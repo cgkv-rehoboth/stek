@@ -76,3 +76,33 @@ class Profile(models.Model):
   address     = models.ForeignKey(Address, null=True, blank=True)
   phone       = models.CharField(max_length=15, blank=True)
   birthday    = models.DateField()
+
+  def __str__(self):
+    return "Profiel van %s" % (self.user.username)
+
+class Family(models.Model):
+
+  lastname = models.CharField(max_length=255)
+  members = models.ManyToManyField(Profile, through="FamilyMember")
+
+  def __str__(self):
+    return "Familie %s" % self.lastname
+
+class FamilyMember(models.Model):
+
+  DAD = 'DAD'
+  MUM = 'MUM'
+  KID = 'KID'
+
+  ROLE_CHOICES = (
+    (DAD, 'Father'),
+    (MUM, 'Mother'),
+    (KID, 'Kid'),
+  )
+
+  family = models.ForeignKey(Family)
+  profile = models.ForeignKey(Profile)
+  role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID)
+
+  def __str__(self):
+    return "%s %s: %s" % (self.family.lastname, self.role, self.profile.user.username)

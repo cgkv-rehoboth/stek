@@ -4,5 +4,7 @@ djangorestframework-jwt
 django-cors-headers
 django-livefield
 django-filter
+django_extensions
 PyYAML
 pyjade
+ipython
