@@ -12,12 +12,12 @@ def timetables(request):
   for doodie in doodies:
     by_table[doodie.timetable] = by_table.get(doodie.timetable, []) + [doodie]
 
-  return render(request, 'timetables.jade', {
+  return render(request, 'timetables.html', {
     'doodies': by_table
   })
 
 def index(request):
-  return render(request, 'index.jade', {
+  return render(request, 'index.html', {
     'services': Service.objects.all()
   })
 
@@ -32,7 +32,7 @@ def login(request):
   if submitted and form.is_valid():
     return http.HttpResponseRedirect('/')
   else:
-    return render(request, 'login.jade', { 'form': AuthenticationForm() })
+    return render(request, 'login.html', { 'form': AuthenticationForm() })
 
 urls = [
   url(r'^$', index),
