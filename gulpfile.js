@@ -12,6 +12,7 @@ var gulp = require('gulp'),
     babelify = require('babelify');
 
 var assets = path.join(__dirname, 'src/assets');
+var scripts = path.join(assets, 'scripts');
 var fonts = path.join(assets, 'fonts/**/*');
 var images = path.join(assets, 'images/**/*');
 var dist = path.join(__dirname, 'dist');
@@ -31,14 +32,14 @@ gulp.task('sass', function() {
 
 // initiates the scripts bundler
 function compileScripts(watch) {
-  var entryFile = path.join(assets, 'app.jsx');
+  var entryFile = path.join(scripts, 'app.jsx');
 
   // we use browserify to bundle node style modules into a
   // script ready for the browser
   var bundler = browserify({
     entries: [entryFile],
     debug: true,
-    paths: ['./node_modules/', path.join(assets, 'scripts'), assets],
+    paths: ['./node_modules/', scripts],
     extensions: ['.jsx', '.js'],
     cache: {}, packageCache: {}, fullPaths: true,
     sourceMaps: true
