@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+  <head>
+    {% include "./head.html" %}
+  </head>
+
+  <body>
+    {% include "./header.html" %}
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- after the body-->
+    <!-- load scripts last-->
+    <script src="{% static "scripts/app.js" %}"></script>
+
+    <!-- google apis-->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=onGoogleReady"></script>
+  </body>
+</html>
