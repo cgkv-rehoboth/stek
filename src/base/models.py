@@ -62,3 +62,17 @@ class TimetableDuty(Event):
     self.title = "%s (%s)" % (self.timetable.title, self.responsible)
 
     return "%s op %s: %s" % (self.timetable.title, self.datetime, self.responsible)
+
+class Address(models.Model):
+
+  street      = models.CharField(max_length=255, blank=True)
+  zip         = models.CharField(max_length=6, blank=True)
+  city        = models.CharField(max_length=255, blank=True)
+  country     = models.CharField(max_length=255, default="Nederland")
+
+class Profile(models.Model):
+
+  user        = models.ForeignKey(User, null=True, blank=True)
+  address     = models.ForeignKey(Address, null=True, blank=True)
+  phone       = models.CharField(max_length=15, blank=True)
+  birthday    = models.DateField()
