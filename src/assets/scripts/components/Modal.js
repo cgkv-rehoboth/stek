@@ -1,6 +1,4 @@
 var React = require('react');
-var Boot = require('react-bootstrap');
-var BackboneComponent = require('./BackboneComponent');
 
 var Carousel = React.createClass({
 

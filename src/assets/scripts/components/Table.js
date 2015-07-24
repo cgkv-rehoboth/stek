@@ -1,6 +1,4 @@
 var React = require('react');
-var {Table} = require('react-bootstrap');
-var BackboneComponent = require('./BackboneComponent');
 var _ = require('underscore');
 
 /**
@@ -8,11 +6,6 @@ var _ = require('underscore');
  */
 module.exports = React.createClass({
 
-  mixins: [BackboneComponent],
-
-  getCollections: function() {
-    return [this.props.data];
-  },
 
   getDefaultProps: function() {
     return {
