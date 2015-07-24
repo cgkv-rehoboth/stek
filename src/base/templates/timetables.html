@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>{% include "./head.jade" %}
+  <head>{% include "./head.html" %}
   </head>
-  <body>{% for table,doodielist in doodies.items|__pyjade_iter:2 %}
+  <body>
+  {% for table,doodielist in doodies.items %}
     <h3>{{ table.title }}
 
     </h3>
@@ -13,12 +14,15 @@
           <td>Datum</td>
         </tr>
       </thead>
-      <tbody>{% for doodie in doodielist|__pyjade_iter:1 %}
+      <tbody>
+      {% for doodie in doodielist|__pyjade_iter:1 %}
         <tr>
           <td>{{ doodie.responsible }}</td>
           <td>{{ doodie.datetime }}</td>
-        </tr>{% endfor %}
+        </tr>
+      {% endfor %}
       </tbody>
-    </table>{% endfor %}
+    </table>
+  {% endfor %}
   </body>
 </html>
