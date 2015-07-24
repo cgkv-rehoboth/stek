@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>{% include "./head.jade" %}
+  </head>
+  <body>{% for table,doodielist in doodies.items|__pyjade_iter:2 %}
+    <h3>{{ table.title }}
+
+    </h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <td>Verantwoordelijke</td>
+          <td>Datum</td>
+        </tr>
+      </thead>
+      <tbody>{% for doodie in doodielist|__pyjade_iter:1 %}
+        <tr>
+          <td>{{ doodie.responsible }}</td>
+          <td>{{ doodie.datetime }}</td>
+        </tr>{% endfor %}
+      </tbody>
+    </table>{% endfor %}
+  </body>
+</html>
