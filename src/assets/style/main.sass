@@ -1,0 +1,70 @@
+@import "compass/reset"
+@import "bootstrap/bootstrap-compass"
+@import "bootstrap/bootstrap"
+@import "bootstrap/variables"
+@import "cgkv"
+@import "sections/header"
+@import "sections/calendar"
+@import "sections/contact"
+@import "sections/family"
+@import "_colors"
+
+.modal
+  position: absolute
+  left: 0px
+  top: 0px
+  width: 100%
+  height: 100%
+  text-align: center
+  z-index: 1000
+  display: hidden
+
+  .modal-bg
+    position: absolute
+    left: 0px
+    top: 0px
+    width: 100%
+    height: 100%
+    background-color: #EEE
+
+  .row
+    div
+      height: 100%
+
+  .modal-modal
+    background-color: white
+    border:
+      top: 1px solid $cgkv-green
+      bottom: 1px solid $cgkv-green
+    margin: 0px auto
+    width: 50%
+
+.pre-icon
+  margin-right: 20px
+
+div.container.login
+  height: 100%
+
+  div.row
+    height: 100%
+
+    div#login-column
+      position: relative
+      height: 100%
+
+      #login-form
+        width: 100%
+        position: absolute
+        top: 50%
+        +translateY(-50%)
+        padding: 20px
+        background-color: white
+        border-left: 1px solid $cgkv-blue
+        border-right: 1px solid $cgkv-blue
+
+        & > .input-group
+          width: 100%
+
+        h2
+          position: absolute
+          top: -75px

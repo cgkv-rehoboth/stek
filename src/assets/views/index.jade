@@ -1,0 +1,72 @@
+doctype html
+html
+
+  head
+    include ./head.jade
+    link(href="style/main.css" rel="stylesheet")
+
+  body
+
+    div.login
+      | Hi
+
+    div.content
+      header
+        div.inject
+        div.icons
+          div.container
+            ul
+              li
+                i.fa.fa-facebook-official
+              li
+                i.fa.fa-envelope-o
+              li
+                i.fa.fa-sign-in
+
+      section#slides
+
+      section.quote.light
+        div.container
+          blockquote
+            For 50 years, WWF has been protecting the future of nature. The world's leading
+            conservation organization, WWF works in 100 countries and is supported by 1.2 million
+            members in the United States and close to 5 million globally.
+
+      section#sermons.green
+        div.container
+          h2
+            i.fa.fa-clock-o.pre-icon
+            | Diensten in de komende weken
+
+          p
+            | Elke zondag ochtend en middag is er een dienst in de Rehoboth kerk, waar iedereen welkom is.
+            | Na de ochtenddienst kunt u meegenieten van de koffie, thee en fris.
+
+          br
+
+          div.inject
+
+      section(id="map")
+
+      //-
+        section(startweek)
+
+        section#family-banner
+          .background(stellar-background="0.8")
+
+          .container.text-center.light
+            h4
+              span.larger 300
+              | jonge en oude leden
+              | die samen een frisse gemeente vormen.
+
+        section(calendar)
+
+        section(contact)
+
+  // after the body
+  // load scripts last
+  script(src="scripts/main.js")
+
+  // google apis
+  script(src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=onGoogleReady")

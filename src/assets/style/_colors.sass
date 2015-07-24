@@ -1,0 +1,33 @@
+$yellow: #b58900
+$orange: #cb4b16
+$red: #dc322f
+$magenta: #d33682
+$violet: #6c71c4
+$blue: #268bd2
+$cyan: #2aa198
+$green: #859900
+
+$cgkv-green: #7FA34B
+$cgkv-blue: #4B7FA3
+
+$dark-bg: #40474D
+$dark-fg: #40474D
+$light-fg: #F0F0F0
+$light-bg: #F0F0F0
+
+@mixin light
+  color: $light-fg
+
+@mixin dark
+  color: $dark-fg
+
+.dark
+  +dark
+
+.light
+  +light
+
+.green
+  background-color: $green
+  border-color: $green
+  color: white

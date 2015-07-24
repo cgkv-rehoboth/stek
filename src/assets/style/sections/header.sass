@@ -1,0 +1,95 @@
+@import "bootstrap/variables"
+@import "compass/css3"
+@import "fonts"
+@import "colors"
+@import "paths"
+@import "mixins"
+
+$navbarHeight: 30px
+
+header
+  position: relative
+  top: 0px
+  z-index: 100
+
+  img
+    width: 120px
+    margin-top: 15px
+    float: left
+
+  .navbar
+    border-bottom: 1px solid #555
+    border-radius: 0px
+
+    position: fixed
+    z-index: 999
+    width: 100%
+    height: $navbarHeight
+    font-size: 15pt
+    color: white
+
+    background-color: #333
+    margin-bottom: 0px
+
+    .navbar-nav
+      float: left
+      margin-left: 20px
+
+    &.navbar-default
+      .navbar-nav > li > a
+        color: white !important
+
+section#slides
+  width: 100%
+  min-height: 400px
+  background-color: #777
+  z-index: 1
+
+  .carousel
+    height: 100%
+    width: 100%
+
+    .carousel-indicators
+      bottom: 5px
+
+    .carousel-inner
+      height: 100%
+      width: 100%
+      overflow: hidden
+
+      .item
+        height: 100%
+        width: 100%
+        background-size: cover
+        background-position: center
+        background-repeat: no-repeat
+
+        .container
+          position: relative
+          height: 100%
+          // to support item text height
+          min-height: 900px
+
+          .carousel-item-text-container
+            position: absolute
+            bottom: 80px
+            width: 100%
+            text-align: center
+
+          .carousel-item-text
+            $black: rgba(black, 0.5)
+            +text-shadow($black 1px 1px 3px, $black -1px 1px 3px, $black 1px -1px 3px, $black -1px -1px 3px)
+
+            margin: 0px auto
+            padding: 20px
+            text-align: center
+            max-height: 400px
+            max-width: 65%
+            width: auto
+
+            color: white
+            font-size: $font-medium
+
+            span
+              font-size: 20pt
+

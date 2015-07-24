@@ -1,0 +1,22 @@
+td
+  | {{ act.activity.when | amDateFormat: 'HH:mm' }}
+td
+  | {{ act.activity.what }}
+td
+  | {{ act.activity.where }}
+td
+  | &euro; {{ act.activity.price }}
+td
+  | {{ act.registrations }}
+td
+  button.btn.btn-outline(
+    ng-show="canRegister"
+    ng-click="ctrl.register()"
+    class="btn-outline")
+    | Aanmelden!
+
+  button.btn.btn-outline(
+    ng-show="!canRegister"
+    ng-click="ctrl.deregister()"
+    class="green btn-outline")
+    | Afmelden ({{ act.user_registrations }} mensen)

@@ -1,0 +1,32 @@
+{
+  "name": "cgkv-woerden",
+  "private": true,
+  "dependencies": {
+    "backbone": "",
+    "jquery": "",
+    "react": "",
+    "react-bootstrap": "",
+    "react-google-maps": "^0.2.4",
+    "traceur": "",
+    "underscore": "",
+    "director": ""
+  },
+  "devDependencies": {
+    "grunt-shell": "",
+    "grunt": "",
+    "grunt-contrib-compass": "",
+    "grunt-contrib-compress": "",
+    "grunt-contrib-connect": "",
+    "grunt-contrib-watch": "",
+    "grunt-contrib-jade": "",
+    "grunt-contrib-copy": "",
+    "grunt-notify": "",
+    "grunt-traceur": "",
+    "grunt-browserify": "",
+    "grunt-react": "",
+    "es6ify": ""
+  },
+  "engines": {
+    "node": ">=0.12.0"
+  }
+}

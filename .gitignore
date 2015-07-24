@@ -1,0 +1,8 @@
+*.pyc
+__pycache__/
+.virtualenv/
+tags
+*.sqlite3
+.sass-cache/
+node_modules/
+dist/
