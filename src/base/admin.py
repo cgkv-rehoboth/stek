@@ -6,13 +6,13 @@ admin.site.register(Event)
 admin.site.register(Slide)
 admin.site.register(Service)
 admin.site.register(TimetableDuty)
+admin.site.register(Address)
 admin.site.register(Profile)
 admin.site.register(FamilyMember)
-admin.site.register(Address)
 
 
 # Create custom form for Family
-class FamilyMemberInline(admin.StackedInline):
+class FamilyMemberInline(admin.TabularInline):
   model = FamilyMember
   extra = 0
 
