@@ -6,3 +6,10 @@ tags
 .sass-cache/
 node_modules/
 dist/
+.idea/workspace.xml
+.idea/stek.iml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/libraries/Django_Lib.xml
+.idea/.name
+.idea/modules.xml

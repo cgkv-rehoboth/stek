@@ -71,6 +71,9 @@ class Address(models.Model):
   city        = models.CharField(max_length=255, blank=True)
   country     = models.CharField(max_length=255, default="Nederland")
 
+  def __str__(self):
+    return "%s, %s, %s (%s)" % (self.street, self.zip, self.city, self.country)
+
 class Profile(models.Model):
 
   user        = models.ForeignKey(User, null=True, blank=True)
