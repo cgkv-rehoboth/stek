@@ -93,11 +93,13 @@ class FamilyMember(models.Model):
   DAD = 'DAD'
   MUM = 'MUM'
   KID = 'KID'
+  INDEPENDENT_KID = 'IKI'
 
   ROLE_CHOICES = (
     (DAD, 'Father'),
     (MUM, 'Mother'),
     (KID, 'Kid'),
+    (INDEPENDENT_KID, 'Independent kid'),
   )
 
   family = models.ForeignKey(Family)
@@ -105,4 +107,4 @@ class FamilyMember(models.Model):
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID)
 
   def __str__(self):
-    return "%s %s: %s" % (self.family.lastname, self.role, self.profile.user.username)
+    return "%s %s: %s" % (self.family.lastname, self.get_role_display(), self.profile.user.username)
