@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from livefield.models import LiveModel
+from django.db.models import Count
 
 class TimestampedModel(models.Model):
 
@@ -87,6 +88,9 @@ class Family(models.Model):
 
   def __str__(self):
     return "Familie %s" % self.lastname
+
+  def size(self):
+    return self.members.all().count()
 
 class FamilyMember(models.Model):
 
