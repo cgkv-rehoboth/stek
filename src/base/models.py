@@ -87,7 +87,7 @@ class Profile(models.Model):
 class Family(models.Model):
 
   lastname = models.CharField(max_length=255)
-  members = models.ManyToManyField(Profile, through="FamilyMember")
+  members = models.ManyToManyField(User, through="FamilyMember")
 
   def __str__(self):
     return "Familie %s" % self.lastname
@@ -110,8 +110,8 @@ class FamilyMember(models.Model):
   )
 
   family = models.ForeignKey(Family)
-  profile = models.ForeignKey(Profile)
+  user = models.ForeignKey(User)
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID)
 
   def __str__(self):
-    return "%s %s: %s" % (self.family.lastname, self.get_role_display(), self.profile.user.username)
+    return "%s %s: %s" % (self.family.lastname, self.get_role_display(), self.user.username)
