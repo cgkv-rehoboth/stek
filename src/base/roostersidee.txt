@@ -1,0 +1,37 @@
+Model: EVENTS
+ID              Event ID
+Title           (e.g. Ochtenddienst, Begravenis, Seniorenuitje, etc.)
+Begindate
+Enddate         NULL  --- If null: Enddate will get the same value as Begindate
+Begintime       NULL  \__ If both null: event is the whole day
+Endtime         NULL  /
+Description
+
+Model: DUTIES (or a less shitty title)
+ID              Duty ID
+Event           Event ID
+Task            Task ID     (e.g. Beamer, Dominee, Oppas, etc.)
+User            User ID
+Comments        NULL
+
+Model: TASKS
+ID              Task id
+Task            (e.g. Beamer, Dominee, Oppas, etc.)
+Description     NULL
+
+-- Optional --
+Model: SERVICES
+ID              Service ID
+Event           Event ID
+Liturgie        (file/text with the liturgie (<- wats deze in het Engels) of the service)
+Recording       (URL/file of the soundrecording of the service)
+Sermoninfo      (some extra info: the whole text written out; maybe an attachment of the PPT; the theme; ...)
+-- End optional --
+
+
+
+Thus:              [ EVENTS ]
+                   /        \
+          [SERVICES]       [ DUTIES ]
+          (or some-        /        \
+          thing else)  [USERS]    [TASKS]
