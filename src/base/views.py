@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django import http
 
 from .models import *
+from agenda.models import *
 
 def timetables(request):
 

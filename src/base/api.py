@@ -11,8 +11,8 @@ class UserViewSet(viewsets.ModelViewSet):
   queryset = User.objects.all()
 
   serializer_class = UserSerializer
-
-class TimetableViewSet(viewsets.ModelViewSet):
+'''
+class TimetbleViewSet(viewsets.ModelViewSet):
   queryset = Timetable\
     .objects\
     .select_related('owner', 'events')\
@@ -28,7 +28,7 @@ class EventViewSet(viewsets.ModelViewSet):
     .all()
 
   serializer_class = EventSerializer
-
+'''
 class SlideViewSet(viewsets.ModelViewSet):
   queryset = Slide\
     .objects\
@@ -36,7 +36,7 @@ class SlideViewSet(viewsets.ModelViewSet):
     .all()
 
   serializer_class = SlideSerializer
-
+'''
 class DutyViewSet(viewsets.ModelViewSet):
   queryset = TimetableDuty\
     .objects\
@@ -44,13 +44,13 @@ class DutyViewSet(viewsets.ModelViewSet):
     .all()
 
   serializer_class = DutySerializer
-
+'''
 router = AngularRouter(trailing_slash=False)
 router.register(r'users', UserViewSet)
-router.register(r'events', EventViewSet)
+'''router.register(r'events', EventViewSet)
 router.register(r'timetables', TimetableViewSet)
+router.register(r'duties', DutyViewSet)'''
 router.register(r'slides', SlideViewSet)
-router.register(r'duties', DutyViewSet)
 
 urls = [
   url(r'^', include(router.urls)),
