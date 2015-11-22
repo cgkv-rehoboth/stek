@@ -6,22 +6,6 @@ from django import http
 from .models import *
 from agenda.models import *
 
-def timetables(request):
-
-  doodies = TimetableDuty.objects.all()
-  by_table = {}
-  for doodie in doodies:
-    by_table[doodie.timetable] = by_table.get(doodie.timetable, []) + [doodie]
-
-  return render(request, 'timetables.html', {
-    'doodies': by_table
-  })
-
-def index(request):
-  return render(request, 'index.html', {
-    'services': Service.objects.all()
-  })
-
 def login(request):
   if request.method == 'POST':
     form = AuthenticationForm(data=request.POST)
@@ -36,8 +20,5 @@ def login(request):
     return render(request, 'login.html', { 'form': AuthenticationForm() })
 
 urls = [
-  url(r'^$', index),
   url(r'^login$', login, name='login'),
-
-  url(r'^roosters$', timetables),
 ]

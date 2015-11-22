@@ -1,13 +1,19 @@
-// libs
+// jQuery 4 life
 let $ = require('jquery');
-let React = require('react');
-let _ = require('underscore');
-let Router = require('react-router');
-let { Route, DefaultRoute, Link, RouteHandler } = Router;
 
 // bind global jquery instance
 window.jQuery = $;
 window.$ = $;
+
+// some global injections
+let _easing = require('jquery.easing');
+let _bootstrap = require('bootstrap');
+let _theme = require('./lib/grayscale');
+
+let React = require('react');
+let _ = require('underscore');
+let Router = require('react-router');
+let { Route, DefaultRoute, Link, RouteHandler } = Router;
 
 // api
 let api = require('api');

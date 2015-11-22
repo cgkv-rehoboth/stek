@@ -41,7 +41,8 @@ INSTALLED_APPS = (
   'django_extensions',
   'corsheaders',
   'agenda',
-  'base'
+  'base',
+  'public'
 )
 
 MIDDLEWARE_CLASSES = (

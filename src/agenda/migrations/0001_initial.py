@@ -16,17 +16,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Event',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
                 ('live', livefield.fields.LiveField(default=True)),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('incalendar', models.BooleanField(default=True)),
-                ('title', models.CharField(blank=True, null=True, max_length=255)),
+                ('title', models.CharField(blank=True, max_length=255, null=True)),
                 ('startdatetime', models.DateTimeField()),
                 ('enddatetime', models.DateTimeField(blank=True, null=True)),
                 ('description', models.TextField(blank=True, null=True)),
-                ('repeatEvery', models.IntegerField(blank=True, null=True, default=None)),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='events')),
+                ('repeatEvery', models.IntegerField(blank=True, default=None, null=True)),
+                ('owner', models.ForeignKey(related_name='events', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'abstract': False,
@@ -36,9 +36,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Service',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
                 ('minister', models.CharField(max_length=255)),
-                ('theme', models.CharField(blank=True, default='', max_length=255)),
+                ('theme', models.CharField(blank=True, max_length=255, default='')),
                 ('comments', models.TextField(blank=True, null=True)),
                 ('event', models.ForeignKey(to='agenda.Event')),
             ],
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Timetable',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
                 ('live', livefield.fields.LiveField(default=True)),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
@@ -65,11 +65,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TimetableDuty',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
                 ('comments', models.TextField(blank=True, null=True)),
-                ('event', models.ForeignKey(to='agenda.Event', related_name='duties')),
-                ('responsible', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='duties')),
-                ('timetable', models.ForeignKey(to='agenda.Timetable', related_name='duties')),
+                ('event', models.ForeignKey(related_name='duties', to='agenda.Event')),
+                ('responsible', models.ForeignKey(related_name='duties', to=settings.AUTH_USER_MODEL)),
+                ('timetable', models.ForeignKey(related_name='duties', to='agenda.Timetable')),
             ],
             options={
             },
@@ -78,13 +78,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='service',
             name='timetable',
-            field=models.ForeignKey(to='agenda.Timetable', related_name='services'),
+            field=models.ForeignKey(related_name='services', to='agenda.Timetable'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='event',
             name='timetable',
-            field=models.ForeignKey(to='agenda.Timetable', related_name='events'),
+            field=models.ForeignKey(related_name='events', to='agenda.Timetable'),
             preserve_default=True,
         ),
     ]
