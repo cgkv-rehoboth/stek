@@ -14,8 +14,9 @@ var gulp = require('gulp'),
 var assets = path.join(__dirname, 'src/assets');
 var scripts = path.join(assets, 'scripts');
 var fonts = path.join(assets, 'fonts/**/*');
-var images = path.join(assets, 'images/**/*');
+var images = path.join(assets, 'resources/images/**/*');
 var dist = path.join(__dirname, 'dist');
+var css = path.join(assets, 'css/**/*');
 
 gulp.task('sass', function() {
   gulp.src('./src/assets/sass/main.sass')
@@ -23,7 +24,7 @@ gulp.task('sass', function() {
       includePaths : [
         path.join(__dirname, 'src/assets/fonts'),// sass
         path.join(__dirname, 'src/assets/sass'), // sass
-        path.join(__dirname, 'src/assets/css'),  // css
+        css,  // css
         path.join(__dirname, 'node_modules/')    // libs
       ]
     }).on('error', sass.logError))
@@ -85,11 +86,12 @@ gulp.task('watch', function() {
 
   compileScripts(true);
   initWatch(['./src/assets/sass/**/*.sass', './src/assets/sass/**/*.css'], 'sass');
+  initWatch(['./src/assets/css/**/*.css'], 'copy');
 });
 
 // copy the assets to the dist
 gulp.task('copy', function() {
-  return gulp.src([fonts, images], {base: assets})
+  return gulp.src([fonts, images, css], {base: assets})
     .pipe(gulp.dest(dist));
 });
 

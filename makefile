@@ -1,5 +1,5 @@
 mkenv:
-	pyvenv-3.4 .virtualenv
+	pyvenv .virtualenv
 
 install:
 	test -d .virtualenv || ${MAKE} mkenv

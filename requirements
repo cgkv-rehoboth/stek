@@ -1,4 +1,4 @@
-Django==1.7
+Django
 djangorestframework
 djangorestframework-jwt
 django-cors-headers
