@@ -41,7 +41,6 @@ class TimetableDuty(models.Model):
 
   responsible = models.ForeignKey(User, related_name="duties")
   event       = models.ForeignKey(Event, related_name="duties")
-  timetable   = models.ForeignKey(Timetable, related_name="duties")
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
@@ -49,12 +48,10 @@ class TimetableDuty(models.Model):
 
     return "%s op %s: %s" % (self.timetable.title, self.event.datetime, self.responsible)
 
-class Service(models.Model):
+class Service(Event):
 
   minister    = models.CharField(max_length=255)
   theme       = models.CharField(max_length=255, blank=True, default="")
-  event       = models.ForeignKey(Event)
-  timetable   = models.ForeignKey(Timetable, related_name="services")
   comments    = models.TextField(blank=True, null=True)
 
   def save(self, *args, **kwargs):
