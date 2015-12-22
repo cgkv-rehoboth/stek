@@ -18,6 +18,7 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
   title       = models.CharField(max_length=255)
   owner       = models.ForeignKey(User)
   description = models.TextField(blank=True, null=True)
+  team        = models.ForeignKey(Team, related_name="timetables", null=True)
 
   def __str__(self): return self.title
 
@@ -62,3 +63,35 @@ class Service(models.Model):
     if self.theme != "": self.title += ": %s" % self.theme
 
     super(Service, self).save(*args, **kwargs)
+
+
+class Team(models.Model):
+
+  name = models.CharField(max_length=255)
+  members = models.ManyToManyField(User, through="TeamMember")
+
+  def __str__(self):
+    return "Team %s" % self.name
+
+  def size(self):
+    return self.members.all().count()
+
+class TeamMember(models.Model):
+
+  LEADER = 'LEI'
+  LID = 'LID'
+
+  ROLE_CHOICES = (
+    (LEADER, 'Leiding'),
+    (LID, 'Leden'),
+  )
+
+  team = models.ForeignKey(Team)
+  user = models.ForeignKey(User)
+  role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
+  email = models.EmailField(max_length=255, blank=True)
+  description = models.TextField(blank=True)
+
+
+  def __str__(self):
+    return "%s %s: %s" % (self.team.name, self.get_role_display(), self.user.username)
