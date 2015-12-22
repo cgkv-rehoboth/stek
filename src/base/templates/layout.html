@@ -11,11 +11,14 @@
     {% block content %}
     {% endblock %}
 
-    <!-- after the body-->
-    <!-- load scripts last-->
-    <script src="{% static "scripts/app.js" %}"></script>
+    <footer>
+        <div class="container text-center">
+            <p>Copyright &copy; http://www.cgkvwoerden.nl {% now "Y" %}</p>
+        </div>
+    </footer>
 
-    <!-- google apis-->
+    <script src="{% static "scripts/app.js" %}"></script>
+    <script src="{% static "js/grayscale.js" %}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=onGoogleReady"></script>
   </body>
 </html>

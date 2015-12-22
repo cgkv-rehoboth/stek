@@ -18,6 +18,7 @@ let { Route, DefaultRoute, Link, RouteHandler } = Router;
 // api
 let api = require('api');
 
+/*
 class App extends React.Component {
 
   render() {
@@ -40,3 +41,4 @@ window.onGoogleReady = () => {
 Router.run(routes, function (Handler, state) {
   React.render(<Handler {...state.params} />, $('#app')[0]);
 });
+*/

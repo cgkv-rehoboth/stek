@@ -25,7 +25,8 @@ gulp.task('sass', function() {
         path.join(__dirname, 'src/assets/fonts'),// sass
         path.join(__dirname, 'src/assets/sass'), // sass
         css,  // css
-        path.join(__dirname, 'node_modules/')    // libs
+        path.join(__dirname, 'node_modules/'),
+        path.join(__dirname, 'node_modules/font-awesome/scss/')
       ]
     }).on('error', sass.logError))
     .pipe(gulp.dest(path.join(dist, 'css')));

@@ -1,9 +1,32 @@
-@import "cgkv"
-@import "sections/header"
-@import "sections/calendar"
-@import "sections/contact"
-@import "sections/family"
-@import "_colors"
+// @import "sections/calendar"
+// @import "sections/contact"
+// @import "sections/family"
+@import "grayscale"
+@import "colors"
+@import "fonts"
+
+*
+  font-family: RobotoDraft
+  font-weight: 300 !important
+  line-height: 200%
+
+.stub-column
+  height: 0px
+
+.vspace
+  min-height: 20px
+
+section
+  padding-bottom: 50px
+
+#what
+  position: relative
+  background-color: black
+  background-image: url('/static/resources/images/contact-bg.jpg')
+  background-position: center
+  background-size: cover
+  color: white
+  min-height: 250px
 
 .modal
   position: absolute
@@ -30,8 +53,8 @@
   .modal-modal
     background-color: white
     border:
-      top: 1px solid $cgkv-green
-      bottom: 1px solid $cgkv-green
+      top: 1px solid $cgkv-blue
+      bottom: 1px solid $cgkv-blue
     margin: 0px auto
     width: 50%
 
