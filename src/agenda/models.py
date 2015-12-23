@@ -34,14 +34,16 @@ class Event(TimestampedModel, LiveModel, models.Model):
   description     = models.TextField(blank=True, null=True)
 
   # minutes; null = not repeated
-  repeatEvery = models.IntegerField(blank=True, null=True, default=None)
+  repeatEvery = models.IntegerField(blank=True, null=True, default=None, help_text="In minutes")
 
-  def __str__(self): return self.title
+  def __str__(self):
+    return "%s, at %s" % (self.title, self.startdatetime)
 
 class TimetableDuty(models.Model):
 
   responsible = models.ForeignKey(User, related_name="duties")
   event       = models.ForeignKey(Event, related_name="duties")
+  timetable   = models.ForeignKey(Timetable, related_name="duties")
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
