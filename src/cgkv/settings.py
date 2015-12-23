@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'cgkv.wsgi.application'
 
 DATABASES = {
   'default': {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    'ENGINE': 'django.db.backends.mysql', 
+    'NAME': 'cgkv',
+    'USER': 'cgkv',
+    'PASSWORD': 'lCCnO6D9Py1VQukTlGknTnFiNyx6TmJ6',
+    'HOST': 'localhost',
+    'PORT': '3306',
   }
 }
 
