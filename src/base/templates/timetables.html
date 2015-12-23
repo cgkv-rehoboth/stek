@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
-  <head>{% include "./head.html" %}
-  </head>
-  <body>
-  {% for table,doodielist in doodies.items %}
-    <h3>{{ table.title }}
+{% extends "./layout.html" %}
 
-    </h3>
+{% load staticfiles %}
+
+{% block content %}
+  {% for table,doodielist in doodies.items %}
+    <h3>{{ table.title }}</h3>
     <table class="table">
       <thead>
         <tr>
@@ -18,11 +16,10 @@
       {% for doodie in doodielist|__pyjade_iter:1 %}
         <tr>
           <td>{{ doodie.responsible }}</td>
-          <td>{{ doodie.datetime }}</td>
+          <td>{{ doodie.event.datetime }}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
   {% endfor %}
-  </body>
-</html>
+{% endblock %}

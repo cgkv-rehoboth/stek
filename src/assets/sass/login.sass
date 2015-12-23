@@ -1,11 +1,27 @@
-div#login
+@import colors
 
-  .vspace
-    min-height: 30px
+div.container.login
+  height: 100%
 
-  form
-    width: 100%
+  div.row
+    height: 100%
 
-    input
-      width: 100%
-      display: block
+    div#login-column
+      position: relative
+      height: 100%
+
+      #login-form
+        width: 100%
+        position: absolute
+        top: 50%
+        padding: 20px
+        background-color: white
+        border-left: 1px solid $blue
+        border-right: 1px solid $blue
+
+        & > .input-group
+          width: 100%
+
+        h2
+          position: absolute
+          top: -75px

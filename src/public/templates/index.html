@@ -3,16 +3,7 @@
 {% load staticfiles %}
 
 {% block content %}
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-</head>
-
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-
 
   <!-- Intro Header -->
   <header class="intro">
@@ -51,6 +42,9 @@
     </div>
   </section>
 
+  <section id="foto-1">
+  </section>
+
   <section id="what" class="content-section text-center">
     <div class="container">
       <div class="col-lg-8 col-lg-offset-2">
@@ -62,7 +56,7 @@
   <section id="sermons">
   <div class="container">
     <h2>
-    <i class="fa fa-clock-o pre-icon"></i>Diensten in de komende weken
+    Diensten in de komende weken
     </h2>
 
     <p>
@@ -82,7 +76,7 @@
     {% for service in services %}
     <tr>
       <td>{{ service.title }}</td>
-      <td>{{ service.datetime|date:"f A - l d M" }}</td>
+      <td>{{ service.startdatetime|date:"f A - l d M" }}</td>
     </tr>
     {% endfor %}
 

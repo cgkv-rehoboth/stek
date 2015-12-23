@@ -7,8 +7,30 @@
 
 *
   font-family: RobotoDraft
-  font-weight: 300 !important
+  font-weight: 300
   line-height: 200%
+  font-size: 14pt
+
+#wrapper
+  min-height: 100%
+  position: relative
+
+$footer-height: 80px
+footer
+  background-color: $dark-bg
+  color: $light-fg
+  position: absolute
+  bottom: 0px
+  height: $footer-height 
+  width: 100%
+
+#content
+  padding-bottom: $footer-height
+a, p, li
+  font-weight: 300
+
+h1, h2, h3, h4, h5
+  font-weight: 300
 
 .stub-column
   height: 0px
@@ -24,16 +46,15 @@ section
     background-color: $dark-bg
     color: $light-fg
 
-footer
-  background-color: $dark-bg
-  color: $light-fg
+#foto-1
+  height: 350px
+  background-image: url('/static/resources/images/contact-bg.jpg')
+  background-position: center
+  background-size: cover
 
 #what
   position: relative
   background-color: black
-  background-image: url('/static/resources/images/contact-bg.jpg')
-  background-position: center
-  background-size: cover
   color: white
   min-height: 250px
 
@@ -70,28 +91,10 @@ footer
 .pre-icon
   margin-right: 20px
 
-div.container.login
-  height: 100%
-
-  div.row
-    height: 100%
-
-    div#login-column
-      position: relative
-      height: 100%
-
-      #login-form
-        width: 100%
-        position: absolute
-        top: 50%
-        padding: 20px
-        background-color: white
-        border-left: 1px solid $cgkv-blue
-        border-right: 1px solid $cgkv-blue
-
-        & > .input-group
-          width: 100%
-
-        h2
-          position: absolute
-          top: -75px
+table
+  tr
+    th
+      font-weight: 700
+      font-size: 14pt
+    td
+      font-size: 14pt
