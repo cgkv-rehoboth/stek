@@ -1,25 +1,52 @@
 {% extends "./layout.html" %}
 
 {% load staticfiles %}
+{% load utils %}
 
 {% block content %}
-  {% for table,doodielist in doodies.items %}
-    <h3>{{ table.title }}</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <td>Verantwoordelijke</td>
-          <td>Datum</td>
-        </tr>
-      </thead>
-      <tbody>
-      {% for doodie in doodielist|__pyjade_iter:1 %}
-        <tr>
-          <td>{{ doodie.responsible }}</td>
-          <td>{{ doodie.event.datetime }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  {% endfor %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <h1>Timetables </h1>
+        <div class="col-sm-12">
+          <ul class="nav nav-tabs">
+            {% for table in mytables %}
+              <li role="presentation" {% if table.pk == table_id %}class="active"{% endif %}><a href="?table={{ table.pk }}">{{ table.title }}</a></li>
+            {% endfor %}
+          <li role="presentation" class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            Dropdown <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            {% for table in notmytables %}
+              <li role="presentation" {% if table.pk == table_id %}class="active"{% endif %}><a href="?table={{ table.pk }}">{{ table.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+          </ul>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Event</th>
+                <th>Persoon</th>
+                <th>Opmerkingen</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for duty in duties|__pyjade_iter:1 %}
+              {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday %}{% endifchanged %}
+              <tr class="table-{{ rowday }}">
+                <td>{{ duty.event.startdatetime }}</td>
+                <td>{{ duty.event.title }}</td>
+                <td>{{ duty.responsible|usernicename }}</td>
+                <td>{{ duty.comments }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}

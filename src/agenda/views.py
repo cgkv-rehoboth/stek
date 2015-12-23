@@ -1,19 +1,28 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.forms import AuthenticationForm
 from django import http
+import datetime
 
 from .models import *
 
+@login_required
 def timetables(request):
+  table_id = 1
+  if request.GET and request.GET['table']:
+    table_id = int(request.GET['table'])
 
-  doodies = TimetableDuty.objects.all()
-  by_table = {}
-  for doodie in doodies:
-    by_table[doodie.timetable] = by_table.get(doodie.timetable, []) + [doodie]
+  duties = TimetableDuty.objects.filter(timetable=table_id, event__startdatetime__gte=datetime.date.today()).order_by("event__startdatetime", "event__enddatetime")
+
+  mytables = Timetable.objects.filter(team__members__pk=request.user.pk).exclude(team__isnull=True)
+  notmytables = Timetable.objects.exclude(team__members__pk=request.user.pk).exclude(team__isnull=True)
 
   return render(request, 'timetables.html', {
-    'doodies': by_table
+    'table_id': table_id,
+    'mytables': mytables,
+    'notmytables': notmytables,
+    'duties': duties
   })
 
 urls = [
