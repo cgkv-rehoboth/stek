@@ -108,3 +108,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, "../dist/"),
 )
+
+localsettingspath = os.path.join(BASE_DIR, "cgkv/localsettings.py")
+if os.path.exists(localsettingspath):
+    import cgkv.localsettings
