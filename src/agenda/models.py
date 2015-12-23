@@ -18,7 +18,7 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
   title       = models.CharField(max_length=255)
   owner       = models.ForeignKey(User)
   description = models.TextField(blank=True, null=True)
-  team        = models.ForeignKey(Team, related_name="timetables", null=True)
+  team        = models.ForeignKey("Team", related_name="timetables", blank=True, null=True)
 
   def __str__(self): return self.title
 
@@ -42,7 +42,6 @@ class TimetableDuty(models.Model):
 
   responsible = models.ForeignKey(User, related_name="duties")
   event       = models.ForeignKey(Event, related_name="duties")
-  timetable   = models.ForeignKey(Timetable, related_name="duties")
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
@@ -50,12 +49,10 @@ class TimetableDuty(models.Model):
 
     return "%s op %s: %s" % (self.timetable.title, self.event.datetime, self.responsible)
 
-class Service(models.Model):
+class Service(Event):
 
   minister    = models.CharField(max_length=255)
   theme       = models.CharField(max_length=255, blank=True, default="")
-  event       = models.ForeignKey(Event)
-  timetable   = models.ForeignKey(Timetable, related_name="services")
   comments    = models.TextField(blank=True, null=True)
 
   def save(self, *args, **kwargs):
@@ -64,17 +61,26 @@ class Service(models.Model):
 
     super(Service, self).save(*args, **kwargs)
 
-
+# Team models
 class Team(models.Model):
 
   name = models.CharField(max_length=255)
-  members = models.ManyToManyField(User, through="TeamMember")
+  members = models.ManyToManyField(User, through="TeamMember", related_name="members")
+  email = models.EmailField(max_length=255, blank=True)
+  description = models.TextField(blank=True)
 
   def __str__(self):
-    return "Team %s" % self.name
+    return "%s" % self.name
 
   def size(self):
     return self.members.all().count()
+
+  def leader(self):
+    text = ""
+    for v in TeamMember.objects.filter(team_id=self.pk, role="LEI"):
+      text += "%s, " % str(v.user.username)
+
+    return text
 
 class TeamMember(models.Model):
 
@@ -83,14 +89,12 @@ class TeamMember(models.Model):
 
   ROLE_CHOICES = (
     (LEADER, 'Leiding'),
-    (LID, 'Leden'),
+    (LID, 'Lid'),
   )
 
   team = models.ForeignKey(Team)
-  user = models.ForeignKey(User)
+  user = models.ForeignKey(User, related_name="team_membership")
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
-  email = models.EmailField(max_length=255, blank=True)
-  description = models.TextField(blank=True)
 
 
   def __str__(self):
