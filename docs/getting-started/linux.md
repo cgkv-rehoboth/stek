@@ -14,13 +14,18 @@
 
 6. Run the build for the client side files `gulp`
 
-7.  You can now migrate the database (make sure the virtualenv is activated as before) and
+7. Download and install MySQL and run the following queries:
+
+    create database cgkv;
+    grant all privileges on cgkv.* to cgkv@localhost identified by 'lCCnO6D9Py1VQukTlGknTnFiNyx6TmJ6';
+
+8.  You can now migrate the database (make sure the virtualenv is activated as before) and
     run the development server; from the `src/` run:
 
     python manage.py migrate
 	  python manage.py runserver
 
-8.  You should now be able to visit `localhost:8000` (and `localhost:8000/admin/`) in your browser.
+9.  You should now be able to visit `localhost:8000` (and `localhost:8000/admin/`) in your browser.
 
 ## Post installation
 

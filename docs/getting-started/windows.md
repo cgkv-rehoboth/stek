@@ -21,7 +21,10 @@
 
     gulp
 
-8. Download and install MySQL
+8. Download and install MySQL and run the following queries:
+
+    create database cgkv;
+    grant all privileges on cgkv.* to cgkv@localhost identified by 'lCCnO6D9Py1VQukTlGknTnFiNyx6TmJ6';
 
 9. Download and install PyCharm :
 
