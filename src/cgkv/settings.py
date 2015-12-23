@@ -111,4 +111,4 @@ STATICFILES_DIRS = (
 
 localsettingspath = os.path.join(BASE_DIR, "cgkv/localsettings.py")
 if os.path.exists(localsettingspath):
-    import cgkv.localsettings
+    from cgkv.localsettings import *
