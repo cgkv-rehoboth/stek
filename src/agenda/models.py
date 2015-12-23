@@ -33,9 +33,6 @@ class Event(TimestampedModel, LiveModel, models.Model):
   timetable       = models.ForeignKey(Timetable, related_name="events")
   description     = models.TextField(blank=True, null=True)
 
-  # minutes; null = not repeated
-  repeatEvery = models.IntegerField(blank=True, null=True, default=None, help_text="In minutes")
-
   def __str__(self):
     return "%s, at %s" % (self.title, self.startdatetime)
 

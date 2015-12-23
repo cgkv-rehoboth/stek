@@ -23,11 +23,7 @@ admin.site.register(TimetableDuty, TimetableDutyAdmin)
 
 # Create custom display for Event
 class EventAdmin(admin.ModelAdmin):
-  list_display = ['title', 'startdatetime', 'enddatetime', 'timetable', 'repeatEveryMin', 'description']
-
-  def repeatEveryMin(self, obj):
-    return obj.repeatEvery
-  repeatEveryMin.short_description = "RepeatEvery (minutes)"
+  list_display = ['title', 'startdatetime', 'enddatetime', 'timetable', 'description']
 
 admin.site.register(Event, EventAdmin)
 
