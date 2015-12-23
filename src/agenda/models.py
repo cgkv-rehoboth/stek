@@ -45,9 +45,7 @@ class TimetableDuty(models.Model):
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
-    self.title = "%s (%s)" % (self.timetable.title, self.responsible)
-
-    return "%s op %s: %s" % (self.timetable.title, self.event.datetime, self.responsible)
+    return "%s op %s door %s" % (self.event.title, self.event.startdatetime, self.responsible)
 
 class Service(Event):
 
