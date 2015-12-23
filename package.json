@@ -15,20 +15,21 @@
     "watchify": "^3.2.3"
   },
   "dependencies": {
-    "bootstrap": "^3.3.5",
-    "classnames": "^2.1.3",
-    "cookies-js": "^1.2.1",
-    "font-awesome": "^4.4.0",
-    "jquery": "^2.1.4",
-    "jquery.easing": "^1.3.2",
-    "material-ui": "^0.10.0",
-    "object-assign": "^3.0.0",
-    "q": "^1.4.1",
-    "q-xhr": "^0.1.3",
-    "react": "^0.13.3",
-    "react-google-maps": "^1.7.1",
-    "react-router": "^0.13.3",
-    "react-tap-event-plugin": "^0.1.7",
-    "underscore": "^1.8.3"
+    "bootstrap": "",
+    "classnames": "",
+    "cookies-js": "",
+    "font-awesome": "",
+    "jquery": "",
+    "jquery.easing": "",
+    "object-assign": "",
+    "q": "",
+    "q-xhr": "",
+    "react": "0.14.3",
+    "react-dom": "0.14.3",
+    "react-google-maps": "",
+    "react-router": "^1.0.2",
+    "react-tap-event-plugin": "",
+    "underscore": "",
+    "history": "1.13.x"
   }
 }
