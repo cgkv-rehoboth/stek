@@ -1,8 +1,6 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(Service)
-
 
 # Create custom display for TimeTable
 class TimetableDutyInline(admin.TabularInline):
@@ -26,6 +24,12 @@ class EventAdmin(admin.ModelAdmin):
   list_display = ['title', 'startdatetime', 'enddatetime', 'timetable', 'description']
 
 admin.site.register(Event, EventAdmin)
+
+# Create custom display for Service
+class ServiceAdmin(admin.ModelAdmin):
+  list_display = ['title',  'minister', 'theme', 'startdatetime', 'enddatetime', 'description', 'comments']
+
+admin.site.register(Service, ServiceAdmin)
 
 # Team stuff
 class TeamMemberAdmin(admin.ModelAdmin):
