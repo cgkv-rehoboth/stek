@@ -53,8 +53,7 @@ class Service(Event):
   comments    = models.TextField(blank=True, null=True)
 
   def save(self, *args, **kwargs):
-    self.title = "Dienst (%s)" % self.minister
-    if self.theme != "": self.title += ": %s" % self.theme
+    if self.title == "": self.title = "Dienst"
 
     super(Service, self).save(*args, **kwargs)
 
