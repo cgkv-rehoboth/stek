@@ -1,6 +1,6 @@
 ## CGKV Woerden Site
 
-![logo](https://raw.githubusercontent.com/cgkv-rehoboth/stek/master/src/assets/resources/images/logo-zwart.png)
+<img src="https://raw.githubusercontent.com/cgkv-rehoboth/stek/master/src/assets/resources/images/logo-zwart.png" width="200" />
 
 ### Contributing
 
