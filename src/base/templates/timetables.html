@@ -8,6 +8,17 @@
     <div class="container-fluid">
       <div class="row">
         <h1>Mijn roosters</h1>
+
+        {% if messages %}
+          <!-- Status messages -->
+          <ul class="messages">
+            {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <!-- Timetable menu/choices -->
         <div class="col-sm-12">
           <ul class="nav nav-tabs">
             {% for table in mytables %}
@@ -25,6 +36,7 @@
             </li>
           </ul>
 
+          <!-- Timetable duties -->
           {% if table_id > 0 %}
           <table class="table table-hover">
             <thead>
@@ -38,20 +50,64 @@
             <tbody>
             {% for duty in duties|__pyjade_iter:1 %}
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
-              <tr class="table-{{ rowday }}">
-                <td>{{ duty.event.startdatetime }}</td>
-                <td>{{ duty.event.title }}</td>
-                <td>{{ duty.responsible|usernicename }}</td>
+              <tr class="table-{{ rowday }}" data-duty-pk="{{ duty.pk }}">
+                <td class="duty-date">{{ duty.event.startdatetime }}</td>
+                <td class="duty-title">{{ duty.event.title }}</td>
+                <td>
+                  {{ duty.responsible|usernicename }}
+                  {% if duty.responsible.pk == user.pk %}
+                    <a href="javascript:void(0)" class="timetable-ruilen" title="Ruilen aanvragen"><i class="fa fa-pencil"></i></a>
+                  {% endif %}
+                </td>
                 <td>{{ duty.comments }}</td>
               </tr>
             {% endfor %}
             </tbody>
           </table>
           {% else %}
-          Please select a Timetable from the list above
+          Je hebt geen persoonlijke rooster, maar je kan wel andere roosters bekijken door op de knop "Andere roosters" te klikken
           {% endif %}
         </div>
       </div>
     </div>
+
+    <!-- Modal for 'ruilen'-event -->
+    <div class="modal fade" id="ruilModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="exampleModalLabel">Ruilen</h4>
+          </div>
+          <form method="post" action="">
+            {% csrf_token %}
+            <div class="modal-body">
+              <input type="hidden" value="" name="modal-duty-pk" />
+              <div class="form-group">
+                Ruilen aanvragen voor "<span class="modal-event-name"></span>, <span class="modal-event-date"></span>".
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="control-label">Reden/opmerking:</label>
+                <textarea class="form-control" name="comments"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+              <button type="submit" class="btn btn-primary">Versturen</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </section>
+
+  <!-- Todo: This script needs to be placed in a script file -->
+  <script>
+    $(".timetable-ruilen").click(function(){
+      $("#ruilModal .modal-event-name").text($(this).closest("tr").find(".duty-title").text());
+      $("#ruilModal .modal-event-date").text($(this).closest("tr").find(".duty-date").text());
+      $("#ruilModal input[name=modal-duty-pk]").val($(this).closest("tr").attr("data-duty-pk"));
+      $("#ruilModal").modal('show');
+    });
+  </script>
 {% endblock %}
