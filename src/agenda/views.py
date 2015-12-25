@@ -61,7 +61,10 @@ def timetables(request):
     'table_id': table_id,
     'mytables': mytables,
     'notmytables': notmytables,
-    'duties': duties
+    'duties': duties,
+
+    'events': Event.objects.all(),
+    'users': User.objects.all()
   })
 
 urls = [

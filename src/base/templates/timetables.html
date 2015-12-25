@@ -34,6 +34,7 @@
                 {% endfor %}
               </ul>
             </li>
+            <li role="presentation" title="Add another splittable"><a href="#"><i class="fa fa-plus"></i></a></li>
           </ul>
 
           <!-- Timetable duties -->
@@ -67,6 +68,26 @@
           {% else %}
           Je hebt geen persoonlijke rooster, maar je kan wel andere roosters bekijken door op de knop "Andere roosters" te klikken
           {% endif %}
+          <form method="post" action="timetableduty/create">
+            {% csrf_token %}
+
+            <select name="event">
+              {% for v in events %}
+                <option value="{{ v.pk }}">{{ v.title }}</option>
+              {% endfor %}
+            </select>
+
+            <select name="responsible">
+              {% for v in users %}
+                <option value="{{ v.pk }}">{{ v.username }}</option>
+              {% endfor %}
+            </select>
+
+            <textarea name="comments"></textarea>
+
+            <input type="submit" value="Schedule!" class="btn btn-primary" />
+
+          </form>
         </div>
       </div>
     </div>
