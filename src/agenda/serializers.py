@@ -3,7 +3,6 @@ from rest_framework import serializers
 from .models import *
 from base.serializers import UserSerializer
 
-
 class SimpleTimetableSerializer(serializers.ModelSerializer):
   """ Timetables without there events
   """
@@ -31,12 +30,30 @@ class TimetableSerializer(SimpleTimetableSerializer):
   class Meta:
     model = Timetable
 
+
+class ShortTimetableSerializer(SimpleTimetableSerializer):
+  """ Timetables without there events
+  """
+
+  class Meta:
+    model = Timetable
+
 class ServiceSerializer(EventSerializer):
   class Meta:
     model = Service
 
-class DutySerializer(EventSerializer):
+class DutyReadSerializer(serializers.ModelSerializer):
+
   responsible = UserSerializer()
+  event = EventSerializer()
+  timetable = ShortTimetableSerializer()
 
   class Meta:
     model = TimetableDuty
+    fields = ['pk', 'responsible', 'event', 'timetable', 'comments']
+
+class DutyWriteSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = TimetableDuty
+    fields = ['pk', 'responsible', 'event', 'timetable', 'comments']

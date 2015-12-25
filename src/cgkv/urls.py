@@ -6,11 +6,13 @@ from django.conf import settings
 
 import base.views
 import agenda.views
+import agenda.api
 import public.views
 
 urlpatterns = patterns('',
   url(r'^', include(base.views.urls)),
   url(r'^', include(agenda.views.urls)),
+  url(r'^', include(agenda.api.urls)),
   url(r'^', include(public.views.urls)),
 
   url(r'^admin/', include(admin.site.urls)),
