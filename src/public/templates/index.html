@@ -9,11 +9,30 @@
       <div class="intro-gradient" ></div>
       <div class="container">
         <div class="row">
-          <div class="col-md-8 col-md-offset-2">
-            <img src="{% static 'resources/images/logo-wit.png' %}">
-            <br/>
-            <p class="intro-text">Een gastvrije gemeente met veel jonge mense en wijze oude mensen</p>
-            <a href="#about" class="btn btn-circle page-scroll">
+          {% if listen_live %}
+            <div class="col-md-4 col-md-offset-2">
+              <img src="{% static 'resources/images/logo-wit.png' %}">
+            </div>
+            <div id="listen-in"  "class="col-md-4">
+              <div class="pulse-container">
+                <div class="pulse cyan"></div>
+                <button class="cyan btn-rounded pulse-content"
+                        data-toggle="tooltip" data-placement="bottom"
+                        title="U kunt nu luisteren naar de live stream!"
+                        >Luister nu mee!</button>
+              </div>
+            </div>
+          {% else %}
+            <div class="col-md-8 col-md-offset-2">
+              <img src="{% static 'resources/images/logo-wit.png' %}">
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- intro footer --!>
+        <div class="row">
+          <div class="col-sm-12">
+            <a id="go-down" href="#about" class="btn btn-circle page-scroll cyan">
               <i class="fa fa-angle-double-down animated"></i>
             </a>
           </div>
@@ -24,21 +43,40 @@
 {% endblock %}
 
 {% block content %}
-<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+<body id="frontpage" data-spy="scroll" data-target=".navbar-fixed-top">
 
   <!-- About Section -->
   <section id="about" class="content-section text-center">
     <div class="container">
-      <h2>Wie we zijn</h2>
-      <div class="row">
+      <h1 class="with-sub">Rehoboth Woerden: een frisse gemeente</h1>
+      <h4>Een geestelijk rustpunt in het Groene Hart</h4>
+      <div id="drieslag" class="row">
         <div class="col-md-4">
-            <h4>Jong</h4>
+           <div class="row">
+             <button class="btn-circle blue"><i class="fa fa-child"></i></button>
+           </div>
+           <div class="row">
+             <h3>Jong</h3>
+             <p>{% lorem 20 w %}</p>
+           </div>
         </div>
         <div class="col-md-4">
-            <h4>Oud</h4>
+           <div class="row">
+             <button class="btn-circle blue"><i class="fa fa-battery-half" ></i></button>
+           </div>
+           <div class="row">
+             <h3>Medium</h3>
+             <p>{% lorem 14 w random %}</p>
+           </div>
         </div>
         <div class="col-md-4">
-            <h4>Gastvrij</h4>
+           <div class="row">
+             <button class="btn-circle blue"><i class="fa fa-comments" ></i></button>
+           </div>
+           <div class="row">
+             <h3>Oud</h3>
+             <p>{% lorem 10 w random %}</p>
+           </div>
         </div>
       </div>
     </div>
@@ -47,7 +85,7 @@
   <section id="foto-1">
   </section>
 
-  <section id="what" class="content-section text-center">
+  <section id="what" class="content-section text-center dark">
     <div class="container">
       <div class="col-lg-8 col-lg-offset-2">
         <h2>Wat we doen</h2>

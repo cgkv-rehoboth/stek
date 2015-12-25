@@ -1,0 +1,62 @@
+@import colors
+
+@-moz-keyframes pulse
+  0%
+    -moz-transform: scale(1)
+    opacity: 0.0
+ 
+  50%
+    -moz-transform: scale(1.1)
+    opacity: 0.5
+ 
+  100%
+    -moz-transform: scale(1.2)
+    opacity: 0.0
+ 
+
+
+@-webkit-keyframes "pulse"
+  0%
+    -webkit-transform: scale(1)
+    opacity: 0.0
+ 
+  50%
+    -webkit-transform: scale(1.3)
+    opacity: 0.5
+ 
+  100%
+    -webkit-transform: scale(1.6)
+    opacity: 0.0
+
+div.pulse-container
+  position: relative
+  display: inline-block
+
+  div.pulse
+    position: absolute
+    left: 0px
+    top: 0px
+    width: 100%
+    height: 100%
+    z-index: 10
+
+    border: 10px solid #fff601
+    background: transparent
+    -webkit-border-radius: 60px
+    -moz-border-radius: 60px
+    border-radius: 60px
+    -webkit-animation: pulse 2s ease-out
+    -moz-animation: pulse 2s ease-out
+    animation: pulse 2s ease-out
+    -webkit-animation-iteration-count: infinite
+    -moz-animation-iteration-count: infinite
+    animation-iteration-count: infinite
+    opacity: 0
+
+    &.cyan
+      border-color: $cyan
+
+  .pulse-content
+    position: relative
+    z-index: 100
+    margin: 0px
