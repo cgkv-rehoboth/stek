@@ -1,25 +1,44 @@
 @import fonts
 @import reset
 @import grayscale
+@import animations
 
 // theme overrides
 *
   font-family: RobotoDraft
   font-weight: 300
-  line-height: 200%
   font-size: 14pt
   box-sizing: border-box
 
 p
   font-size: 14pt
+  font-weight: 300
+  line-height: 200%
+
+
+h1, h2, h3, h4
+  margin-bottom: 30px
 
 h1
-  font-size: 22pt
-  margin-bottom: 10px
+  font-size: 25pt
+  font-weight: 300
 
 h2
-  font-size: 20pt
-  margin-bottom: 10px
+  font-size: 23pt
+  font-weight: 300
+
+h3
+  font-size: 18pt
+  font-weight: 300
+
+h4
+  font-size: 15pt
+  font-weight: 700
+  color: $blue
+
+h1, h2, h3
+  &.with-sub
+    margin-bottom: 10px
 
 table
   tr

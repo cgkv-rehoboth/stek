@@ -5,6 +5,7 @@ from agenda.models import *
 
 def index(request):
   return render(request, 'index.html', {
+    'listen_live': True,
     'services': Service.objects.all()
   })
 
