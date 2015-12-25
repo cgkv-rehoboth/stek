@@ -7,38 +7,24 @@ window.$ = $;
 
 // some global injections
 let _easing = require('jquery.easing');
-let _bootstrap = require('bootstrap');
+
+// make sure bootstrap is loaded
+let _bootstrap = require('bootstrap/dist/js/bootstrap.min');
+require('bootstrap/js/tooltip');
+
+// theming thingies
 let _theme = require('./lib/grayscale');
 
-let React = require('react');
-let _ = require('underscore');
-let Router = require('react-router');
-let { Route, DefaultRoute, Link, RouteHandler } = Router;
+function _initForms($form) {
+  let data = $form.serializeArray();
+  console.log(data);
+}
 
 // api
 let api = require('api');
+api.duties.list().then((data) => console.log(data));
 
-/*
-class App extends React.Component {
-
-  render() {
-    console.log("Inited app");
-    return false;
-  }
-}
-
-let routes = (
-  <Route>
-    <Route path="/" handler={App}>
-    </Route>
-  </Route>
-);
-
-window.onGoogleReady = () => {
-  console.debug("Loaded google apis...");
-}
-
-Router.run(routes, function (Handler, state) {
-  React.render(<Handler {...state.params} />, $('#app')[0]);
-});
-*/
+// init bootstrap tooltips
+console.log($('[data-toggle="tooltip"]'));
+$(() => console.log("HI!"));
+$(() => $('[data-toggle="tooltip"]').tooltip());
