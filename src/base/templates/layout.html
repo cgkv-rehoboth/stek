@@ -23,7 +23,10 @@
       </footer>
     </div>
 
-    <script src="{% static "scripts/app.js" %}"></script>
+    <script src="{% static "scripts/common.js" %}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=onGoogleReady"></script>
+
+    {% block scripts %}
+    {% endblock %}
   </body>
 </html>
