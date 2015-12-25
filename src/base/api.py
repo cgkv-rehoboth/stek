@@ -1,11 +1,58 @@
 from django.contrib.auth.models import User
 from django.conf.urls import url, include
 
-from rest_framework import routers, viewsets, views, response, permissions
+from rest_framework import routers, viewsets, views, response, permissions, metadata
+from rest_framework.pagination import PageNumberPagination
 
 from .routers import *
 from .models import *
 from .serializers import *
+
+class MinimalMetadata(metadata.BaseMetadata):
+
+  def determine_metadata(self, request, view):
+    return dict(
+      name=view.get_view_name(),
+      description=view.get_view_description()
+    )
+
+class StekPaginator(PageNumberPagination):
+  page_size = 100
+  page_size_query_param = 'page_size'
+  max_page_size = 1000
+
+  def get_paginated_response(self, data):
+    resp = super().get_paginated_response(data)
+
+    # include the current page number
+    resp.data['pageno'] = self.page.number
+
+    return resp
+
+class StekViewSet(viewsets.GenericViewSet):
+
+  pagination_class = StekPaginator
+  metadata_class = MinimalMetadata
+
+  def get_serializer(self, *args, **kwargs):
+    """ Improved get_serializer that will look for list_/detail_serializer_class properties
+    """
+    if self.__class__.serializer_class is not None:
+      cls = self.__class__.serializer_class
+    else:
+      if self.action == 'list' and hasattr(self.__class__,
+                           'list_serializer_class'):
+        cls = self.__class__.list_serializer_class
+      elif hasattr(self.__class__, 'detail_serializer_class'):
+        cls = self.__class__.detail_serializer_class
+      else:
+        # error handling
+        return super().get_serializer(*args, **kwargs)
+
+    # default the context
+    kwargs['context'] = self.get_serializer_context()
+
+    return cls(*args, **kwargs)
 
 class UserViewSet(viewsets.ModelViewSet):
   queryset = User.objects.all()
