@@ -13,7 +13,7 @@ var gulp = require('gulp'),
 
 var assets = path.join(__dirname, 'src/assets');
 var scripts = path.join(assets, 'scripts');
-var fonts = path.join(assets, 'fonts/**/*');
+var fonts = path.join(assets, 'resources/fonts/**/*');
 var images = path.join(assets, 'resources/images/**/*');
 var dist = path.join(__dirname, 'dist');
 var css = path.join(assets, 'css/**/*');
