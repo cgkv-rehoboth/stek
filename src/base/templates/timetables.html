@@ -73,13 +73,13 @@
 
             <select name="event">
               {% for v in events %}
-                <option value="{{ v.pk }}">{{ v.title }}</option>
+                <option value="{{ v.pk }}">{{ v }}</option>
               {% endfor %}
             </select>
 
             <select name="responsible">
               {% for v in users %}
-                <option value="{{ v.pk }}">{{ v.username }}</option>
+                <option value="{{ v.pk }}">{{ v }}</option>
               {% endfor %}
             </select>
 

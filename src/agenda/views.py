@@ -12,7 +12,7 @@ from .models import *
 @login_required
 def timetables(request):
   # Check if someone triggerd the 'ruilen'-form
-  if request.POST and request.POST['modal-duty-pk']:
+  if 'modal-duty-pk' in request.POST:
     # Get the duty in question
     duty = TimetableDuty.objects.filter(pk=request.POST['modal-duty-pk'])[:1].get()
 
@@ -28,7 +28,7 @@ def timetables(request):
     for v in TeamMember.objects.filter(team_id=duty.timetable.team.pk, role="LEI"):
       recipients.append(v.user.email)
 
-    send_mail("Ruilverzoek " + duty.event.title, message, "noreply@cgkvwoerden.nl", recipients)
+    #send_mail("Ruilverzoek " + duty.event.title, message, "noreply@cgkvwoerden.nl", recipients)
 
     # Set feedback/status message to inform the user
     messages.success(request, 'De teamleiding is op de hoogte gebracht van je verzoek!')
@@ -63,8 +63,8 @@ def timetables(request):
     'notmytables': notmytables,
     'duties': duties,
 
-    'events': Event.objects.all(),
-    'users': User.objects.all()
+    'events': Event.objects.filter(startdatetime__gte=datetime.date.today()).order_by('startdatetime'),#.exclude(duties__in=duties),
+    'users': User.objects.filter(team_membership__team__timetables=table_id)
   })
 
 urls = [
