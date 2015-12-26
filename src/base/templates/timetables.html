@@ -7,8 +7,12 @@
   <section>
     <div class="container-fluid">
       <div class="row">
-        <h1>Mijn roosters</h1>
+        <div class="col-sm-12">
+          <h1>Mijn roosters</h1>
+        </div>
+      </div>
 
+      <div class="row">
         {% if messages %}
           <!-- Status messages -->
           <ul class="messages">
@@ -34,12 +38,11 @@
                 {% endfor %}
               </ul>
             </li>
-            <li role="presentation" title="Add another splittable"><a href="#"><i class="fa fa-plus"></i></a></li>
           </ul>
 
           <!-- Timetable duties -->
           {% if table_id > 0 %}
-          <table class="table table-hover">
+          <table id="timetable"  class="table table-hover">
             <thead>
               <tr>
                 <th>Datum</th>
