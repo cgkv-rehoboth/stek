@@ -81,6 +81,8 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = 'cgkv.urls'
 
+LOGIN_URL = '/login'
+
 WSGI_APPLICATION = 'cgkv.wsgi.application'
 
 

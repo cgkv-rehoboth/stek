@@ -27,7 +27,7 @@
         <div class="col-sm-12">
           <ul class="nav nav-tabs">
             {% for table in mytables %}
-              <li role="presentation" {% if table.pk == table_id %}class="active"{% endif %}><a href="?table={{ table.pk }}">{{ table.title }}</a></li>
+              <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}><a href={% url 'timetable-detail' table.pk %}>{{ table.title }}</a></li>
             {% endfor %}
             <li role="presentation" class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -35,14 +35,14 @@
               </a>
               <ul class="dropdown-menu">
                 {% for table in notmytables %}
-                  <li role="presentation" {% if table.pk == table_id %}class="active"{% endif %}><a href="?table={{ table.pk }}">{{ table.title }}</a></li>
+                  <li role="presentation" {% if table == current_table %}class="active"{% endif %}><a href="{% url 'timetable-detail' table.pk %}">{{ table.title }}</a></li>
                 {% endfor %}
               </ul>
             </li>
           </ul>
 
           <!-- Timetable duties -->
-          {% if table_id > 0 %}
+          {% if current_table %}
           <table id="timetable"  class="table table-hover">
             <thead>
               <tr>

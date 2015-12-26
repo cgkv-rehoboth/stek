@@ -20,13 +20,15 @@
               <div class="vspace"></div>
               <div class="vspace"></div>
               <form method="post" action="{% url "login" %}">
+                {% csrf_token %}
                 {{ form.username }}
                 <br />
                 {{ form.password }}
                 <br />
                 <div class="btn-group pull-right">
                   <button type="button" class="btn btn-flat">Annuleren</button>
-                  <input type="submit" class="btn btn-flat">                </div>
+                  <input type="submit" class="btn btn-flat" />
+                </div>
               </form>
             {% else %}
               <h2>Hi {{ user }}!
