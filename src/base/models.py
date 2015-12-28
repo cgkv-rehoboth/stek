@@ -40,7 +40,14 @@ class Family(models.Model):
   members = models.ManyToManyField(User, through="FamilyMember")
 
   def __str__(self):
-    return "Familie %s" % self.lastname
+    # Get the head of the family
+    father = self.members.filter(familymember__role='DAD').first()
+    if father:
+      father = " (" + father.first_name[:1] + ". " + father.last_name + ")"
+    else:
+      father = ''
+
+    return "Familie %s%s" % (self.lastname, father)
 
   def size(self):
     return self.members.all().count()
