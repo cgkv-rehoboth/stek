@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Prefetch
 from django.shortcuts import render
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.forms import AuthenticationForm
@@ -22,7 +23,27 @@ def login(request):
     return render(request, 'login.html', { 'form': AuthenticationForm() })
 
 @login_required
-def addressbook(request):
+def addressbook(request, view='persons'):
+  table = None
+  families = None
+
+  # Check which table needs to be loaded
+  if view == 'persons':
+    table = ProfileTable(Profile.objects.all())
+    RequestConfig(request, paginate={'per_page': 30}).configure(table)
+  elif view == 'families':
+    # Get all families including the members (which are sorted by age)
+    families = Family.objects.prefetch_related(Prefetch('members', queryset=FamilyMember.objects.order_by('user__profile__birthday'))).order_by('lastname')
+
+  return render(request, 'addressbook.html', {
+    'table': table,
+    'families': families
+  })
+
+
+# Not gonna use this one anymore
+@login_required
+def addressbookx(request):
   table = 'persons'
   if 'table' in request.GET:
     table = request.GET['table']
@@ -42,5 +63,7 @@ def addressbook(request):
 
 urls = [
   url(r'^login$', login, name='login'),
-  url(r'^adresboek', addressbook, name='addressbook')
+  url(r'^adresboek/(?P<view>\w+)/$', addressbook, name='addressbook-detail'),
+  url(r'^adresboek/$', addressbook, name='addressbook-list'),
+  url(r'^profiel/(?P<id>\d+)/$', addressbook, name='profile'),
 ]

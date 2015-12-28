@@ -5,15 +5,28 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
-  <style>
-    table th a i.fa-sort{
-      display: none;
-    }
-    table th a:hover i.fa-sort{
-      display: inline-block;
-    }
-  </style>
-  <section>
+  <section id="addressbook">
+    <style>
+      table th a i.fa-sort{
+        display: none;
+      }
+      table th a:hover i.fa-sort{
+        display: inline-block;
+      }
+
+      .family-picture{
+        width: 100%;
+      }
+
+      .family-list .family-list-details{
+        display: none;
+      }
+
+      .family-contact-address{
+        //float: left;
+        //margin-right: 40px;
+      }
+    </style>
     <div class="container-fluid">
       <div class="row">
         <h1>Adresboek</h1>
@@ -30,16 +43,60 @@
         <!-- Addressbook menu/choices -->
         <div class="col-sm-12">
           <ul class="nav nav-tabs">
-            <li role="presentation" title="Add another splittable" class="active"><a href="?table=persons">Personen</a></li>
-            <li role="presentation" title="Add another splittable"><a href="?table=families">Families</a></li>
-            <li role="presentation" title="Add another splittable"><a href="?table=search">Zoeken</a></li>
-            <li role="presentation" title="Add another splittable"><a href="?table=search">Favorieten</a></li>
+            <li role="presentation" title="Add another splittable" {% if table %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "persons" %}">Personen</a></li>
+            <li role="presentation" title="Add another splittable" {% if families %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "families" %}">Families</a></li>
+            <li role="presentation" title="Add another splittable" {% if search %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "search" %}">Zoeken</a></li>
+            <li role="presentation" title="Add another splittable" {% if favorites %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "favorites" %}">Favorieten</a></li>
           </ul>
 
           <!-- Addressbook list -->
           {% if table %}
             {% render_table table %}
+
+          {% elif families %}
+            <div class="list-group family-list">
+            {% for v in families %}
+              <a href="javascript:void(0)" class="list-group-item family-list-item" data-family-id="{{ v.pk }}">{{ v }}</a>
+
+              <div class="row family-list-details" data-listensTo="{{ v.pk }}">
+                <div class="col-lg-8">
+                  <!-- Some familymember + details -->
+                  <table class="table table-hover">
+                    {% for w in v.members.all %}
+                      <tr>
+                        <td><a href="{% url 'profile' w.user.pk %}">{{ w.user.first_name }}</a></td>
+                        <td>{{ w.user.profile.birthday }}</td>
+                        <td>{{ w.user.profile.phone }}</td>
+                      </tr>
+                    {% endfor %}
+
+                    <!-- Contact info -->
+                    <tr>
+                      <td>
+                        <strong>Adres</strong><br/>
+                        {{ v.members.all.0.user.profile.address.street }}<br/>
+                        {{ v.members.all.0.user.profile.address.zip }}, {{ v.members.all.0.user.profile.address.city }}<br/>
+                      </td>
+                      <td>
+                        <strong>Telefoon</strong><br/>
+                        {{ v.members.all.0.user.profile.phone }}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </table>
+
+                </div>
+
+                <div class="col-lg-4">
+                  <!-- Place for the family photo -->
+                  <!-- Todo: load image only when needed/clicked, not all images of all the families at the same time -->
+                  <img src="http://blog.novakdjokovicfoundation.org/media/2014/06/shutterstock_151928681.jpg" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+                </div>
+              </div>
+            {% endfor %}
+            </div>
           {% else %}
+
             <table class="table table-hover table-striped table-bordered">
               <thead>
                 <tr>
@@ -72,4 +129,15 @@
       </div>
     </div>
   </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script>
+    $(function(){
+      $('.family-list .family-list-item').click(function(){
+        $('.family-list .family-list-details[data-listensTo=' + $(this).attr('data-family-id') + ']').slideToggle(100);
+      });
+    })
+  </script>
 {% endblock %}
