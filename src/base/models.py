@@ -26,7 +26,7 @@ class Address(models.Model):
 
 class Profile(models.Model):
 
-  user        = models.ForeignKey(User, null=True, blank=True)
+  user        = models.OneToOneField(User, null=True, blank=True, related_name="profile")
   address     = models.ForeignKey(Address, null=True, blank=True)
   phone       = models.CharField(max_length=15, blank=True)
   birthday    = models.DateField()

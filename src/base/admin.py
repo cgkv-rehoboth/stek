@@ -29,7 +29,7 @@ class ProfileInline(admin.StackedInline):
 
 class UserAdmin(admin.ModelAdmin):
   fieldsets = [
-    ('User',   {'fields': ['username', 'password', 'first_name', 'last_name', 'email']}),
+    ('User',   {'fields': ['username', 'first_name', 'last_name', 'email']}),
     ('Extra',  {'fields': ['groups', ], 'classes': ['collapse']}),
   ]
   inlines = [ProfileInline, FamilyMemberInline]

@@ -2,13 +2,18 @@
 
 {% load staticfiles %}
 {% load utils %}
+{% load render_table from django_tables2 %}
 
 {% block content %}
   <section>
     <div class="container-fluid">
       <div class="row">
-        <h1>Mijn roosters</h1>
+        <div class="col-sm-12">
+          <h1>Mijn roosters</h1>
+        </div>
+      </div>
 
+      <div class="row">
         {% if messages %}
           <!-- Status messages -->
           <ul class="messages">
@@ -34,12 +39,11 @@
                 {% endfor %}
               </ul>
             </li>
-            <li role="presentation" title="Add another splittable"><a href="#"><i class="fa fa-plus"></i></a></li>
           </ul>
 
           <!-- Timetable duties -->
           {% if table_id > 0 %}
-          <table class="table table-hover">
+          <table id="timetable"  class="table table-hover">
             <thead>
               <tr>
                 <th>Datum</th>
@@ -49,7 +53,7 @@
               </tr>
             </thead>
             <tbody>
-            {% for duty in duties|__pyjade_iter:1 %}
+            {% for duty in duties %}
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
               <tr class="table-{{ rowday }}" data-duty-pk="{{ duty.pk }}">
                 <td class="duty-date">{{ duty.event.startdatetime }}</td>

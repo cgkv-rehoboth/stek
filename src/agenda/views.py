@@ -36,7 +36,6 @@ def timetables(request):
     # Redirect to the same page, to prevent re-submitting the form on page-reload
     return HttpResponseRedirect('/roosters?table=' + str(duty.timetable.pk))
 
-
   # Get all the tables linked to the team(s) the user is in
   mytables = Timetable.objects.filter(team__members__pk=request.user.pk).exclude(team__isnull=True)
   # Get all the other tables that are not really relevant to the user

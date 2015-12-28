@@ -2,6 +2,7 @@ let apiurl = "http://localhost:8000/api/v1/";
 let Q = require('q-xhr')(window.XMLHttpRequest, require('q'));
 let Cookies = require('cookies-js');
 let _ = require('underscore');
+let http = require('utils/http');
 
 let api = '/api/v1';
 let static_url = '/static';
@@ -36,26 +37,6 @@ Q.xhr.interceptors = [
     }
   }
 ];
-
-//
-// utility functions
-//
-
-function post(url, data, options={}) {
-  options.headers = _.defaults(options.headers || {}, {
-    'X-CSRFToken': Cookies.get('csrftoken')
-  });
-
-  return Q.xhr.post(url, data, options);
-}
-
-function del(url, options={}) {
-  options.headers = _.defaults(options.headers || {}, {
-    'X-CSRFToken': Cookies.get('csrftoken')
-  });
-
-  return Q.xhr.delete(url, options);
-}
 
 let api_obj = {
   duties: {

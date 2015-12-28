@@ -9,7 +9,8 @@ var gulp = require('gulp'),
     notify = require('gulp-notify'),
     watchify = require('watchify'),
     browserify = require('browserify'),
-    babelify = require('babelify');
+    babelify = require('babelify'),
+    glob = require('glob');
 
 var assets = path.join(__dirname, 'src/assets');
 var scripts = path.join(assets, 'scripts');
@@ -33,13 +34,11 @@ gulp.task('sass', function() {
 });
 
 // initiates the scripts bundler
-function compileScripts(watch) {
-  var entryFile = path.join(scripts, 'app.jsx');
-
+function compileScripts(watch, entry) {
   // we use browserify to bundle node style modules into a
   // script ready for the browser
   var bundler = browserify({
-    entries: [entryFile],
+    entries: [entry],
     debug: true,
     paths: ['./node_modules/', scripts],
     extensions: ['.jsx', '.js'],
@@ -58,8 +57,11 @@ function compileScripts(watch) {
           message: "Error: <%= error.message %>",
           title: "Error building scripts"
       }))
-      .pipe(source(entryFile))
-      .pipe(rename('app.js'))
+      .pipe(source(entry))
+      .pipe(rename(function(fp) {
+        // I hate mutating state.
+        fp.dirname = "";
+      }))
       .pipe(gulp.dest(path.join(dist, 'scripts')));
 
     stream.on('end', function() { gutil.log("Done building scripts"); });
@@ -76,6 +78,13 @@ function compileScripts(watch) {
   return bundle();
 }
 
+function bundleScripts(watch) {
+  var entries = glob.sync(path.join(scripts, 'pages/**/*.js'));
+  entries.forEach(function(entry) {
+    compileScripts(watch, entry);
+  });
+}
+
 // watch assets and build on changes
 gulp.task('watch', function() {
   livereload.listen();
@@ -85,7 +94,8 @@ gulp.task('watch', function() {
     gulp.watch(files, [task]);
   }
 
-  compileScripts(true);
+  bundleScripts(true);
+
   initWatch(['./src/assets/sass/**/*.sass', './src/assets/sass/**/*.css'], 'sass');
   initWatch(['./src/assets/css/**/*.css'], 'copy');
 });
@@ -101,6 +111,6 @@ gulp.task('default', function() {
   gutil.log(">> Building & standing watch for changes...");
   gulp.start('sass');
   gulp.start('copy');
-  compileScripts(false);
+  bundleScripts(false);
   gulp.start('watch');
 });
