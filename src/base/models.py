@@ -20,6 +20,7 @@ class Address(models.Model):
   zip         = models.CharField(max_length=6, blank=True)
   city        = models.CharField(max_length=255, blank=True)
   country     = models.CharField(max_length=255, default="Nederland")
+  phone       = models.CharField(max_length=15, blank=True)
 
   def __str__(self):
     return "%s, %s, %s (%s)" % (self.street, self.zip, self.city, self.country)
@@ -40,14 +41,14 @@ class Family(models.Model):
   members = models.ManyToManyField(User, through="FamilyMember")
 
   def __str__(self):
-    # Get the head of the family
-    father = self.members.filter(familymember__role='DAD').first()
-    if father:
-      father = " (" + father.first_name[:1] + ". " + father.last_name + ")"
-    else:
-      father = ''
+    # Get the head of the family (mainly the father of the family) ...
+    head = self.members.filter(familymember__role='DAD').first()
 
-    return "Familie %s%s" % (self.lastname, father)
+    # ... otherwise the eldest
+    if not head:
+      head = self.members.all().order_by('profile__birthday').first()
+
+    return "Familie %s, %s." % (self.lastname, head.first_name[:1])
 
   def size(self):
     return self.members.all().count()
