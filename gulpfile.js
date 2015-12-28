@@ -48,7 +48,7 @@ function compileScripts(watch, entry) {
 
   // we use babel to transpile es6 syntax and the react jsx syntax
   // down to es5
-  bundler.transform(babelify);
+  bundler.transform(babelify, {presets: ["es2015", "react"]});
 
   function bundle() {
     var stream = bundler
