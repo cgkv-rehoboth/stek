@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load utils %}
+{% load render_table from django_tables2 %}
 
 {% block content %}
   <style>
@@ -29,38 +30,44 @@
         <!-- Addressbook menu/choices -->
         <div class="col-sm-12">
           <ul class="nav nav-tabs">
-            <li role="presentation" title="Add another splittable"><a href="#"><i class="fa fa-plus"></i></a></li>
-            <li role="presentation" title="Add another splittable"><a href="#"><i class="fa fa-plus"></i></a></li>
+            <li role="presentation" title="Add another splittable" class="active"><a href="?table=persons">Personen</a></li>
+            <li role="presentation" title="Add another splittable"><a href="?table=families">Families</a></li>
+            <li role="presentation" title="Add another splittable"><a href="?table=search">Zoeken</a></li>
+            <li role="presentation" title="Add another splittable"><a href="?table=search">Favorieten</a></li>
           </ul>
 
           <!-- Addressbook list -->
-          <table class="table table-hover table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>
-                  <a href="?order_by={% if request.GET.order_by == 'first_name' %}-{% endif %}first_name">
-                    Voornaam
-                    <i class="fa fa-sort{% if request.GET.order_by == 'first_name' %}-desc{% elif request.GET.order_by == '-first_name' %}-asc{% endif %}"></i>
-                  </a>
-                </th>
-                <th><a href="?order_by={% if request.GET.order_by == 'last_name' %}-{% endif %}last_name">Achternaam</a></th>
-                <th><a href="?order_by={% if request.GET.order_by == 'profile__address' %}-{% endif %}profile__address">Adres</a></th>
-                <th><a href="?order_by={% if request.GET.order_by == 'profile__birthday' %}-{% endif %}profile__birthday">Geboortedatum</a></th>
-                <th><a href="?order_by={% if request.GET.order_by == 'profile__phone' %}-{% endif %}profile__phone">Telefoon</a></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for v in users %}
+          {% if table %}
+            {% render_table table %}
+          {% else %}
+            <table class="table table-hover table-striped table-bordered">
+              <thead>
                 <tr>
-                  <td>{{ v.first_name }}</td>
-                  <td>{{ v.last_name }}</td>
-                  <td>{{ v.profile.address }}</td>
-                  <td>{{ v.profile.birthday }}</td>
-                  <td>{{ v.profile.phone }}</td>
+                  <th>
+                    <a href="?order_by={% if request.GET.order_by == 'first_name' %}-{% endif %}first_name">
+                      Voornaam
+                      <i class="fa fa-sort{% if request.GET.order_by == 'first_name' %}-desc{% elif request.GET.order_by == '-first_name' %}-asc{% endif %}"></i>
+                    </a>
+                  </th>
+                  <th><a href="?order_by={% if request.GET.order_by == 'last_name' %}-{% endif %}last_name">Achternaam</a></th>
+                  <th><a href="?order_by={% if request.GET.order_by == 'profile__address' %}-{% endif %}profile__address">Adres</a></th>
+                  <th><a href="?order_by={% if request.GET.order_by == 'profile__birthday' %}-{% endif %}profile__birthday">Geboortedatum</a></th>
+                  <th><a href="?order_by={% if request.GET.order_by == 'profile__phone' %}-{% endif %}profile__phone">Telefoon</a></th>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {% for v in users %}
+                  <tr>
+                    <td>{{ v.first_name }}</td>
+                    <td>{{ v.last_name }}</td>
+                    <td>{{ v.profile.address }}</td>
+                    <td>{{ v.profile.birthday }}</td>
+                    <td>{{ v.profile.phone }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
         </div>
       </div>
     </div>
