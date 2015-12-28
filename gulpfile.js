@@ -6,7 +6,6 @@ var gulp = require('gulp'),
     watch = require('gulp-watch'),
     source = require('vinyl-source-stream'),
     livereload = require('gulp-livereload'),
-    notify = require('gulp-notify'),
     watchify = require('watchify'),
     browserify = require('browserify'),
     babelify = require('babelify'),
@@ -53,10 +52,9 @@ function compileScripts(watch, entry) {
   function bundle() {
     var stream = bundler
       .bundle()
-      .on("error", notify.onError({
-          message: "Error: <%= error.message %>",
-          title: "Error building scripts"
-      }))
+      .on("error", function (error) {
+        console.error("Error: " + error.message);
+      })
       .pipe(source(entry))
       .pipe(rename(function(fp) {
         // I hate mutating state.
