@@ -9,15 +9,18 @@ class StreetZipColumn(tables.Column):
 class ProfileTable(tables.Table):
   id = tables.Column(visible=False)
   user = tables.Column(visible=False)
+  address = tables.Column(visible=False)
 
-  first_name = tables.Column(verbose_name="Voornaam", accessor='user.first_name')
-  last_name = tables.Column(accessor='user.last_name')
-  email = tables.EmailColumn(accessor='user.email')
+  first_name = tables.Column(accessor='user.first_name', verbose_name="Voornaam")
+  last_name = tables.Column(accessor='user.last_name', verbose_name="Achternaam")
+  email = tables.EmailColumn(accessor='user.email', verbose_name="Email")
+  phone = tables.EmailColumn(verbose_name="Telefoon")
+  birthday = tables.EmailColumn(verbose_name="Geboortedatum")
 
   street_zip = StreetZipColumn(accessor='address', verbose_name='Adres')
   city = tables.Column(accessor='address.city', verbose_name='Plaats')
 
-  favorite = tables.TemplateColumn('<i class="fa fa-star-o"></i>')
+  favorite = tables.TemplateColumn('<i class="fa fa-star-o"></i>', verbose_name=" ")
 
   class Meta:
     model = Profile

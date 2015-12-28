@@ -22,9 +22,13 @@
         display: none;
       }
 
-      .family-contact-address{
-        //float: left;
-        //margin-right: 40px;
+      .favorite i{
+        cursor: pointer;
+      }
+
+      .google-maps-link{
+        font-size: 80%;
+        margin-left: 5px;
       }
     </style>
     <div class="container-fluid">
@@ -43,43 +47,52 @@
         <!-- Addressbook menu/choices -->
         <div class="col-sm-12">
           <ul class="nav nav-tabs">
-            <li role="presentation" title="Add another splittable" {% if table %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "persons" %}">Personen</a></li>
-            <li role="presentation" title="Add another splittable" {% if families %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "families" %}">Families</a></li>
-            <li role="presentation" title="Add another splittable" {% if search %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "search" %}">Zoeken</a></li>
-            <li role="presentation" title="Add another splittable" {% if favorites %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "favorites" %}">Favorieten</a></li>
+            <li role="presentation" title="Add another splittable" {% if page == 'persons' %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "persons" %}">Personen</a></li>
+            <li role="presentation" title="Add another splittable" {% if page == 'families' %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "families" %}">Families</a></li>
+            <li role="presentation" title="Add another splittable" {% if page == 'search' %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "search" %}">Zoeken</a></li>
+            <li role="presentation" title="Add another splittable" {% if page == 'favorites' %}class="active"{% endif %}><a href="{% url 'addressbook-detail' "favorites" %}">Favorieten</a></li>
           </ul>
 
           <!-- Addressbook list -->
-          {% if table %}
-            {% render_table table %}
+          {% if page == 'persons' %}
+            <!-- Persons page -->
+            {% render_table data %}
 
-          {% elif families %}
+          {% elif page == 'families' %}
+            <!-- Family page -->
             <div class="list-group family-list">
-            {% for v in families %}
+            {% for v in data %}
               <a href="javascript:void(0)" class="list-group-item family-list-item" data-family-id="{{ v.pk }}">{{ v }}</a>
 
               <div class="row family-list-details" data-listensTo="{{ v.pk }}">
                 <div class="col-lg-8">
                   <!-- Some familymember + details -->
                   <table class="table table-hover">
+                    <tr>
+                      <th>Voornaam</th>
+                      <th>Geboortedatum</th>
+                      <th>Mobiele telefoon</th>
+                      <th> </th>
+                    </tr>
                     {% for w in v.members.all %}
                       <tr>
                         <td><a href="{% url 'profile' w.user.pk %}">{{ w.user.first_name }}</a></td>
                         <td>{{ w.user.profile.birthday }}</td>
                         <td>{{ w.user.profile.phone }}</td>
+                        <td class="favorite"><i class="fa fa-star-o"></i></td>
                       </tr>
                     {% endfor %}
 
                     <!-- Contact info -->
                     <tr>
                       <td>
-                        <strong>Adres</strong><br/>
+                        <strong>Adres</strong> <a href="http://www.google.com/maps/place/{{ v.members.all.0.user.profile.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link"><i class="fa fa-external-link"></i></a><br/>
                         {{ v.members.all.0.user.profile.address.street }}<br/>
-                        {{ v.members.all.0.user.profile.address.zip }}, {{ v.members.all.0.user.profile.address.city }}<br/>
+                        {{ v.members.all.0.user.profile.address.zip }}, {{ v.members.all.0.user.profile.address.city }}
                       </td>
                       <td>
                         <strong>Telefoon</strong><br/>
-                        {{ v.members.all.0.user.profile.phone }}
+                        {{ v.members.all.0.user.profile.address.phone }}
                       </td>
                       <td></td>
                     </tr>
@@ -95,35 +108,23 @@
               </div>
             {% endfor %}
             </div>
-          {% else %}
 
-            <table class="table table-hover table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th>
-                    <a href="?order_by={% if request.GET.order_by == 'first_name' %}-{% endif %}first_name">
-                      Voornaam
-                      <i class="fa fa-sort{% if request.GET.order_by == 'first_name' %}-desc{% elif request.GET.order_by == '-first_name' %}-asc{% endif %}"></i>
-                    </a>
-                  </th>
-                  <th><a href="?order_by={% if request.GET.order_by == 'last_name' %}-{% endif %}last_name">Achternaam</a></th>
-                  <th><a href="?order_by={% if request.GET.order_by == 'profile__address' %}-{% endif %}profile__address">Adres</a></th>
-                  <th><a href="?order_by={% if request.GET.order_by == 'profile__birthday' %}-{% endif %}profile__birthday">Geboortedatum</a></th>
-                  <th><a href="?order_by={% if request.GET.order_by == 'profile__phone' %}-{% endif %}profile__phone">Telefoon</a></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for v in users %}
-                  <tr>
-                    <td>{{ v.first_name }}</td>
-                    <td>{{ v.last_name }}</td>
-                    <td>{{ v.profile.address }}</td>
-                    <td>{{ v.profile.birthday }}</td>
-                    <td>{{ v.profile.phone }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          {% elif page == 'search' %}
+            <!-- Search page -->
+            <form method="post" action="{% url 'addressbook-detail' 'search'%}">
+              {% csrf_token %}
+              <input type="text" name="search" value="" autocomplete="off" placeholder="Zoekterm"/>
+              <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+
+            <div class="search-results">
+              {% if data %}
+                {% render_table data %}
+              {% else %}
+                No data found.
+              {% endif %}
+            </div>
+
           {% endif %}
         </div>
       </div>
@@ -138,6 +139,10 @@
       $('.family-list .family-list-item').click(function(){
         $('.family-list .family-list-details[data-listensTo=' + $(this).attr('data-family-id') + ']').slideToggle(100);
       });
+
+      $('.favorite i').click(function(){
+        alert('Gonna add them to ya favorites! Yeah-yeah jingle-yeah!');
+      })
     })
   </script>
 {% endblock %}
