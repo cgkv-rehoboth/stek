@@ -21,3 +21,8 @@ function del(url, options={}) {
 
   return Q.xhr.delete(url, options);
 }
+
+module.exports = {
+  post: post,
+  del : del
+};

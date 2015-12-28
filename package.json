@@ -30,6 +30,7 @@
     "react-google-maps": "",
     "react-router": "^1.0.2",
     "react-tap-event-plugin": "",
-    "underscore": ""
+    "underscore": "",
+    "material-ui" : ""
   }
 }

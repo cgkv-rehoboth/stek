@@ -72,26 +72,12 @@
           {% else %}
           Je hebt geen persoonlijke rooster, maar je kan wel andere roosters bekijken door op de knop "Andere roosters" te klikken
           {% endif %}
-          <form method="post" action="timetableduty/create">
-            {% csrf_token %}
+        </div>
+      </div> <!-- row -->
 
-            <select name="event">
-              {% for v in events %}
-                <option value="{{ v.pk }}">{{ v }}</option>
-              {% endfor %}
-            </select>
-
-            <select name="responsible">
-              {% for v in users %}
-                <option value="{{ v.pk }}">{{ v }}</option>
-              {% endfor %}
-            </select>
-
-            <textarea name="comments"></textarea>
-
-            <input type="submit" value="Schedule!" class="btn btn-primary" />
-
-          </form>
+      <!-- new duties form -->
+      <div class="row" >
+        <div class="col-sm-12" id="duty-form">
         </div>
       </div>
     </div>
@@ -125,8 +111,9 @@
       </div>
     </div>
   </section>
+{% endblock %}
 
-  <!-- Todo: This script needs to be placed in a script file -->
+{% block scripts %}
   <script>
     $(".timetable-ruilen").click(function(){
       $("#ruilModal .modal-event-name").text($(this).closest("tr").find(".duty-title").text());
@@ -135,4 +122,5 @@
       $("#ruilModal").modal('show');
     });
   </script>
+  <script src="{% static 'scripts/timetables.js' %}"></script>
 {% endblock %}

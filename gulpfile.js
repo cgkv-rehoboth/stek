@@ -61,6 +61,7 @@ function compileScripts(watch, entry) {
       .pipe(rename(function(fp) {
         // I hate mutating state.
         fp.dirname = "";
+        fp.extname = ".js";
       }))
       .pipe(gulp.dest(path.join(dist, 'scripts')));
 
@@ -79,7 +80,8 @@ function compileScripts(watch, entry) {
 }
 
 function bundleScripts(watch) {
-  var entries = glob.sync(path.join(scripts, 'pages/**/*.js'));
+  var entries = glob.sync(path.join(scripts, 'pages/**/*.js')).concat(
+        glob.sync(path.join(scripts, 'pages/**/*.jsx')));
   entries.forEach(function(entry) {
     compileScripts(watch, entry);
   });

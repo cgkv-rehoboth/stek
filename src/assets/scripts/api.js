@@ -40,7 +40,7 @@ Q.xhr.interceptors = [
 
 let api_obj = {
   duties: {
-    create: (duty) => post(`${api}/agenda/duties/`, data),
+    create: (duty) => http.post(`${api}/agenda/duties/`, duty),
 
     list: (page=1, pagesize=50) => {
       return Q.xhr
