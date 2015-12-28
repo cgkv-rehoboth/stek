@@ -30,6 +30,11 @@
         font-size: 80%;
         margin-left: 5px;
       }
+
+      .search-form label{
+        margin: auto 8px;
+        cursor: pointer;
+      }
     </style>
     <div class="container-fluid">
       <div class="row">
@@ -111,19 +116,28 @@
 
           {% elif page == 'search' %}
             <!-- Search page -->
-            <form method="post" action="{% url 'addressbook-detail' 'search'%}">
+            <form method="post" action="{% url 'addressbook-detail' 'search'%}" class="search-form">
               {% csrf_token %}
-              <input type="text" name="search" value="" autocomplete="off" placeholder="Zoekterm"/>
-              <button type="submit"><i class="fa fa-search"></i></button>
+              <input type="text" name="search" value="{% if extra %}{{ extra.0 }}{% endif %}" autocomplete="off" placeholder="Zoekterm" autofocus/>
+              <button type="submit"><i class="fa fa-search"></i></button><br/>
+              Zoeken op:
+              <label><input type="checkbox" name="fields[]" value="first_name" {% if extra and 'first_name' in extra or not extra %}checked{% endif %}/> Voornaam</label>
+              <label><input type="checkbox" name="fields[]" value="last_name" {% if extra and 'last_name' in extra or not extra %}checked{% endif %}/> Achternaam</label>
+              <label><input type="checkbox" name="fields[]" value="address" {% if extra and 'address' in extra %}checked{% endif %}/> Adres</label>
             </form>
 
-            <div class="search-results">
+            <br/>
+            {% if extra %}
+              <!-- Display result -->
               {% if data %}
-                {% render_table data %}
+                <strong>Results for </strong>{{ extra.0 }}<strong> :</strong>
+                <div class="search-results">
+                  {% render_table data %}
+                </div>
               {% else %}
-                No data found.
+                No matches found...
               {% endif %}
-            </div>
+            {% endif %}
 
           {% endif %}
         </div>

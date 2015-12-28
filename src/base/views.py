@@ -25,6 +25,8 @@ def login(request):
 @login_required
 def addressbook(request, page='persons'):
   data=None
+  extra=None
+
   # Check which table/view needs to be loaded
   if page == 'persons':
     data = ProfileTable(Profile.objects.all())
@@ -35,12 +37,29 @@ def addressbook(request, page='persons'):
     data = Family.objects.prefetch_related(Prefetch('members', queryset=FamilyMember.objects.order_by('user__profile__birthday'))).order_by('lastname')
 
   elif page == 'search' and 'search' in request.POST and not request.POST['search'] == "":
-    data = ProfileTable(Profile.objects.filter(Q(user__first_name__contains=request.POST['search']) | Q(user__last_name__contains=request.POST['search'])))
+    # Get search fields
+    extra = request.POST.getlist('fields[]')
+
+    # Add search query at begin of this list for template usage
+    extra.insert(0, request.POST['search'])
+
+    # Get search data
+    query = Q()
+    if 'first_name' in extra:
+      query |= Q(user__first_name__contains=request.POST['search'])
+    if 'last_name' in extra:
+      query |= Q(user__last_name__contains=request.POST['search'])
+    if 'address' in extra:
+      query |= Q(address__street__contains=request.POST['search'])
+
+    # Generate table
+    data = ProfileTable(Profile.objects.filter(query))
     RequestConfig(request, paginate={'per_page': 30}).configure(data)
 
   return render(request, 'addressbook.html', {
     'page': page,
-    'data': data
+    'data': data,
+    'extra': extra
   })
 
 def addressbooksearch(query):
