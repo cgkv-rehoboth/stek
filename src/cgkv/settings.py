@@ -28,20 +28,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
             ],
         },
     },
-]
-
-TEMPLATE_CONTEXT_PROCESSORS = [
-  "django.contrib.auth.context_processors.auth",
-  "django.template.context_processors.debug",
-  "django.template.context_processors.i18n",
-  "django.template.context_processors.media",
-  "django.template.context_processors.static",
-  "django.template.context_processors.tz",
-  "django.contrib.messages.context_processors.messages",
-  "django.core.context_processors.request"
 ]
 
 ALLOWED_HOSTS = ['*']
@@ -69,8 +62,7 @@ INSTALLED_APPS = (
   'corsheaders',
   'agenda',
   'base',
-  'public',
-  'django_tables2'
+  'public'
 )
 
 MIDDLEWARE_CLASSES = (
