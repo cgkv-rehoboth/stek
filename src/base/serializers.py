@@ -2,7 +2,12 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from .models import *
 
+class FamilySerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Family
+
 class UserSerializer(serializers.ModelSerializer):
+
   class Meta:
     model = User
     fields = ('id', 'username', 'first_name', 'last_name', 'email')
@@ -13,6 +18,8 @@ class AddressSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
   user = UserSerializer()
+  address = AddressSerializer()
+  family = FamilySerializer()
 
   class Meta:
     model = Profile

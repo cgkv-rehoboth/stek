@@ -2,8 +2,6 @@ from django.contrib import admin
 from .models import *
 
 admin.site.register(Slide)
-admin.site.register(FamilyMember)
-admin.site.register(Favorites)
 
 # Create custom display for Address
 class AddressAdmin(admin.ModelAdmin):
@@ -11,13 +9,7 @@ class AddressAdmin(admin.ModelAdmin):
 
 admin.site.register(Address, AddressAdmin)
 
-# Create custom display for Family
-class FamilyMemberInline(admin.TabularInline):
-  model = FamilyMember
-  extra = 0
-
 class FamilyAdmin(admin.ModelAdmin):
-  inlines = [FamilyMemberInline]
   list_display = ['lastname', 'size']
 
 admin.site.register(Family, FamilyAdmin)
@@ -33,7 +25,7 @@ class UserAdmin(admin.ModelAdmin):
     ('User',   {'fields': ['username', 'first_name', 'last_name', 'email']}),
     ('Extra',  {'fields': ['groups', ], 'classes': ['collapse']}),
   ]
-  inlines = [ProfileInline, FamilyMemberInline]
+  inlines = [ProfileInline]
   list_display = ['last_name', 'first_name', 'username', 'email', 'is_active', 'last_login']
   list_display_links = ['username']
   list_filter = ['is_active']

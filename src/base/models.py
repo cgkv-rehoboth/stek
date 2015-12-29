@@ -27,36 +27,6 @@ class Address(models.Model):
 
 class Profile(models.Model):
 
-  user        = models.OneToOneField(User, null=True, blank=True, related_name="profile")
-  address     = models.ForeignKey(Address, null=True, blank=True)
-  phone       = models.CharField(max_length=15, blank=True)
-  birthday    = models.DateField()
-  photo       = models.FileField(upload_to='/', null=True, blank=True) #Todo: specify upload dir
-
-  def __str__(self):
-    return "Profiel van %s" % (self.user.username)
-
-class Family(models.Model):
-
-  lastname    = models.CharField(max_length=255)
-  members     = models.ManyToManyField(User, through="FamilyMember")
-  photo       = models.FileField(upload_to='/', null=True, blank=True) #Todo: specify upload dir
-
-  def __str__(self):
-    # Get the head of the family (mainly the father of the family) ...
-    head = self.members.filter(familymember__role='DAD').first()
-
-    # ... otherwise the eldest
-    if not head:
-      head = self.members.all().order_by('profile__birthday').first()
-
-    return "Familie %s, %s." % (self.lastname, head.first_name[:1])
-
-  def size(self):
-    return self.members.all().count()
-
-class FamilyMember(models.Model):
-
   DAD = 'DAD'
   MUM = 'MUM'
   KID = 'KID'
@@ -69,12 +39,27 @@ class FamilyMember(models.Model):
     (INDEPENDENT_KID, 'Independent kid'),
   )
 
-  family      = models.ForeignKey(Family)
-  user        = models.ForeignKey(User)
-  role        = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID)
+  user        = models.OneToOneField(User, null=True, blank=True, related_name="profile")
+  address     = models.ForeignKey(Address, null=True, blank=True)
+  phone       = models.CharField(max_length=15, blank=True)
+  birthday    = models.DateField()
+  photo       = models.FileField(upload_to='/', null=True, blank=True) #Todo: specify upload dir
+  family      = models.ForeignKey("Family", null=True, related_name='members')
+  role_in_family = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID, null=True)
 
   def __str__(self):
-    return "%s %s: %s" % (self.family.lastname, self.get_role_display(), self.user.username)
+    return "Profiel van %s" % (self.user.username)
+
+class Family(models.Model):
+
+  lastname    = models.CharField(max_length=255)
+  photo       = models.FileField(upload_to='/', null=True, blank=True) #Todo: specify upload dir
+
+  def __str__(self):
+    return "Familie %s" % (self.lastname,)
+
+  def size(self):
+    return self.members.all().count()
 
 class Favorites(models.Model):
 
