@@ -1,3 +1,7 @@
+let React = require("react");
+let ReactDom = require("react-dom");
+let ProfileSearchTable = require("ProfileSearchTable");
+
 /**
  * Created by Samuel-Anton on 29 dec 2015.
  */
@@ -21,8 +25,8 @@ $(function(){
       }else{
         console.log("Something went a little bit wrong :/");
       }
-    })
-  })
+    });
+  });
 /*
     // Scroll to the family details div
     $(document.body).animate({
@@ -31,4 +35,6 @@ $(function(){
 */
   // Search form
 
-})
+});
+
+ReactDom.render(<ProfileSearchTable />, $("#profile-search-table")[0]);
