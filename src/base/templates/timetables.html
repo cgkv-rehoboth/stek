@@ -29,13 +29,20 @@
             {% for table in mytables %}
               <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}><a href={% url 'timetable-detail' table.pk %}>{{ table.title }}</a></li>
             {% endfor %}
+
+            {% if not current_table in mytables %}
+              <li role="presentation" class="active"><a href={% url 'timetable-detail' current_table.pk %}>{{ current_table.title }}</a></li>
+            {% endif %}
+
             <li role="presentation" class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true" aria-expanded="false">
                 Andere roosters <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
                 {% for table in notmytables %}
-                  <li role="presentation" {% if table == current_table %}class="active"{% endif %}><a href="{% url 'timetable-detail' table.pk %}">{{ table.title }}</a></li>
+                  <li role="presentation"><a href="{% url 'timetable-detail' table.pk %}">{{ table.title }}</a></li>
+                {% empty %}
+                  <li role="presentation">Niets gevonden</li>
                 {% endfor %}
               </ul>
             </li>
@@ -114,6 +121,7 @@
 {% endblock %}
 
 {% block scripts %}
+  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script>
     $(".timetable-ruilen").click(function(){
       $("#ruilModal .modal-event-name").text($(this).closest("tr").find(".duty-title").text());

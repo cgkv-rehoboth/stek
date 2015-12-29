@@ -37,23 +37,26 @@ def form(request):
 
 @login_required
 def timetables(request, id=None):
+
   # Get all the tables linked to the team(s) the user is in
   mytables = list(Timetable\
     .objects\
     .filter(team__members__pk=request.user.pk)\
     .exclude(team__isnull=True))
 
-  # Get all the other tables that are not really relevant to the user
-  notmytables = list(Timetable\
-    .objects\
-    .exclude(team__members__pk=request.user.pk)\
-    .exclude(team__isnull=True))
-
   # Get the first-to-see table id
   if id is None and len(mytables) > 0:
     id = mytables[0].pk
 
+  # Get current table
   table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
+
+  # Get all the other tables that are not really relevant to the user
+  notmytables = list(Timetable\
+    .objects\
+    .exclude(team__members__pk=request.user.pk)\
+    .exclude(team__isnull=True)\
+    .exclude(pk=id))
 
   # Get all the duties from the specific table
   duties = table.duties\
