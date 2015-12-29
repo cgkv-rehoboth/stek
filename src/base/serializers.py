@@ -7,6 +7,16 @@ class UserSerializer(serializers.ModelSerializer):
     model = User
     fields = ('id', 'username', 'first_name', 'last_name', 'email')
 
+class AddressSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Address
+
+class ProfileSerializer(serializers.ModelSerializer):
+  user = UserSerializer()
+
+  class Meta:
+    model = Profile
+
 class SlideSerializer(serializers.ModelSerializer):
   owner = UserSerializer()
 
