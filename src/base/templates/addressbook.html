@@ -6,80 +6,6 @@
 
 {% block content %}
   <section id="addressbook">
-    <style>
-      table th a i.fa-sort{
-        display: none;
-      }
-      table th a:hover i.fa-sort{
-        display: inline-block;
-      }
-
-      table td a{
-        color: #2d9972;
-      }
-
-      .family-menu{
-        text-align: center;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        font-size: 140%;
-      }
-
-      .family-menu a{
-        margin: auto 8px;
-        font-weight: bold;
-        font-size: 100%;
-      }
-      
-      .family-menu a:hover{
-        text-decoration: underline;
-      }
-
-      .family-picture{
-        width: 100%;
-      }
-
-      .family-list .family-list-details{
-        display: none;
-      }
-
-      .family-list .family-list-header{
-        margin-top: 20px;
-        margin-bottom: 5px;
-        font-weight: bold;
-      }
-
-      .favorite div{
-        cursor: pointer;
-        display: inline-block;
-      }
-      
-      .favorite div i.fa{
-        float: left;
-      }
-
-      .favorite div:hover :not(.fa-star-half-o){
-        display: none;
-      }
-
-      .favorite div:hover .fa-star-half-o{
-        display: block;
-      }
-
-      .favorite div .fa-star-half-o{
-        display: none;
-      }
-
-      .google-maps-link{
-        font-size: 80%;
-        margin-left: 5px;
-      }
-
-      .search-form label{
-        margin: auto 8px;
-        cursor: pointer;
-      }
-    </style>
     <div class="container-fluid">
       <div class="row">
         <h1>Adresboek</h1>
@@ -204,4 +130,4 @@
 
 {% block scripts %}
   <script src="{% static "scripts/addressbook.js" %}"></script>
-{% endblock %}1
+{% endblock %}
