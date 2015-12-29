@@ -29,15 +29,15 @@ def addressbook(request, page='persons', id=None):
   extra=None
 
   # Check which table/view needs to be loaded
-  if page == 'families':
+  if page == 'persons':
+    data = ProfileTable(Profile.objects.all())
+    RequestConfig(request, paginate={'per_page': 30}).configure(data)
+
+  elif page == 'families':
     # Get all families including the members (which are sorted by age)
     data = Family.objects.prefetch_related(Prefetch('members', queryset=FamilyMember.objects.order_by('user__profile__birthday'))).order_by('lastname')
 
     extra = id
-
-  elif page == 'persons':
-    data = ProfileTable(Profile.objects.all())
-    RequestConfig(request, paginate={'per_page': 30}).configure(data)
 
   elif page == 'search' and 'search' in request.POST and not request.POST['search'] == "":
     # Get search fields
@@ -79,8 +79,8 @@ def addressbookPost(request, form=None, action=None):
   if form == 'favorites' and 'id' in request.GET:
     # Check if id is already a favorite, if yes: remove it!
     # Todo: Do some fancy adding stuff
-    return JsonResponse({'hasErrors':False})
-  return JsonResponse({'hasErrors':True})
+    return JsonResponse({'hasErrors': False})
+  return JsonResponse({'hasErrors': True})
 
 '''
 # Not gonna use this one anymore

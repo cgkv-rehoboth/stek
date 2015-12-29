@@ -18,12 +18,34 @@
         color: #2d9972;
       }
 
+      .family-menu{
+        text-align: center;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .family-menu a{
+        margin: auto 8px;
+        font-weight: bold;
+        font-size: 140%;
+      }
+      
+      .family-menu a:hover{
+        text-decoration: underline;
+      }
+
       .family-picture{
         width: 100%;
       }
 
       .family-list .family-list-details{
         display: none;
+      }
+
+      .family-list .family-list-header{
+        margin-top: 20px;
+        margin-bottom: 5px;
+        font-weight: bold;
       }
 
       .favorite div{
@@ -86,8 +108,19 @@
 
           {% elif page == 'families' %}
             <!-- Family page -->
+            <!-- Alphabetic list -->
+            <div class="family-menu">
+            {% for v in data %}
+              {% ifchanged v.lastname.0 %}
+                <a href="#{{ v.lastname.0 }}">{{ v.lastname.0 }}</a>
+              {% endifchanged %}
+            {% endfor %}
+            </div>
+
+            <!-- Family list -->
             <div class="list-group family-list">
             {% for v in data %}
+              {% ifchanged v.lastname.0 %}<div class="family-list-header" id="{{ v.lastname.0 }}">{{ v.lastname.0 }}</div>{% endifchanged %}
               <a href="javascript:void(0)" class="list-group-item family-list-item" id="{{ v.pk }}">{{ v }}</a>
 
               <div class="row family-list-details" data-family-pk="{{ v.pk }}" {% if extra == v.pk %}style="display: block"{% endif %}>
