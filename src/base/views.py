@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Q
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.forms import AuthenticationForm
@@ -61,6 +62,10 @@ def addressbook(request, page='persons', id=None):
     data = ProfileTable(Profile.objects.filter(query).order_by('user__last_name', 'user__first_name'))
     RequestConfig(request, paginate={'per_page': 30}).configure(data)
 
+  elif page == 'favorites':
+    data = ProfileTable(Profile.objects.all()) # Todo: apply filter for favorites
+    RequestConfig(request, paginate={'per_page': 30}).configure(data)
+
   return render(request, 'addressbook.html', {
     'page': page,
     'data': data,
@@ -69,6 +74,13 @@ def addressbook(request, page='persons', id=None):
 
 def addressbookFamily(request, id):
   return addressbook(request, 'families', int(id))
+
+def addressbookPost(request, form=None, action=None):
+  if form == 'favorites' and 'id' in request.GET:
+    # Check if id is already a favorite, if yes: remove it!
+    # Todo: Do some fancy adding stuff
+    return JsonResponse({'hasErrors':False})
+  return JsonResponse({'hasErrors':True})
 
 '''
 # Not gonna use this one anymore
@@ -95,6 +107,7 @@ def addressbookx(request):
 urls = [
   url(r'^login$', login, name='login'),
   url(r'^adresboek/families/(?P<id>\d+)/$', addressbookFamily, name='addressbook-family-detail'),
+  url(r'^adresboek/(?P<form>\w+)/(?P<action>\w+)/$', addressbookPost, name='addressbook-post'),
   url(r'^adresboek/(?P<page>\w+)/$', addressbook, name='addressbook-detail'),
   url(r'^adresboek/$', addressbook, name='addressbook-list'),
   url(r'^profiel/(?P<id>\d+)/$', addressbook, name='profile'),

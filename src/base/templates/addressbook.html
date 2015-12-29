@@ -26,8 +26,25 @@
         display: none;
       }
 
-      .favorite i{
+      .favorite div{
         cursor: pointer;
+        display: inline-block;
+      }
+      
+      .favorite div i.fa{
+        float: left;
+      }
+
+      .favorite div:hover :not(.fa-star-half-o){
+        display: none;
+      }
+
+      .favorite div:hover .fa-star-half-o{
+        display: block;
+      }
+
+      .favorite div .fa-star-half-o{
+        display: none;
       }
 
       .google-maps-link{
@@ -63,7 +80,7 @@
           </ul>
 
           <!-- Addressbook list -->
-          {% if page == 'persons' %}
+          {% if page == 'persons' or page == 'favorites' %}
             <!-- Persons page -->
             {% render_table data %}
 
@@ -88,7 +105,7 @@
                         <td><a href="{% url 'profile' w.user.pk %}">{{ w.user.first_name }}</a></td>
                         <td>{{ w.user.profile.birthday }}</td>
                         <td>{{ w.user.profile.phone }}</td>
-                        <td class="favorite"><i class="fa fa-star-o"></i></td>
+                        <td class="favorite"><div data-user-pk="{{ w.user.pk }}" title="{% if not w.user.profile.isfavorite %}Voeg toe aan{% else %}Verwijder van{% endif %} favorieten"><i class="fa fa-star{% if not w.user.profile.isfavorite %}-o{% endif %}"></i><i class="fa fa-star-half-o"></i></div></td>
                       </tr>
                     {% endfor %}
 
@@ -158,8 +175,22 @@
         $('.family-list .family-list-details[data-family-pk=' + $(this).attr('id') + ']').slideToggle(100);
       });
 
-      $('.favorite i').click(function(){
-        alert('Gonna add them to ya favorites! Yeah-yeah jingle-yeah!');
+      $('.favorite div').click(function(){
+        alert('Gonna add them to ya favorites! Yeah-yeah jingle-yeah! Btw, the id is: ' + $(this).attr('data-user-pk'));
+
+        // Submit a request to make that user a favorite (or not)
+        $.ajax({
+          data: {id: $(this).attr('data-user-pk')},
+          type: 'GET',
+          url: '{% url 'addressbook-post' 'favorites' 'submit' %}',
+        }).done(function(m){
+          if(m.hasErrors === false) {
+            // Reload page, because I'm to lazy to reload the table
+            location.reload();
+          }else{
+            console.log("Something went a little bit wrong :/");
+          }
+        })
       })
 
       {% if page == 'families' and extra %}
