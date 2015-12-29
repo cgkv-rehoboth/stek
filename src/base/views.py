@@ -23,18 +23,20 @@ def login(request):
     return render(request, 'login.html', { 'form': AuthenticationForm() })
 
 @login_required
-def addressbook(request, page='persons'):
+def addressbook(request, page='persons', id=None):
   data=None
   extra=None
 
   # Check which table/view needs to be loaded
-  if page == 'persons':
-    data = ProfileTable(Profile.objects.all())
-    RequestConfig(request, paginate={'per_page': 30}).configure(data)
-
-  elif page == 'families':
+  if page == 'families':
     # Get all families including the members (which are sorted by age)
     data = Family.objects.prefetch_related(Prefetch('members', queryset=FamilyMember.objects.order_by('user__profile__birthday'))).order_by('lastname')
+
+    extra = id
+
+  elif page == 'persons':
+    data = ProfileTable(Profile.objects.all())
+    RequestConfig(request, paginate={'per_page': 30}).configure(data)
 
   elif page == 'search' and 'search' in request.POST and not request.POST['search'] == "":
     # Get search fields
@@ -53,7 +55,7 @@ def addressbook(request, page='persons'):
       query |= Q(address__street__contains=request.POST['search'])
 
     # Generate table
-    data = ProfileTable(Profile.objects.filter(query))
+    data = ProfileTable(Profile.objects.filter(query).order_by('user__last_name', 'user__first_name'))
     RequestConfig(request, paginate={'per_page': 30}).configure(data)
 
   return render(request, 'addressbook.html', {
@@ -62,8 +64,8 @@ def addressbook(request, page='persons'):
     'extra': extra
   })
 
-def addressbooksearch(query):
-  return "You looked for: " + query;
+def addressbookFamily(request, id):
+  return addressbook(request, 'families', int(id))
 
 '''
 # Not gonna use this one anymore
@@ -89,7 +91,7 @@ def addressbookx(request):
 
 urls = [
   url(r'^login$', login, name='login'),
-  #url(r'^adresboek/search/(?P<query>\w+)/$', addressbooksearch, name='addressbook-search'),
+  url(r'^adresboek/families/(?P<id>\d+)/$', addressbookFamily, name='addressbook-family-detail'),
   url(r'^adresboek/(?P<page>\w+)/$', addressbook, name='addressbook-detail'),
   url(r'^adresboek/$', addressbook, name='addressbook-list'),
   url(r'^profiel/(?P<id>\d+)/$', addressbook, name='profile'),

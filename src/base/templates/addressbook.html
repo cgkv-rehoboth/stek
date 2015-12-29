@@ -14,6 +14,10 @@
         display: inline-block;
       }
 
+      table td a{
+        color: #2d9972;
+      }
+
       .family-picture{
         width: 100%;
       }
@@ -67,9 +71,9 @@
             <!-- Family page -->
             <div class="list-group family-list">
             {% for v in data %}
-              <a href="javascript:void(0)" class="list-group-item family-list-item" data-family-id="{{ v.pk }}">{{ v }}</a>
+              <a href="javascript:void(0)" class="list-group-item family-list-item" id="{{ v.pk }}">{{ v }}</a>
 
-              <div class="row family-list-details" data-listensTo="{{ v.pk }}">
+              <div class="row family-list-details" data-family-pk="{{ v.pk }}" {% if extra == v.pk %}style="display: block"{% endif %}>
                 <div class="col-lg-8">
                   <!-- Some familymember + details -->
                   <table class="table table-hover">
@@ -151,12 +155,19 @@
   <script>
     $(function(){
       $('.family-list .family-list-item').click(function(){
-        $('.family-list .family-list-details[data-listensTo=' + $(this).attr('data-family-id') + ']').slideToggle(100);
+        $('.family-list .family-list-details[data-family-pk=' + $(this).attr('id') + ']').slideToggle(100);
       });
 
       $('.favorite i').click(function(){
         alert('Gonna add them to ya favorites! Yeah-yeah jingle-yeah!');
       })
+
+      {% if page == 'families' and extra %}
+        // Scroll to the family details div
+        $(document.body).animate({
+          scrollTop: $('#{{ extra }}').offset().top
+        }, 500);
+      {% endif %}
     })
   </script>
 {% endblock %}
