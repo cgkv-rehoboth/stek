@@ -162,7 +162,9 @@
                 <div class="col-lg-4">
                   <!-- Place for the family photo -->
                   <!-- Todo: load image only when needed/clicked, not all images of all the families at the same time -->
-                  <img src="http://blog.novakdjokovicfoundation.org/media/2014/06/shutterstock_151928681.jpg" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+                  {% if v.photo %}
+                    <img src="{{ v.photo }}" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+                  {% endif %}
                 </div>
               </div>
             {% endfor %}
