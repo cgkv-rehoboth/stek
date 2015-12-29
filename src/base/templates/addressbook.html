@@ -22,12 +22,13 @@
         text-align: center;
         padding: 10px;
         border-bottom: 1px solid #ddd;
+        font-size: 140%;
       }
 
       .family-menu a{
         margin: auto 8px;
         font-weight: bold;
-        font-size: 140%;
+        font-size: 100%;
       }
       
       .family-menu a:hover{
@@ -112,6 +113,7 @@
             <div class="family-menu">
             {% for v in data %}
               {% ifchanged v.lastname.0 %}
+                {% if not v == data|first %} - {% endif %}
                 <a href="#{{ v.lastname.0 }}">{{ v.lastname.0 }}</a>
               {% endifchanged %}
             {% endfor %}
@@ -162,9 +164,7 @@
                 <div class="col-lg-4">
                   <!-- Place for the family photo -->
                   <!-- Todo: load image only when needed/clicked, not all images of all the families at the same time -->
-                  {% if v.photo %}
-                    <img src="{{ v.photo }}" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
-                  {% endif %}
+                    <img src="http://i.dailymail.co.uk/i/pix/2013/08/11/article-2389444-1B3E011F000005DC-391_634x618.jpg" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
                 </div>
               </div>
             {% endfor %}
@@ -203,37 +203,5 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-  <script>
-    $(function(){
-      $('.family-list .family-list-item').click(function(){
-        $('.family-list .family-list-details[data-family-pk=' + $(this).attr('id') + ']').slideToggle(100);
-      });
-
-      $('.favorite div').click(function(){
-        alert('Gonna add them to ya favorites! Yeah-yeah jingle-yeah! Btw, the id is: ' + $(this).attr('data-user-pk'));
-
-        // Submit a request to make that user a favorite (or not)
-        $.ajax({
-          data: {id: $(this).attr('data-user-pk')},
-          type: 'GET',
-          url: '{% url 'addressbook-post' 'favorites' 'submit' %}',
-        }).done(function(m){
-          if(m.hasErrors === false) {
-            // Reload page, because I'm to lazy to reload the table
-            location.reload();
-          }else{
-            console.log("Something went a little bit wrong :/");
-          }
-        })
-      })
-
-      {% if page == 'families' and extra %}
-        // Scroll to the family details div
-        $(document.body).animate({
-          scrollTop: $('#{{ extra }}').offset().top
-        }, 500);
-      {% endif %}
-    })
-  </script>
-{% endblock %}
+  <script src="{% static "scripts/addressbook.js" %}"></script>
+{% endblock %}1
