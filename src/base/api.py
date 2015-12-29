@@ -106,13 +106,19 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
   filter_backends = (filters.SearchFilter,)
   search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address__street')
 
+class FavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, StekViewSet):
+  queryset = Favorites.objects.all()
+  serializer_class = FavoriteSerializer
+
+  permission_classes = [IsAuthenticated]
+
 router = DefaultRouter(trailing_slash=False)
 router.register(r'users', UserViewSet)
 router.register(r'profiles', ProfileViewSet)
+router.register(r'favorites', FavoriteViewSet)
 '''router.register(r'events', EventViewSet)
 router.register(r'timetables', TimetableViewSet)
 router.register(r'duties', DutyViewSet)'''
 router.register(r'slides', SlideViewSet)
 
 urls = router.urls
-

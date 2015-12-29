@@ -57,12 +57,19 @@ let api_obj = {
     }
   },
   profiles: {
-    list: (search='', page=1, pagesize=30) => {
+    list: (search='', page=1, pagesize=30, favorite_only=false) => {
       return Q.xhr
         .get(`${api}/profiles`, {
-          params: {search: search, page: page, pagesize: pagesize}
+          params: {search: search, page: page, pagesize: pagesize, favorite_only: favorite_only}
         });
     },
+  },
+  favorites: {
+    create: (favorite) => http.get(`${api}/favorites/`, favorite),
+
+    list: (search='', page=1, pagesize=30) => {
+      return api_obj.profiles.list(search, page, pagesize, true)
+    }
   }
 };
 
