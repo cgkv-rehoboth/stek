@@ -5,11 +5,13 @@ from django.contrib import admin
 from django.conf import settings
 
 import base.views
+import base.api
 import agenda.views
 import agenda.api
 import public.views
 
 apipatterns = patterns('',
+  url(r'^', include(base.api.urls)),
   url(r'^agenda/', include(agenda.api.urls)),
 )
 

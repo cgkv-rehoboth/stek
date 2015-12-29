@@ -1,12 +1,16 @@
 from django.contrib.auth.models import User
 from django.conf.urls import url, include
 
-from rest_framework import routers, viewsets, views, response, permissions, metadata
+from rest_framework import routers, viewsets, views, response, permissions, metadata, mixins, filters
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.routers import DefaultRouter
 
-from .routers import *
+import django_filters
+
 from .models import *
 from .serializers import *
+
+from rest_framework.permissions import IsAuthenticated
 
 class MinimalMetadata(metadata.BaseMetadata):
 
@@ -92,13 +96,23 @@ class DutyViewSet(viewsets.ModelViewSet):
 
   serializer_class = DutySerializer
 '''
-router = AngularRouter(trailing_slash=False)
+
+class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewSet):
+
+  queryset = Profile.objects.all()
+  serializer_class = ProfileSerializer
+
+  permission_classes = [IsAuthenticated]
+  filter_backends = (filters.SearchFilter,)
+  search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address__street')
+
+router = DefaultRouter(trailing_slash=False)
 router.register(r'users', UserViewSet)
+router.register(r'profiles', ProfileViewSet)
 '''router.register(r'events', EventViewSet)
 router.register(r'timetables', TimetableViewSet)
 router.register(r'duties', DutyViewSet)'''
 router.register(r'slides', SlideViewSet)
 
-urls = [
-  url(r'^', include(router.urls)),
-]
+urls = router.urls
+
