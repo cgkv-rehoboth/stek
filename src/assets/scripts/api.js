@@ -55,7 +55,17 @@ let api_obj = {
           params: {pk: pk}
         });
     }
+  },
+  profiles: {
+    list: (search='', page=1, pagesize=30) => {
+      return Q.xhr
+        .get(`${api}/profiles`, {
+          params: {search: search, page: page, pagesize: pagesize}
+        });
+    },
   }
 };
+
+window.api = api_obj;
 
 module.exports = api_obj;
