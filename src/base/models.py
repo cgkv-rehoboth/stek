@@ -31,14 +31,16 @@ class Profile(models.Model):
   address     = models.ForeignKey(Address, null=True, blank=True)
   phone       = models.CharField(max_length=15, blank=True)
   birthday    = models.DateField()
+  photo       = models.ImageField(upload_to='/') #Todo: specify upload dir
 
   def __str__(self):
     return "Profiel van %s" % (self.user.username)
 
 class Family(models.Model):
 
-  lastname = models.CharField(max_length=255)
-  members = models.ManyToManyField(User, through="FamilyMember")
+  lastname    = models.CharField(max_length=255)
+  members     = models.ManyToManyField(User, through="FamilyMember")
+  photo       = models.ImageField(upload_to='/') #Todo: specify upload dir
 
   def __str__(self):
     # Get the head of the family (mainly the father of the family) ...
@@ -67,9 +69,9 @@ class FamilyMember(models.Model):
     (INDEPENDENT_KID, 'Independent kid'),
   )
 
-  family = models.ForeignKey(Family)
-  user = models.ForeignKey(User)
-  role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID)
+  family      = models.ForeignKey(Family)
+  user        = models.ForeignKey(User)
+  role        = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID)
 
   def __str__(self):
     return "%s %s: %s" % (self.family.lastname, self.get_role_display(), self.user.username)
