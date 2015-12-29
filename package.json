@@ -14,7 +14,8 @@
     "gulp-watch": "^4.2.4",
     "rename": "^1.0.3",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.2.3"
+    "watchify": "^3.2.3",
+    "glob": ""
   },
   "dependencies": {
     "bootstrap": "",

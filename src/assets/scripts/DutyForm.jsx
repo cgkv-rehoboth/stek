@@ -17,7 +17,6 @@ class DutyForm extends React.Component {
         timetable: this.props.timetable
       });
 
-      debugger;
       api
         .duties
         .create(data)
