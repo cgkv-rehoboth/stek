@@ -47,12 +47,15 @@ def addressbook(request, page='persons', id=None):
 
     # Get search data
     query = Q()
-    if 'first_name' in extra:
-      query |= Q(user__first_name__contains=request.POST['search'])
-    if 'last_name' in extra:
-      query |= Q(user__last_name__contains=request.POST['search'])
-    if 'address' in extra:
-      query |= Q(address__street__contains=request.POST['search'])
+    for v in request.POST['search'].split(' '):
+      subquery = Q()
+      if 'first_name' in extra:
+        subquery |= Q(user__first_name__contains=v)
+      if 'last_name' in extra:
+        subquery |= Q(user__last_name__contains=v)
+      if 'address' in extra:
+        subquery |= Q(address__street__contains=v)
+      query &= subquery
 
     # Generate table
     data = ProfileTable(Profile.objects.filter(query).order_by('user__last_name', 'user__first_name'))
