@@ -6,6 +6,7 @@ class ProfileTable(tables.Table):
   id = tables.Column(visible=False)
   user = tables.Column(visible=False)
   address = tables.Column(visible=False)
+  photo = tables.Column(visible=False)
 
   first_name = tables.Column(accessor='user', order_by='user__first_name', verbose_name="Voornaam")
   #first_name = tables.LinkProfile(accessor='user.first_name', verbose_name="Voornaam")
