@@ -1,26 +1,12 @@
 let React = require("react");
 let _ = require('underscore');
 
-class TRow extends React.Component {
-  render() {
-    return <div></div>;
-  }
-}
-
-class TCell extends React.Component {
-  render() {
-    return <div></div>;
-  }
-}
-
 class Table extends React.Component {
   render() {
-    return <div></div>;
+    return <table className="table table-hover table-striped table-bordered">{this.props.children}</table>;
   }
 }
 
 module.exports = {
-  TRow: TRow,
-  TCell: TCell,
   Table, Table
 };
