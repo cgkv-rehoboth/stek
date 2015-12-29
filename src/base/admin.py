@@ -3,6 +3,7 @@ from .models import *
 
 admin.site.register(Slide)
 admin.site.register(FamilyMember)
+admin.site.register(Favorites)
 
 # Create custom display for Address
 class AddressAdmin(admin.ModelAdmin):
