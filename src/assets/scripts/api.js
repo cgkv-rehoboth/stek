@@ -45,7 +45,7 @@ let api_obj = {
     list: (page=1, pagesize=50) => {
       return Q.xhr
         .get(`${api}/agenda/duties/`, {
-          params: {page: page, pagesize: pagesize}
+          params: {page: page, page_size: pagesize}
         });
     },
 
@@ -57,11 +57,11 @@ let api_obj = {
     }
   },
   profiles: {
-    list: (search='', page=1, pagesize=30, favorite_only=false) => {
+    list: (search='', page=1, pagesize=30, extra_params={}) => {
       return Q.xhr
-        .get(`${api}/profiles`, {
-          params: {search: search, page: page, pagesize: pagesize, favorite_only: favorite_only}
-        });
+        .get(`${api}/profiles`, _.extend({
+          params: {search: search, page: page, page_size: pagesize}
+        }, extra_params));
     },
 
     favorite: (pk) => {
@@ -75,7 +75,7 @@ let api_obj = {
 
   favorites: {
     list: (search='', page=1, pagesize=30) => {
-      return api_obj.profiles.list(search, page, pagesize, true)
+      return api_obj.profiles.list(search, page, page_size, true)
     }
   }
 };
