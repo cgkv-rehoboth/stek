@@ -31,8 +31,8 @@ class SlideSerializer(serializers.ModelSerializer):
     model = Slide
 
 class FavoriteSerializer(serializers.ModelSerializer):
-  owner = UserSerializer()
-  favorite = UserSerializer()
+  owner = ProfileSerializer()
+  favorite = ProfileSerializer()
 
   class Meta:
     model = Favorites

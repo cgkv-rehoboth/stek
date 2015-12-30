@@ -1,5 +1,7 @@
 {% extends "./addressbookLayout.html" %}
 
+{% load static %}
+
 {% block innerContent %}
   <!-- Family page -->
   <!-- Alphabetic list -->
@@ -37,9 +39,9 @@
             {% for w in v.members.all %}
               <tr>
                 <td><a href="{% url 'profile' w.user.pk %}">{{ w.user.first_name }}</a></td>
-                <td>{{ w.user.profile.birthday }}</td>
-                <td>{{ w.user.profile.phone }}</td>
-                <td class="favorite"><div data-user-pk="{{ w.user.pk }}" title="{% if not w.user.profile.isfavorite %}Voeg toe aan{% else %}Verwijder van{% endif %} favorieten"><i class="fa fa-star{% if not w.user.profile.isfavorite %}-o{% endif %}"></i><i class="fa fa-star-half-o"></i></div></td>
+                <td>{{ w.birthday }}</td>
+                <td>{{ w.phone }}</td>
+                <td class="favstar" data-pk="{{ w.pk }}" data-favorite="{{ w.is_favorite }}"></td>
               </tr>
             {% endfor %}
 
@@ -71,4 +73,8 @@
     </div>
   {% endfor %}
   </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static "scripts/addressbookFamily.js" %}"></script>
 {% endblock %}

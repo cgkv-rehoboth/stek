@@ -2,8 +2,11 @@ from django.contrib.auth.models import User
 from django.conf.urls import url, include
 
 from rest_framework import routers, viewsets, views, response, permissions, metadata, mixins, filters
+from rest_framework.decorators import detail_route
+from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.routers import DefaultRouter
+from rest_framework import status
 
 import django_filters
 
@@ -123,11 +126,26 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
 
     return response
 
-class FavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, StekViewSet):
+  @detail_route(methods=['post'])
+  def favorite(self, request, pk):
+    fav = Favorites.objects.create(favorite=self.get_object(), owner=request.profile)
+    ser = FavoriteSerializer(fav)
+    return Response(ser.data, status=status.HTTP_201_CREATED)
+
+  @detail_route(methods=['post'])
+  def defavorite(self, request, pk):
+    fav = Favorites.objects.filter(favorite=self.get_object(), owner=request.profile)
+    fav.delete()
+
+    return Response(status=status.HTTP_200_OK)
+
+class FavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, StekViewSet):
   queryset = Favorites.objects.all()
   serializer_class = FavoriteSerializer
 
   permission_classes = [IsAuthenticated]
+
+
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'users', UserViewSet)

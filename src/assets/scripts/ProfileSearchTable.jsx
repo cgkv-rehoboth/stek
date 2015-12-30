@@ -4,6 +4,7 @@ let api = require('api');
 let forms = require('forms');
 let $ = require("jquery");
 let { Table } = require('bootstrap/tables');
+let FavStar = require('bootstrap/favorites');
 
 class ProfileSearchTable extends React.Component {
 
@@ -52,11 +53,12 @@ class ProfileSearchTable extends React.Component {
         <td>{prof.address.city}</td>
         <td>{prof.phone}</td>
         <td>{prof.user.email}</td>
+        <td><FavStar pk={prof.id} favorite={prof.is_favorite}></FavStar></td>
       </tr>;
     });
 
     return <div>
-      <input type="text" onChange={_.debounce(this.searchChange.bind(this), 1000)} />
+      <input type="text" onChange={_.throttle(this.searchChange.bind(this), 1000)} />
       <Table>
         <tbody>
         {rows}
