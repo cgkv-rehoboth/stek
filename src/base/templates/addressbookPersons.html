@@ -8,5 +8,9 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="{% static "scripts/addressbook.js" %}"></script>
+  {% with page|title as pageTitle %}
+    {% with "scripts/addressbook"|add:pageTitle|add:".js" as scripturl %}
+      <script src="{% static scripturl %}"></script>
+    {% endwith %}
+  {% endwith %}
 {% endblock %}
