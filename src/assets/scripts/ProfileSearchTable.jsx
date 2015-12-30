@@ -2,6 +2,7 @@ let React = require("react");
 let _ = require('underscore');
 let api = require('api');
 let forms = require('forms');
+let $ = require("jquery");
 let { Table } = require('bootstrap/tables');
 
 class ProfileSearchTable extends React.Component {
@@ -17,9 +18,9 @@ class ProfileSearchTable extends React.Component {
     };
   }
 
-  componentWillMount() {
+  loadProfiles(searchtext="") {
     // load initial profiles
-    api.profiles.list()
+    return api.profiles.list(searchtext)
       .then((data) => {
         console.debug("Loading profiles complete");
 
@@ -27,6 +28,15 @@ class ProfileSearchTable extends React.Component {
           profiles: data.data.results
         });
       });
+  }
+
+  componentWillMount() {
+    this.loadProfiles();
+  }
+
+  searchChange(e) {
+    let text = $(e.target).val();
+    this.loadProfiles(text);
   }
 
   render() {
@@ -46,6 +56,7 @@ class ProfileSearchTable extends React.Component {
     });
 
     return <div>
+      <input type="text" onChange={_.debounce(this.searchChange.bind(this), 1000)} />
       <Table>
         <tbody>
         {rows}
