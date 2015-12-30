@@ -3,30 +3,38 @@ let _ = require('underscore');
 let api = require('api');
 let forms = require('forms');
 let $ = require("jquery");
-let { Table } = require('bootstrap/tables');
 let FavStar = require('bootstrap/favorites');
+let { PaginatedTable } = require('bootstrap/tables');
 
 class ProfileSearchTable extends React.Component {
 
   static get propTypes() {
-    return {};
+    return {
+      listFunc: React.PropTypes.func.isRequired // (searchText, page) => promise<[profile]>
+    };
   }
 
   constructor(props) {
     super(props);
     this.state = {
-      profiles: []
+      profiles: [],
+      pageno: 0,
+      hasPrev: false,
+      hasNext: false
     };
   }
 
-  loadProfiles(searchtext="") {
+  loadProfiles(searchtext="", page=1) {
     // load initial profiles
-    return api.profiles.list(searchtext)
+    return this.props.listFunc(searchtext, page)
       .then((data) => {
         console.debug("Loading profiles complete");
 
         this.setState({
-          profiles: data.data.results
+          profiles: data.data.results,
+          pageno: data.data.pageno,
+          hasPrev: data.data.previous !== null,
+          hasNext: data.data.next !== null
         });
       });
   }
@@ -38,6 +46,10 @@ class ProfileSearchTable extends React.Component {
   searchChange(e) {
     let text = $(e.target).val();
     this.loadProfiles(text);
+  }
+
+  pageChange(page) {
+    this.loadProfiles("", page);
   }
 
   render() {
@@ -58,12 +70,12 @@ class ProfileSearchTable extends React.Component {
     });
 
     return <div>
-      <input type="text" onChange={_.throttle(this.searchChange.bind(this), 1000)} />
-      <Table>
+      <input type="text" onChange={_.debounce(this.searchChange.bind(this), 1000)} />
+      <PaginatedTable pageno={this.state.pageno} onPageChange={this.pageChange.bind(this)} hasPrev={this.state.hasPrev} hasNext={this.state.hasNext}>
         <tbody>
         {rows}
         </tbody>
-      </Table>
+      </PaginatedTable>
     </div>;
   }
 }

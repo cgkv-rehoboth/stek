@@ -106,7 +106,7 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
   serializer_class = ProfileSerializer
 
   permission_classes = [IsAuthenticated]
-  filter_backends = (filters.SearchFilter,)
+  filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend)
   search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address__street')
 
   def retrieve(self, request, *args, **kwargs):
