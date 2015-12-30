@@ -106,6 +106,23 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
   filter_backends = (filters.SearchFilter,)
   search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address__street')
 
+  def retrieve(self, request, *args, **kwargs):
+    response = super().retrieve(request, *args, **kwargs)
+    response.data["is_favorite"] = self.get_object().is_favorite_for(request.profile)
+
+    return response
+
+  def list(self, request, *args, **kwargs):
+    response = super().list(request, *args, **kwargs)
+
+    is_favorite = dict(
+      [ (v.favorite.pk, True) for v in Favorites.objects.filter(owner=request.profile) ])
+    
+    for i , u in enumerate(response.data['results']):
+      response.data['results'][i]["is_favorite"] = is_favorite.get(u['id'], False)
+
+    return response
+
 class FavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, StekViewSet):
   queryset = Favorites.objects.all()
   serializer_class = FavoriteSerializer

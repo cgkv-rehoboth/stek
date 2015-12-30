@@ -47,6 +47,9 @@ class Profile(models.Model):
   family      = models.ForeignKey("Family", null=True, related_name='members')
   role_in_family = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID, null=True)
 
+  def is_favorite_for(self, user):
+    return self.favorited_by.filter(owner=user).exists()
+
   def __str__(self):
     return "Profiel van %s" % (self.user.username)
 
@@ -63,5 +66,5 @@ class Family(models.Model):
 
 class Favorites(models.Model):
 
-  owner       = models.ForeignKey(User, related_name="favorite_owner")
-  favorite    = models.ForeignKey(User)
+  owner       = models.ForeignKey(Profile, related_name="favorites")
+  favorite    = models.ForeignKey(Profile, related_name="favorited_by")

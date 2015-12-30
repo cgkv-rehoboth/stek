@@ -64,7 +64,8 @@ INSTALLED_APPS = (
   'corsheaders',
   'agenda',
   'base',
-  'public'
+  'public',
+  'debug_toolbar'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -74,7 +75,8 @@ MIDDLEWARE_CLASSES = (
   #'django.middleware.clickjacking.XFrameOptionsMiddleware',
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.contrib.messages.middleware.MessageMiddleware',
-  'django.contrib.auth.middleware.AuthenticationMiddleware'
+  'django.contrib.auth.middleware.AuthenticationMiddleware',
+  'base.middleware.ProfileMiddleware'
 )
 
 REST_FRAMEWORK = {
