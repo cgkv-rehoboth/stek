@@ -89,7 +89,7 @@ def addressbookFavoritesPost(request, action=None):
 @login_required
 def addressbookFamily(request, id=0):
   # Get all families including the members (which are sorted by age)
-  data = Family.objects.prefetch_related(Prefetch('members', queryset=FamilyMember.objects.order_by('user__profile__birthday'))).order_by('lastname')
+  data = Family.objects.prefetch_related(Prefetch('members', queryset=Profile.objects.order_by('birthday'))).order_by('lastname')
 
   return render(request, 'addressbookFamily.html', {
     'page': 'families',
@@ -99,13 +99,8 @@ def addressbookFamily(request, id=0):
 
 @login_required
 def addressbookProfile(request, id=None):
-  # TEMPORARY: waiting for a profile page
-  table = ProfileTable(Profile.objects.filter(user__pk=id))
-  RequestConfig(request, paginate={'per_page': 30}).configure(table)
-
-  return render(request, 'addressbookPersons.html', {
-    'page': 'persons',
-    'table': table,
+  return render(request, 'profile.html', {
+    'p': Profile.objects.get(pk=id)
   })
 
 

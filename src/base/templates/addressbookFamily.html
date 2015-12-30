@@ -20,7 +20,7 @@
       <div class="family-list-header" id="{{ v.lastname.0 }}">{{ v.lastname.0 }}</div>
     {% endifchanged %}
 
-    <a href="javascript:void(0)" class="list-group-item family-list-item" id="{{ v.pk }}">{{ v }}</a>
+    <a href="javascript:void(0)" class="list-group-item family-list-item" id="{{ v.pk }}">{{ v }}, {{ v.members.all.0.user.first_name.0 }}.</a>
 
     <!-- family details -->
     <div class="container-fluid">
