@@ -21,7 +21,7 @@ class ProfileTable(tables.Table):
   favorite = tables.Column(accessor='user', verbose_name=" ")
 
   def render_first_name(self, value):
-    return mark_safe('<a href="/profile/' + str(value.pk) + '">' + value.first_name + '</a>')
+    return mark_safe('<a href="/adresboek/profiel/' + str(value.pk) + '/">' + value.first_name + '</a>')
 
   def render_street_zip(self, value):
     return mark_safe('%s <small>(%s)</small>' % (value.street, value.zip))

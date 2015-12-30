@@ -24,22 +24,11 @@ def login(request):
     return render(request, 'login.html', { 'form': AuthenticationForm() })
 
 @login_required
-def addressbook(request, page='persons', id=None):
-  data=None
-  extra=None
+def addressbookSearch(request):
+  extra = None
+  data = "Send some search query please."
 
-  # Check which table/view needs to be loaded
-  if page == 'persons':
-    data = ProfileTable(Profile.objects.all())
-    RequestConfig(request, paginate={'per_page': 30}).configure(data)
-
-  elif page == 'families':
-    # Get all families including the members (which are sorted by age)
-    data = Family.objects.prefetch_related(Prefetch('members', queryset=FamilyMember.objects.order_by('user__profile__birthday'))).order_by('lastname')
-
-    extra = id
-
-  elif page == 'search' and 'search' in request.POST and not request.POST['search'] == "":
+  if 'search' in request.POST and not request.POST['search'] == "":
     # Get search fields
     extra = request.POST.getlist('fields[]')
 
@@ -62,25 +51,63 @@ def addressbook(request, page='persons', id=None):
     data = ProfileTable(Profile.objects.filter(query).order_by('user__last_name', 'user__first_name'))
     RequestConfig(request, paginate={'per_page': 30}).configure(data)
 
-  elif page == 'favorites':
-    data = ProfileTable(Profile.objects.all()) # Todo: apply filter for favorites
-    RequestConfig(request, paginate={'per_page': 30}).configure(data)
-
-  return render(request, 'addressbook.html', {
-    'page': page,
+  return render(request, 'addressbookSearch.html', {
     'data': data,
     'extra': extra
   })
 
-def addressbookFamily(request, id):
-  return addressbook(request, 'families', int(id))
+@login_required
+def addressbookPersons(request):
+  table = ProfileTable(Profile.objects.all())
+  RequestConfig(request, paginate={'per_page': 30}).configure(table)
 
-def addressbookPost(request, form=None, action=None):
-  if form == 'favorites' and 'id' in request.GET:
+  return render(request, 'addressbookPersons.html', {
+    'page': 'persons',
+    'table': table,
+  })
+
+
+@login_required
+def addressbookFavorites(request):
+  table = ProfileTable(Profile.objects.all())
+  RequestConfig(request, paginate={'per_page': 30}).configure(table)
+
+  return render(request, 'addressbookPersons.html', {
+    'page': 'favorites',
+    'table': table,
+  })
+
+@login_required
+def addressbookFavoritesPost(request, action=None):
+  if 'id' in request.GET:
     # Check if id is already a favorite, if yes: remove it!
     # Todo: Do some fancy adding stuff
     return JsonResponse({'hasErrors': False})
   return JsonResponse({'hasErrors': True})
+
+
+@login_required
+def addressbookFamily(request, id=0):
+  # Get all families including the members (which are sorted by age)
+  data = Family.objects.prefetch_related(Prefetch('members', queryset=FamilyMember.objects.order_by('user__profile__birthday'))).order_by('lastname')
+
+  return render(request, 'addressbookFamily.html', {
+    'page': 'families',
+    'data': data,
+    'id': int(id)
+  })
+
+@login_required
+def addressbookProfile(request, id=None):
+  # TEMPORARY: waiting for a profile page
+  table = ProfileTable(Profile.objects.filter(user__pk=id))
+  RequestConfig(request, paginate={'per_page': 30}).configure(table)
+
+  return render(request, 'addressbookPersons.html', {
+    'page': 'persons',
+    'table': table,
+  })
+
 
 '''
 # Not gonna use this one anymore
@@ -106,9 +133,11 @@ def addressbookx(request):
 
 urls = [
   url(r'^login$', login, name='login'),
+  url(r'^adresboek/$', addressbookPersons, name='addressbook-list'),
+  url(r'^adresboek/leden/$', addressbookPersons, name='addressbook-persons-list'),
+  url(r'^adresboek/families/$', addressbookFamily, name='addressbook-family-list'),
   url(r'^adresboek/families/(?P<id>\d+)/$', addressbookFamily, name='addressbook-family-detail'),
-  url(r'^adresboek/(?P<form>\w+)/(?P<action>\w+)/$', addressbookPost, name='addressbook-post'),
-  url(r'^adresboek/(?P<page>\w+)/$', addressbook, name='addressbook-detail'),
-  url(r'^adresboek/$', addressbook, name='addressbook-list'),
-  url(r'^profiel/(?P<id>\d+)/$', addressbook, name='profile'),
+  url(r'^adresboek/favorites/$', addressbookFavorites, name='addressbook-favorites-list'),
+  url(r'^adresboek/favorites/(?P<action>\w+)/$', addressbookFavoritesPost, name='addressbook-favorites-post'),
+  url(r'^adresboek/profiel/(?P<id>\d+)/$', addressbookProfile, name='profile'),
 ]

@@ -1,0 +1,74 @@
+{% extends "./addressbookLayout.html" %}
+
+{% block innerContent %}
+  <!-- Family page -->
+  <!-- Alphabetic list -->
+  <div class="family-menu">
+  {% for v in data %}
+    {% ifchanged v.lastname.0 %}
+      {% if not v == data|first %} - {% endif %}
+      <a href="#{{ v.lastname.0 }}">{{ v.lastname.0 }}</a>
+    {% endifchanged %}
+  {% endfor %}
+  </div>
+
+  <!-- Family list -->
+  <div class="list-group family-list">
+  {% for v in data %}
+    {# Set header with first letter of the last name #}
+    {% ifchanged v.lastname.0 %}
+      <div class="family-list-header" id="{{ v.lastname.0 }}">{{ v.lastname.0 }}</div>
+    {% endifchanged %}
+
+    <a href="javascript:void(0)" class="list-group-item family-list-item" id="{{ v.pk }}">{{ v }}</a>
+
+    <!-- family details -->
+    <div class="container-fluid">
+      <div class="row family-list-details" data-family-pk="{{ v.pk }}" {% if id == v.pk %}style="display: block"{% endif %}>
+        <div class="col-lg-8">
+          <!-- Familymembers + details -->
+          <table class="table table-hover">
+            <tr>
+              <th>Voornaam</th>
+              <th>Geboortedatum</th>
+              <th>Mobiele telefoon</th>
+              <th> </th>
+            </tr>
+            {% for w in v.members.all %}
+              <tr>
+                <td><a href="{% url 'profile' w.user.pk %}">{{ w.user.first_name }}</a></td>
+                <td>{{ w.user.profile.birthday }}</td>
+                <td>{{ w.user.profile.phone }}</td>
+                <td class="favorite"><div data-user-pk="{{ w.user.pk }}" title="{% if not w.user.profile.isfavorite %}Voeg toe aan{% else %}Verwijder van{% endif %} favorieten"><i class="fa fa-star{% if not w.user.profile.isfavorite %}-o{% endif %}"></i><i class="fa fa-star-half-o"></i></div></td>
+              </tr>
+            {% endfor %}
+
+            <!-- Contact info -->
+            <tr>
+              <td>
+                <strong>Adres</strong> <a href="http://www.google.com/maps/place/{{ v.members.all.0.user.profile.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link"><i class="fa fa-external-link"></i></a><br/>
+                {{ v.members.all.0.user.profile.address.street }}<br/>
+                {{ v.members.all.0.user.profile.address.zip }}, {{ v.members.all.0.user.profile.address.city }}
+              </td>
+              <td>
+                <strong>Telefoon</strong><br/>
+                {{ v.members.all.0.user.profile.address.phone }}
+              </td>
+              <td></td>
+            </tr>
+          </table>
+
+        </div>
+
+        <div class="col-lg-4">
+          <!-- Family photo -->
+          <!-- Todo: load image only when needed/clicked, not all images of all the families at the same time -->
+          {% if v.photo %}
+            <img src="{{ v.photo }}" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% endblock %}
