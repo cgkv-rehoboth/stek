@@ -4,8 +4,9 @@
 {% load utils %}
 
 {% block content %}
-  <section id="addressbook">
-    <div>
+  <section class="container-fluid" id="addressbook">
+    <div class="row">
+      <div class="col-sm-12">
       <h1>Adresboek</h1>
 
       {% if messages %}
@@ -17,21 +18,21 @@
         </ul>
       {% endif %}
 
-      <div>
-        <!-- Addressbook menu/choices -->
-        <ul class="nav nav-tabs">
+        <div>
+          <!-- Addressbook menu/choices -->
+          <ul class="nav nav-tabs">
           <li role="presentation" {% if page == 'persons' %}class="active"{% endif %}><a href="{% url 'addressbook-persons-list' %}">Leden</a></li>
           <li role="presentation" {% if page == 'families' %}class="active"{% endif %}><a href="{% url 'addressbook-family-list' %}">Families</a></li>
           <li role="presentation" {% if page == 'favorites' %}class="active"{% endif %}><a href="{% url 'addressbook-favorites-list' %}">Favorieten</a></li>
-        </ul>
+          </ul>
 
-        {% block innerContent %}
-        {% endblock %}
+          {% block innerContent %}
+          {% endblock %}
+        </div>
       </div>
     </div>
   </section>
 {% endblock %}
 
 {% block scripts %}
-  <script src="{% static "scripts/addressbook.js" %}"></script>
 {% endblock %}

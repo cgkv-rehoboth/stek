@@ -31,12 +31,9 @@ class ProfileSearchTable extends React.Component {
 
   render() {
     let rows = _.map(this.state.profiles, (prof) => {
-      var family;
-      if(prof.family) {
-        family = <a href={"/adresboek/families/" + prof.family.id + "/"}>{prof.user.last_name}</a>;
-      } else {
-        family = <span></span>;
-      }
+      let family = prof.family
+        ? <a href={"/adresboek/families/" + prof.family.id + "/"}>{prof.user.last_name}</a>
+        : family = <span></span>;
 
       return <tr key={prof.id}>
         <td><a href={"/adresboek/profile/" + prof.id + "/"}>{prof.user.first_name}</a></td>
