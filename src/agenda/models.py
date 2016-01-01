@@ -19,12 +19,12 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
   owner       = models.ForeignKey(User)
   description = models.TextField(blank=True, null=True)
   team        = models.ForeignKey("Team", related_name="timetables", blank=True, null=True)
+  incalendar  = models.BooleanField(default=True)
 
   def __str__(self): return self.title
 
 class Event(TimestampedModel, LiveModel, models.Model):
 
-  # detail object can be any model implementing EventDetails
   incalendar      = models.BooleanField(default=True)
   title           = models.CharField(max_length=255, blank=True, null=True)
   startdatetime   = models.DateTimeField()

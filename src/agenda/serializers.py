@@ -18,18 +18,27 @@ class EventSerializer(serializers.ModelSerializer):
   class Meta:
     model = Event
 
+class EventWithDutiesSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = Event
+
+  class CustomDutySerializer(serializers.ModelSerializer):
+    responsible = UserSerializer()
+
+    class Meta:
+      model = TimetableDuty
+      fields = ['pk', 'responsible']
+
+  owner = UserSerializer()
+  duties = CustomDutySerializer(many=True)
+
 class TimetableSerializer(SimpleTimetableSerializer):
   """ Timetables with there events
   """
 
-  events = EventSerializer(
-    read_only=True,
-    many=True
-  )
-
   class Meta:
     model = Timetable
-
 
 class ShortTimetableSerializer(SimpleTimetableSerializer):
   """ Timetables without there events
