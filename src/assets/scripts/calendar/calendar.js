@@ -2,6 +2,7 @@ let React = require("react");
 let moment = require("moment");
 require("moment-range"); // moment plugin
 let _ = require("underscore");
+let cn = require("classnames");
 
 class CalEvent extends React.Component {
   static get propTypes() {
@@ -19,19 +20,23 @@ class CalDay extends React.Component {
   static get propTypes() {
     return {
       day: React.PropTypes.object, // moment or null for dummy day
-      events: React.PropTypes.array
+      events: React.PropTypes.array,
+      focus: React.PropTypes.bool
     };
   }
 
   static get defaultProps() {
     return {
-      events: []
+      events: [],
+      focus: false
     };
   }
 
   render() {
-    return <td className="cal-day">
-      <h2>{this.props.day.format("Do")}</h2>
+    return <td className={cn('cal-day', {focus: this.props.focus})}>
+      <span className={cn('day-no')}>
+        {this.props.day.format("D")}
+      </span>
       {
         _.map(this.props.events, (event) => 
           <CalEvent event={event}>
@@ -55,9 +60,11 @@ class CalMonth extends React.Component {
     let month_start = moment([this.props.year, this.props.month, 1]);
     let month = moment.range(month_start, month_start.clone().endOf("month"));
     let days = [];
+    let today = moment().format("YYYY-DDD");
 
     month.by("days", (moment) => {
-      days.push(<CalDay key={moment.format("D")+1} day={moment} events={[]}></CalDay>);
+      let focus = moment.format("YYYY-DDD") == today;
+      days.push(<CalDay focus={focus} key={moment.format("D")+1} day={moment} events={[]}></CalDay>);
     });
 
     // fill start and end week
@@ -113,10 +120,17 @@ class Calendar extends React.Component {
 
   render() {
     return <div className="calendar">
-      <div>
-        <button onClick={this.prevMonth.bind(this)}>PREV</button>
-        <h1>{this.month().format("MMMM YYYY")}</h1>
-        <button onClick={this.nextMonth.bind(this)}>NEXT</button>
+      <div className="calendar-head">
+        <button className="prev blue btn-circle" onClick={this.prevMonth.bind(this)}>
+          <i className="fa fa-chevron-left"></i>
+        </button>
+        <div>
+          <p className="calendar-month">{this.month().format("MMMM")}</p>
+          <p className="calendar-year">{this.month().format("YYYY")}</p>
+        </div>
+        <button className="next blue btn-circle" onClick={this.nextMonth.bind(this)}>
+          <i className="fa fa-chevron-right"></i>
+        </button>
       </div>
 
       <CalMonth tables={this.props.tables} month={this.state.month} year={this.state.year} />

@@ -1,4 +1,73 @@
+@import colors
+
+#calendar
+  width: 100%
+
+.calendar-head
+  position: relative
+  text-align: center
+  height: 80px
+
+  button
+    margin-top: 15px
+
+  p.calendar-month
+    position: absolute
+    width: 100%
+    top: 20px
+    left: 0px
+    text-align: center
+
+    font-size: 25pt
+
+  p.calendar-year
+    position: absolute
+    width: 100%
+    top: 0px
+    left: 0px
+    text-align: center
+
+    font-size: 15pt
+
+  button.prev
+    position: absolute
+    left: 0px
+    top: 0px
+
+  button.next
+    position: absolute
+    right: 0px
+    top: 0px
+
+  p
+    margin: 0px
+
+.calendar
+  width: 100%
+
+  table
+    width: 100%
+    background-color: darken($light-bg, 5%)
+
+    td
+      border: 1px solid darken($light-bg, 10%)
+      padding: 4px
 
 .cal-day
-  height: 80px
-  width: 110px
+  position: relative
+  height: 120px
+
+  span.day-no
+    position: absolute
+    top: 10px
+    right: 10px
+    font-size: 30pt
+    font-weight: bold
+    color: darken($light-bg, 12%)
+
+  &.focus
+    border:
+      bottom: 3px solid $blue
+
+    span.day-no
+      color: $blue
