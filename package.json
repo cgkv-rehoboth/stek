@@ -24,6 +24,9 @@
     "font-awesome": "",
     "jquery": "",
     "jquery.easing": "",
+    "material-ui": "",
+    "moment": "",
+    "moment-range": "^2.1.0",
     "object-assign": "",
     "q": "1.4.x",
     "q-xhr": "",
@@ -31,7 +34,6 @@
     "react-dom": "0.14.3",
     "react-google-maps": "",
     "react-tap-event-plugin": "",
-    "underscore": "",
-    "material-ui": ""
+    "underscore": ""
   }
 }

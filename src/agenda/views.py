@@ -74,7 +74,12 @@ def timetables(request, id=None):
     'users': table.team.members.all()
   })
 
+@login_required
+def calendar(request):
+  return render(request, 'calendar.html')
+
 urls = [
   url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail'),
   url(r'^roosters/$', timetables, name='timetable-list'),
+  url(r'^calendar/$', calendar, name='calendar'),
 ]
