@@ -15,7 +15,10 @@ class CalEvent extends React.Component {
   eventTimeRange() {
     return moment
       .range(moment(this.props.event.startdatetime), moment(this.props.event.enddatetime))
-      .intersect(moment.range(this.props.day.clone().startOf('day'), this.props.day.clone().endOf('day')));
+      .intersect(
+        moment.range(
+          this.props.day.clone().startOf('day'),
+          this.props.day.clone().endOf('day')));
   }
 
   render() {
@@ -54,7 +57,7 @@ class CalDay extends React.Component {
       <ul>
       {
         _.map(this.props.events, (event, i) => 
-          <CalEvent key={i} event={event} day={this.props.day} />
+          <CalEvent key={i} event={event} day={this.props.day.clone()} />
         )
       }
       </ul>
@@ -77,15 +80,15 @@ class CalMonth extends React.Component {
     let days = [];
     let today = moment().format("YYYY-DDD");
 
-    month.by("days", (moment) => {
-      let focus = moment.format("YYYY-DDD") == today;
-      let day = moment.format("D");
+    month.by("days", (day) => {
+      let focus = day.format("YYYY-DDD") == today;
+      let dayOfWeek = day.format("D");
       days.push(
         <CalDay
           focus={focus}
-          key={day+1}
-          day={moment}
-          events={this.props.events[day] || []}></CalDay>
+          key={dayOfWeek+1}
+          day={day.clone()}
+          events={this.props.events[dayOfWeek] || []}></CalDay>
       );
     });
 
@@ -160,7 +163,8 @@ class Calendar extends React.Component {
     let prev = this.month().subtract(1, 'months');
     this.setState({
       year: prev.year(),
-      month: prev.month()
+      month: prev.month(),
+      events: {}
     });
 
     this.props.onMonthChange(prev.year(), prev.month());
@@ -170,7 +174,8 @@ class Calendar extends React.Component {
     let next = this.month().add(1, 'months');
     this.setState({
       year: next.year(),
-      month: next.month()
+      month: next.month(),
+      events: {}
     });
 
     this.props.onMonthChange(next.year(), next.month());
