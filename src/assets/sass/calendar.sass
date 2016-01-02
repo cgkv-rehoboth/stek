@@ -74,11 +74,11 @@ tr
   
       span.day-no
         position: absolute
-        top: 10px
+        bottom: 10px
         right: 10px
         font-size: 30pt
         font-weight: bold
-        color: darken($light-bg, 12%)
+        color: #666
   
       &.focus
         bottom: 3px solid $blue
@@ -86,16 +86,29 @@ tr
         span.day-no
           color: $blue
   
+  ul
+    li.cal-event
+      width: 100%
+      background-color: $cyan
+      margin-bottom: 1px
+      color: white
+      padding:
+        bottom: 2px
+        top: 2px
+        left: 5px
+
+  // hover animation
   td.cal-day
     &:hover
       .content
-        +transition(left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out)
-        width: 120%
-        height: 120%
-        left: -10%
-        top: -10%
+        +transition(left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out, background-color 0.5s ease-out)
+        width: 150%
+        height: 150%
+        left: -25%
+        top: -25%
         border: $table-border
-        background-color: $blue
+        background-color: white
+        padding: 5px
         color: white
         z-index: 1000
   

@@ -3,6 +3,8 @@ from .models import *
 from .serializers import *
 from rest_framework.routers import DefaultRouter
 from rest_framework import mixins, viewsets, filters, metadata
+from rest_framework.response import Response
+from rest_framework.decorators import detail_route, list_route
 from datetime import datetime, timedelta
 
 class DutyViewSet(
@@ -29,8 +31,21 @@ class EventViewSet(
         StekViewSet):
 
   model = Event
-  queryset = Event.objects.all()
+  queryset = Event.objects.select_related('timetable').all()
   serializer_class = EventSerializer
+
+  def list(self, request):
+    events = self.get_queryset()
+    fromdate = request.GET.get('from')
+    todate = request.GET.get('to')
+
+    # filter events
+    if fromdate is not None:
+      events = events.filter(startdatetime__gte=datetime.fromtimestamp(int(fromdate)))
+    if todate is not None:
+      events = events.filter(enddatetime__lt=datetime.fromtimestamp(int(todate)))
+
+    return Response(self.get_serializer(events, many=True).data)
 
 class TimetableViewSet(
         mixins.RetrieveModelMixin,
@@ -56,9 +71,9 @@ class TimetableViewSet(
 
     # filter events
     if fromdate is not None:
-      events = events.filter(startdatetime__gte=datetime.fromtimestamp(fromdate))
+      events = events.filter(startdatetime__gte=datetime.fromtimestamp(int(fromdate)))
     if todate is not None:
-      events = events.filter(enddatetime__lt=datetime.fromtimestamp(todate))
+      events = events.filter(enddatetime__lt=datetime.fromtimestamp(int(todate)))
 
     events_by_table = dict([ (pk, []) for pk in pks ])
 
@@ -74,5 +89,6 @@ class TimetableViewSet(
 router = DefaultRouter()
 router.register("duties", DutyViewSet, base_name="duties")
 router.register("timetables", TimetableViewSet, base_name="timetable")
+router.register("events", EventViewSet, base_name="events")
 
 urls = router.urls

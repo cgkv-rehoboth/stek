@@ -75,7 +75,17 @@ let api_obj = {
 
   favorites: {
     list: (search='', page=1, pagesize=30) => {
-      return api_obj.profiles.list(search, page, page_size, true)
+      return api_obj.profiles.list(search, page, pagesize, true);
+    }
+  },
+
+  events: {
+    // from and to should be unix timestamps
+    list: (from, to, extra_params) => {
+      return Q.xhr
+        .get(`${api}/agenda/events/`, _.extend({
+          params: {from: from, to: to}
+        }, extra_params));
     }
   }
 };

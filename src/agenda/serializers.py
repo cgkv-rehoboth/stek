@@ -3,25 +3,28 @@ from rest_framework import serializers
 from .models import *
 from base.serializers import UserSerializer
 
-class SimpleTimetableSerializer(serializers.ModelSerializer):
-  """ Timetables without there events
-  """
+class TimetableSerializer(serializers.ModelSerializer):
   owner = UserSerializer()
 
   class Meta:
     model = Timetable
 
+class ShortTimetableSerializer(serializers.ModelSerializer):
+  """ Minimal timetable
+  """
+
+  class Meta:
+    model = Timetable
+    fields = ["pk", "title", "incalendar"]
+
 class EventSerializer(serializers.ModelSerializer):
   owner = UserSerializer()
-  timetable = SimpleTimetableSerializer()
+  timetable = ShortTimetableSerializer()
 
   class Meta:
     model = Event
 
-class EventWithDutiesSerializer(serializers.ModelSerializer):
-
-  class Meta:
-    model = Event
+class EventWithDutiesSerializer(EventSerializer):
 
   class CustomDutySerializer(serializers.ModelSerializer):
     responsible = UserSerializer()
@@ -30,22 +33,7 @@ class EventWithDutiesSerializer(serializers.ModelSerializer):
       model = TimetableDuty
       fields = ['pk', 'responsible']
 
-  owner = UserSerializer()
   duties = CustomDutySerializer(many=True)
-
-class TimetableSerializer(SimpleTimetableSerializer):
-  """ Timetables with there events
-  """
-
-  class Meta:
-    model = Timetable
-
-class ShortTimetableSerializer(SimpleTimetableSerializer):
-  """ Timetables without there events
-  """
-
-  class Meta:
-    model = Timetable
 
 class ServiceSerializer(EventSerializer):
   class Meta:
