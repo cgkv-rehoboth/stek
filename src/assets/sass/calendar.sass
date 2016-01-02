@@ -13,8 +13,10 @@ $table-border: 1px solid darken($light-bg, 9%)
   text-align: center
   height: 80px
 
-  button
+  .btn
     margin-top: 15px
+    font-size: 25pt
+    color: $blue
 
   p.calendar-month
     position: absolute
@@ -34,12 +36,12 @@ $table-border: 1px solid darken($light-bg, 9%)
 
     font-size: 15pt
 
-  button.prev
+  .btn.prev
     position: absolute
     left: 0px
     top: 0px
 
-  button.next
+  .btn.next
     position: absolute
     right: 0px
     top: 0px
@@ -76,7 +78,7 @@ tr
         position: absolute
         bottom: 10px
         right: 10px
-        font-size: 30pt
+        font-size: 20pt
         font-weight: bold
         color: #666
   
@@ -89,13 +91,25 @@ tr
   ul
     li.cal-event
       width: 100%
-      background-color: $cyan
+      background-color: $blue
       margin-bottom: 1px
       color: white
       padding:
         bottom: 2px
         top: 2px
         left: 5px
+        right: 5px
+
+      .cal-event-title
+        text-transform: uppercase
+        font-size: 11pt
+
+      .cal-event-timing
+        float: right
+        color: rgba(white, 0.4)
+        font-weight: bold
+        background-color: $blue
+        font-size: 12pt !important
 
   // hover animation
   td.cal-day

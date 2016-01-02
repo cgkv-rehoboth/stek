@@ -7,19 +7,32 @@ let cn = require("classnames");
 class CalEvent extends React.Component {
   static get propTypes() {
     return {
-      event: React.PropTypes.object.isRequired
+      event: React.PropTypes.object.isRequired,
+      day: React.PropTypes.object.isRequired
     };
   }
 
+  eventTimeRange() {
+    return moment
+      .range(moment(this.props.event.startdatetime), moment(this.props.event.enddatetime))
+      .intersect(moment.range(this.props.day.clone().startOf('day'), this.props.day.clone().endOf('day')));
+  }
+
   render() {
-    return <li className="cal-event"><span>{this.props.event.title}</span></li>;
+    let eventTime = this.eventTimeRange();
+    return <li className="cal-event">
+      <span className="cal-event-title">{this.props.event.title}</span>
+      <span className="cal-event-timing">
+        ({eventTime.start.format("hh:mm")}-{eventTime.end.format("hh:mm")})
+      </span>
+    </li>;
   }
 }
 
 class CalDay extends React.Component {
   static get propTypes() {
     return {
-      day: React.PropTypes.object, // moment or null for dummy day
+      day: React.PropTypes.object,
       events: React.PropTypes.array,
       focus: React.PropTypes.bool
     };
@@ -41,8 +54,7 @@ class CalDay extends React.Component {
       <ul>
       {
         _.map(this.props.events, (event, i) => 
-          <CalEvent key={i} event={event}>
-          </CalEvent>
+          <CalEvent key={i} event={event} day={this.props.day} />
         )
       }
       </ul>
@@ -115,7 +127,11 @@ class Calendar extends React.Component {
       events: {}
     };
 
-    this.props.eventStore.listen((events) => {
+  }
+
+  componentWillMount() {
+    // subscribe at the store
+    this._unsubscribe = this.props.eventStore.listen((events) => {
       let eventsByDay = {};
       _.each(events, (event) => {
         moment
@@ -130,6 +146,14 @@ class Calendar extends React.Component {
 
       this.setState({ events: eventsByDay });
     });
+    
+    // initial load
+    this.props.onMonthChange(this.month().year(), this.month().month());
+  }
+
+  componentWillUnmount() {
+    // unsubscribe from the store
+    this._unsubscribe();
   }
 
   prevMonth() {
@@ -163,12 +187,12 @@ class Calendar extends React.Component {
           <p className="calendar-month">{this.month().format("MMMM")}</p>
           <p className="calendar-year">{this.month().format("YYYY")}</p>
         </div>
-        <button className="prev blue btn-circle" onClick={this.prevMonth.bind(this)}>
+        <span className="prev btn" onClick={this.prevMonth.bind(this)}>
           <i className="fa fa-chevron-left"></i>
-        </button>
-        <button className="next blue btn-circle" onClick={this.nextMonth.bind(this)}>
+        </span>
+        <span className="next btn" onClick={this.nextMonth.bind(this)}>
           <i className="fa fa-chevron-right"></i>
-        </button>
+        </span >
       </div>
 
       <CalMonth events={this.state.events} month={this.state.month} year={this.state.year} />
