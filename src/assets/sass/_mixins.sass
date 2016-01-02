@@ -1,4 +1,9 @@
 
+=transition($trans...)
+  -webkit-transition: $trans
+  -moz-transition: $trans
+  -o-transition: $trans
+
 =linear-gradient($startc, $startt, $stopc, $stopt)
   background: -moz-linear-gradient(top, $startc $startt, $stopc $stopt)
   background: -webkit-linear-gradient(top, $startc $startt, $stopc $stopt)

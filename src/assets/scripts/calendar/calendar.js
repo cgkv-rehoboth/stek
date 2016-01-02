@@ -34,6 +34,7 @@ class CalDay extends React.Component {
 
   render() {
     return <td className={cn('cal-day', {focus: this.props.focus})}>
+      <div className="content">
       <span className={cn('day-no')}>
         {this.props.day.format("D")}
       </span>
@@ -43,6 +44,7 @@ class CalDay extends React.Component {
           </CalEvent>
         )
       }
+      </div>
     </td>;
   }
 }
