@@ -4,7 +4,10 @@ class ProfileMiddleware(object):
 
   def process_request(self, request):
     if request.user.is_authenticated():
-      request.profile = request.user.profile
+      try:
+        request.profile = request.user.profile
+      except Exception as e:
+        request.profile = None
     else:
       request.profile = None
 
