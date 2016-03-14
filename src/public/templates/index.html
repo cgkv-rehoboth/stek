@@ -43,12 +43,16 @@
 <body id="frontpage" data-spy="scroll" data-target=".navbar-fixed-top">
 
   <!-- About Section -->
-  <section id="about" class="content-section text-center">
+  <section id="about" class="content-section">
     <div class="container">
       <h2>Over de Rehoboth kerk</h2>
       <div class="row">
         <div class="col-md-12">
           <h3>Onze naam</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
           <p>
             We zijn een samenwerkingsgemeente van de Christelijke Gereformeerde Kerk
             en de Gereformeerde Kerk vrijgemaakt. De samenwerking bestaat
@@ -61,8 +65,12 @@
       <div class="row">
         <div class="col-md-12">
           <h3>Ons karakter</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
           <p>
-            een gastvrije en warme gemeente geleid en gedreven door het evangelie,
+            Een gastvrije en warme gemeente geleid en gedreven door het evangelie,
             waarbinnen alle mensen zich met hun mogelijkheden voor elkaar inzetten.
             De gemeente staat bekend om de sterke onderlinge band en om de zorg naar
             binnen en naar buiten. De kinderen en jongeren maken deel
@@ -71,28 +79,70 @@
           </p>
         </div>
       </div>
-    <div class="row">
-      <div class="col-md-12">
-        <h3>Onze predikant</h3>
-        <p>
-          Drs. André Jansen is sinds 2010 predikant van onze gemeente. Hij is geboren
-          in Pretoria, Zuid-Afrika. Sinds 2000 verkondigt hij Gods Woord in Nederland.
-          Zijn visie: “God verweeft zijn liefde en plan met onze harten, monden en
-          handen.” Heb je vragen? Neem contact met hem op.
-        </p>
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Onze predikant</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8">
+            <p>
+            Drs. André Jansen is sinds 2010 predikant van onze gemeente. Hij is geboren
+            in Pretoria, Zuid-Afrika. Sinds 2000 verkondigt hij Gods Woord in Nederland.
+            Zijn visie: “God verweeft zijn liefde en plan met onze harten, monden en
+            handen.” Heb je vragen? Neem contact met hem op.
+            </p>
+        </div>
+        <div class="col-md-4 text-center">
+            <img src="{% static 'resources/images/andre_jansen.jpg' %}" />
+            <p>Ds. Andre Jansen</p>
+        </div>
       </div>
     </div>
+  </section>
+
+  <section id="activiteiten" class="content-section dark">
+    <div id="foto-1">
+      <div class="to-dark-gradient" style="bottom: 0px; height: 150px;"></div>
     </div>
-  </section>
 
-  <section id="foto-1">
-    <div class="to-dark-gradient" style="bottom: 0px; height: 150px;">
-  </section>
-
-  <section id="activiteiten" class="content-section text-center dark">
-    <div class="container">
-      <div class="col-lg-8 col-lg-offset-2">
-        <h2>Activiteiten</h2>
+    <div id="activity-content" class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h2>Activiteiten</h2>
+        </div>
+      </div>
+    </div>
+    <div id="activity-blocks" class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fa fa-users fa-round fa-preicon"></i>Kinderkring
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-users fa-round fa-preicon"></i>Kringen
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-users fa-round fa-preicon"></i>Jeugdvereniging
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fa fa-play fa-round fa-preicon"></i>Startzondag
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-coffee fa-round fa-preicon"></i>Koffiedrinken na de ochtenddienst
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-soccer-ball-o fa-round fa-preicon"></i>Jeugd kamp!
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fa fa-graduation-cap fa-round fa-preicon"></i>Cathegisatie
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-globe fa-round fa-preicon"></i>Evangelisatie
+        </div>
       </div>
     </div>
   </section>
@@ -111,14 +161,18 @@
 
     <div id="luisteren" class="row">
       <div class="col-md-6">
-        <a class="btn btn-default" href="http://kerkdienstgemist.nl/assets/267">
-        Live meeluisteren
-        </a>
+        <p>
+          <a class="btn btn-default" href="http://kerkdienstgemist.nl/assets/267">
+            Live meeluisteren
+          </a>
+        </p>
       </div>
       <div class="col-md-6">
-        <a class="btn btn-default" href="http://kerkdienstgemist.nl/assets/267">
-        Opname archief
-        </a>
+        <p>
+          <a class="btn btn-default" href="http://kerkdienstgemist.nl/assets/267">
+            Opname archief
+          </a>
+        </p>
       </div>
     </div>
 
