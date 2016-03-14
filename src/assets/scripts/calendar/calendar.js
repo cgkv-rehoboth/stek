@@ -24,10 +24,10 @@ class CalEvent extends React.Component {
   render() {
     let eventTime = this.eventTimeRange();
     return <li className="cal-event">
-      <span className="cal-event-title">{this.props.event.title}</span>
       <span className="cal-event-timing">
-        ({eventTime.start.format("hh:mm")}-{eventTime.end.format("hh:mm")})
+        {eventTime.start.format("HH:mm")}
       </span>
+      <span className="cal-event-title">{this.props.event.title}</span>
     </li>;
   }
 }
@@ -93,7 +93,7 @@ class CalMonth extends React.Component {
     });
 
     // fill start and end week
-    let start_fill = parseInt(month.start.format("d"));
+    let start_fill = parseInt(month.start.format("d")) % 6;
     let end_fill = (6-parseInt(month.end.format("d"))) % 6;
     _.each(_.range(start_fill), (i) => days.unshift(<td key={i}></td>));
     _.each(_.range(end_fill), (i) => days.push(<td key={35-i}></td>));

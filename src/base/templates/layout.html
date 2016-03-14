@@ -17,11 +17,18 @@
         {% endblock %}
       </div>
 
-      <footer>
-        <div class="container text-center">
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h2>Sitemap</h2>
+          </div>
+        </div>
+      </div>
+      <div class="container text-center">
         <p id="copyright">Copyright &copy; http://www.cgkvwoerden.nl {% now "Y" %}</p
-      </footer>
-    </div>
+      </div>
+    </footer>
 
     <script src="{% static "scripts/common.js" %}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=onGoogleReady"></script>

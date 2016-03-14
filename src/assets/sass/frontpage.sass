@@ -1,5 +1,18 @@
+@import colors
+
 #frontpage
+  .to-dark-gradient
+    position: absolute
+    width: 100%
+    left: 0px
+
+    +linear-gradient(transparent, 0%, $dark-bg, 100%)
+
+  #sitemap
+    background-color: lighten($dark-bg, 10%)
+
   #foto-1
+    position: relative
     height: 350px
     background-image: url('/static/resources/images/contact-bg.jpg')
     background-position: center
@@ -11,11 +24,11 @@
       text-align: center
       font-size: 18pt
 
-  $what-h: 250px
-  #what
+  $activiteiten-h: 250px
+  #activiteiten
     position: relative
     color: white
-    min-height: $what-h
+    min-height: $activiteiten-h
 
   .intro
     position: relative
@@ -32,12 +45,12 @@
 
     img
       float: none
-      height: $what-h
+      height: $activiteiten-h
 
   #listen-in
     text-align: center
     margin-top: 100px
-    height: $what-h
+    height: $activiteiten-h
 
     div.pulse-container
       margin-top: -50%
@@ -50,6 +63,11 @@
     height: 35%
     left: 0px
     top: 65%
+
+  #diensten
+    .row#luisteren
+      & > div
+        text-align: center
 
   #go-down
     margin-top: 50px

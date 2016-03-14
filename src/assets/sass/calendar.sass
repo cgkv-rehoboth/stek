@@ -65,7 +65,14 @@ tr
     position: relative
     height: 120px
     width: 1 / 7
-  
+
+    &.focus
+      .content
+        border-bottom: 3px solid $green !important
+
+        span.day-no
+          color: $green
+
     .content
       position: absolute
       left: 0px
@@ -82,18 +89,16 @@ tr
         font-weight: bold
         color: #666
   
-      &.focus
-        bottom: 3px solid $blue
-  
-        span.day-no
-          color: $blue
-  
   ul
     li.cal-event
+      position: relative
       width: 100%
       background-color: $blue
       margin-bottom: 1px
       color: white
+      white-space: nowrap
+      height: 22px
+      overflow: hidden
       padding:
         bottom: 2px
         top: 2px
@@ -105,15 +110,20 @@ tr
         font-size: 11pt
 
       .cal-event-timing
-        float: right
-        color: rgba(white, 0.4)
-        font-weight: bold
+        position: absolute
+        right: 0px
+        top: 0px
+        height: 22px
+        padding: 2px 5px
+        color: rgba(white, 0.6)
         background-color: $blue
-        font-size: 12pt !important
+        line-height: 18px
+        vertical-align: middle
+        font-size: 10pt
 
   // hover animation
   td.cal-day
-    &:hover
+    &:hover, &.focused
       .content
         +transition(left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out, background-color 0.5s ease-out)
         width: 150%
@@ -125,25 +135,25 @@ tr
         padding: 5px
         color: white
         z-index: 1000
-  
-    &:last-child:hover
+ 
+    &:last-child:hover, &:last-child.focused
       .content
         right: -1px
         left: auto
   
-    &:first-child:hover
+    &:first-child:hover, &:first-child.focused
       .content
         left: -2px
         right: auto
 
   &:last-child
-    td.cal-day:hover
+    td.cal-day:hover, td.cal-day.focused
       .content
         bottom: -1px
         top: auto
 
   &:first-child
-    td.cal-day:hover
+    td.cal-day:hover, td.cal-day.focused
       .content
         top: -1px
         bottom: auto

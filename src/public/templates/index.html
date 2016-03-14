@@ -14,13 +14,10 @@
               <img src="{% static 'resources/images/logo-wit.png' %}">
             </div>
             <div id="listen-in"  "class="col-md-4">
-              <div class="pulse-container">
-                <div class="pulse cyan"></div>
-                <button class="cyan btn-rounded pulse-content"
-                        data-toggle="tooltip" data-placement="bottom"
-                        title="U kunt nu luisteren naar de live stream!"
-                        >Luister nu mee!</button>
-              </div>
+                <a class="cyan btn-rounded btn"
+                   data-toggle="tooltip" data-placement="bottom"
+                   href="http://kerkdienstgemist.nl/assets/267"
+                   title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
             </div>
           {% else %}
             <div class="col-md-8 col-md-offset-2">
@@ -48,61 +45,82 @@
   <!-- About Section -->
   <section id="about" class="content-section text-center">
     <div class="container">
-      <h1 class="with-sub">Rehoboth Woerden: een frisse gemeente</h1>
-      <h4>Een geestelijk rustpunt in het Groene Hart</h4>
-      <div id="drieslag" class="row">
-        <div class="col-md-4">
-           <div class="row">
-             <button class="btn-circle blue"><i class="fa fa-child"></i></button>
-           </div>
-           <div class="row">
-             <h3>Jong</h3>
-             <p>{% lorem 20 w %}</p>
-           </div>
-        </div>
-        <div class="col-md-4">
-           <div class="row">
-             <button class="btn-circle blue"><i class="fa fa-battery-half" ></i></button>
-           </div>
-           <div class="row">
-             <h3>Medium</h3>
-             <p>{% lorem 14 w random %}</p>
-           </div>
-        </div>
-        <div class="col-md-4">
-           <div class="row">
-             <button class="btn-circle blue"><i class="fa fa-comments" ></i></button>
-           </div>
-           <div class="row">
-             <h3>Oud</h3>
-             <p>{% lorem 10 w random %}</p>
-           </div>
+      <h2>Over de Rehoboth kerk</h2>
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Onze naam</h3>
+          <p>
+            We zijn een samenwerkingsgemeente van de Christelijke Gereformeerde Kerk
+            en de Gereformeerde Kerk vrijgemaakt. De samenwerking bestaat
+            sinds 2008 en wordt ook wel CGKV Woerden genoemd. De naam
+            Rehoboth betekent: God geeft ruimte (zie het Bijbelboek Genesis
+            26:22).
+          </p>
         </div>
       </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Ons karakter</h3>
+          <p>
+            een gastvrije en warme gemeente geleid en gedreven door het evangelie,
+            waarbinnen alle mensen zich met hun mogelijkheden voor elkaar inzetten.
+            De gemeente staat bekend om de sterke onderlinge band en om de zorg naar
+            binnen en naar buiten. De kinderen en jongeren maken deel
+            uit van de gemeente van Christus en krijgen de aandacht en
+            ruimte die nodig is tot opbouw van hun geloof.
+          </p>
+        </div>
+      </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Onze predikant</h3>
+        <p>
+          Drs. André Jansen is sinds 2010 predikant van onze gemeente. Hij is geboren
+          in Pretoria, Zuid-Afrika. Sinds 2000 verkondigt hij Gods Woord in Nederland.
+          Zijn visie: “God verweeft zijn liefde en plan met onze harten, monden en
+          handen.” Heb je vragen? Neem contact met hem op.
+        </p>
+      </div>
+    </div>
     </div>
   </section>
 
   <section id="foto-1">
+    <div class="to-dark-gradient" style="bottom: 0px; height: 150px;">
   </section>
 
-  <section id="what" class="content-section text-center dark">
+  <section id="activiteiten" class="content-section text-center dark">
     <div class="container">
       <div class="col-lg-8 col-lg-offset-2">
-        <h2>Wat we doen</h2>
+        <h2>Activiteiten</h2>
       </div>
     </div>
   </section>
 
-  <section id="sermons">
+  <section id="diensten">
   <div class="container">
     <h2>
-    Diensten in de komende weken
+      Diensten
     </h2>
 
     <p>
-    Elke zondag ochtend en middag is er een dienst in de Rehoboth kerk, waar iedereen welkom
-    is.  Na de ochtenddienst kunt u meegenieten van de koffie, thee en fris.
+      Elke zondag ochtend (9.30) en middag (16.30) is er een dienst in de
+        Rehoboth kerk, waar iedereen welkom is. Na de ochtenddienst kunt u
+        meegenieten van de koffie, thee en fris.
     </p>
+
+    <div id="luisteren" class="row">
+      <div class="col-md-6">
+        <a class="btn btn-default" href="http://kerkdienstgemist.nl/assets/267">
+        Live meeluisteren
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a class="btn btn-default" href="http://kerkdienstgemist.nl/assets/267">
+        Opname archief
+        </a>
+      </div>
+    </div>
 
     <br/>
     <table class="table">
@@ -128,21 +146,40 @@
   <section id="contact" class="dark content-section text-center">
     <div class="container">
       <div class="row">
-      <div class="col-lg-8 col-lg-offset-2">
-          <h2>Waar u ons kunt vinden</h2>
-          <p>Voel je vrij om contact met ons op te nemen</p>
-          <ul class="list-inline banner-social-buttons">
-          <li>
-              <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
-          </li>
-          <li>
-              <a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
-          </li>
-          <li>
-              <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
-          </li>
-          </ul>
+        <h2>Contact</h2>
       </div>
+      <div class="row" >
+        <div class="col-md-12" >
+          <p>
+            Overweeg je om lid te worden van onze kerk? Neem dan contact met ons op via
+            het contact-formulier.
+          </p>
+          <p>
+            <a class="btn btn-rounded cyan">Contact formulier</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <h3><i class="fa fa-home fa-preicon"></i>Kerkgebouw</h3>
+          <p id="adres">
+            Leidsestraatweg 130<br />
+            3443 BZ Woerden<br />
+          </p>
+          <p id="telno">
+            <i class="fa fa-phone fa-preicon"></i>0348-411830
+          </p>
+          <a  href="https://www.google.com/maps/place/Rehobothkerk+Woerden/@52.0863863,4.8631967,17z/data=!3m1!4b1!4m2!3m1!1s0x47c6782be4ac2517:0x6c583f89b11390b1"
+              class="btn btn-rounded cyan">Op de kaart</a>
+        </div>
+        <div class="col-md-6">
+          <h3><i class="fa fa-envelope fa-preicon" ></i>Postadres</h3>
+          <p id="adres">
+            Postbus 277<br />
+            3440 AG Woerden<br />
+          </p>
+        </div>
       </div>
     </div>
   </section>
