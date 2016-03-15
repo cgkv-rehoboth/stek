@@ -1,7 +1,8 @@
-let React = require("react");
-let _ = require('underscore');
+import React from "react";
+import {Button} from 'bootstrap/buttons';
+import Icon from 'bootstrap/Icon';
 
-class Table extends React.Component {
+export class Table extends React.Component {
   render() {
     return <table className="table table-hover table-striped table-bordered">
        {this.props.children}
@@ -9,7 +10,7 @@ class Table extends React.Component {
   }
 }
 
-class PaginatedTable extends React.Component {
+export class PaginatedTable extends React.Component {
 
   static get propTypes() {
     return {
@@ -21,29 +22,28 @@ class PaginatedTable extends React.Component {
   }
 
   render() {
-    let prevButton = this.props.hasPrev
-          ? <button onClick={() => this.props.onPageChange(this.props.pageno-1)}>
-              <i className="fa fa-chevron-left" /></button>
-          : null;
-    let nextButton = this.props.hasNext
-          ? <button onClick={() => this.props.onPageChange(this.props.pageno+1)}>
-              <i className="fa fa-chevron-right" /></button>
-          : null;
+    let prevButton = 
+          <Button
+            onClick={() => this.props.onPageChange(this.props.pageno-1)}
+            disabled ={!this.props.hasPrev}
+          ><Icon name="chevron-left" /></Button>;
+    let nextButton =
+          <Button
+             onClick={() => this.props.onPageChange(this.props.pageno+1)}
+             disabled={!this.props.hasNext}
+          ><Icon name="chevron-right" /></Button>;
 
-    return <div>
+    return <div className="paginated-table">
       <Table>
         {this.props.children}
       </Table>
-      <div>
-        {prevButton}
-        <button>{this.props.pageno}</button>
-        {nextButton}
+      <div className="pages">
+        <div>
+          {prevButton}
+          <Button>{this.props.pageno}</Button>
+          {nextButton}
+        </div>
       </div>
     </div>;
   }
 }
-
-module.exports = {
-  Table: Table,
-  PaginatedTable: PaginatedTable
-};
