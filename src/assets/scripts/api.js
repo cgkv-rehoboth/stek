@@ -57,11 +57,11 @@ let api_obj = {
     }
   },
   profiles: {
-    list: (search='', page=1, pagesize=30, extra_params={}) => {
+    list: (search='', page=1, extra_params={}) => {
       return Q.xhr
-        .get(`${api}/profiles`, _.extend({
-          params: {search: search, page: page, page_size: pagesize}
-        }, extra_params));
+        .get(`${api}/profiles`, {
+          params: _.extend({search: search, page: page}, extra_params)
+        });
     },
 
     favorite: (pk) => {

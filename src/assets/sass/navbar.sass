@@ -1,0 +1,76 @@
+@import colors
+
+$navbar-h: 50px
+.navbar-custom
+  margin-bottom: 0
+  border-bottom: 1px solid #bbb
+  text-transform: uppercase
+  font-family: Montserrat,Helvetica,Arial,sans-serif
+  font-size: 11pt
+  height: $navbar-h
+
+  .navbar-brand
+    white-space: nowrap
+    img
+      display: inline-block
+      margin-right: 20px
+      vertical-align: middle
+      height: 100%
+    
+    &:focus
+      outline: 0
+    
+    .navbar-toggle
+      padding: 4px 6px
+      color: #eee
+      &:focus, &:active
+        outline: 0
+      
+  a
+    color: #eee
+    vertical-align: middle
+
+  &.top-nav-collapse a
+    color: #eee
+  
+  .nav li
+    a
+      -webkit-transition: background .3s ease-in-out
+      -moz-transition: background .3s ease-in-out
+      transition: background .3s ease-in-out
+      display: inline-block
+      vertical-align: middle
+
+      &:hover
+        outline: 0
+        color: $blue
+        background-color: transparent
+      
+      &:focus, &:active
+        outline: 0
+        background-color: transparent
+      
+    &.active
+      outline: 0
+      a
+        color: $blue
+
+.navbar-collapse
+  a
+    color: #eee
+
+@media (min-width: 768px)
+  .navbar-custom
+    padding: 20px 0
+    border-bottom: 1px solid transparent
+    letter-spacing: 1px
+    background: 0 0
+    -webkit-transition: background .5s ease-in-out, border .5s ease-in-out, padding .5s ease-in-out
+    -moz-transition: background .5s ease-in-out, border .5s ease-in-out, padding .5s ease-in-out
+    transition: background .5s ease-in-out, border .5s ease-in-out, padding .5s ease-in-out
+
+    &.top-nav-collapse
+      padding: 0
+      border-bottom: 1px solid lighten($dark-bg, 10%)
+      background-color: $dark-bg
+      color: #eee

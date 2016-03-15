@@ -3,18 +3,8 @@
 // Code licensed under the Apache License v2.0.
 // For details, see http://www.apache.org/licenses/LICENSE-2.0.
 
-@import mixins
-@import colors
-
-body
-  width: 100%
-  height: 100%
-  color: #000
-  background-color: #eee
-
-html
-  width: 100%
-  height: 100%
+@import ../mixins
+@import ../colors
 
 @media (min-width: 768px)
   p
@@ -29,87 +19,9 @@ a
   &:hover, &:focus
     text-decoration: none
     color: $blue
-  
-
 
 .light
   font-weight: 400
-
-$navbar-h: 50px
-.navbar-custom
-  margin-bottom: 0
-  border-bottom: 1px solid #bbb
-  text-transform: uppercase
-  font-family: Montserrat,Helvetica,Arial,sans-serif
-  background-color: $dark-bg
-  color: #eee
-  font-size: 14pt
-  height: $navbar-h
-
-  .navbar-brand
-    white-space: nowrap
-    img
-      display: inline-block
-      margin-right: 20px
-      vertical-align: middle
-      height: 100%
-    
-    &:focus
-      outline: 0
-    
-    .navbar-toggle
-      padding: 4px 6px
-      color: #eee
-      &:focus, &:active
-        outline: 0
-      
-  a
-    color: #eee
-    vertical-align: middle
-
-  &.top-nav-collapse a
-    color: #eee
-  
-  .nav li
-    a
-      -webkit-transition: background .3s ease-in-out
-      -moz-transition: background .3s ease-in-out
-      transition: background .3s ease-in-out
-      display: inline-block
-      vertical-align: middle
-      &:hover
-        outline: 0
-        color: $blue
-        background-color: transparent
-      
-      &:focus, &:active
-        outline: 0
-        background-color: transparent
-      
-    &.active
-      outline: 0
-      a
-        color: $blue
-
-.navbar-collapse
-  a
-    color: #eee
-
-@media (min-width: 768px)
-  .navbar-custom
-    padding: 20px 0
-    border-bottom: 1px solid transparent
-    letter-spacing: 1px
-    background: 0 0
-    -webkit-transition: background .5s ease-in-out, border .5s ease-in-out, padding .5s ease-in-out
-    -moz-transition: background .5s ease-in-out, border .5s ease-in-out, padding .5s ease-in-out
-    transition: background .5s ease-in-out, border .5s ease-in-out, padding .5s ease-in-out
-
-    &.top-nav-collapse
-      padding: 0
-      border-bottom: 1px solid lighten($dark-bg, 10%)
-      background-color: $dark-bg
-      color: #eee
 
 .intro
   position: relative
@@ -193,54 +105,40 @@ $navbar-h: 50px
   -moz-transition: all .3s ease-in-out
   transition: all .3s ease-in-out
 
-
 .btn-default
   border: 1px solid $blue
   color: #eee
   background-color: $blue
   &:hover, &:focus
-    border: 1px solid lighten($blue, 20%)
     outline: 0
-    color: #000
     background-color: lighten($blue, 10%)
   
 .btn-rounded
-  height: 50px
-  padding: 0px 30px
+  height: 40px
+  padding: 0px 15px
   border: 0px solid #eee
   border-radius: 25px
-  font-size: 16pt
-  line-height: 50px
+  font-size: 12pt
+  line-height: 40px
   vertical-align: middle
   -webkit-transition: background .3s ease-in-out
   -moz-transition: background .3s ease-in-out
   transition: background .3s ease-in-out
+
   &:hover, &:focus
     outline: 0
     color: #eee
     background: rgba(255, 255, 255, 0.1)
 
+  &.small
+    padding: 0px 15px
+    height: 30px
+    line-height: 30px
+
   &.cyan
     color: #eee
     background-color: $cyan
   
-  i.animated
-    -webkit-transition-property: -webkit-transform
-    -webkit-transition-duration: 1s
-    -moz-transition-property: -moz-transform
-    -moz-transition-duration: 1s
-  
-  &:hover i.animated
-    -webkit-animation-name: pulse
-    -moz-animation-name: pulse
-    -webkit-animation-duration: 1.5s
-    -moz-animation-duration: 1.5s
-    -webkit-animation-iteration-count: infinite
-    -moz-animation-iteration-count: infinite
-    -webkit-animation-timing-function: linear
-    -moz-animation-timing-function: linear
-  
-
 .btn-circle
   width: 50px
   text-align: center
@@ -252,6 +150,7 @@ $navbar-h: 50px
   -webkit-transition: background .3s ease-in-out
   -moz-transition: background .3s ease-in-out
   transition: background .3s ease-in-out
+
   &:hover, &:focus
     outline: 0
     color: #eee
@@ -265,25 +164,8 @@ $navbar-h: 50px
     color: #eee
     background-color: $blue
   
-  i.animated
-    -webkit-transition-property: -webkit-transform
-    -webkit-transition-duration: 1s
-    -moz-transition-property: -moz-transform
-    -moz-transition-duration: 1s
-  
-  &:hover i.animated
-    -webkit-animation-name: pulse
-    -moz-animation-name: pulse
-    -webkit-animation-duration: 1.5s
-    -moz-animation-duration: 1.5s
-    -webkit-animation-iteration-count: infinite
-    -moz-animation-iteration-count: infinite
-    -webkit-animation-timing-function: linear
-    -moz-animation-timing-function: linear
-
 ul.banner-social-buttons
   margin-top: 0
-
 
 @media (max-width: 1199px)
   ul.banner-social-buttons
@@ -310,9 +192,4 @@ footer
 
 img
   &::selection, &::-moz-selection
-    background: 0 0
-  
-
-
-body
-  webkit-tap-highlight-color: rgba(255, 255, 255, 0.2)
+    background: 0 0 

@@ -1,98 +1,52 @@
 @import fonts
 @import reset
-@import grayscale
-@import animations
+@import common
+@import colors
 
-body
-  font-family: RobotoDraft
-  font-weight: 300
-  font-size: 14pt
+#wrapper
+  min-height: 100%
+  position: relative
 
-// theme overrides
-*
-  box-sizing: border-box
-
-p
-  font-size: 14pt
-  font-weight: 300
-  line-height: 200%
-
-i.fa-preicon
-  margin-right: 10px
-
-$fa-round-h: 40px
-i.fa-round
-  width: $fa-round-h
-  height: $fa-round-h 
-  border-radius: 400px
-  text-align: center
-  line-height: $fa-round-h
-  vertical-align: middle
-  background-color: $blue
-
-
-
-h1, h2, h3, h4
-  margin-top: 20px
-  margin-bottom: 30px
-
-h1
-  font-size: 25pt
-  font-weight: 300
-
-h2
-  font-family: Montserrat
-  font-size: 45px
-  font-weight: 700
-  text-transform: uppercase
-  margin-bottom: 50px
-
-h3
-  font-size: 18pt
-  font-weight: 300
-
-h4
-  font-size: 15pt
-  font-weight: 700
-  color: $blue
-
-h1, h2, h3
-  &.with-sub
-    margin-bottom: 10px
-
-table
-  tr
-
-    th
-      font-weight: 700
-      font-size: 14pt
-
-    td
-      font-size: 14pt
-
-.stub-column
-  height: 0px
-
-.vspace
-  min-height: 20px
-
-section
-  padding-bottom: 50px
+#content
   padding-top: 50px
 
-  &.dark
+.navbar-custom
+  background-color: $dark-bg
+  padding: 0px
+  
+  .nav li
     background-color: $dark-bg
-    color: $light-fg
 
-quote
-  font-size: 30pt
-  line-height: 40pt
+    &:hover
+      background-color: lighten($dark-bg, 5%)
 
-// main layout
-@import layout
+      & > a
+        color: $blue
+
+    a
+      color: $light-fg
+
+    ul.dropdown-menu
+      background-color: $dark-bg
+      padding: 0px
+      margin-right: -4px
+      border: 0px
+
+      li
+        text-align: right
+        padding: 0px
+
+        a
+          padding-top: 8px
+          padding-bottom: 8px
+          min-width: 200px
+
+.paginated-table
+  .pages
+    width: 100%
+    text-align: center
 
 // pages
-@import frontpage
 @import timetables
 @import calendar
 @import addressbook

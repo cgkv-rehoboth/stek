@@ -29,3 +29,16 @@ window.profileListMain = () => {
     $("#profile-search-table")[0]
   );
 }
+
+window.favoriteListMain = () => {
+  let favoriteProfiles = (query, page) => {
+    return api.profiles.list(query, page, {
+      favorites_only: true
+    });
+  };
+
+  ReactDom.render(
+      <ProfileSearchTable listFunc={favoriteProfiles} />,
+    $("#profile-search-table")[0]
+  );
+}

@@ -38,7 +38,7 @@ export class PaginatedTable extends React.Component {
         {this.props.children}
       </Table>
       <div className="pages">
-        <div>
+        <div className="btn-group">
           {prevButton}
           <Button>{this.props.pageno}</Button>
           {nextButton}
