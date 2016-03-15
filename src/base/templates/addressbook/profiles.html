@@ -1,0 +1,12 @@
+{% extends "addressbook/layout.html" %}
+
+{% load static %}
+
+{% block innerContent %}
+  <!-- Persons page -->
+  <div id="profile-search-table"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script>window.profileListMain();</script>
+{% endblock %}

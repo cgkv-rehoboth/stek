@@ -1,44 +1,44 @@
-<!DOCTYPE html>
-<html>
+{% extends "./layout.html" %}
 
-  <head>
-    {% include "./head.html" %}
-  </head>
+{% load staticfiles %}
+{% load utils %}
 
-  <body>
-
-    {% include "./header.html" %}
-
-    <div class="container login">
-      <div class="row">
-        <div class="col-md-3"></div>
-        <div id="login-column" class="col-md-6">
-          <div id="login-form">
-            {% if not user.is_authenticated %}
-              <h2>Inloggen
-              </h2>
-              <div class="vspace"></div>
-              <div class="vspace"></div>
-              <form method="post" action="{% url "login" %}">
-                {% csrf_token %}
-                {{ form.username }}
-                <br />
-                {{ form.password }}
-                <br />
-                <div class="btn-group pull-right">
-                  <button type="button" class="btn btn-flat">Annuleren</button>
-                  <input type="submit" class="btn btn-flat" />
-                </div>
-              </form>
-            {% else %}
-              <h2>Hi {{ user }}!
-              </h2>
-              <p>Je bent al ingelogd</p>
+{% block content %} 
+</form>
+  <div class="container login">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div id="login-column" class="col-md-6">
+        <div id="login-form">
+          {% if not user.is_authenticated %}
+            <h2>Inloggen
+            </h2>
+            {% if form.errors %}
+              <p>Your username and password didn't match. Please try again.</p>
             {% endif %}
-          </div>
+            <div class="vspace"></div>
+            <div class="vspace"></div>
+            <form method="post" action="{% url "login" %}">
+              {% csrf_token %}
+              {{ form.username }}
+              <br />
+              {{ form.password }}
+              <br />
+              <div class="btn-group pull-right">
+                <button type="button" class="btn btn-flat">Annuleren</button>
+                <input type="hidden" name="next" value="{{ next }}" />
+                <input type="submit" class="btn btn-flat" />
+              </div>
+            </form>
+          {% else %}
+            <div class="text-center">
+              <h2>Hi {{ user }}!</h2>
+              <p>Je bent ingelogd</p>
+            </div>
+          {% endif %}
         </div>
-        <div class="col-md-3"></div>
       </div>
+      <div class="col-md-3"></div>
     </div>
-  </body>
-</html>
+  </div>
+{% endblock %}

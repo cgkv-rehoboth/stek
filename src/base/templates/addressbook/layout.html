@@ -1,0 +1,25 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+
+{% block content %}
+  <section class="container-fluid" id="addressbook">
+    <div class="row">
+      <div class="col-sm-12">
+        <h2>Adresboek</h2>
+
+        {% if messages %}
+          <!-- Status messages -->
+          <ul class="messages">
+            {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+    {% block innerContent %}
+    {% endblock %}
+  </section>
+{% endblock %}

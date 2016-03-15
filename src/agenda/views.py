@@ -81,5 +81,5 @@ def calendar(request):
 urls = [
   url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail'),
   url(r'^roosters/$', timetables, name='timetable-list'),
-  url(r'^calendar/$', calendar, name='calendar'),
+  url(r'^kalender/$', calendar, name='calendar'),
 ]

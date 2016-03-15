@@ -4,10 +4,17 @@
 {% load utils %}
 
 {% block content %}
-  <section class="container-fluid" id="profile">
+  <section class="container" id="profile">
     <div class="row">
-      <div class="col-sm-12">
-        <h1>Profiel van {{ p.user.first_name }}</h1>
+      <div class="col-md-4">
+        {% if p.photo %}
+          <img src="{{ p.photo}}" />
+        {% else %}
+          <img src="{% static 'resources/images/no_photo.jpg' %}" />
+        {% endif %}
+      </div>
+      <div class="col-md-8">
+        <h1>{{ p.user.first_name }} {{ p.user.last_name }}</h1>
         <br/>
         <fieldset>
           <legend>Persoonlijk</legend>

@@ -65,48 +65,21 @@ class UserViewSet(viewsets.ModelViewSet):
   queryset = User.objects.all()
 
   serializer_class = UserSerializer
-'''
-class TimetbleViewSet(viewsets.ModelViewSet):
-  queryset = Timetable\
-    .objects\
-    .select_related('owner', 'events')\
-    .all()
-
-  serializer_class = TimetableSerializer
-  filter_fields = ('title',)
-
-class EventViewSet(viewsets.ModelViewSet):
-  queryset = Event\
-    .objects\
-    .select_related('owner')\
-    .all()
-
-  serializer_class = EventSerializer
-'''
-class SlideViewSet(viewsets.ModelViewSet):
-  queryset = Slide\
-    .objects\
-    .select_related('owner')\
-    .all()
-
-  serializer_class = SlideSerializer
-'''
-class DutyViewSet(viewsets.ModelViewSet):
-  queryset = TimetableDuty\
-    .objects\
-    .select_related('timetable', 'responsible')\
-    .all()
-
-  serializer_class = DutySerializer
-'''
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewSet):
+
+  class FavoriteFilterBackend(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+      if request.GET.get('favorites_only') is not None:
+        return queryset.filter(favorited_by__owner=request.profile)
+      else:
+        return queryset
 
   queryset = Profile.objects.all()
   serializer_class = ProfileSerializer
 
   permission_classes = [IsAuthenticated]
-  filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend)
+  filter_backends = (FavoriteFilterBackend, filters.SearchFilter, filters.DjangoFilterBackend)
   search_fields = ('user__first_name', 'user__last_name', 'user__email', 'address__street')
 
   def retrieve(self, request, *args, **kwargs):
@@ -145,15 +118,9 @@ class FavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.D
 
   permission_classes = [IsAuthenticated]
 
-
-
 router = DefaultRouter(trailing_slash=False)
 router.register(r'users', UserViewSet)
 router.register(r'profiles', ProfileViewSet)
 router.register(r'favorites', FavoriteViewSet)
-'''router.register(r'events', EventViewSet)
-router.register(r'timetables', TimetableViewSet)
-router.register(r'duties', DutyViewSet)'''
-router.register(r'slides', SlideViewSet)
 
 urls = router.urls

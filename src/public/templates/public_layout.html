@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+  <head>
+    {% include "./head.html" %}
+    <link href="{% static 'css/public/main.css' %}" rel="stylesheet">
+  </head>
+
+  <body>
+    <i id="pagetop"></i>
+
+    {%  block intro %}
+    {% endblock %}
+
+    <div id="wrapper" >
+      {% include "./public_header.html" %}
+
+      <div id="content" >
+        {% block content %}
+        {% endblock %}
+      </div>
+
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h2>Sitemap</h2>
+          </div>
+        </div>
+      </div>
+      <div class="container text-center">
+        <p id="copyright">Copyright &copy; http://www.cgkvwoerden.nl {% now "Y" %}</p
+      </div>
+    </footer>
+
+    <script src="{% static "scripts/common.js" %}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=onGoogleReady"></script>
+
+    {% block scripts %}
+    {% endblock %}
+  </body>
+</html>

@@ -19,7 +19,11 @@ var dist = path.join(__dirname, 'dist');
 var css = path.join(assets, 'css/**/*');
 
 gulp.task('sass', function() {
-  gulp.src('./src/assets/sass/main.sass')
+  gulp.src([
+    './src/assets/sass/common.sass',
+    './src/assets/sass/main.sass',
+    './src/assets/sass/public/main.sass'
+  ], {base: './src/assets/sass/'})
     .pipe(sass({
       includePaths : [
         path.join(__dirname, 'src/assets/fonts'),// sass
@@ -78,11 +82,7 @@ function compileScripts(watch, entry) {
 }
 
 function bundleScripts(watch) {
-  var entries = glob.sync(path.join(scripts, 'pages/**/*.js')).concat(
-        glob.sync(path.join(scripts, 'pages/**/*.jsx')));
-  entries.forEach(function(entry) {
-    compileScripts(watch, entry);
-  });
+  compileScripts(watch, path.join(scripts, 'app.jsx'));
 }
 
 // watch assets and build on changes
