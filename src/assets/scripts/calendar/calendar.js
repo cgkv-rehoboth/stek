@@ -49,7 +49,12 @@ class CalDay extends React.Component {
   }
 
   render() {
-    return <td className={cn('cal-day', {focus: this.props.focus})}>
+    let clz = cn('cal-day', {
+      focus: this.props.focus,
+      hoverable: this.props.events.length != 0
+    });
+
+    return <td className={clz}>
       <div className="content">
       <span className={cn('day-no')}>
         {this.props.day.format("D")}

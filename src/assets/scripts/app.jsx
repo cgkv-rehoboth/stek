@@ -3,6 +3,7 @@ import ReactDom from "react-dom";
 import ProfileSearchTable from "ProfileSearchTable";
 import api from "api";
 import $ from 'jquery';
+import moment from 'moment';
 
 // bind global jquery instance
 window.jQuery = $;
@@ -41,4 +42,27 @@ window.favoriteListMain = () => {
       <ProfileSearchTable listFunc={favoriteProfiles} />,
     $("#profile-search-table")[0]
   );
+}
+
+import { Calendar } from 'calendar/calendar';
+import actions from 'calendar/actions';
+import eventStore from "calendar/store";
+
+window.calendarMain = () => {
+  class MainCal extends React.Component {
+
+    onMonthChange(year, month) {
+      actions.loadEvents(year, month);
+    }
+
+    render() {
+      return <Calendar
+      tables={[]}
+      onMonthChange={this.onMonthChange.bind(this)}
+      eventStore={eventStore}
+      initFocus={moment()} />;
+    }
+  }
+
+  ReactDom.render(<MainCal />, $("#calendar")[0]);
 }
