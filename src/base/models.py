@@ -57,6 +57,7 @@ class Family(models.Model):
 
   lastname    = models.CharField(max_length=255)
   photo       = models.FileField(upload_to='/', null=True, blank=True) #Todo: specify upload dir
+  address     = models.OneToOneField(Address, null=True, blank=True)
 
   def __str__(self):
     return "Familie %s" % (self.lastname,)

@@ -1,6 +1,10 @@
-{% extends "./addressbookLayout.html" %}
+{% extends "./addressbook/layout.html" %}
 
 {% load static %}
+
+{% block subtitle %}
+  Families
+{% endblock %}
 
 {% block innerContent %}
   <!-- Family page -->
@@ -8,7 +12,6 @@
   <div class="family-menu">
   {% for v in data %}
     {% ifchanged v.lastname.0 %}
-      {% if not v == data|first %} - {% endif %}
       <a href="#{{ v.lastname.0 }}">{{ v.lastname.0 }}</a>
     {% endifchanged %}
   {% endfor %}
@@ -22,47 +25,58 @@
       <div class="family-list-header" id="{{ v.lastname.0 }}">{{ v.lastname.0 }}</div>
     {% endifchanged %}
 
-    <a href="javascript:void(0)" class="list-group-item family-list-item" id="{{ v.pk }}">{{ v }}, {{ v.members.all.0.user.first_name.0 }}.</a>
-
-    <!-- family details -->
-    <div class="container-fluid">
-      <div class="row family-list-details" data-family-pk="{{ v.pk }}" {% if id == v.pk %}style="display: block"{% endif %}>
-        <div class="col-lg-8">
+    <div class="container-fluid list-group-item family-list-item">
+      <div class="row">
+        <p class="col-md-12 family-name" id="{{ v.pk }}">
+          {{ v.lastname }} 
+          ({% for w in v.members.all %} {{ w.user.first_name }}, {% endfor %})
+        </p>
+      </div>
+      <div class="row family-list-details" data-family-pk="{{ v.pk }}"
+           {% if id == v.pk %}style="display: block;"{% endif %}>
+        <div class="col-md-8">
           <!-- Familymembers + details -->
-          <table class="table table-hover">
+          <h3>Gezinsleden</h3>
+          <table class="table table-bordered table-hover">
             <tr>
               <th>Voornaam</th>
               <th>Geboortedatum</th>
               <th>Mobiele telefoon</th>
-              <th> </th>
             </tr>
             {% for w in v.members.all %}
               <tr>
-                <td><a href="{% url 'profile' w.user.pk %}">{{ w.user.first_name }}</a></td>
+                <td><a href="{% url 'profile-detail-page' w.user.pk %}">
+                  {{ w.user.first_name }}
+                </a></td>
                 <td>{{ w.birthday }}</td>
                 <td>{{ w.phone }}</td>
-                <td class="favstar" data-pk="{{ w.pk }}" data-favorite="{{ w.is_favorite }}"></td>
               </tr>
             {% endfor %}
 
             <!-- Contact info -->
+            {% if v.address %}
             <tr>
               <td>
-                <strong>Adres</strong> <a href="http://www.google.com/maps/place/{{ v.members.all.0.user.profile.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link"><i class="fa fa-external-link"></i></a><br/>
-                {{ v.members.all.0.user.profile.address.street }}<br/>
-                {{ v.members.all.0.user.profile.address.zip }}, {{ v.members.all.0.user.profile.address.city }}
+                <strong>Adres</strong>
+                  <a href="http://www.google.com/maps/place/{{ v.members.all.0.user.profile.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link">
+                    <i class="fa fa-external-link"></i>
+                  </a>
+                  <br/>
+                {{ v.address.street }}<br/>
+                {{ v.address.zip }}, {{ v.address.city }}
               </td>
               <td>
                 <strong>Telefoon</strong><br/>
-                {{ v.members.all.0.user.profile.address.phone }}
+                {{ v.address.phone }}
               </td>
               <td></td>
             </tr>
+            {% endif %}
           </table>
 
         </div>
 
-        <div class="col-lg-4">
+        <div class="col-md-4">
           <!-- Family photo -->
           <!-- Todo: load image only when needed/clicked, not all images of all the families at the same time -->
           {% if v.photo %}
@@ -76,5 +90,5 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="{% static "scripts/addressbookFamily.js" %}"></script>
+  <script>window.familiesMain();</script>
 {% endblock %}

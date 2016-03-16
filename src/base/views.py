@@ -7,15 +7,8 @@ from django.shortcuts import render
 from django.conf.urls import patterns, include, url
 from django import http
 
+from agenda.models import *
 from base.models import *
-
-"""
-  url(r'^leden/(?P<id>\d+)/$', addressbook.profile, name='profile'),
-  url(r'^families/$', addressbook.family_list, name='addressbook-family-list'),
-  url(r'^families/(?P<id>\d+)/$', addressbook.family, name='addressbook-family-detail'),
-  url(r'^adresboek/favorites/$', addressbook.favorites, name='addressbook-favorites-list'),
-  url(r'^adresboek/favorites/(?P<id>\d+)/$', addressbook.detail, name='addressbook-favorites-post'),
-"""
 
 @login_required
 def profile_list(request):
@@ -26,14 +19,41 @@ def favorite_list(request):
   return render(request, 'addressbook/favorites.html')
 
 @login_required
-def profile_detail(request, id):
+def family_list(request, pk=None):
+  data = Family.objects\
+    .prefetch_related(Prefetch('members', queryset=Profile.objects.order_by('birthday')))\
+    .order_by('lastname')
+
+  # get dictionary of favorites
+  favorites = dict(
+    [ (v.favorite.pk, True) for v in Favorites.objects.filter(owner=request.profile) ])
+
+  if pk is not None:
+    pk = int(pk)
+
+  return render(request, 'addressbook/families.html', {
+    'data': data,
+    'favorites': favorites,
+    'id': pk
+  })
+
+@login_required
+def profile_detail(request, pk):
+  profiel = Profile.objects.get(pk=pk)
+  memberships = TeamMember.objects\
+                          .prefetch_related("team")\
+                          .filter(user__pk=pk)
+
   return render(request, 'profile.html', {
-    'p': Profile.objects.get(pk=id)
+    'p': profiel,
+    'memberships': memberships
   })
 
 urls = [
   url(r'^login$', auth_views.login, {'template_name':'login.html'}, name='login'),
-  url(r'^adresboek/$', profile_list, name='profile-list'),
-  url(r'^adresboek/favorieten/$', favorite_list, name='favorite-list'),
-  url(r'^profiel/(?P<id>\d+)/$', profile_detail, name='profile-detail'),
+  url(r'^adresboek/$', profile_list, name='profile-list-page'),
+  url(r'^adresboek/favorieten/$', favorite_list, name='favorite-list-page'),
+  url(r'^adresboek/families/$', family_list, name='family-list-page'),
+  url(r'^adresboek/families/(?P<pk>\d+)/$', family_list, name='family-detail-page'),
+  url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
 ]

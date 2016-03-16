@@ -33,6 +33,13 @@ class Event(TimestampedModel, LiveModel, models.Model):
   timetable       = models.ForeignKey(Timetable, related_name="events")
   description     = models.TextField(blank=True, null=True)
 
+  def save(self, *args, **kwargs):
+    # default enddate if not set
+    if self.enddatetime == None:
+      self.enddatetime = self.startdatetime
+
+    super().save(*args, **kwargs)
+
   def __str__(self):
     return "%s, at %s" % (self.title, self.startdatetime)
 
@@ -57,7 +64,6 @@ class Service(Event):
 
     super(Service, self).save(*args, **kwargs)
 
-# Team models
 class Team(models.Model):
 
   name = models.CharField(max_length=255)
@@ -84,14 +90,13 @@ class TeamMember(models.Model):
   LID = 'LID'
 
   ROLE_CHOICES = (
-    (LEADER, 'Leiding'),
-    (LID, 'Lid'),
+    (LEADER, 'leiding'),
+    (LID, 'lid'),
   )
 
   team = models.ForeignKey(Team)
   user = models.ForeignKey(User, related_name="team_membership")
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
-
 
   def __str__(self):
     return "%s %s: %s" % (self.team.name, self.get_role_display(), self.user.username)

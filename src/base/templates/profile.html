@@ -16,18 +16,54 @@
       <div class="col-md-8">
         <h1>{{ p.user.first_name }} {{ p.user.last_name }}</h1>
         <br/>
-        <fieldset>
-          <legend>Persoonlijk</legend>
-          Naam: {{ p.user.first_name }} {{ p.user.last_name }}<br/>
-          Geboortedatum: {{ p.birthday }}<br/>
-        </fieldset>
+
+        <h3>Persoonlijk</h3>
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <th>Naam</th>
+              <td>{{ p.user.first_name }} {{ p.user.last_name }}</td>
+            </tr>
+            <tr>
+              <th>Geboortedatum</th>
+              <td>{{ p.birthday }}</td>
+            </tr>
+          </tbody>
+        </table>
 
         <br/>
-        <fieldset>
-          <legend>Contact</legend>
-          Adres: {{ p.address }}<br/>
-          Telefoon: {{ p.phone}}<br/>
-        </fieldset>
+
+        <h3>Contact</h3>
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <th>Adres</th>
+              <td>{{ p.address }}</td>
+            </tr>
+            <tr>
+              <th>Telefoon</th>
+              <td>{{ p.phone}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <br/>
+
+        <h3>Teams</h3>
+        <table class="table table-bordered">
+          <thead>
+            <th>Team</th>
+            <th>Rol</th>
+          </thead>
+          <tbody>
+            {% for m in memberships %}
+              <tr>
+                <td>{{ m.team.name }}</td>
+                <td>{{ m.get_role_display }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </section>

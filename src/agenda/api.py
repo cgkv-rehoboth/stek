@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework import mixins, viewsets, filters, metadata
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
+from django.db.models import Q
 from datetime import datetime, timedelta
 
 class DutyViewSet(
@@ -41,9 +42,11 @@ class EventViewSet(
 
     # filter events
     if fromdate is not None:
-      events = events.filter(startdatetime__gte=datetime.fromtimestamp(int(fromdate)))
+      fromdate = datetime.fromtimestamp(int(fromdate))
+      events = events.filter(startdatetime__gte=fromdate)
     if todate is not None:
-      events = events.filter(enddatetime__lt=datetime.fromtimestamp(int(todate)))
+      todate = datetime.fromtimestamp(int(todate))
+      events = events.filter(Q(enddatetime__lt=todate)|Q(enddatetime__isnull=True))
 
     return Response(self.get_serializer(events, many=True).data)
 
