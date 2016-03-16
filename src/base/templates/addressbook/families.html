@@ -52,27 +52,19 @@
                 <td>{{ w.phone }}</td>
               </tr>
             {% endfor %}
+          </table>
 
             <!-- Contact info -->
-            {% if v.address %}
-            <tr>
-              <td>
-                <strong>Adres</strong>
-                  <a href="http://www.google.com/maps/place/{{ v.members.all.0.user.profile.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link">
-                    <i class="fa fa-external-link"></i>
-                  </a>
-                  <br/>
-                {{ v.address.street }}<br/>
-                {{ v.address.zip }}, {{ v.address.city }}
-              </td>
-              <td>
-                <strong>Telefoon</strong><br/>
-                {{ v.address.phone }}
-              </td>
-              <td></td>
-            </tr>
-            {% endif %}
-          </table>
+          {% if v.address %}
+            <h3>Adres</h3>
+            <p>
+              <a href="http://www.google.com/maps/place/{{ v.members.all.0.user.profile.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link">
+                <i class="fa fa-external-link"></i>
+              </a>
+              {{ v.address.street }}<br/>
+              {{ v.address.zip }}, {{ v.address.city }} <br />
+              {{ v.address.phone }}
+          {% endif %}
 
         </div>
 

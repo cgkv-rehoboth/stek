@@ -2,6 +2,7 @@ import React from "react";
 import {Button} from 'bootstrap/buttons';
 import Icon from 'bootstrap/Icon';
 import _ from 'underscore';
+import $ from 'jquery';
 
 export class Table extends React.Component {
   render() {
@@ -104,7 +105,7 @@ export class SearchTable extends React.Component {
       <div className="profile-search-table">
         <div>
           <Icon name="search" />
-          <input type="text" onChange={_.debounce(this.searchChange.bind(this), 1000)} />
+          <input type="text" onChange={_.debounce(this.searchChange.bind(this), 300)} />
         </div>
         <PaginatedTable
           pageno={this.state.page}
