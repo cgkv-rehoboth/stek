@@ -7,18 +7,18 @@
 {% endblock %}
 
 {% block innerContent %}
-  <div class="list-group team-list">
+  <div class="list-group list-group-hide-detail">
   {% for team in teams %}
-    <div class="container-fluid list-group-item team-list-item">
+    <div class="container-fluid list-group-item">
       <div class="row">
-        <h3 class="col-md-12 team-name" id="{{ v.pk }}">
+        <h3 class="col-md-12 list-group-head" id="{{ v.pk }}">
           {{ team.name }} 
         </h3>
       </div>
-      <div class="row team-details" data-team-pk="{{ team.pk }}"
+      <div class="row list-group-detail" data-team-pk="{{ team.pk }}"
            {% if id == team.pk %}style="display: block;"{% endif %}>
         <div class="col-md-12">
-          <h4>Team leden</h4>
+          <h4>Teamleden</h4>
           <table class="table table-bordered table-hover">
             <tr>
               <th width="50%">Naam</th>

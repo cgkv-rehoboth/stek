@@ -69,5 +69,6 @@ urls = [
   url(r'^adresboek/families/$', family_list, name='family-list-page'),
   url(r'^adresboek/families/(?P<pk>\d+)/$', family_list, name='family-detail-page'),
   url(r'^teams/$', team_list, name='team-list-page'),
+  url(r'^teams/(?P<pk>\d+)/$', team_list, name='team-detall-page'),
   url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
 ]

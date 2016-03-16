@@ -18,7 +18,7 @@
   </div>
 
   <!-- Family list -->
-  <div class="list-group family-list">
+  <div class="list-group list-group-hide-detail family-list">
   {% for v in data %}
     {# Set header with first letter of the last name #}
     {% ifchanged v.lastname.0 %}
@@ -27,12 +27,12 @@
 
     <div class="container-fluid list-group-item family-list-item">
       <div class="row">
-        <p class="col-md-12 family-name" id="{{ v.pk }}">
+        <p class="col-md-12 list-group-head" id="{{ v.pk }}">
           {{ v.lastname }} 
           ({% for w in v.members.all %} {{ w.user.first_name }}, {% endfor %})
         </p>
       </div>
-      <div class="row family-list-details" data-family-pk="{{ v.pk }}"
+      <div class="row list-group-detail" data-family-pk="{{ v.pk }}"
            {% if id == v.pk %}style="display: block;"{% endif %}>
         <div class="col-md-8">
           <!-- Familymembers + details -->

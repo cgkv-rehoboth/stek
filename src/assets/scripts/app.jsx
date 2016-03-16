@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDom from "react-dom";
-import {ProfileSearchTable} from "ProfileSearchTable";
+import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
 import api from "api";
 import $ from 'jquery';
@@ -16,6 +16,24 @@ require('jquery.easing');
 require('bootstrap/dist/js/bootstrap.min');
 require('bootstrap/js/tooltip');
 require('lib/grayscale');
+
+function initListGroupDetail() {
+  $('.list-group-item', '.list-group-hide-detail')
+    .each(function() {
+      let self = $(this);
+      console.log(self);
+      self.find('.list-group-head').click(() => {
+        let detail = self.find('.list-group-detail');
+        console.log(detail);
+
+        // close all others
+        $('.list-group-detail').slideUp(100);
+
+        // open detail
+        detail.slideToggle(100);
+      });
+    });
+}
 
 //
 // main functions for different pages
@@ -71,15 +89,7 @@ window.calendarMain = () => {
 import FavStar from 'containers/FavStar';
 
 window.familiesMain = () => {
-  $('.family-list-item', '.family-list')
-    .each(function() {
-      let self = $(this);
-      self.find('.family-name').click(() => {
-        $('.family-list-details').slideUp(100);
-        self.find('.family-list-details')
-          .slideToggle(100);
-      });
-    });
+  initListGroupDetail();
 
   /*
     // Scroll to the family details div
@@ -95,16 +105,5 @@ window.familiesMain = () => {
 };
 
 window.teamListMain = () => {
-  let searchTeams = (query, page) => {
-    return api.teams.list(query, page, 2);
-  };
-
-  let renderTeamRow = (team) => {
-    return <tr><td>{team.name}</td></tr>;
-  };
-
-  ReactDom.render(
-      <SearchTable renderRow={renderTeamRow} listFunc={searchTeams} />,
-    $("#team-table")[0]
-  );
+  initListGroupDetail();
 };
