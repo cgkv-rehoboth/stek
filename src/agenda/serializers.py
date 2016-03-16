@@ -24,6 +24,12 @@ class EventSerializer(serializers.ModelSerializer):
   class Meta:
     model = Event
 
+class TeamSerializer(serializers.ModelSerializer):
+  members = UserSerializer(many=True)
+
+  class Meta:
+    model = Team
+
 class EventWithDutiesSerializer(EventSerializer):
 
   class CustomDutySerializer(serializers.ModelSerializer):

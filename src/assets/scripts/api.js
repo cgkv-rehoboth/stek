@@ -56,6 +56,7 @@ let api_obj = {
         });
     }
   },
+
   profiles: {
     list: (search='', page=1, extra_params={}) => {
       return Q.xhr
@@ -70,6 +71,15 @@ let api_obj = {
 
     defavorite: (pk) => {
       return http.post(`${api}/profiles/${pk}/defavorite`);
+    }
+  },
+
+  teams: {
+    list: (search='', page=1, extra_params={}) => {
+      return Q.xhr
+        .get(`${api}/agenda/teams/`, {
+          params: _.extend({search: search, page: page}, extra_params)
+        });
     }
   },
 

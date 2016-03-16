@@ -19,6 +19,19 @@ def favorite_list(request):
   return render(request, 'addressbook/favorites.html')
 
 @login_required
+def team_list(request, pk=None):
+  teams = Team.objects.all()\
+                      .prefetch_related("teammembers")
+
+  if pk is not None:
+    pk = int(pk)
+
+  return render(request, 'addressbook/teams.html', {
+    'teams': teams,
+    'id': pk
+  })
+
+@login_required
 def family_list(request, pk=None):
   data = Family.objects\
     .prefetch_related(Prefetch('members', queryset=Profile.objects.order_by('birthday')))\
@@ -55,5 +68,6 @@ urls = [
   url(r'^adresboek/favorieten/$', favorite_list, name='favorite-list-page'),
   url(r'^adresboek/families/$', family_list, name='family-list-page'),
   url(r'^adresboek/families/(?P<pk>\d+)/$', family_list, name='family-detail-page'),
+  url(r'^teams/$', team_list, name='team-list-page'),
   url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
 ]

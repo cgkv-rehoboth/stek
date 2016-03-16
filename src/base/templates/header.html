@@ -26,10 +26,10 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="/adresboek/">Ledenlijst</a></li>
-              <li><a href="/adresboek/families/">Families</a></li>
-              <li><a href="/adresboek/families/">Teams</a></li>
-              <li><a href="/adresboek/favorieten/">Favorieten</a></li>
+              <li><a href="{% url 'profile-list-page' %}">Ledenlijst</a></li>
+              <li><a href="{% url 'family-list-page' %}">Families</a></li>
+              <li><a href="{% url 'team-list-page' %}">Teams</a></li>
+              <li><a href="{% url 'favorite-list-page' %}">Favorieten</a></li>
             </ul>
           </li>
           <li>

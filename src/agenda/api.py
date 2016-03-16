@@ -1,12 +1,21 @@
-from base.api import StekViewSet
-from .models import *
-from .serializers import *
 from rest_framework.routers import DefaultRouter
 from rest_framework import mixins, viewsets, filters, metadata
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
 from django.db.models import Q
 from datetime import datetime, timedelta
+
+from base.api import StekViewSet
+from .models import *
+from .serializers import *
+
+class TeamViewSet(
+    mixins.ListModelMixin,
+    StekViewSet):
+
+  model = Team
+  queryset = Team.objects.all()
+  serializer_class = TeamSerializer
 
 class DutyViewSet(
         mixins.RetrieveModelMixin,
@@ -93,5 +102,6 @@ router = DefaultRouter()
 router.register("duties", DutyViewSet, base_name="duties")
 router.register("timetables", TimetableViewSet, base_name="timetable")
 router.register("events", EventViewSet, base_name="events")
+router.register("teams", TeamViewSet, base_name="teams")
 
 urls = router.urls

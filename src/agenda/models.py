@@ -94,7 +94,7 @@ class TeamMember(models.Model):
     (LID, 'lid'),
   )
 
-  team = models.ForeignKey(Team)
+  team = models.ForeignKey(Team, related_name="teammembers")
   user = models.ForeignKey(User, related_name="team_membership")
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
 

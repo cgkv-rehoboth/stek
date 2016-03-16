@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDom from "react-dom";
-import ProfileSearchTable from "ProfileSearchTable";
+import {ProfileSearchTable} from "ProfileSearchTable";
+import {SearchTable} from "bootstrap/tables";
 import api from "api";
 import $ from 'jquery';
 import moment from 'moment';
@@ -91,4 +92,19 @@ window.familiesMain = () => {
     let fav = $(this).data('favorite') !== undefined;
     ReactDom.render(<FavStar pk={$(this).data('pk')} favorite={fav} />, $(this)[0]);
   });
+};
+
+window.teamListMain = () => {
+  let searchTeams = (query, page) => {
+    return api.teams.list(query, page, 2);
+  };
+
+  let renderTeamRow = (team) => {
+    return <tr><td>{team.name}</td></tr>;
+  };
+
+  ReactDom.render(
+      <SearchTable renderRow={renderTeamRow} listFunc={searchTeams} />,
+    $("#team-table")[0]
+  );
 };
