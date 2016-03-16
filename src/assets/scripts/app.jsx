@@ -44,25 +44,51 @@ window.favoriteListMain = () => {
   );
 }
 
-import { Calendar } from 'calendar/calendar';
-import actions from 'calendar/actions';
-import eventStore from "calendar/store";
+import { Calendar } from 'containers/Calendar';
 
 window.calendarMain = () => {
   class MainCal extends React.Component {
 
-    onMonthChange(year, month) {
-      actions.loadEvents(year, month);
-    }
-
     render() {
+      let onMonthChange = (year, month) => {
+        let from = moment([year, month]);
+        let to = from.clone().add(1, 'months');
+
+        return api.events.list(from.unix(), to.unix());
+      };
+
       return <Calendar
       tables={[]}
-      onMonthChange={this.onMonthChange.bind(this)}
-      eventStore={eventStore}
+      onMonthChange={onMonthChange}
       initFocus={moment()} />;
     }
   }
 
   ReactDom.render(<MainCal />, $("#calendar")[0]);
-}
+};
+
+import FavStar from 'containers/FavStar';
+
+window.familiesMain = () => {
+  $('.family-list-item', '.family-list')
+    .each(function() {
+      let self = $(this);
+      self.find('.family-name').click(() => {
+        $('.family-list-details').slideUp(100);
+        self.find('.family-list-details')
+          .slideToggle(100);
+      });
+    });
+
+  /*
+    // Scroll to the family details div
+    $(document.body).animate({
+    scrollTop: $('#').offset().top // Todo
+    }, 500);
+    */
+
+  $('.favstar').each(function() {
+    let fav = $(this).data('favorite') !== undefined;
+    ReactDom.render(<FavStar pk={$(this).data('pk')} favorite={fav} />, $(this)[0]);
+  });
+};

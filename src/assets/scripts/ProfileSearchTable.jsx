@@ -1,13 +1,13 @@
-let React = require("react");
-let _ = require('underscore');
-let api = require('api');
-let forms = require('forms');
-let $ = require("jquery");
-let FavStar = require('bootstrap/favorites');
-let { PaginatedTable } = require('bootstrap/tables');
+import React from "react";
+import _ from 'underscore';
+import api from 'api';
+import forms from 'forms';
+import $ from "jquery";
+import { PaginatedTable } from 'bootstrap/tables';
+import FavStar from 'containers/FavStar';
 import Icon from 'bootstrap/Icon';
 
-class ProfileSearchTable extends React.Component {
+export default class ProfileSearchTable extends React.Component {
 
   static get propTypes() {
     return {
@@ -93,5 +93,3 @@ class ProfileSearchTable extends React.Component {
     );
   }
 }
-
-module.exports = ProfileSearchTable;

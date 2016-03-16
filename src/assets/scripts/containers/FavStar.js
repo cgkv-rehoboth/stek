@@ -1,7 +1,7 @@
-let React = require("react");
-let api = require('api');
+import React from "react";
+import api from 'api';
 
-class FavStar extends React.Component {
+export default class FavStar extends React.Component {
 
   static get propTypes() {
     return {
@@ -47,5 +47,3 @@ class FavStar extends React.Component {
           </div>;
   }
 }
-
-module.exports = FavStar;

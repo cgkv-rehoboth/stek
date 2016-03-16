@@ -116,14 +116,14 @@ class Calendar extends React.Component {
   static get propTypes() {
     return {
       initFocus: React.PropTypes.object,
-      onMonthChange: React.PropTypes.func,
-      eventStore: React.PropTypes.object.isRequired
+      onMonthChange: React.PropTypes.func
     };
   }
 
   static get defaultProps() {
     return {
-      onMonthChange: () => {},
+      initFocus: moment(),
+      onMonthChange: () => {}
     };
   }
 
@@ -137,31 +137,30 @@ class Calendar extends React.Component {
 
   }
 
-  componentWillMount() {
-    // subscribe at the store
-    this._unsubscribe = this.props.eventStore.listen((events) => {
-      let eventsByDay = {};
-      _.each(events, (event) => {
-        moment
-          .range(moment(event.startdatetime), moment(event.enddatetime))
-          .by('days', (day) => {
-            let key = moment(event.startdatetime).format("D");
-            let evs = (eventsByDay[key] || []);
-            evs.push(event)
-            eventsByDay[key] = evs;
-          });
-      });
-
-      this.setState({ events: eventsByDay });
-    });
-    
-    // initial load
-    this.props.onMonthChange(this.month().year(), this.month().month());
+  loadEvents(year, month) {
+    this.props
+      .onMonthChange(year, month)
+      .then((resp) => this.handleEvents(resp.data));
   }
 
-  componentWillUnmount() {
-    // unsubscribe from the store
-    this._unsubscribe();
+  handleEvents(events) {
+    let eventsByDay = {};
+    _.each(events, (event) => {
+      moment
+        .range(moment(event.startdatetime), moment(event.enddatetime))
+        .by('days', (day) => {
+          let key = moment(event.startdatetime).format("D");
+          let evs = (eventsByDay[key] || []);
+          evs.push(event);
+          eventsByDay[key] = evs;
+        });
+    });
+
+    this.setState({ events: eventsByDay });
+  }
+
+  componentWillMount() {
+    this.loadEvents(this.month().year(), this.month().month());
   }
 
   prevMonth() {
@@ -172,7 +171,7 @@ class Calendar extends React.Component {
       events: {}
     });
 
-    this.props.onMonthChange(prev.year(), prev.month());
+    this.loadEvents(prev.year(), prev.month());
   }
 
   nextMonth() {
@@ -183,7 +182,7 @@ class Calendar extends React.Component {
       events: {}
     });
 
-    this.props.onMonthChange(next.year(), next.month());
+    this.loadEvents(next.year(), next.month());
   }
 
   month() {

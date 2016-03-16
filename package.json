@@ -34,8 +34,6 @@
     "react-dom": "0.14.3",
     "react-google-maps": "",
     "react-tap-event-plugin": "",
-    "underscore": "",
-    "reflux": "",
-    "reflux-promise": ""
+    "underscore": ""
   }
 }
