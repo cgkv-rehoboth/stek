@@ -22,10 +22,10 @@ export default class ProfileSearchTable extends React.Component {
       ? <a href={"/adresboek/families/" + prof.family.id + "/"}>{prof.user.last_name}</a>
       : family = <span></span>;
      let address = prof.address
-      ? <td>prof.address.street + <small>({prof.address.zip})</small></td>
+      ? <td>{prof.address.street} <small>({prof.address.zip})</small></td>
       : <td></td>;
      let city = prof.address
-      ? <td>prof.address.city</td>
+      ? <td>{prof.address.city}</td>
       : <td></td>;
 
      return (

@@ -58,7 +58,7 @@
           {% if v.address %}
             <h3>Adres</h3>
             <p>
-              <a href="http://www.google.com/maps/place/{{ v.members.all.0.user.profile.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link">
+              <a href="http://www.google.com/maps/place/{{ v.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link">
                 <i class="fa fa-external-link"></i>
               </a>
               {{ v.address.street }}<br/>
