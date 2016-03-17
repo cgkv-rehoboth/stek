@@ -2,7 +2,6 @@
 
 {% load staticfiles %}
 {% load utils %}
-{% load render_table from django_tables2 %}
 
 {% block content %}
   <section>
@@ -27,64 +26,36 @@
         <div class="col-sm-12">
           <ul class="nav nav-tabs">
             {% for table in mytables %}
-              <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}><a href={% url 'timetable-detail' table.pk %}>{{ table.title }}</a></li>
+              <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}>
+                <a href={% url 'timetable-detail-page' table.pk %}>{{ table.title }}</a>
+              </li>
             {% endfor %}
 
             {% if not current_table in mytables %}
-              <li role="presentation" class="active"><a href={% url 'timetable-detail' current_table.pk %}>{{ current_table.title }}</a></li>
+              <li role="presentation" class="active">
+                <a href={% url 'timetable-detail-page' current_table.pk %}>{{ current_table.title }}</a>
+              </li>
             {% endif %}
 
             <li role="presentation" class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true" aria-expanded="false">
                 Andere roosters <span class="caret"></span>
               </a>
+              {% if notmytables|length > 0 %}
               <ul class="dropdown-menu">
                 {% for table in notmytables %}
-                  <li role="presentation"><a href="{% url 'timetable-detail' table.pk %}">{{ table.title }}</a></li>
-                {% empty %}
-                  <li role="presentation">Niets gevonden</li>
+                  <li role="presentation">
+                    <a href="{% url 'timetable-detail-page' table.pk %}">{{ table.title }}</a>
+                  </li>
                 {% endfor %}
               </ul>
+              {% endif %}
             </li>
           </ul>
 
           <!-- Timetable duties -->
-          {% if current_table %}
-          <table id="timetable"  class="table table-hover">
-            <thead>
-              <tr>
-                <th>Datum</th>
-                <th>Event</th>
-                <th>Persoon</th>
-                <th>Opmerkingen</th>
-              </tr>
-            </thead>
-            <tbody>
-            {% for duty in duties %}
-              {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
-              <tr class="table-{{ rowday }}" data-duty-pk="{{ duty.pk }}">
-                <td class="duty-date">{{ duty.event.startdatetime }}</td>
-                <td class="duty-title">{{ duty.event.title }}</td>
-                <td>
-                  {{ duty.responsible|usernicename }}
-                  {% if duty.responsible.pk == user.pk %}
-                    <a href="javascript:void(0)" class="timetable-ruilen" title="Ruilen aanvragen"><i class="fa fa-pencil"></i></a>
-                  {% endif %}
-                </td>
-                <td>{{ duty.comments }}</td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-          {% else %}
-          Je hebt geen persoonlijke rooster, maar je kan wel andere roosters bekijken door op de knop "Andere roosters" te klikken
-          {% endif %}
-        </div>
-      </div> <!-- row -->
-
-      <!-- new duties form -->
-      <div class="row" >
-        <div class="col-sm-12" id="duty-form">
+          <div id="timetable" data-pk="{{ current_table.pk }}}">
+          </div>
         </div>
       </div>
     </div>
@@ -117,18 +88,12 @@
         </div>
       </div>
     </div>
+
   </section>
 {% endblock %}
 
 {% block scripts %}
-  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script>
-    $(".timetable-ruilen").click(function(){
-      $("#ruilModal .modal-event-name").text($(this).closest("tr").find(".duty-title").text());
-      $("#ruilModal .modal-event-date").text($(this).closest("tr").find(".duty-date").text());
-      $("#ruilModal input[name=modal-duty-pk]").val($(this).closest("tr").attr("data-duty-pk"));
-      $("#ruilModal").modal('show');
-    });
+    window.timetableMain();
   </script>
-  <script src="{% static 'scripts/timetables.js' %}"></script>
 {% endblock %}

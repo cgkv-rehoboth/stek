@@ -1,12 +1,8 @@
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib.auth.forms import AuthenticationForm
-from django import http
-import datetime
-from django.contrib import messages
+from datetime import datetime
 from .models import *
 
 """
@@ -49,29 +45,21 @@ def timetables(request, id=None):
     id = mytables[0].pk
 
   # Get current table
-  table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
+  table = Timetable.objects.prefetch_related('team__members').get(pk=id)
 
-  # Get all the other tables that are not really relevant to the user
+  # Get all the other tables
+  # that are not really relevant to the user
   notmytables = list(Timetable\
     .objects\
     .exclude(team__members__pk=request.user.pk)\
     .exclude(team__isnull=True)\
     .exclude(pk=id))
 
-  # Get all the duties from the specific table
-  duties = table.duties\
-    .filter(event__startdatetime__gte=datetime.date.today())\
-    .order_by("event__startdatetime", "event__enddatetime")
-
   # Render that stuff!
   return render(request, 'timetables.html', {
     'current_table': table,
     'mytables': mytables,
-    'notmytables': notmytables,
-    'duties': duties,
-
-    'events': Event.objects.all(),
-    'users': table.team.members.all()
+    'notmytables': notmytables
   })
 
 @login_required
@@ -79,7 +67,7 @@ def calendar(request):
   return render(request, 'calendar.html')
 
 urls = [
-  url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail'),
-  url(r'^roosters/$', timetables, name='timetable-list'),
-  url(r'^kalender/$', calendar, name='calendar'),
+  url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail-page'),
+  url(r'^roosters/$', timetables, name='timetable-list-page'),
+  url(r'^kalender/$', calendar, name='calendar-page'),
 ]

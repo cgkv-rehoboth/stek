@@ -21,13 +21,13 @@ function initListGroupDetail() {
   $('.list-group-item', '.list-group-hide-detail')
     .each(function() {
       let self = $(this);
-      console.log(self);
       self.find('.list-group-head').click(() => {
         let detail = self.find('.list-group-detail');
-        console.log(detail);
 
         // close all others
-        $('.list-group-detail').slideUp(100);
+        $('.list-group-detail')
+          .not(detail)
+          .slideUp(100);
 
         // open detail
         detail.slideToggle(100);
@@ -106,4 +106,16 @@ window.familiesMain = () => {
 
 window.teamListMain = () => {
   initListGroupDetail();
+};
+
+window.timetableMain = () => {
+  console.debug("Init timetables");
+  /*$(".timetable-ruilen").click(function(){
+    $("#ruilModal .modal-event-name").text($(this).closest("tr").find(".duty-title").text());
+    $("#ruilModal .modal-event-date").text($(this).closest("tr").find(".duty-date").text());
+    $("#ruilModal input[name=modal-duty-pk]").val($(this).closest("tr").attr("data-duty-pk"));
+    $("#ruilModal").modal('show');
+  });*/
+
+  // ReactDom.render(<DutyForm timetable={1} />, $("#duty-form")[0]);
 };
