@@ -30,7 +30,7 @@ class Address(models.Model):
 def user_profile_pic(profile, filename):
   _, ext = os.path.splitext(filename)
 
-  return 'profiles/%s.%s' % (profile.username, ext)
+  return 'profiles/%s_%s%s' % (profile.pk, profile.user.username, ext)
 
 class Profile(models.Model):
 

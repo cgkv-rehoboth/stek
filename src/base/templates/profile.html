@@ -7,15 +7,21 @@
   <section class="container" id="profile">
     <div class="row">
       <div class="col-md-4">
+      </div>
+      <div class="col-md-8 ">
+        <h1>{{ p.user.first_name }} {{ p.user.last_name }}</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
         {% if p.photo %}
-          <img src="{{ p.photo}}" />
+          <img class="profile-pic" src="{{ MEDIA_URL }}/{{ p.photo}}" />
         {% else %}
           <img src="{% static 'resources/images/no_photo.jpg' %}" />
         {% endif %}
       </div>
       <div class="col-md-8">
-        <h1>{{ p.user.first_name }} {{ p.user.last_name }}</h1>
-        <br/>
 
         <h3>Persoonlijk</h3>
         <table class="table table-bordered">
