@@ -1,5 +1,17 @@
 @import ../colors
 
+section
+  padding-bottom: 50px
+  padding-top: 50px
+
+  &.dark
+    background-color: $dark-bg
+    color: $light-fg
+
+  &.darker
+    background-color: darken($dark-bg, 3%)
+    color: $light-fg
+   
 .to-dark-gradient
   position: absolute
   width: 100%
