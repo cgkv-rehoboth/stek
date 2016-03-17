@@ -7,11 +7,11 @@
 {% endblock %}
 
 {% block innerContent %}
-  <div class="list-group list-group-hide-detail">
+  <div class="list-group list-group-hide-detail" data-focus="{{ id }}">
   {% for team in teams %}
     <div class="container-fluid list-group-item">
       <div class="row">
-        <h3 class="col-md-12 list-group-head" id="{{ v.pk }}">
+        <h3 class="col-md-12 list-group-head" id="{{ team.pk }}">
           {{ team.name }} 
         </h3>
       </div>

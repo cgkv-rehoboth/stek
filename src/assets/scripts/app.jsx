@@ -33,6 +33,14 @@ function initListGroupDetail() {
         detail.slideToggle(100);
       });
     });
+
+  let focus_id = $('.list-group-hide-detail').data('focus');
+  if(focus_id) {
+    let y = $(`#${focus_id}`).offset().top - $('.navbar').height() - 20;
+    $('html, body').animate({
+      scrollTop: y
+    }, 1000);
+  }
 }
 
 //

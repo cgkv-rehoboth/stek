@@ -62,7 +62,8 @@
           <tbody>
             {% for m in memberships %}
               <tr>
-                <td>{{ m.team.name }}</td>
+                <td>
+                  <a href="{% url 'team-detail-page' m.team.pk %}">{{ m.team.name }}</td>
                 <td>{{ m.get_role_display }}</td>
               </tr>
             {% endfor %}
