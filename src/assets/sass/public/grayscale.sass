@@ -6,10 +6,9 @@
 @import ../mixins
 @import ../colors
 
-@media (min-width: 768px)
-  p
-    margin: 0 0 35px
-    line-height: 1.6
+p
+  margin: 0 0 35px
+  line-height: 1.6
 
 a
   color: #42dca3
@@ -104,6 +103,14 @@ a
   -webkit-transition: all .3s ease-in-out
   -moz-transition: all .3s ease-in-out
   transition: all .3s ease-in-out
+  background-color: lighten($dark-bg, 10%)
+
+  &.cyan
+    color: #eee
+    background-color: $cyan
+
+    &:hover
+      background-color: desaturate(darken($cyan, 10%), 0.1)
 
 .btn-default
   border: 1px solid $blue
@@ -134,10 +141,6 @@ a
     padding: 0px 15px
     height: 30px
     line-height: 30px
-
-  &.cyan
-    color: #eee
-    background-color: $cyan
   
 .btn-circle
   width: 50px

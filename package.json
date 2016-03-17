@@ -24,6 +24,7 @@
     "font-awesome": "",
     "jquery": "",
     "jquery.easing": "",
+    "json3": "^3.3.2",
     "material-ui": "",
     "moment": "",
     "moment-range": "^2.1.0",

@@ -1,0 +1,21 @@
+
+form
+
+  input, .input-group, textarea
+    margin:
+      top: 8px
+      bottom: 8px
+
+    &.faulty, &.faulty > *
+      border-color: red
+      color: red
+
+    // don't add the margin twice
+    input
+      margin: 0px
+
+  textarea
+    width: 100%
+    min-height: 100px
+    color: black
+    padding: 10px

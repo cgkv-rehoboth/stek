@@ -17,5 +17,5 @@ def contact_post(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 urls = [
-  url(r'^contact/$', contact_post, name='contact-post'),
+  url(r'^contact/$', contact_post, name='contact-create'),
 ]

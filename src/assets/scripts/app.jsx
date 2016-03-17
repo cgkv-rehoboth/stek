@@ -5,6 +5,7 @@ import {SearchTable} from "bootstrap/tables";
 import api from "api";
 import $ from 'jquery';
 import moment from 'moment';
+import initAsyncForm from 'utils/asyncForm';
 
 // bind global jquery instance
 window.jQuery = $;
@@ -16,6 +17,12 @@ require('jquery.easing');
 require('bootstrap/dist/js/bootstrap.min');
 require('bootstrap/js/tooltip');
 require('lib/grayscale');
+
+function initAsyncForms() {
+  let $forms = $('.async-form');
+
+  $forms.each(function() {initAsyncForm(this);});
+}
 
 function initListGroupDetail() {
   $('.list-group-item', '.list-group-hide-detail')
@@ -127,3 +134,7 @@ window.timetableMain = () => {
 
   // ReactDom.render(<DutyForm timetable={1} />, $("#duty-form")[0]);
 };
+
+window.frontpageMain = () => {
+  initAsyncForms();
+}
