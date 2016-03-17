@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'cgkv.wsgi.application'
 
 DATABASES = {
   'default': {
-    'ENGINE': 'django.db.backends.mysql', 
+    'ENGINE': 'django.db.backends.mysql',
     'NAME': 'cgkv',
     'USER': 'cgkv',
     'PASSWORD': 'lCCnO6D9Py1VQukTlGknTnFiNyx6TmJ6',
@@ -134,8 +134,10 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = "/media/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "../static/")
+MEDIA_ROOT = os.path.join(BASE_DIR, "../media/")
 
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, "../dist/"),

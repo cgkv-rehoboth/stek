@@ -29,3 +29,10 @@ urlpatterns = patterns('',
 
   # url(r'^', include(static.static("/", document_root=os.path.join(settings.BASE_DIR, "static/")))),
 )
+
+# serve media files
+if settings.DEBUG:
+  urlpatterns += patterns('',
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+      'document_root': settings.MEDIA_ROOT
+    }))

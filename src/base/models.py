@@ -5,6 +5,8 @@ from django.contrib.contenttypes.models import ContentType
 from livefield.models import LiveModel
 from django.db.models import Count
 
+import os
+
 class Slide(LiveModel, models.Model):
 
   image       = models.CharField(max_length=255)
@@ -25,6 +27,11 @@ class Address(models.Model):
   def __str__(self):
     return "%s, %s, %s (%s)" % (self.street, self.zip, self.city, self.country)
 
+def user_profile_pic(profile, filename):
+  _, ext = os.path.splitext(filename)
+
+  return 'profiles/%s.%s' % (profile.username, ext)
+
 class Profile(models.Model):
 
   DAD = 'DAD'
@@ -43,7 +50,7 @@ class Profile(models.Model):
   address     = models.ForeignKey(Address, null=True, blank=True)
   phone       = models.CharField(max_length=15, blank=True)
   birthday    = models.DateField()
-  photo       = models.FileField(upload_to='/', null=True, blank=True) #Todo: specify upload dir
+  photo       = models.ImageField(upload_to=user_profile_pic, null=True, blank=True)
   family      = models.ForeignKey("Family", null=True, related_name='members')
   role_in_family = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID, null=True)
 
@@ -53,10 +60,15 @@ class Profile(models.Model):
   def __str__(self):
     return "Profiel van %s" % (self.user.username)
 
+def family_pic(fam, filename):
+  _, ext = os.path.splitext(filename)
+
+  return 'families/%s%s' % (fam.pk, ext)
+
 class Family(models.Model):
 
   lastname    = models.CharField(max_length=255)
-  photo       = models.FileField(upload_to='/', null=True, blank=True) #Todo: specify upload dir
+  photo       = models.FileField(upload_to=family_pic, null=True, blank=True) #Todo: specify upload dir
   address     = models.OneToOneField(Address, null=True, blank=True)
 
   def __str__(self):
