@@ -9,9 +9,11 @@ import base.api
 import agenda.views
 import agenda.api
 import public.views
+import public.api
 
 apipatterns = patterns('',
   url(r'', include(base.api.urls)),
+  url(r'', include(public.api.urls)),
   url(r'^agenda/', include(agenda.api.urls)),
 )
 
