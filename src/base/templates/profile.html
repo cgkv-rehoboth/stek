@@ -17,8 +17,6 @@
       <div class="col-md-4">
         {% if p.photo %}
           <img class="profile-pic" src="{{ MEDIA_URL }}/{{ p.photo}}" />
-        {% else %}
-          <img src="{% static 'resources/images/no_photo.jpg' %}" />
         {% endif %}
       </div>
       <div class="col-md-8">
