@@ -13,6 +13,7 @@ var gulp = require('gulp'),
     glob = require('glob'),
     sourcemaps = require('gulp-sourcemaps'),
     uglify = require('gulp-uglify'),
+    gzip = require('gulp-gzip'),
     chalk = require('chalk');
 
 
@@ -128,11 +129,22 @@ gulp.task('build:scripts:watch', function() {
   });
 });
 
+gulp.task('build:scripts:gzip', function() {
+  gulp.src(path.join(dist, 'scripts', '*.js'))
+    .pipe(gzip())
+    .pipe(gulp.dest(path.join(dist, 'scripts')));
+});
+
 gulp.task('build:scripts:prod', function() {
   // use watchify for fast rebuilds using browserify
   var entry = path.join(scripts, 'app.jsx');
   var bundler = make_bundler(entry, true);
-  bundle(bundler, entry, true);
+  var stream = bundle(bundler, entry, true);
+
+  // gzip the results
+  stream.on('end', function() {
+    gulp.start('build:scripts:gzip');
+  });
 });
 
 gulp.task('build:static', function() {
