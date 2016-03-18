@@ -10,3 +10,7 @@ Just follow the [GitHub Flow](https://guides.github.com/introduction/flow/index.
 ### Getting started
 
 See `docs/getting-started/` for a concise guide on development.
+
+### Production
+
+- Make sure the server's user has read/write access to the media directory
