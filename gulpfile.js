@@ -10,9 +10,11 @@ var gulp = require('gulp'),
     watchify = require('watchify'),
     browserify = require('browserify'),
     babelify = require('babelify'),
-    glob = require('glob')
+    glob = require('glob'),
     sourcemaps = require('gulp-sourcemaps'),
-    uglify = require('gulp-uglify');
+    uglify = require('gulp-uglify'),
+    chalk = require('chalk');
+
 
 var assets = path.join(__dirname, 'src/assets');
 var scripts = path.join(assets, 'scripts');
@@ -21,7 +23,31 @@ var images = path.join(assets, 'resources/images/**/*');
 var dist = path.join(__dirname, 'dist');
 var css = path.join(assets, 'css/**/*');
 
-gulp.task('sass', function() {
+function map_error(err) {
+  if (err.fileName) {
+    // regular error
+    gutil.log(chalk.red(err.name)
+              + ': '
+              + chalk.yellow(err.fileName.replace(__dirname + '/src/js/', ''))
+              + ': '
+              + 'Line '
+              + chalk.magenta(err.lineNumber)
+              + ' & '
+              + 'Column '
+              + chalk.magenta(err.columnNumber || err.column)
+              + ': '
+              + chalk.blue(err.description));
+  } else {
+    // browserify error..
+    gutil.log(chalk.red(err.name)
+              + ': '
+              + chalk.yellow(err.message));
+  }
+
+  this.end();
+}
+
+gulp.task('build:sass', function() {
   gulp.src([
     './src/assets/sass/common.sass',
     './src/assets/sass/main.sass',
@@ -39,8 +65,7 @@ gulp.task('sass', function() {
     .pipe(gulp.dest(path.join(dist, 'css')));
 });
 
-// initiates the scripts bundler
-function compileScripts(watch, entry, production) {
+function make_bundler(entry, production) {
   var sourceMaps = !production;
 
   // we use browserify to bundle node style modules into a
@@ -58,41 +83,62 @@ function compileScripts(watch, entry, production) {
   // down to es5
   bundler.transform(babelify, {presets: ["es2015", "react"]});
 
-  function bundle() {
-    var stream = bundler
-      .bundle()
-      .on("error", function (error) {
-        console.error("Error: " + error.message);
-      })
-      .pipe(source(entry))
-      .pipe(buffer())
-      .pipe(sourcemaps.init({loadMaps: true}))
-      .pipe(uglify())
-      .pipe(sourcemaps.write(path.join(dist, 'scripts')))
-      .pipe(rename(function(fp) {
-        // I hate mutating state.
-        fp.dirname = "";
-        fp.extname = ".js";
-      }))
-      .pipe(gulp.dest(path.join(dist, 'scripts')));
+  return bundler;
+}
 
-    stream.on('end', function() { gutil.log("Done building scripts"); });
+// initiates the scripts bundler
+function bundle(bundler, entry, production) {
+  var stream = bundler
+    .bundle()
+    .on("error", function (error) {
+      console.error("Error: " + error.message);
+    })
+    .pipe(source(entry))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(uglify())
+    .pipe(sourcemaps.write(path.join(dist, 'scripts')))
+    .pipe(rename(function(fp) {
+      // I hate mutating state.
+      fp.dirname = "";
+      fp.extname = ".js";
+    }))
+    .pipe(gulp.dest(path.join(dist, 'scripts')));
 
-    return stream;
-  };
+  stream.on('end', function() {
+    gutil.log(chalk.green("Done building scripts"));
+  });
 
+  return stream;
+};
+
+gulp.task('build:scripts:dev', function() {
   // use watchify for fast rebuilds using browserify
-  if(watch) {
-    bundler = watchify(bundler);
-    bundler.on('update', bundle);
-  }
+  var entry = path.join(scripts, 'app.jsx');
+  var bundler = make_bundler(entry, false);
+  bundle(bundler, entry, false);
+});
 
-  return bundle();
-}
+gulp.task('build:scripts:watch', function() {
+  // use watchify for fast rebuilds using browserify
+  var entry = path.join(scripts, 'app.jsx');
+  var bundler = watchify(make_bundler(entry, false));
+  bundler.on('update', function() {
+    bundle(bundler, entry, false);
+  });
+});
 
-function bundleScripts(watch) {
-  compileScripts(watch, path.join(scripts, 'app.jsx'), false);
-}
+gulp.task('build:scripts:prod', function() {
+  // use watchify for fast rebuilds using browserify
+  var entry = path.join(scripts, 'app.jsx');
+  var bundler = make_bundler(entry, true);
+  bundle(bundler, entry, true);
+});
+
+gulp.task('build:static', function() {
+  return gulp.src([fonts, images, css], {base: assets})
+    .pipe(gulp.dest(dist));
+});
 
 // watch assets and build on changes
 gulp.task('watch', function() {
@@ -103,23 +149,22 @@ gulp.task('watch', function() {
     gulp.watch(files, [task]);
   }
 
-  bundleScripts(true);
+  // initial build and watch scripts
+  gulp.start('build:scripts:dev');
+  gulp.start('build:scripts:watch');
 
-  initWatch(['./src/assets/sass/**/*.sass', './src/assets/sass/**/*.css'], 'sass');
-  initWatch(['./src/assets/css/**/*.css'], 'copy');
+  // watch sass and css libraries
+  initWatch(['./src/assets/sass/**/*.sass', './src/assets/sass/**/*.css'], 'build:sass');
+  initWatch(['./src/assets/css/**/*.css'], 'build:static');
 });
 
-// copy the assets to the dist
-gulp.task('copy', function() {
-  return gulp.src([fonts, images, css], {base: assets})
-    .pipe(gulp.dest(dist));
-});
-
-// run the tasks and start watching by default
 gulp.task('default', function() {
   gutil.log(">> Building & standing watch for changes...");
-  gulp.start('sass');
-  gulp.start('copy');
-  bundleScripts(false);
   gulp.start('watch');
+});
+
+gulp.task('build:prod', function() {
+  gulp.start('build:sass');
+  gulp.start('build:static');
+  gulp.start('build:scripts:prod');
 });
