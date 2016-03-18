@@ -5,11 +5,14 @@ var gulp = require('gulp'),
     path = require('path'),
     watch = require('gulp-watch'),
     source = require('vinyl-source-stream'),
+    buffer = require('vinyl-buffer'),
     livereload = require('gulp-livereload'),
     watchify = require('watchify'),
     browserify = require('browserify'),
     babelify = require('babelify'),
-    glob = require('glob');
+    glob = require('glob')
+    sourcemaps = require('gulp-sourcemaps'),
+    uglify = require('gulp-uglify');
 
 var assets = path.join(__dirname, 'src/assets');
 var scripts = path.join(assets, 'scripts');
@@ -37,16 +40,18 @@ gulp.task('sass', function() {
 });
 
 // initiates the scripts bundler
-function compileScripts(watch, entry) {
+function compileScripts(watch, entry, production) {
+  var sourceMaps = !production;
+
   // we use browserify to bundle node style modules into a
   // script ready for the browser
   var bundler = browserify({
     entries: [entry],
-    debug: true,
+    debug: sourceMaps,
     paths: ['./node_modules/', scripts],
     extensions: ['.jsx', '.js'],
     cache: {}, packageCache: {}, fullPaths: true,
-    sourceMaps: true
+    sourceMaps: sourceMaps
   });
 
   // we use babel to transpile es6 syntax and the react jsx syntax
@@ -60,6 +65,10 @@ function compileScripts(watch, entry) {
         console.error("Error: " + error.message);
       })
       .pipe(source(entry))
+      .pipe(buffer())
+      .pipe(sourcemaps.init({loadMaps: true}))
+      .pipe(uglify())
+      .pipe(sourcemaps.write(path.join(dist, 'scripts')))
       .pipe(rename(function(fp) {
         // I hate mutating state.
         fp.dirname = "";
@@ -82,7 +91,7 @@ function compileScripts(watch, entry) {
 }
 
 function bundleScripts(watch) {
-  compileScripts(watch, path.join(scripts, 'app.jsx'));
+  compileScripts(watch, path.join(scripts, 'app.jsx'), false);
 }
 
 // watch assets and build on changes
