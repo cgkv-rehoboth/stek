@@ -16,6 +16,14 @@ class Slide(LiveModel, models.Model):
 
   def __str__(self): return self.title
 
+class Wijk(models.Model):
+
+  id = models.IntegerField(primary_key=True)
+  naam = models.CharField(max_length=255)
+
+  def __str__(self):
+    return "%s (%s)" % (self.naam, self.id)
+
 class Address(models.Model):
 
   street      = models.CharField(max_length=255, blank=True)
@@ -23,6 +31,7 @@ class Address(models.Model):
   city        = models.CharField(max_length=255, blank=True)
   country     = models.CharField(max_length=255, default="Nederland")
   phone       = models.CharField(max_length=15, blank=True)
+  wijk        = models.ForeignKey(Wijk, null=True, blank=True)
 
   def __str__(self):
     return "%s, %s, %s (%s)" % (self.street, self.zip, self.city, self.country)
@@ -49,16 +58,31 @@ class Profile(models.Model):
   user        = models.OneToOneField(User, null=True, blank=True, related_name="profile")
   address     = models.ForeignKey(Address, null=True, blank=True)
   phone       = models.CharField(max_length=15, blank=True)
-  birthday    = models.DateField()
+  first_name  = models.CharField(max_length=255, blank=True)
+  last_name   = models.CharField(max_length=255, blank=True)
+  email       = models.CharField(max_length=255, blank=True, null=True)
+  birthday    = models.DateField(null=True)
   photo       = models.ImageField(upload_to=user_profile_pic, null=True, blank=True)
   family      = models.ForeignKey("Family", null=True, related_name='members')
   role_in_family = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID, null=True)
+
+  class Meta:
+    unique_together = (('first_name', 'last_name', 'birthday'), )
+
+  def best_address(self):
+    if self.address:
+      return self.address
+    else:
+      return self.family.address
+
+  def name(self):
+    return "%s %s" % (self.first_name, self.last_name)
 
   def is_favorite_for(self, user):
     return self.favorited_by.filter(owner=user).exists()
 
   def __str__(self):
-    return "Profiel van %s" % (self.user.username)
+    return "Profiel van %s" % self.name()
 
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)

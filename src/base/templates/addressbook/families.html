@@ -11,9 +11,11 @@
   <!-- Alphabetic list -->
   <div class="family-menu">
   {% for v in data %}
-    {% ifchanged v.lastname.0 %}
-      <a href="#{{ v.lastname.0 }}">{{ v.lastname.0 }}</a>
-    {% endifchanged %}
+    {% with v.lastname.0.upper as firstletter %}
+      {% ifchanged firstletter %}
+        <a href="#{{ firstletter }}">{{ firstletter }}</a>
+      {% endifchanged %}
+    {% endwith %}
   {% endfor %}
   </div>
 
@@ -21,15 +23,22 @@
   <div class="list-group list-group-hide-detail family-list" data-focus="{{ id }}">
   {% for v in data %}
     {# Set header with first letter of the last name #}
-    {% ifchanged v.lastname.0 %}
-      <div class="family-list-header" id="{{ v.lastname.0 }}">{{ v.lastname.0 }}</div>
-    {% endifchanged %}
+    {% with v.lastname.0.upper as firstletter %}
+      {% ifchanged firstletter %}
+        <div class="family-list-header" id="{{ firstletter }}">{{ firstletter }}</div>
+      {% endifchanged %}
+    {% endwith %}
 
     <div class="container-fluid list-group-item family-list-item">
       <div class="row">
         <p class="col-md-12 list-group-head" id="{{ v.pk }}">
+          {% if request.user.is_superuser %}
+            <a href="{% url 'admin:base_family_change' v.pk %}">
+              <i class="fa fa-edit fa-preicon"></i>
+            </a>
+          {% endif %}
           {{ v.lastname }} 
-          ({% for w in v.members.all %} {{ w.user.first_name }}, {% endfor %})
+          ({% for w in v.members.all %} {{ w.first_name }}, {% endfor %})
         </p>
       </div>
       <div class="row list-group-detail" data-family-pk="{{ v.pk }}"
@@ -45,8 +54,8 @@
             </tr>
             {% for w in v.members.all %}
               <tr>
-                <td><a href="{% url 'profile-detail-page' w.user.pk %}">
-                  {{ w.user.first_name }}
+                <td><a href="{% url 'profile-detail-page' w.pk %}">
+                  {{ w.first_name }}
                 </a></td>
                 <td>{{ w.birthday }}</td>
                 <td>{{ w.phone }}</td>
@@ -56,14 +65,24 @@
 
             <!-- Contact info -->
           {% if v.address %}
-            <h3>Adres</h3>
+            <h3>
+              {% if request.user.is_superuser %}
+                <a href="{% url 'admin:base_address_change' v.address.pk %}">
+                  <i class="fa fa-edit fa-preicon"></i>
+                </a>
+              {% endif %}
+              Adres
+            </h3>
             <p>
-              <a href="http://www.google.com/maps/place/{{ v.address }}" target="_blank" title="Bekijk op Google Maps" class="google-maps-link">
-                <i class="fa fa-external-link"></i>
-              </a>
+
               {{ v.address.street }}<br/>
               {{ v.address.zip }}, {{ v.address.city }} <br />
-              {{ v.address.phone }}
+              {{ v.address.phone }} <br />
+              <a href="http://www.google.com/maps/place/{{ v.address }}"
+                 target="_blank"
+                 title="Bekijk op Google Maps" class="google-maps-link">
+                <i class="fa fa-external-link fa-preicon"></i>Kaart
+              </a>
           {% endif %}
 
         </div>

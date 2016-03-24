@@ -1,11 +1,15 @@
 from django.contrib import admin
 from .models import *
-
+from datetime import datetime
 
 # Create custom display for TimeTable
 class TimetableDutyInline(admin.TabularInline):
   model = TimetableDuty
   extra = 0
+
+  def get_queryset(self, request):
+    return TimetableDuty.objects.filter(
+      event__startdatetime__gte=datetime.now().replace(hour=0, minute=0, second=0))
 
 class TimetableAdmin(admin.ModelAdmin):
   inlines = [TimetableDutyInline]

@@ -96,15 +96,18 @@ function bundle(bundler, entry, production) {
     })
     .pipe(source(entry))
     .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(uglify())
-    .pipe(sourcemaps.write(path.join(dist, 'scripts')))
     .pipe(rename(function(fp) {
       // I hate mutating state.
       fp.dirname = "";
       fp.extname = ".js";
-    }))
-    .pipe(gulp.dest(path.join(dist, 'scripts')));
+    }));
+
+  // uglify in production mode
+  if(production) {
+    stream = stream.pipe(uglify());
+  }
+
+  stream = stream.pipe(gulp.dest(path.join(dist, 'scripts')));
 
   stream.on('end', function() {
     gutil.log(chalk.green("Done building scripts"));
@@ -114,7 +117,6 @@ function bundle(bundler, entry, production) {
 };
 
 gulp.task('build:scripts:dev', function() {
-  // use watchify for fast rebuilds using browserify
   var entry = path.join(scripts, 'app.jsx');
   var bundler = make_bundler(entry, false);
   bundle(bundler, entry, false);
@@ -127,6 +129,7 @@ gulp.task('build:scripts:watch', function() {
   bundler.on('update', function() {
     bundle(bundler, entry, false);
   });
+  bundle(bundler, entry, false);
 });
 
 gulp.task('build:scripts:gzip', function() {
@@ -162,7 +165,6 @@ gulp.task('watch', function() {
   }
 
   // initial build and watch scripts
-  gulp.start('build:scripts:dev');
   gulp.start('build:scripts:watch');
 
   // watch sass and css libraries

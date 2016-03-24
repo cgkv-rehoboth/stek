@@ -136,5 +136,9 @@ window.timetableMain = () => {
 };
 
 window.frontpageMain = () => {
-  initAsyncForms();
+  let $form = $('#contact-form form');
+  initAsyncForm($form, (resp) => {
+    alert("Uw email is succesvol verstuurd naar de gemeente! U zult spoedig antwoord ontvangen op " +
+         resp.data.email);
+  });
 }
