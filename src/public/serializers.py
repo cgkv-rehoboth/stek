@@ -4,13 +4,14 @@ from django.core.mail import send_mail
 from rest_framework import serializers
 
 from .models import *
-from base.serializers import UserSerializer
+from base.serializers import UserSerializer, RecaptchaField
 
 class ContactSerializer(serializers.Serializer):
   email = serializers.EmailField()
   message = serializers.CharField()
   first_name = serializers.CharField()
   last_name = serializers.CharField()
+  recaptcha = RecaptchaField()
 
   def save(self):
     sender = '%s %s' % (self.validated_data['first_name'], self.validated_data['first_name'])

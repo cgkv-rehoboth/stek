@@ -103,7 +103,6 @@ LOGIN_REDIRECT_URL = '/login'
 
 WSGI_APPLICATION = 'cgkv.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
@@ -144,6 +143,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "../media/")
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, "../dist/"),
 )
+
+#
+# application settings
+#
+
+NOCAPTCHA = True
+RECAPTCHA_PUBLIC_KEY = '6LdTEBsTAAAAAEGoRs_P10MVgylFKuxHnKZzB-m1'
+RECAPTCHA_PRIVATE_KEY = '6LdTEBsTAAAAAGdjKkSYNWRSx_5w5fCEZGrZIkyk'
+#
+# localsettings loading
+#
 
 localsettingspath = os.path.join(BASE_DIR, "cgkv/localsettings.py")
 if os.path.exists(localsettingspath):

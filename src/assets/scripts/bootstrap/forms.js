@@ -280,6 +280,11 @@ export class CaptchaField extends Field {
   clear() {
     this.refs.recaptcha.reset();
   }
+
+  setErrors(errs) {
+    if(errs.length > 0)
+      alert("Om ons tegen spam te beschermen moet u het vinkje in de witte box aanvinken.");
+  }
   
   onChange(e) {
     this.setValue(e);
