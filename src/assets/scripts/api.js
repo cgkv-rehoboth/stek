@@ -89,15 +89,8 @@ let api_obj = {
     }
   },
 
-  contact: {
-    submit: (first_name, last_name, email, message) => {
-      return http.post(`${api}/contact/`, {
-        first_name,
-        last_name,
-        email,
-        message
-      });
-    }
+  contact: (data) => {
+    return http.post(`${api}/contact/`, data);
   },
 
   events: {

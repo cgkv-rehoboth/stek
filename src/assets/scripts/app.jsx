@@ -2,6 +2,7 @@ import React from "react";
 import ReactDom from "react-dom";
 import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
+import * as forms from 'bootstrap/forms';
 import api from "api";
 import $ from 'jquery';
 import moment from 'moment';
@@ -136,9 +137,49 @@ window.timetableMain = () => {
 };
 
 window.frontpageMain = () => {
-  let $form = $('#contact-form form');
-  initAsyncForm($form, (resp) => {
-    alert("Uw email is succesvol verstuurd naar de gemeente! U zult spoedig antwoord ontvangen op " +
-         resp.data.email);
-  });
+  let $form_container = $('#contact-form');
+
+  let formBuilder = <div>
+    <div className="row" >
+      <div  className="col-sm-6">
+        <forms.CharField name="first_name" label="Voornaam" />
+      </div>
+      <div  className="col-sm-6">
+        <forms.CharField name="last_name" label="Achternaam" />
+      </div>
+    </div>
+    <div className="row" >
+      <div  className="col-sm-12">
+        <forms.CharField name="email" label="E-mail" />
+      </div>
+    </div>
+    <div className="vspace" >
+    </div>
+    <div className="row" >
+      <div  className="col-sm-12">
+        <forms.TextField name="message" label="Bericht" />
+      </div>
+    </div>
+    <div className="vspace" ></div>
+    <div className="row" >
+      <div  className="col-sm-6">
+        <forms.CaptchaField />
+      </div>
+      <div  className="col-sm-6 text-right">
+        <forms.SubmitButton label="Verstuur!" />
+      </div>
+    </div>
+  </div>;
+
+  ReactDom.render(
+    <forms.Form
+      action={api.contact}
+      onSuccess={(resp) => {
+            alert("Uw email is succesvol verstuurd naar de gemeente! " +
+                  "U zult spoedig antwoord ontvangen op " + resp.data.email);
+      }}>
+      {formBuilder}
+    </forms.Form>,
+    $form_container[0]
+  );
 }
