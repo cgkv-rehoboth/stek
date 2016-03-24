@@ -117,7 +117,7 @@ class Command(BaseCommand):
   def handle(self, *args, **options):
     member_fp = options['member-file'][0]
 
-    with open(member_fp, 'r', encoding='ISO-8859-1') as fh:
+    with open(member_fp, 'r', encoding='utf-8') as fh:
       members = csv.reader(fh, delimiter=',')
       families = parse_families(members)
 
