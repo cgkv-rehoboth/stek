@@ -13,4 +13,12 @@ See `docs/getting-started/` for a concise guide on development.
 
 ### Production
 
-- Make sure the server's user has read/write access to the media directory
+Make sure...
+
+- ... the server's user has read/write access to the media directory
+- ... you have build the staticfiles using in production mode `gulp build:prod`
+- ...that the file `src/cgkv/localsettings.py` exists that sets `DEBUG = False` and a secret
+db user/password
+- ...that you have run `./manage.py collectstatic`
+
+Everytime the staticfiles change, you have to run `collectstatic` and restart the wsgi process.
