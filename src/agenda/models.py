@@ -20,6 +20,7 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
   description = models.TextField(blank=True, null=True)
   team        = models.ForeignKey("Team", related_name="timetables", blank=True, null=True)
   incalendar  = models.BooleanField(default=True)
+  color       = models.CharField(max_length=6, default='268bd2')
 
   def __str__(self): return self.title
 

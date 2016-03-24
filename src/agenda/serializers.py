@@ -15,7 +15,7 @@ class ShortTimetableSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Timetable
-    fields = ["pk", "title", "incalendar"]
+    fields = ["pk", "title", "incalendar", "color"]
 
 class EventSerializer(serializers.ModelSerializer):
   owner = UserSerializer()

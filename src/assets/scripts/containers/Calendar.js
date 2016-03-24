@@ -3,6 +3,7 @@ let moment = require("moment");
 require("moment-range"); // moment plugin
 let _ = require("underscore");
 let cn = require("classnames");
+import Icon from "bootstrap/Icon";
 
 class CalEvent extends React.Component {
   static get propTypes() {
@@ -22,8 +23,9 @@ class CalEvent extends React.Component {
   }
 
   render() {
+    let {event} = this.props;
     let eventTime = this.eventTimeRange();
-    return <li className="cal-event">
+    return <li className="cal-event" style={{backgroundColor: `#${event.timetable.color}`}}>
       <span className="cal-event-timing">
         {eventTime.start.format("HH:mm")}
       </span>
@@ -57,6 +59,9 @@ class CalDay extends React.Component {
     return <td className={clz}>
       <div className="content">
       <span className={cn('day-no')}>
+        <span className={cn('day-name')}>
+          {this.props.day.format("dd")}
+        </span>
         {this.props.day.format("D")}
       </span>
       <ul>
@@ -66,6 +71,7 @@ class CalDay extends React.Component {
         )
       }
       </ul>
+      <button className="add-event btn btn-circle tiny black"><Icon name="plus" /></button>
       </div>
     </td>;
   }
@@ -102,7 +108,7 @@ class CalMonth extends React.Component {
     let end_fill = (6-parseInt(month.end.format("d"))) % 6;
     _.each(_.range(start_fill), (i) => days.unshift(<td key={i}></td>));
     _.each(_.range(end_fill), (i) => days.push(<td key={35-i}></td>));
-    let days_by_week = _.groupBy(days, (x, i) => Math.floor(i / 6))
+    let days_by_week = _.groupBy(days, (x, i) => Math.floor(i / 7));
 
     return <table>
       <tbody>

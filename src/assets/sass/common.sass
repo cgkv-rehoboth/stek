@@ -126,6 +126,22 @@ quote
       background-color: desaturate(darken($blue, 10%), 0.1)
       color: #eee
 
+  &.black
+    color: #eee
+    background-color: #333
+
+    &:hover
+      background-color: #666
+      color: #eee
+
+  &.green
+    color: #eee
+    background-color: $green
+
+    &:hover
+      background-color: desaturate(darken($green, 10%), 0.1)
+      color: #eee
+
   &.cyan
     color: #eee
     background-color: $cyan
@@ -165,16 +181,24 @@ quote
     line-height: 30px
   
 .btn-circle
-  width: 50px
+  width: 51px
+  height: 51px
+  vertical-align: middle
   text-align: center
-  height: 50px
-  padding: 7px 16px
+  line-height: 51px
+  padding: 0px
   border-radius: 100% !important
   border: 0px
   font-size: 30px
   -webkit-transition: background .3s ease-in-out
   -moz-transition: background .3s ease-in-out
   transition: background .3s ease-in-out
+
+  &.tiny
+    height: 26px
+    width: 26px
+    line-height: 26px
+    font-size: 13px
 
   &:hover, &:focus
     outline: 0
