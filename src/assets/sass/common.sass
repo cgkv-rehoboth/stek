@@ -97,8 +97,89 @@ quote
 .list-group-hide-detail
   .list-group-detail
     display: none
+    padding-top: 30px
   .list-group-head
     cursor: pointer
+
+.btn
+  border-radius: 0
+  text-transform: uppercase
+  font-family: Montserrat,Helvetica,Arial,sans-serif
+  font-weight: 400
+  -webkit-transition: all .3s ease-in-out
+  -moz-transition: all .3s ease-in-out
+  transition: all .3s ease-in-out
+
+  &.dark
+    background-color: lighten($dark-bg, 10%)
+    color: #eee
+
+    &:hover
+      background-color: desaturate($blue, 0.1)
+      color: #eee
+
+  &.blue
+    color: #eee
+    background-color: $blue
+
+    &:hover
+      background-color: desaturate(darken($blue, 10%), 0.1)
+      color: #eee
+
+  &.cyan
+    color: #eee
+    background-color: $cyan
+
+    &:hover
+      background-color: desaturate(darken($cyan, 10%), 0.1)
+      color: #eee
+
+.btn-default
+  border: 1px solid $blue
+  color: #eee
+  background-color: $blue
+  &:hover, &:focus
+    outline: 0
+    background-color: lighten($blue, 10%)
+  
+.btn-rounded
+  height: 40px
+  padding: 0px 15px
+  border: 0px solid #eee
+  border-radius: 25px
+  font-size: 12pt
+  line-height: 40px
+  vertical-align: middle
+  -webkit-transition: background .3s ease-in-out
+  -moz-transition: background .3s ease-in-out
+  transition: background .3s ease-in-out
+
+  &:hover, &:focus
+    outline: 0
+    color: #eee
+    background: rgba(255, 255, 255, 0.1)
+
+  &.small
+    padding: 0px 15px
+    height: 30px
+    line-height: 30px
+  
+.btn-circle
+  width: 50px
+  text-align: center
+  height: 50px
+  padding: 7px 16px
+  border-radius: 100% !important
+  border: 0px
+  font-size: 30px
+  -webkit-transition: background .3s ease-in-out
+  -moz-transition: background .3s ease-in-out
+  transition: background .3s ease-in-out
+
+  &:hover, &:focus
+    outline: 0
+    color: #eee
+    background: rgba(255, 255, 255, 0.1)
 
 @import navbar
 @import forms

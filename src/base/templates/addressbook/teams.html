@@ -11,30 +11,37 @@
   {% for team in teams %}
     <div class="container-fluid list-group-item">
       <div class="row">
-        <h3 class="col-md-12 list-group-head" id="{{ team.pk }}">
+        <p class="col-md-12 list-group-head" id="{{ team.pk }}">
           {{ team.name }} 
-        </h3>
+        </p>
       </div>
-      <div class="row list-group-detail" data-team-pk="{{ team.pk }}"
+      <div class="list-group-detail" data-team-pk="{{ team.pk }}"
            {% if id == team.pk %}style="display: block;"{% endif %}>
-        <div class="col-md-12">
-          <h4>Teamleden</h4>
-          <table class="table table-bordered table-hover">
-            <tr>
-              <th width="50%">Naam</th>
-              <th width="50%">Rol</th>
-            </tr>
-            {% for lid in team.teammembers.all %}
-              <tr>
-                <td><a href="{% url 'profile-detail-page' lid.user.pk %}">
-                  {{ lid.user.first_name }} 
-                  {{ lid.user.last_name }}
-                </a></td>
-                <td>{{ lid.get_role_display }}</td>
-              </tr>
-            {% endfor %}
-          </table>
 
+        <div class="row">
+          <div class="col-md-12">
+            <p>{{ team.description }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <h4>Teamleden</h4>
+            <table class="table table-bordered table-hover">
+              <tr>
+                <th width="50%">Naam</th>
+                <th width="50%">Rol</th>
+              </tr>
+              {% for lid in team.teammembers.all %}
+                <tr>
+                  <td><a href="{% url 'profile-detail-page' lid.user.pk %}">
+                    {{ lid.user.first_name }} 
+                    {{ lid.user.last_name }}
+                  </a></td>
+                  <td>{{ lid.get_role_display }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
         </div>
       </div>
     </div>

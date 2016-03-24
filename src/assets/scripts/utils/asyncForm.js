@@ -2,7 +2,11 @@ import * as http from 'utils/http';
 import $ from 'jquery';
 import _ from 'underscore';
 
-export default function initAsyncForm(formElem) {
+function clearErrors($form) {
+  $form.find('input, .input-group').removeClass('faulty');
+}
+
+export default function initAsyncForm(formElem, onSuccess=(() => {})) {
   let $form = $(formElem);
   let url = $form.attr('action');
   let $errors = $('.errors', $form);
@@ -25,7 +29,12 @@ export default function initAsyncForm(formElem) {
         console.log("Succesfully submitted form: ", resp.data);
 
         // clear the form
+        clearErrors($form);
         $inputs.val('');
+
+        onSuccess(resp);
+
+        return resp;
       })
       .catch((resp) => {
         let errors = resp.data;
@@ -33,8 +42,8 @@ export default function initAsyncForm(formElem) {
         // make sure we don't ruin everything if the dom is not formatted
         // properly and this runs into problems
         try {
-          // reset faulty markings
-          $form.find('input, .input-group').removeClass('faulty');
+          clearErrors($form);
+
           // mark the inputs that are faulty
           _.each(errors, (err, key) => {
             let $faulty_input = $inputs.filter(`[name=${key}]`);

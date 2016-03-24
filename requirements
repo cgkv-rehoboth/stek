@@ -13,3 +13,4 @@ mysqlclient==1.3.7
 django-tables2==1.0.5
 django-flat-theme==1.1.3
 django-debug-toolbar
+Pillow

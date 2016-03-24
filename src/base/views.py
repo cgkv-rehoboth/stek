@@ -34,7 +34,10 @@ def team_list(request, pk=None):
 @login_required
 def family_list(request, pk=None):
   data = Family.objects\
-    .prefetch_related(Prefetch('members', queryset=Profile.objects.order_by('birthday')))\
+    .prefetch_related(
+      Prefetch('members', queryset=Profile.objects.order_by('birthday')),
+      'address'
+    )\
     .order_by('lastname')
 
   # get dictionary of favorites

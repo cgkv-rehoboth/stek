@@ -9,7 +9,14 @@
       <div class="col-md-4">
       </div>
       <div class="col-md-8 ">
-        <h1>{{ p.user.first_name }} {{ p.user.last_name }}</h1>
+        <h1>
+          {% if request.user.is_superuser %}
+            <a href="{% url 'admin:base_profile_change' p.pk %}">
+              <i class="fa fa-edit fa-preicon"></i>
+            </a>
+          {% endif %}
+          {{ p.first_name }} {{ p.last_name }}
+        </h1>
       </div>
     </div>
 
@@ -26,11 +33,18 @@
           <tbody>
             <tr>
               <th>Naam</th>
-              <td>{{ p.user.first_name }} {{ p.user.last_name }}</td>
+              <td>
+                {{ p.first_name }}
+                <a href="{% url 'family-detail-page' p.family.pk %}">{{ p.last_name }}
+              </td>
             </tr>
             <tr>
               <th>Geboortedatum</th>
               <td>{{ p.birthday }}</td>
+            </tr>
+            <tr>
+              <th>E-mail</th>
+              <td>{{ p.email }}</td>
             </tr>
           </tbody>
         </table>
@@ -42,7 +56,7 @@
           <tbody>
             <tr>
               <th>Adres</th>
-              <td>{{ p.address }}</td>
+              <td>{{ p.best_address }}</td>
             </tr>
             <tr>
               <th>Telefoon</th>
@@ -53,22 +67,24 @@
 
         <br/>
 
-        <h3>Teams</h3>
-        <table class="table table-bordered">
-          <thead>
-            <th>Team</th>
-            <th>Rol</th>
-          </thead>
-          <tbody>
-            {% for m in memberships %}
-              <tr>
-                <td>
-                  <a href="{% url 'team-detail-page' m.team.pk %}">{{ m.team.name }}</td>
-                <td>{{ m.get_role_display }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        {% if memberships|length != 0 %}
+          <h3>Teams</h3>
+          <table class="table table-bordered">
+            <thead>
+              <th>Team</th>
+              <th>Rol</th>
+            </thead>
+            <tbody>
+              {% for m in memberships %}
+                <tr>
+                  <td>
+                    <a href="{% url 'team-detail-page' m.team.pk %}">{{ m.team.name }}</td>
+                  <td>{{ m.get_role_display }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
       </div>
     </div>
   </section>
