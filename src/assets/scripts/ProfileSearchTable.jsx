@@ -1,7 +1,7 @@
 import React from "react";
 import _ from 'underscore';
 import api from 'api';
-import forms from 'forms';
+import forms from 'bootstrap/forms';
 import $ from "jquery";
 import { PaginatedTable, SearchTable } from 'bootstrap/tables';
 import FavStar from 'containers/FavStar';

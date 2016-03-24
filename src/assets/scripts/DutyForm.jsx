@@ -1,7 +1,7 @@
 let React = require("react");
 let _ = require('underscore');
 let api = require('api');
-let forms = require('forms');
+import * as forms from 'bootstrap/forms';
 
 class DutyForm extends React.Component {
 

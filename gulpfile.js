@@ -29,7 +29,7 @@ function map_error(err) {
     // regular error
     gutil.log(chalk.red(err.name)
               + ': '
-              + chalk.yellow(err.fileName.replace(__dirname + '/src/js/', ''))
+              + chalk.yellow(err.fileName)
               + ': '
               + 'Line '
               + chalk.magenta(err.lineNumber)
@@ -42,10 +42,8 @@ function map_error(err) {
     // browserify error..
     gutil.log(chalk.red(err.name)
               + ': '
-              + chalk.yellow(err.message));
+              + chalk.white(err.message));
   }
-
-  this.end();
 }
 
 gulp.task('build:sass', function() {
@@ -92,7 +90,7 @@ function bundle(bundler, entry, production) {
   var stream = bundler
     .bundle()
     .on("error", function (error) {
-      console.error("Error: " + error.message);
+      map_error(error);
     })
     .pipe(source(entry))
     .pipe(buffer())
