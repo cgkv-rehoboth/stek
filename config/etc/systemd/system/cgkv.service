@@ -1,0 +1,18 @@
+[Unit]
+Description=Rehoboth master alpha server
+Requires=mysqld.service nginx.service  
+Wants=mysqld.service nginx.service
+
+[Service]
+Type=notify
+WorkingDirectory=/srv/http/rehoboth.inkworks.nl
+ExecStart=/srv/http/rehoboth.inkworks.nl/.virtualenv/bin/uwsgi --ini uwsgi.ini
+User=http
+PIDFile=/srv/http/rehoboth.inkworks.nl/server.pid
+# Restart=always
+KillSignal=SIGQUIT
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+
