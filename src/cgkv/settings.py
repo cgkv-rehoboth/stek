@@ -59,6 +59,7 @@ INSTALLED_APPS = (
   'django.contrib.contenttypes',
   'django.contrib.sessions',
   'django.contrib.messages',
+  'whitenoise.runserver_nostatic',
   'django.contrib.staticfiles',
   'django_tables2',
   'rest_framework',
@@ -78,7 +79,8 @@ MIDDLEWARE_CLASSES = (
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.contrib.messages.middleware.MessageMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
-  'base.middleware.ProfileMiddleware'
+  'base.middleware.ProfileMiddleware',
+  'whitenoise.middleware.WhiteNoiseMiddleware'
 )
 
 REST_FRAMEWORK = {
@@ -132,7 +134,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
 MEDIA_URL = "/media/"
 
