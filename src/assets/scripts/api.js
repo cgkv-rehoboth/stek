@@ -100,6 +100,10 @@ let api_obj = {
         .get(`${api}/agenda/events/`, _.extend({
           params: {from: from, to: to}
         }, extra_params));
+    },
+
+    add: (data) => {
+      return http.post(`${api}/agenda/events/`, data);
     }
   }
 };

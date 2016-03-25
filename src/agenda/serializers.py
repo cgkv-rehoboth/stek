@@ -23,6 +23,7 @@ class EventSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Event
+    read_only_fields = ["owner"]
 
 class TeamSerializer(serializers.ModelSerializer):
   members = UserSerializer(many=True)

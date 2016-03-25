@@ -1,9 +1,12 @@
-let React = require("react");
-let moment = require("moment");
-require("moment-range"); // moment plugin
-let _ = require("underscore");
-let cn = require("classnames");
+import React, {Component, PropTypes} from 'react';
+import moment from 'moment';
+import moment_range from 'moment-range';
+import _ from 'underscore';
+import cn from 'classnames';
+import api from 'api';
+
 import Icon from "bootstrap/Icon";
+import * as forms from 'bootstrap/forms';
 
 class CalEvent extends React.Component {
   static get propTypes() {
@@ -37,9 +40,10 @@ class CalEvent extends React.Component {
 class CalDay extends React.Component {
   static get propTypes() {
     return {
-      day: React.PropTypes.object,
+      day: React.PropTypes.object.isRequired,
       events: React.PropTypes.array,
-      focus: React.PropTypes.bool
+      focus: React.PropTypes.bool,
+      addEvent: React.PropTypes.func.isRequired
     };
   }
 
@@ -51,6 +55,7 @@ class CalDay extends React.Component {
   }
 
   render() {
+    let { addEvent, day } = this.props;
     let clz = cn('cal-day', {
       focus: this.props.focus,
       hoverable: this.props.events.length != 0
@@ -60,18 +65,21 @@ class CalDay extends React.Component {
       <div className="content">
       <span className={cn('day-no')}>
         <span className={cn('day-name')}>
-          {this.props.day.format("dd")}
+          {day.format("dd")}
         </span>
-        {this.props.day.format("D")}
+        {day.format("D")}
       </span>
       <ul>
       {
         _.map(this.props.events, (event, i) => 
-          <CalEvent key={i} event={event} day={this.props.day.clone()} />
+          <CalEvent key={i} event={event} day={day.clone()} />
         )
       }
       </ul>
-      <button className="add-event btn btn-circle tiny black"><Icon name="plus" /></button>
+      <button
+        className="add-event btn btn-circle tiny black"
+        onClick={() => addEvent(day)}
+        ><Icon name="plus" /></button>
       </div>
     </td>;
   }
@@ -81,7 +89,8 @@ class CalMonth extends React.Component {
   static get propTypes() {
     return {
       month: React.PropTypes.number.isRequired, // 1-12
-      year: React.PropTypes.number.isRequired
+      year: React.PropTypes.number.isRequired,
+      addEvent: React.PropTypes.func.isRequired
     };
   }
   
@@ -97,6 +106,7 @@ class CalMonth extends React.Component {
       days.push(
         <CalDay
           focus={focus}
+          addEvent={this.props.addEvent}
           key={dayOfWeek+1}
           day={day.clone()}
           events={this.props.events[dayOfWeek] || []}></CalDay>
@@ -118,7 +128,56 @@ class CalMonth extends React.Component {
   }
 }
 
-class Calendar extends React.Component {
+export class EventForm extends Component {
+  static get propTypes() {
+    return {
+      onCancel: PropTypes.func.isRequired,
+      day: PropTypes.object.isRequired
+    };
+  }
+
+  render() {
+    let {onCancel, day} = this.props;
+
+    return (
+      <forms.Form action={api.events.add}>
+        <div className="row">
+          <div className="col-md-6 col-md-offset-3 text-center">
+            <h2>Nieuw Agenda item</h2>
+            <forms.CharField name="title" label="Titel" />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-3 col-md-offset-3">
+            <forms.CharField initial={day.format()} name="start_datetime" label="Start om" />
+          </div>
+          <div className="col-md-3">
+            <forms.CharField name="end_datetime" label="Eindigt om" />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6 col-md-offset-3 text-center">
+            <forms.CharField name="timetable" label="Agenda" />
+          </div>
+        </div>
+        <div className="vspace"></div>
+        <div className="row">
+          <div className="col-md-6 col-md-offset-3">
+            <forms.TextField name="description" label="Beschrijving" />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6 col-md-offset-3">
+            <button className="btn btn-rounded black" onClick={onCancel}>Annuleren</button>
+            <forms.SubmitButton label="Voeg toe"/>
+          </div>
+        </div>
+      </forms.Form>
+    );
+  }
+}
+
+export default class Calendar extends Component {
   static get propTypes() {
     return {
       initFocus: React.PropTypes.object,
@@ -138,7 +197,10 @@ class Calendar extends React.Component {
     this.state = {
       year: this.props.initFocus.year(),
       month: this.props.initFocus.month(),
-      events: {}
+      events: {},
+
+      showEventForm: false,
+      eventFormDate: null
     };
 
   }
@@ -195,7 +257,18 @@ class Calendar extends React.Component {
     return moment([this.state.year, this.state.month]);
   }
 
+  addEvent(day) {
+    this.setState({
+      eventFormDate: day,
+      showEventForm: true
+    });
+  }
+
   render() {
+    let {showEventForm, eventFormDate} = this.state;
+
+    let onCancel = () => this.setState({ showEventForm: false });
+
     return <div className="calendar">
       <div className="calendar-head">
         <div>
@@ -210,11 +283,13 @@ class Calendar extends React.Component {
         </span >
       </div>
 
-      <CalMonth events={this.state.events} month={this.state.month} year={this.state.year} />
+      { showEventForm
+          ? <EventForm day={eventFormDate} onCancel={onCancel}/>
+          : <CalMonth
+              events={this.state.events}
+              addEvent={this.addEvent.bind(this)}
+              month={this.state.month}
+              year={this.state.year} /> }
     </div>;
   }
 }
-
-module.exports = {
-  Calendar: Calendar
-};
