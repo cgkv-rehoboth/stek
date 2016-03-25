@@ -45,8 +45,10 @@ def timetables(request, id=None):
     id = mytables[0].pk
 
   # Get current table
-  table = Timetable.objects.prefetch_related('team__members').get(pk=id)
+  table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
 
+  duties = TimetableDuty.objects.filter(timetable=table)
+  
   # Get all the other tables
   # that are not really relevant to the user
   notmytables = list(Timetable\
@@ -58,6 +60,7 @@ def timetables(request, id=None):
   # Render that stuff!
   return render(request, 'timetables.html', {
     'current_table': table,
+    'duties': duties,
     'mytables': mytables,
     'notmytables': notmytables
   })
