@@ -1,12 +1,13 @@
 import React from "react";
 import ReactDom from "react-dom";
-import ProfileSearchTable from "ProfileSearchTable";
-import {SearchTable} from "bootstrap/tables";
-import * as forms from 'bootstrap/forms';
 import api from "api";
 import $ from 'jquery';
 import moment from 'moment';
-import initAsyncForm from 'utils/asyncForm';
+
+import ProfileSearchTable from "ProfileSearchTable";
+import {SearchTable} from "bootstrap/tables";
+import * as forms from 'bootstrap/forms';
+import Calendar from 'containers/Calendar';
 
 // bind global jquery instance
 window.jQuery = $;
@@ -18,12 +19,6 @@ require('jquery.easing');
 require('bootstrap/dist/js/bootstrap.min');
 require('bootstrap/js/tooltip');
 require('lib/grayscale');
-
-function initAsyncForms() {
-  let $forms = $('.async-form');
-
-  $forms.each(function() {initAsyncForm(this);});
-}
 
 function initListGroupDetail() {
   $('.list-group-item', '.list-group-hide-detail')
@@ -78,8 +73,6 @@ window.favoriteListMain = () => {
     $("#profile-search-table")[0]
   );
 }
-
-import { Calendar } from 'containers/Calendar';
 
 window.calendarMain = () => {
   class MainCal extends React.Component {
