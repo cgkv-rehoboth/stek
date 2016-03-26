@@ -228,6 +228,22 @@ export class CharField extends Field {
   }
 }
 
+export class SelectField extends Field {
+
+  onChange(event) {
+    this.setValue(event.target.value);
+  }
+  
+  render() {
+    let {name, label} = this.props;
+    return <LabeledInput name={name} label={label}>
+      <select className="form-control" name={name} onChange={this.onChange.bind(this)}>
+        {this.props.children}
+      </select>
+    </LabeledInput>;
+  }
+}
+
 /* Saves the value as an moment object, returns it as a ISO-8601 string
  */
 export class DateTimeField extends Field {
@@ -339,6 +355,15 @@ export class CaptchaField extends Field {
     return Object.assign({}, Field.defaultProps, {
       name: "recaptcha"
     });
+  }
+
+  getValue() {
+    let value = super.getValue();
+
+    // make sure we don't send the same thing twice
+    this.clear();
+
+    return value;
   }
 
   clear() {

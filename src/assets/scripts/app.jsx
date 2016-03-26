@@ -3,6 +3,7 @@ import ReactDom from "react-dom";
 import api from "api";
 import $ from 'jquery';
 import moment from 'moment';
+import * as qs from 'querystring';
 
 // localize
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
@@ -13,6 +14,7 @@ import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
 import * as forms from 'bootstrap/forms';
 import Calendar from 'containers/Calendar';
+import EventForm from 'containers/EventForm';
 
 // bind global jquery instance
 window.jQuery = $;
@@ -187,4 +189,14 @@ window.frontpageMain = () => {
     </forms.Form>,
     $form_container[0]
   );
-}
+};
+
+window.addEventMain = () => {
+  let timestamp = qs.parse(window.location.search.replace("?", "")).datetime;
+  var day = moment.unix(timestamp);
+  if(!day.isValid()) {
+    day = moment();
+  }
+
+  React.render(<EventForm day={day} />, $('#add-event-form')[0]);
+};
