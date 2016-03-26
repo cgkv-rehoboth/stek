@@ -148,9 +148,13 @@ gulp.task('build:scripts:prod', function() {
   });
 });
 
-gulp.task('build:static', function() {
+gulp.task('build:static:assets', function() {
   return gulp.src([fonts, images, css], {base: assets})
     .pipe(gulp.dest(dist));
+});
+
+gulp.task('build:static', function() {
+  gulp.start('build:static:assets');
 });
 
 // watch assets and build on changes

@@ -4,6 +4,11 @@ import api from "api";
 import $ from 'jquery';
 import moment from 'moment';
 
+// localize
+import momentLocalizer from 'react-widgets/lib/localizers/moment';
+momentLocalizer(moment);
+import nl from 'moment/locale/nl';
+
 import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
 import * as forms from 'bootstrap/forms';
