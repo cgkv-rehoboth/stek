@@ -7,17 +7,26 @@ import api from 'api';
 
 import Icon from "bootstrap/Icon";
 import * as forms from 'bootstrap/forms';
+import Async from 'containers/Async';
 
-export default class EventForm extends Component {
+function loadTimetables() {
+  return api.timetables
+    .list(true)
+    .then(resp => resp.data);
+}
+
+class EventForm extends Component {
   static get propTypes() {
     return {
-      day: PropTypes.object.isRequired
+      day: PropTypes.object.isRequired,
+      timetables: PropTypes.array.isRequired
     };
   }
 
   render() {
-    let {day} = this.props;
+    let {day, timetables} = this.props;
     let start = day.clone();
+    let options = _.map(timetables, (table) => <option value={table.title}>{table.title}</option>);
 
     return (
       <forms.Form action={api.events.add}>
@@ -38,8 +47,7 @@ export default class EventForm extends Component {
         <div className="row">
           <div className="col-md-6 col-md-offset-3 text-center">
             <forms.SelectField name="timetable" label="Agenda">
-              <option value="Diensten">Diensten</option>
-              <option value="Hi">Hi</option>
+              {options}
             </forms.SelectField>
           </div>
         </div>
@@ -57,4 +65,11 @@ export default class EventForm extends Component {
       </forms.Form>
     );
   }
+}
+
+export default function (props) {
+  return <Async
+    promise={loadTimetables()}
+    then={(tables) => <EventForm {...props} timetables={tables} />}
+  />;
 }
