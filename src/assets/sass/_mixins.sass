@@ -9,5 +9,10 @@
   background: -webkit-linear-gradient(top, $startc $startt, $stopc $stopt)
   background: linear-gradient(to bottom, $startc $startt, $stopc $stopt)
 
+=box-shadow($args...)
+  -moz-box-shadow: $args
+  -webkit-box-shadow: $args
+  box-shadow: $args
+
 =cgkv-shadow()
   +box-shadow(rgba(black, 0.6) 3px 0px 10px)

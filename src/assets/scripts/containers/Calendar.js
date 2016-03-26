@@ -8,6 +8,25 @@ import api from 'api';
 import Icon from "bootstrap/Icon";
 import * as forms from 'bootstrap/forms';
 
+export function generateCalendar(yearno, monthno, f) {
+  let month_start = moment([yearno, monthno, 1]);
+  let month_end = month_start.clone().endOf("month");
+  let start_fill = parseInt(month_start.format("d")) % 6;
+  let end_fill = (6-parseInt(month_end.format("d"))) % 6;
+  let month = moment.range(
+    month_start.subtract(start_fill, 'days'),
+    month_end.add(end_fill, 'days')
+  );
+
+  let days = [];
+
+  month.by("days", (day) => {
+    days.push(f(day));
+  });
+
+  return days;
+}
+
 class CalEvent extends React.Component {
   static get propTypes() {
     return {
@@ -63,8 +82,8 @@ class CalDay extends React.Component {
 
     return <td className={clz}>
       <div className="content">
-      <span className={cn('day-no')}>
-        <span className={cn('day-name')}>
+      <span className='day-no'>
+        <span className='day-name'>
           {day.format("dd")}
         </span>
         {day.format("D")}
@@ -95,32 +114,28 @@ class CalMonth extends React.Component {
   }
   
   render() {
-    let month_start = moment([this.props.year, this.props.month, 1]);
-    let month = moment.range(month_start, month_start.clone().endOf("month"));
-    let days = [];
+    let { year, month } = this.props;
     let today = moment().format("YYYY-DDD");
 
-    month.by("days", (day) => {
-      let focus = day.format("YYYY-DDD") == today;
-      let dayOfWeek = day.format("D");
-      days.push(
-        <CalDay
+    let days = generateCalendar(year, month, (day) => {
+      let key = day.format("DDDD");
+      if(day.month() == month) {
+        let focus = day.format("YYYY-DDD") == today;
+        let dayOfMonth = day.format("D");
+        return <CalDay
           focus={focus}
           addEvent={this.props.addEvent}
-          key={dayOfWeek+1}
+          key={key}
           day={day.clone()}
-          events={this.props.events[dayOfWeek] || []}></CalDay>
-      );
+          events={this.props.events[dayOfMonth] || []}></CalDay>;
+      } else {
+        return <td key={key}></td>;
+      }
     });
 
-    // fill start and end week
-    let start_fill = parseInt(month.start.format("d")) % 6;
-    let end_fill = (6-parseInt(month.end.format("d"))) % 6;
-    _.each(_.range(start_fill), (i) => days.unshift(<td key={i}></td>));
-    _.each(_.range(end_fill), (i) => days.push(<td key={35-i}></td>));
     let days_by_week = _.groupBy(days, (x, i) => Math.floor(i / 7));
 
-    return <table>
+    return <table className="calendar-table">
       <tbody>
         { _.map(days_by_week, (days, i) => <tr key={i}>{days}</tr>) }
       </tbody>
@@ -138,6 +153,7 @@ export class EventForm extends Component {
 
   render() {
     let {onCancel, day} = this.props;
+    let start = day.clone();
 
     return (
       <forms.Form action={api.events.add}>
@@ -149,10 +165,10 @@ export class EventForm extends Component {
         </div>
         <div className="row">
           <div className="col-md-3 col-md-offset-3">
-            <forms.CharField initial={day.format()} name="start_datetime" label="Start om" />
+            <forms.DateTimeField initial={start} name="start_datetime" label="Start om" />
           </div>
           <div className="col-md-3">
-            <forms.CharField name="end_datetime" label="Eindigt om" />
+            <forms.DateTimeField initial={start.clone().add(1, 'hours')} name="end_datetime" label="Eindigt om" />
           </div>
         </div>
         <div className="row">

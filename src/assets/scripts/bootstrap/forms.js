@@ -2,6 +2,12 @@ import React, {Component, PropTypes} from 'react';
 import _ from 'underscore';
 import cn from 'classnames';
 import ReCAPTCHA from 'react-google-recaptcha';
+import moment from 'moment';
+import Select from 'react-select';
+
+import {Modal, ModalBody, ModalFooter} from 'bootstrap/Modal';
+import Icon from 'bootstrap/Icon';
+import DateTimePicker from 'bootstrap/datetimepicker';
 
 export class Label extends Component {
 
@@ -22,14 +28,12 @@ export class Label extends Component {
   }
 }
 
-export class InputGroup extends Component {
+export class LabeledInput extends Component {
   static get propTypes() {
     return {
       errors: PropTypes.array,
       label: PropTypes.string,
-      name: PropTypes.string.isRequired,
-      onChange: PropTypes.func.isRequired,
-      type: PropTypes.string.isRequired
+      name: PropTypes.string
     };
   }
 
@@ -50,10 +54,6 @@ export class InputGroup extends Component {
          errors={errors}
          className="input-group-addon" id={`${name}-addon`}>{ label || name }</Label>
       {this.props.children}
-      <input
-        value={value}
-        onChange={onChange}
-        type={type} name={name} className="form-control" aria-describedby={`${name}-addon`} />
     </div>;
   }
 }
@@ -215,15 +215,73 @@ export class CharField extends Field {
 
   render() {
     let { label, name } = this.props;
+    let { value } = this.state;
 
     return (
-      <InputGroup
-        errors={this.state.errors}
-        name={name}
-        label={label}
-        value={this.state.value}
-        onChange={this.onChange.bind(this)}
-        type="text" />
+      <LabeledInput name={name} errors={this.state.errors} label={label} >
+        <input
+          value={value}
+          onChange={this.onChange.bind(this)}
+          type="text" name={name} className="form-control" aria-describedby={`${name}-addon`} />
+      </LabeledInput >
+    );
+  }
+}
+
+/* Saves the value as an moment object, returns it as a ISO-8601 string
+ */
+export class DateTimeField extends Field {
+
+  static get defaultProps() {
+    return Object.assign({}, Field.defaultProps, {
+      initial: moment()
+    });
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = Object.assign({}, this.state, {
+      pickerOpen: false
+    });
+  }
+
+  getValue() {
+    return this.state.value.format();
+  }
+
+  onChange(date) {
+    this.setValue(date);
+  }
+
+  openPicker() {
+    this.setState({ pickerOpen: true });
+  }
+
+  closePicker() {
+    this.setState({ pickerOpen: false });
+  }
+
+  render() {
+    let { value, pickerOpen } = this.state;
+    let { label, name } = this.props;
+
+    return (
+      <LabeledInput name={name} errors={this.state.errors} label={label} >
+        <Modal open={pickerOpen} title="Kies een datum en tijd">
+          <ModalBody>
+            <DateTimePicker initial={value} onChange={this.onChange.bind(this)}/>
+          </ModalBody>
+          <ModalFooter>
+            <button type="button" onClick={this.closePicker.bind(this)}><Icon name="check" /></button>
+          </ModalFooter>
+        </Modal>
+        <input
+          value={value.format("lll")}
+          onChange={this.onChange.bind(this)}
+          onClick={this.openPicker.bind(this)}
+          type="text" name={name} className="form-control" aria-describedby={`${name}-addon`} />
+      </LabeledInput >
     );
   }
 }
@@ -232,15 +290,15 @@ export class PasswordField extends CharField {
 
   render() {
     let { label, name } = this.props;
+    let { value } = this.state;
 
     return (
-      <InputGroup
-        errors={this.state.errors}
-        name={name}
-        label={label}
-        onChange={this.onChange.bind(this)}
-        value={this.state.value}
-        type="password" />
+      <LabeledInput name={name} errors={this.state.errors} label={label} >
+        <input
+          value={value}
+          onChange={this.onChange.bind(this)}
+          type="password" name={name} className="form-control" aria-describedby={`${name}-addon`} />
+      </LabeledInput >
     );
   }
 }
