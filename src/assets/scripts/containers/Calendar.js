@@ -130,7 +130,7 @@ class CalMonth extends React.Component {
           day={day.clone()}
           events={this.props.events[dayOfMonth] || []}></CalDay>;
       } else {
-        return <td key={key}></td>;
+        return <td className="cal-day" key={key}><div className="content"></div></td>;
       }
     });
 
@@ -181,7 +181,7 @@ export default class Calendar extends Component {
       moment
         .range(moment(event.startdatetime), moment(event.enddatetime))
         .by('days', (day) => {
-          let key = moment(event.startdatetime).format("D");
+          let key = moment(day).format("D");
           let evs = (eventsByDay[key] || []);
           evs.push(event);
           eventsByDay[key] = evs;
