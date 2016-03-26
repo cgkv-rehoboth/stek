@@ -128,7 +128,8 @@ def timetableruilen(request, id):
       })
       message = template.render(data)
 
-      send_mail("Ruilverzoek", message, 'noreply@domein.nl', duty.timetable.team.leader_email())
+      # Todo: uncomment for real live action
+      #send_mail("Ruilverzoek", message, 'noreply@domein.nl', duty.timetable.team.leader_email())
 
   # Redirect to timetable-detail page to prevent re-submitting and to show the changes
   return redirect('timetable-detail-page', id=id)
