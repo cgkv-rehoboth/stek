@@ -82,6 +82,11 @@ window.favoriteListMain = () => {
 }
 
 window.calendarMain = () => {
+  let query = qs.parse(window.location.search.replace("?", ""));
+  var focus = moment([query.year, query.month || 0, 1]);
+  if(!focus.isValid())
+    focus = moment();
+
   class MainCal extends React.Component {
 
     render() {
@@ -95,7 +100,7 @@ window.calendarMain = () => {
       return <Calendar
       tables={[]}
       onMonthChange={onMonthChange}
-      initFocus={moment()} />;
+      initFocus={focus} />;
     }
   }
 
@@ -198,5 +203,5 @@ window.addEventMain = () => {
     day = moment();
   }
 
-  React.render(<EventForm day={day} />, $('#add-event-form')[0]);
+  ReactDom.render(<EventForm day={day} />, $('#add-event-form')[0]);
 };
