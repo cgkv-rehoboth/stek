@@ -4,6 +4,7 @@ import moment_range from 'moment-range';
 import _ from 'underscore';
 import cn from 'classnames';
 import api from 'api';
+import * as qs from 'querystring';
 
 import Icon from "bootstrap/Icon";
 import * as forms from 'bootstrap/forms';
@@ -143,56 +144,6 @@ class CalMonth extends React.Component {
   }
 }
 
-export class EventForm extends Component {
-  static get propTypes() {
-    return {
-      onCancel: PropTypes.func.isRequired,
-      day: PropTypes.object.isRequired
-    };
-  }
-
-  render() {
-    let {onCancel, day} = this.props;
-    let start = day.clone();
-
-    return (
-      <forms.Form action={api.events.add}>
-        <div className="row">
-          <div className="col-md-6 col-md-offset-3 text-center">
-            <h2>Nieuw Agenda item</h2>
-            <forms.CharField name="title" label="Titel" />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-3 col-md-offset-3">
-            <forms.DateTimeField initial={start} name="start_datetime" label="Start om" />
-          </div>
-          <div className="col-md-3">
-            <forms.DateTimeField initial={start.clone().add(1, 'hours')} name="end_datetime" label="Eindigt om" />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6 col-md-offset-3 text-center">
-            <forms.CharField name="timetable" label="Agenda" />
-          </div>
-        </div>
-        <div className="vspace"></div>
-        <div className="row">
-          <div className="col-md-6 col-md-offset-3">
-            <forms.TextField name="description" label="Beschrijving" />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6 col-md-offset-3">
-            <button className="btn btn-rounded black" onClick={onCancel}>Annuleren</button>
-            <forms.SubmitButton label="Voeg toe"/>
-          </div>
-        </div>
-      </forms.Form>
-    );
-  }
-}
-
 export default class Calendar extends Component {
   static get propTypes() {
     return {
@@ -213,10 +164,7 @@ export default class Calendar extends Component {
     this.state = {
       year: this.props.initFocus.year(),
       month: this.props.initFocus.month(),
-      events: {},
-
-      showEventForm: false,
-      eventFormDate: null
+      events: {}
     };
 
   }
@@ -274,10 +222,8 @@ export default class Calendar extends Component {
   }
 
   addEvent(day) {
-    this.setState({
-      eventFormDate: day,
-      showEventForm: true
-    });
+    let query = qs.stringify({datetime: day.unix()});
+    window.location = '/kalendar/nieuw/?' + query;
   }
 
   render() {

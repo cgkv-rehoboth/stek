@@ -93,6 +93,14 @@ let api_obj = {
     return http.post(`${api}/contact/`, data);
   },
 
+  timetables: {
+    list: (in_calendar, extra) => {
+      return Q.xhr.get(`${api}/agenda/timetables/`, _.extend({
+        params: {incalendar: in_calendar}
+      }, extra));
+    }
+  },
+
   events: {
     // from and to should be unix timestamps
     list: (from, to, extra_params) => {

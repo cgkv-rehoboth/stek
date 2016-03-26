@@ -32,6 +32,10 @@ def form(request):
 """
 
 @login_required
+def add_event(request):
+  return render(request, 'add_event.html', {})
+
+@login_required
 def timetables(request, id=None):
 
   # Get all the tables linked to the team(s) the user is in
@@ -70,4 +74,5 @@ urls = [
   url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail-page'),
   url(r'^roosters/$', timetables, name='timetable-list-page'),
   url(r'^kalender/$', calendar, name='calendar-page'),
+  url(r'^kalendar/nieuw/$', add_event, name='add-event-page'),
 ]
