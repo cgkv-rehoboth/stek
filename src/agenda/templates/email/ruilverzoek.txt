@@ -1,0 +1,6 @@
+Beste teamleider(s),
+
+Er is een ruilverzoek binnen gekomen van {{ name }} van de volgende taak:
+{{ timetable}}: {{ duty }}.
+
+{{ comments }}

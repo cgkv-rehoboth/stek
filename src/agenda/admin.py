@@ -23,6 +23,12 @@ class TimetableDutyAdmin(admin.ModelAdmin):
 
 admin.site.register(TimetableDuty, TimetableDutyAdmin)
 
+# Create custom display for RuilRequest
+class RuilRequestAdmin(admin.ModelAdmin):
+  list_display = ['timetableduty', 'user', 'comments']
+
+admin.site.register(RuilRequest, RuilRequestAdmin)
+
 # Create custom display for Event
 class EventAdmin(admin.ModelAdmin):
   list_display = ['title', 'startdatetime', 'enddatetime', 'timetable', 'description']

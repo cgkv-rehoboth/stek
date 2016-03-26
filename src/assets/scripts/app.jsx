@@ -126,12 +126,19 @@ window.teamListMain = () => {
 
 window.timetableMain = () => {
   console.debug("Init timetables");
-  /*$(".timetable-ruilen").click(function(){
-    $("#ruilModal .modal-event-name").text($(this).closest("tr").find(".duty-title").text());
-    $("#ruilModal .modal-event-date").text($(this).closest("tr").find(".duty-date").text());
+
+  $(".timetable-ruilen").click(function(){
+    $("#ruilModal .modal-event-content").text($(this).attr("title"));
     $("#ruilModal input[name=modal-duty-pk]").val($(this).closest("tr").attr("data-duty-pk"));
+    if($(this).attr("data-aanvragen") == 0){
+      $("#ruilModal .modal-event-comments").hide();
+      $("#ruilModal .modal-submit-button").text("Ongedaan maken");
+    }else{
+      $("#ruilModal .modal-event-comments").show();
+      $("#ruilModal .modal-submit-button").text("Aanvragen");
+    }
     $("#ruilModal").modal('show');
-  });*/
+  });
 
   // ReactDom.render(<DutyForm timetable={1} />, $("#duty-form")[0]);
 };

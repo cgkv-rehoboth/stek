@@ -52,7 +52,7 @@ class TimetableDuty(models.Model):
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
-    return "%s op %s door %s" % (self.event.title, self.event.startdatetime, self.responsible)
+    return "%s op %s door %s" % (self.event.title, self.event.startdatetime, self.responsible.profile.name())
 
 class Service(Event):
 
@@ -85,6 +85,16 @@ class Team(models.Model):
 
     return text
 
+  def leader_email(self):
+    maillist = list()
+
+    for v in TeamMember.objects.filter(team_id=self.pk, role="LEI"):
+      # Todo: validate email before adding it to the list
+      maillist.append(v.user.email)
+
+    return maillist
+
+
 class TeamMember(models.Model):
 
   LEADER = 'LEI'
@@ -101,3 +111,9 @@ class TeamMember(models.Model):
 
   def __str__(self):
     return "%s %s: %s" % (self.team.name, self.get_role_display(), self.user.username)
+
+class RuilRequest(models.Model):
+
+  timetableduty   = models.ForeignKey(TimetableDuty, related_name="ruilen")
+  user            = models.ForeignKey(User, related_name="ruilen")
+  comments        = models.TextField(blank=True)
