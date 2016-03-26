@@ -65,6 +65,7 @@ class TimetableViewSet(mixins.ListModelMixin, StekViewSet):
   queryset = Timetable.objects.all()
   filter_fields = ("incalendar",)
   serializer_class = TimetableSerializer
+  pagination_class = None
 
 router = DefaultRouter()
 router.register("duties", DutyViewSet, base_name="duties")
