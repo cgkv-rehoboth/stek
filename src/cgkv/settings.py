@@ -42,6 +42,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+DEFAULT_FROM_EMAIL = 'info@rehobothkerkwoerden.nl'
+
 INTERNAL_IPS = ('127.0.0.1',)
 
 APPEND_SLASH = False
