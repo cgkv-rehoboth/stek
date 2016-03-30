@@ -233,11 +233,16 @@ export class SelectField extends Field {
   onChange(event) {
     this.setValue(event.target.value);
   }
-  
+
   render() {
     let {name, label} = this.props;
+    let {value} = this.state;
+
     return <LabeledInput name={name} label={label}>
-      <select className="form-control" name={name} onChange={this.onChange.bind(this)}>
+      <select className="form-control"
+        value={value}
+        name={name}
+        onChange={this.onChange.bind(this)}>
         {this.props.children}
       </select>
     </LabeledInput>;
@@ -249,7 +254,7 @@ export class SelectField extends Field {
 export class DateTimeField extends Field {
 
   static get defaultProps() {
-    return Object.assign({}, Field.defaultProps, {
+    return _.extend({}, Field.defaultProps, {
       initial: moment()
     });
   }
@@ -257,7 +262,7 @@ export class DateTimeField extends Field {
   constructor(props) {
     super(props);
 
-    this.state = Object.assign({}, this.state, {
+    this.state = _.extend({}, this.state, {
       pickerOpen: false
     });
   }
@@ -352,7 +357,7 @@ export class CaptchaField extends Field {
   }
 
   static get defaultProps() {
-    return Object.assign({}, Field.defaultProps, {
+    return _.extend({}, Field.defaultProps, {
       name: "recaptcha"
     });
   }
