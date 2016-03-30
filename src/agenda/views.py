@@ -107,7 +107,10 @@ def timetable_ruilen(request, id):
   if from_email is None or len(from_email) == 0:
     from_email = settings.DEFAULT_FROM_EMAIL
 
-  send_mail("Ruilverzoek", message, from_email, duty.timetable.team.leader_email())
+  to_emails = [ t[0] for t in duty.timetable\
+                                  .team.leaders()\
+                                  .values_list('user__profile__email') ]
+  send_mail("Ruilverzoek", message, from_email, to_emails)
 
   # Redirect to timetable-detail page to prevent re-submitting and to show the changes
   return redirect('timetable-detail-page', id=id)

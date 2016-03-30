@@ -81,9 +81,6 @@ class Team(models.Model):
   def leaders(self):
     return self.teammembers.filter(role='LEI')
 
-  def leaders_email(self):
-    return self.leaders().values_list('user__profile__email')
-
 class TeamMember(models.Model):
 
   LEADER = 'LEI'
