@@ -74,7 +74,7 @@
                         <a href="javascript:void(0)"
                           class="timetable-ruilen"
                           title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
-                          data-request-pk="{{ ruilen.pk }}"
+                          data-duty-pk="{{ duty.pk }}"
                         >
                           <i class="fa fa-pencil"></i>
                         </a>
@@ -113,7 +113,7 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title">Ruilen</h4>
             </div>
-            <form method="post" action="{% url 'timetable-ruilen' current_table.pk %}">
+            <form method="post">
               {% csrf_token %}
               <div class="modal-body">
                 <div class="form-group modal-event-content"></div>

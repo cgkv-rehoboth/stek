@@ -128,6 +128,9 @@ window.timetableMain = () => {
   $(".timetable-ruilen").click(function(){
     let elem = $(this);
     let modal = $("#ruilModal");
+    let pk = elem.data('duty-pk');
+    modal.find('form')
+      .attr('action', `/roosters/ruilen/${pk}/`);
     modal.find(".modal-event-content")
       .text(elem.attr("title"));
     modal.modal('show');
