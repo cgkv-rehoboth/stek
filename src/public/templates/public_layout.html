@@ -19,6 +19,7 @@
         {% block content %}
         {% endblock %}
       </div>
+    </div>
 
     <footer>
       <div class="container">
@@ -33,6 +34,11 @@
       </div>
     </footer>
 
+    <script>
+      window.rehoboth = {
+        RECAPTCHA_PUBLIC_KEY: '{{ recaptcha_publickey|escapejs }}'
+      };
+    </script>
     <script src="{% static "scripts/app.js" %}"></script>
 
     {% block scripts %}

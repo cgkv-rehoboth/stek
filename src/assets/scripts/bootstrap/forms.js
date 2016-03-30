@@ -271,6 +271,12 @@ export class TextField extends CharField {
 
 export class CaptchaField extends Field {
 
+  static get propTypes() {
+    return Object.assign({}, Field.propTypes, {
+      sitekey: PropTypes.string.isRequired
+    });
+  }
+
   static get defaultProps() {
     return Object.assign({}, Field.defaultProps, {
       name: "recaptcha"
@@ -293,7 +299,7 @@ export class CaptchaField extends Field {
   render() {
     return <ReCAPTCHA
       ref="recaptcha"
-      sitekey="6LdTEBsTAAAAAEGoRs_P10MVgylFKuxHnKZzB-m1"
+      sitekey={this.props.sitekey}
       onChange={this.onChange.bind(this)} />;
   }
 }

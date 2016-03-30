@@ -170,7 +170,7 @@ window.frontpageMain = () => {
     <div className="vspace" ></div>
     <div className="row" >
       <div  className="col-sm-6">
-        <forms.CaptchaField />
+        <forms.CaptchaField sitekey={window.rehoboth.RECAPTCHA_PUBLIC_KEY} />
       </div>
       <div  className="col-sm-6 text-right">
         <forms.SubmitButton label="Verstuur!" />
