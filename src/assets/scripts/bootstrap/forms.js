@@ -3,7 +3,6 @@ import _ from 'underscore';
 import cn from 'classnames';
 import ReCAPTCHA from 'react-google-recaptcha';
 import moment from 'moment';
-import Select from 'react-select';
 
 import {Modal, ModalBody, ModalFooter} from 'bootstrap/Modal';
 import Icon from 'bootstrap/Icon';
