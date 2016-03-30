@@ -112,13 +112,6 @@ import FavStar from 'containers/FavStar';
 window.familiesMain = () => {
   initListGroupDetail();
 
-  /*
-    // Scroll to the family details div
-    $(document.body).animate({
-    scrollTop: $('#').offset().top // Todo
-    }, 500);
-    */
-
   $('.favstar').each(function() {
     let fav = $(this).data('favorite') !== undefined;
     ReactDom.render(<FavStar pk={$(this).data('pk')} favorite={fav} />, $(this)[0]);
@@ -133,19 +126,23 @@ window.timetableMain = () => {
   console.debug("Init timetables");
 
   $(".timetable-ruilen").click(function(){
-    $("#ruilModal .modal-event-content").text($(this).attr("title"));
-    $("#ruilModal input[name=modal-duty-pk]").val($(this).closest("tr").attr("data-duty-pk"));
-    if($(this).attr("data-aanvragen") == 0){
-      $("#ruilModal .modal-event-comments").hide();
-      $("#ruilModal .modal-submit-button").text("Ongedaan maken");
-    }else{
-      $("#ruilModal .modal-event-comments").show();
-      $("#ruilModal .modal-submit-button").text("Aanvragen");
-    }
-    $("#ruilModal").modal('show');
+    let elem = $(this);
+    let modal = $("#ruilModal");
+    modal.find(".modal-event-content")
+      .text(elem.attr("title"));
+    modal.modal('show');
   });
 
-  // ReactDom.render(<DutyForm timetable={1} />, $("#duty-form")[0]);
+  $(".timetable-undo-ruilen").click(function(){
+    let elem = $(this);
+    let modal = $("#undoRuilModal");
+    let pk = elem.data('request-pk');
+    modal.find('form')
+      .attr('action', `/roosters/ruilen-intrekken/${pk}/`);
+    modal.find(".modal-event-content")
+      .text(elem.attr("title"));
+    modal.modal('show');
+  });
 };
 
 window.frontpageMain = () => {

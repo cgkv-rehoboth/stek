@@ -13,20 +13,7 @@
         </div>
       </div>
 
-    <hr/>
-    {{ message }}
-    <hr/>
-
       <div class="row">
-        {% if messages %}
-          <!-- Status messages -->
-          <ul class="messages">
-            {% for message in messages %}
-              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-
         <!-- Timetable menu/choices -->
         <div class="col-sm-12">
           <ul class="nav nav-tabs">
@@ -66,18 +53,34 @@
             <tbody>
             {% for duty in duties %}
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
-              <tr class="table-{{ rowday }}" data-duty-pk="{{ duty.pk }}">
+              <tr class="table-{{ rowday }}">
                 <td class="duty-date">{{ duty.event.startdatetime }}</td>
                 <td class="duty-title">{{ duty.event.title }}</td>
                 <td>
-                  <span class="{% if duty.responsible.pk == user.pk %}current-user{% endif %} ruilrequest-{{ duty.ruilrequest }}">{{ duty.responsible|usernicename }}</span>
-                  {% if duty.responsible.pk == user.pk %}
-                    {% if duty.ruilrequest == 2 %}
-                      <a href="javascript:void(0)" class="timetable-ruilen" title='Ruilen ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".' data-aanvragen=0 ><i class="fa fa-times"></i></a>
-                    {% else %}
-                      <a href="javascript:void(0)" class="timetable-ruilen" title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".' data-aanvragen=1 ><i class="fa fa-pencil"></i></a>
+                  {% with duty.ruilrequest as ruilen %}
+                    <span class="{% if duty.responsible.pk == user.pk %}current-user{% endif %}
+                                {% if ruilen %}ruil_requested{% endif %}">
+                      {{ duty.responsible|usernicename }}
+                    </span>
+                    {% if duty.responsible.pk == request.user.pk %}
+                      {% if ruilen.user == request.user %}
+                        <a href="javascript:void(0)" class="timetable-undo-ruilen"
+                          title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                          data-request-pk="{{ruilen.pk}}"
+                        >
+                          <i class="fa fa-times"></i>
+                        </a>
+                      {% else %}
+                        <a href="javascript:void(0)"
+                          class="timetable-ruilen"
+                          title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                          data-request-pk="{{ ruilen.pk }}"
+                        >
+                          <i class="fa fa-pencil"></i>
+                        </a>
+                      {% endif %}
                     {% endif %}
-                  {% endif %}
+                  {% endwith %}
                 </td>
                 <td>{{ duty.comments }}</td>
               </tr>
@@ -85,7 +88,10 @@
             </tbody>
           </table>
           {% else %}
-          Je hebt geen persoonlijke rooster, maar je kan wel andere roosters bekijken door op de knop "Andere roosters" te klikken.
+          <p>
+            Je hebt geen persoonlijke rooster, maar je kan wel andere roosters
+            bekijken door op de knop "Andere roosters" te klikken.
+          </p>
           {% endif %}
         </div>
       </div> <!-- row -->
@@ -105,21 +111,54 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="exampleModalLabel">Ruilen</h4>
+              <h4 class="modal-title">Ruilen</h4>
             </div>
             <form method="post" action="{% url 'timetable-ruilen' current_table.pk %}">
               {% csrf_token %}
               <div class="modal-body">
-                <input type="hidden" value="" name="modal-duty-pk" />
                 <div class="form-group modal-event-content"></div>
                 <div class="form-group modal-event-comments">
                   <label for="message-text" class="control-label">Reden/opmerking:</label>
                   <textarea class="form-control" name="comments"></textarea>
                 </div>
               </div>
+
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-                <button type="submit" class="btn btn-primary modal-submit-button">Versturen</button>
+                <button type="button" class="btn btn-default black" data-dismiss="modal">
+                  Annuleren
+                </button>
+                <button type="submit" class="btn btn-default cyan modal-submit-button">
+                  Verzoek indienen
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal for 'ruilen-ongedaan-maken'-event -->
+      <div class="modal fade" id="undoRuilModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 class="modal-title">Ruilverzoek intrekken</h4>
+            </div>
+            <form method="post">
+              {% csrf_token %}
+              <div class="modal-body">
+                <div class="form-group modal-event-content"></div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default black" data-dismiss="modal">
+                  Annuleren
+                </button>
+                <button type="submit" class="btn btn-default cyan modal-submit-button">
+                  Verzoek intrekken
+                </button>
               </div>
             </form>
           </div>

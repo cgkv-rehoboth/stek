@@ -117,3 +117,6 @@ class RuilRequest(models.Model):
   timetableduty   = models.ForeignKey(TimetableDuty, related_name="ruilen")
   user            = models.ForeignKey(User, related_name="ruilen")
   comments        = models.TextField(blank=True)
+
+  class Meta:
+    unique_together = (("timetableduty", "user"),)

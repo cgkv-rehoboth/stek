@@ -5,6 +5,10 @@ register = template.Library()
 def klass(ob):
     return ob.__class__.__name__
 
+@register.filter('get')
+def get(ob, name):
+    return ob[name]
+
 @register.filter('usernicename')
 def usernicename(ob):
     if ob.first_name != "" and ob.last_name != "":
