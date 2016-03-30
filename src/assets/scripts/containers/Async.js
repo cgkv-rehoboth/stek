@@ -14,9 +14,9 @@ export default class Async extends Component {
 
     this.state = {value: undefined};
 
-    props.promise.then((value) => {
-      this.setState({value: value});
-    });
+    props.promise
+      .then((value) => {this.setState({value: value});})
+      .done();
   }
 
   render() {

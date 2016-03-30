@@ -26,7 +26,8 @@ class EventForm extends Component {
   render() {
     let {day, timetables} = this.props;
     let start = day.clone();
-    let options = _.map(timetables, (table) => <option value={table.title}>{table.title}</option>);
+    let options = _.map(timetables, (table) =>
+                        <option key={table.id} value={table.id}>{table.title}</option>);
 
     return (
       <forms.Form action={api.events.add}>
@@ -38,15 +39,16 @@ class EventForm extends Component {
         </div>
         <div className="row">
           <div className="col-md-3 col-md-offset-3">
-            <forms.DateTimeField initial={start} name="start_datetime" label="Start om" />
+            <forms.DateTimeField initial={start} name="startdatetime" label="Start om" />
           </div>
           <div className="col-md-3">
-            <forms.DateTimeField initial={start.clone().add(1, 'hours')} name="end_datetime" label="Eindigt om" />
+            <forms.DateTimeField initial={start.clone().add(1, 'hours')} name="enddatetime" label="Eindigt om" />
           </div>
         </div>
         <div className="row">
           <div className="col-md-6 col-md-offset-3 text-center">
-            <forms.SelectField name="timetable" label="Agenda">
+            <forms.SelectField key="empty" inital="" name="timetable" label="Agenda">
+              <option disabled value="">-- Agenda --</option>
               {options}
             </forms.SelectField>
           </div>
