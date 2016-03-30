@@ -78,22 +78,11 @@ class Team(models.Model):
   def size(self):
     return self.members.all().count()
 
-  def leader(self):
-    text = ""
-    for v in TeamMember.objects.filter(team_id=self.pk, role="LEI"):
-      text += "%s, " % str(v.user.username)
+  def leaders(self):
+    return self.teammembers.filter(role='LEI')
 
-    return text
-
-  def leader_email(self):
-    maillist = list()
-
-    for v in TeamMember.objects.filter(team_id=self.pk, role="LEI"):
-      # Todo: validate email before adding it to the list
-      maillist.append(v.user.email)
-
-    return maillist
-
+  def leaders_email(self):
+    return self.leaders().values_list('user__profile__email')
 
 class TeamMember(models.Model):
 

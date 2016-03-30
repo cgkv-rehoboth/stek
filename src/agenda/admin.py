@@ -54,6 +54,11 @@ class TeamMemberInline(admin.TabularInline):
 
 class TeamAdmin(admin.ModelAdmin):
   inlines = [TeamMemberInline]
-  list_display = ['name', 'leader', 'email', 'size']
+  list_display = ['name', 'get_leader_names', 'email', 'size']
+
+  def get_leader_names(self, obj):
+    return ", ".join(
+      [ p.user.profile.name() for p in obj.leaders().prefetch_related('user__profile') ]
+    )
 
 admin.site.register(Team, TeamAdmin)
