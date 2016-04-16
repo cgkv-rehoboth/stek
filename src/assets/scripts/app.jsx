@@ -13,8 +13,6 @@ import nl from 'moment/locale/nl';
 import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
 import * as forms from 'bootstrap/forms';
-import Calendar from 'containers/Calendar';
-import EventForm from 'containers/EventForm';
 
 // bind global jquery instance
 window.jQuery = $;
@@ -26,6 +24,8 @@ require('jquery.easing');
 require('bootstrap/dist/js/bootstrap.min');
 require('bootstrap/js/tooltip');
 require('lib/grayscale');
+
+window.calendarMain = calendarMain;
 
 function initListGroupDetail() {
   $('.list-group-item', '.list-group-hide-detail')
@@ -81,31 +81,6 @@ window.favoriteListMain = () => {
   );
 }
 
-window.calendarMain = () => {
-  let query = qs.parse(window.location.search.replace("?", ""));
-  var focus = moment([query.year, query.month || 0, 1]);
-  if(!focus.isValid())
-    focus = moment();
-
-  class MainCal extends React.Component {
-
-    render() {
-      let onMonthChange = (year, month) => {
-        let from = moment([year, month]);
-        let to = from.clone().add(1, 'months');
-
-        return api.events.list(from.unix(), to.unix());
-      };
-
-      return <Calendar
-      tables={[]}
-      onMonthChange={onMonthChange}
-      initFocus={focus} />;
-    }
-  }
-
-  ReactDom.render(<MainCal />, $("#calendar")[0]);
-};
 
 import FavStar from 'containers/FavStar';
 
@@ -196,12 +171,6 @@ window.frontpageMain = () => {
   );
 };
 
-window.addEventMain = () => {
-  let timestamp = qs.parse(window.location.search.replace("?", "")).datetime;
-  var day = moment.unix(timestamp);
-  if(!day.isValid()) {
-    day = moment();
-  }
 
-  ReactDom.render(<EventForm day={day} />, $('#add-event-form')[0]);
-};
+//import some main functions
+import calendarMain from 'mains/calendar';
