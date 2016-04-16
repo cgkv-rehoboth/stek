@@ -1,0 +1,56 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Mijn team <small>{{ table.title }}</small></h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Ruilrequests -->
+        <div class="col-sm-12">
+          <h3>Ruilverzoeken</h3>
+          {% if ruils %}
+          <table id="timetable"  class="table table-hover">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Persoon</th>
+                <th>Opmerkingen</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ruil in ruils %}
+              <tr>
+                <td class="duty-date">{{ ruil.timetableduty.event }}</td>
+                <td class="duty-title">{{ ruil.user.profile }}</td>
+                <td>{{ ruil.comments }}</td>
+                <td>
+                  <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>
+                  <a href="{% url 'timetable-ruilverzoek' ruil.id %}" class="btn btn-default cyan modal-submit-button">Voldoen</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p>
+            Er zijn geen ruilverzoeken ingediend!
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -84,6 +84,10 @@ class Profile(models.Model):
   def __str__(self):
     return "Profiel van %s" % self.name()
 
+  def teamleader_of(self, team):
+    # Check if user is teamleader of this timetable's team
+    return self.user.team_membership.filter(team=team, user=self.user).first().role == 'LEI'
+
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)
 
