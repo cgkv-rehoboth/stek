@@ -9,16 +9,16 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <h1>Mijn roosters</h1>
+          <h2>Mijn roosters</h2>
         </div>
       </div>
 
       <div class="row">
-        <!-- Timetable menu/choices -->
         <div class="col-sm-12">
+          <!-- Timetable menu/choices -->
           <ul class="nav nav-tabs">
             {% for table in mytables %}
-              <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}><a href={% url 'timetable-detail-page' table.pk %}>{{ table.title }}</a></li>
+              <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}><a href={% url 'timetable-detail-page' table.pk %}>{{ table.title }}{% if table.groepsbeheer %}<span class="timetable-gear-link"><i class="fa fa-cog" aria-hidden="true" onclick="document.location.href='{% url 'timetable-teamleader-page' table.pk %}'; return false;" title="Beheer dit rooster"></i></span>{% endif %}</a></li>
             {% endfor %}
 
             {% if current_table and not current_table in mytables %}
@@ -87,6 +87,10 @@
             {% endfor %}
             </tbody>
           </table>
+          {% elif mytables %}
+          <p>
+
+          </p>
           {% else %}
           <p>
             Je hebt geen persoonlijke rooster, maar je kan wel andere roosters

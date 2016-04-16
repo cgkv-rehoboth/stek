@@ -24,6 +24,11 @@ def timetables(request, id=None):
     .filter(team__members__pk=request.user.pk)\
     .exclude(team__isnull=True))
 
+  # Insert special buttons for special persons (teamleaders)
+  for table in mytables:
+    if request.user.profile.teamleader_of(table.team):
+      table.groepsbeheer = True
+
   # Get the first-to-see table id
   if id is None and len(mytables) > 0:
     id = mytables[0].pk
