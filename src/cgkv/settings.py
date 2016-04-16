@@ -5,6 +5,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'xtij@)g$t19zj^l$u)gud6-9!0436!=cp&8prn(ahk9)68(j&+'
 
+PAGE_USE_SITE_ID = True
+SITE_ID = 1
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -57,6 +60,7 @@ CORS_ORIGIN_WHITELIST = (
 INSTALLED_APPS = (
   'flat',
   'django.contrib.admin',
+  'django.contrib.sites',
   'django.contrib.auth',
   'django.contrib.contenttypes',
   'django.contrib.sessions',

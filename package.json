@@ -39,6 +39,7 @@
     "react": "~0.14.3",
     "react-dom": "~0.14.3",
     "react-google-recaptcha": "^0.5.2",
+    "react-router": "^2.2.4",
     "react-tap-event-plugin": "^0.2.1",
     "underscore": "^1.8.3"
   },

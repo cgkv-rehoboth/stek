@@ -141,6 +141,9 @@ export class Form extends React.Component {
     } else if(this.props.onSubmit) {
       this.props.onSubmit(this.state.data);
     }
+
+    // after submission, we notify the fields
+    _.map(this.fields, (field) => field.onSubmit());
   }
 
   render() {
@@ -183,6 +186,8 @@ export class Field extends React.Component {
   clear() {
     this.setValue(undefined);
   }
+
+  onSubmit() {}
 
   setErrors(errors=[]) {
     this.setState({errors: errors});
@@ -342,6 +347,7 @@ export class TextField extends CharField {
           name={name}
           onChange={this.onChange.bind(this)}
           value={this.state.value}
+          className={cn({faulty: this.state.errors.length > 0})}
         ></textarea>
       </div>
     );
@@ -362,13 +368,9 @@ export class CaptchaField extends Field {
     });
   }
 
-  getValue() {
-    let value = super.getValue();
-
+  onSubmit() {
     // make sure we don't send the same thing twice
     this.clear();
-
-    return value;
   }
 
   clear() {

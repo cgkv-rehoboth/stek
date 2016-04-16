@@ -148,7 +148,8 @@ export default class Calendar extends Component {
   static get propTypes() {
     return {
       initFocus: React.PropTypes.object,
-      onMonthChange: React.PropTypes.func
+      onMonthChange: React.PropTypes.func,
+      onAddEvent: PropTypes.func
     };
   }
 
@@ -222,8 +223,10 @@ export default class Calendar extends Component {
   }
 
   addEvent(day) {
-    let query = qs.stringify({datetime: day.unix()});
-    window.location = '/kalendar/nieuw/?' + query;
+    // set the default time
+    day.hour(12);
+    day.minute(0);
+    this.props.onAddEvent(day);
   }
 
   render() {
