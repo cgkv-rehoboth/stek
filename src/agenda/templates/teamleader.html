@@ -31,7 +31,7 @@
               {% for ruil in ruils %}
               <tr>
                 <td class="duty-date">{{ ruil.timetableduty.event }}</td>
-                <td class="duty-title">{{ ruil.user.profile }}</td>
+                <td class="duty-title">{{ ruil.user.profile.name }}</td>
                 <td>{{ ruil.comments }}</td>
                 <td>
                   <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>
@@ -53,4 +53,7 @@
 {% endblock %}
 
 {% block scripts %}
+  <script>
+    window.timetableTeamleader();
+  </script>
 {% endblock %}

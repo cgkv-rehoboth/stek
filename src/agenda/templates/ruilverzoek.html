@@ -24,7 +24,6 @@
 
           <form method="post" action="{% url 'timetable-ruilverzoek-accept' ruil.id %}">
             {% csrf_token %}
-            <input type="hidden" name="duty" value="{{ ruil.timetableduty.id }}"/>
             <label>
               Vervanging:
               <select name="vervanging">

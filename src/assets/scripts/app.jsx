@@ -205,3 +205,8 @@ window.addEventMain = () => {
 
   ReactDom.render(<EventForm day={day} />, $('#add-event-form')[0]);
 };
+
+
+window.timetableTeamleader = () => {
+
+};
