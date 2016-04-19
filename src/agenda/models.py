@@ -6,7 +6,6 @@ from livefield.models import LiveModel
 from django.db.models import Count
 
 # Import models of base app
-#from ..base.models import Profile
 from base.models import Profile
 
 class TimestampedModel(models.Model):
@@ -56,7 +55,7 @@ class TimetableDuty(models.Model):
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
-    return "%s op %s door %s" % (self.event.title, self.event.startdatetime, self.responsible.profile.name())
+    return "%s op %s door %s" % (self.event.title, self.event.startdatetime, self.responsible.name())
 
 class Service(Event):
 
@@ -100,7 +99,7 @@ class TeamMember(models.Model):
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
 
   def __str__(self):
-    return "%s %s: %s" % (self.team.name, self.get_role_display(), self.user.username)
+    return "%s %s" % (self.team.name, self.get_role_display())
 
 class RuilRequest(models.Model):
 

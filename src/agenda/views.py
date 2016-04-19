@@ -22,12 +22,12 @@ def timetables(request, id=None):
   # Get all the tables linked to the team(s) the user is in
   mytables = list(Timetable\
     .objects\
-    .filter(team__members__pk=request.user.profile.pk)\
+    .filter(team__members__pk=request.profile.pk)\
     .exclude(team__isnull=True))
 
   # Insert special buttons for special persons (teamleaders)
   for table in mytables:
-    if request.user.profile.teamleader_of(table.team):
+    if request.profile.teamleader_of(table.team):
       table.groepsbeheer = True
 
   # Get the first-to-see table id
@@ -59,7 +59,7 @@ def timetables(request, id=None):
   # that are not really relevant to the user
   notmytables = list(Timetable\
     .objects\
-    .exclude(team__members__pk=request.user.profile.pk)\
+    .exclude(team__members__pk=request.profile.pk)\
     .exclude(team__isnull=True)\
     .exclude(pk=id))
 
@@ -90,7 +90,7 @@ def timetable_undo_ruilen_teamleader(request, id):
   req_id = req.timetableduty.timetable.pk
 
   # Check if user is teamleader of this timetable's team
-  if not request.user.profile.teamleader_of(req.timetableduty.timetable.team):
+  if not request.profile.teamleader_of(req.timetableduty.timetable.team):
     # Show error (no access) page
     return HttpResponse(status=404)
 
@@ -98,7 +98,7 @@ def timetable_undo_ruilen_teamleader(request, id):
   template = get_template('email/ruilverzoek_status.txt')
 
   data = Context({
-    'name': req.user.profile.name,
+    'name': req.profile.name,
     'status': 'afgewezen',
     'timetable': req.timetableduty.timetable.title,
     'duty': req.timetableduty,
@@ -124,7 +124,7 @@ def timetable_ruilen(request, id):
   # Create record
   record = RuilRequest.objects.create(
     timetableduty=duty,
-    user=request.user.profile,
+    profile=request.profile,
     comments=request.POST.get("comments", "")
   )
 
@@ -137,7 +137,7 @@ def timetable_ruilen(request, id):
     comments = "Er is geen reden gegeven."
 
   data = Context({
-    'name': request.user.profile.name,
+    'name': request.profile.name,
     'timetable': duty.timetable.title,
     'duty': duty,
     'comments': comments
@@ -151,7 +151,7 @@ def timetable_ruilen(request, id):
 
   to_emails = [ t[0] for t in duty.timetable\
                                   .team.leaders()\
-                                  .values_list('user__profile__email') ]
+                                  .values_list('profile__email') ]
   send_mail("Ruilverzoek", message, from_email, to_emails)
 
   # Redirect to timetable-detail page to prevent re-submitting and to show the changes
@@ -164,7 +164,7 @@ def timetable_teamleader(request, id):
   table = Timetable.objects.prefetch_related('team__members').get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.user.profile.teamleader_of(table.team):
+  if not request.profile.teamleader_of(table.team):
     # Show error (no access) page
     return HttpResponse(status=404)
 
@@ -185,7 +185,7 @@ def timetable_ruilverzoek(request, id):
   ruil = RuilRequest.objects.get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.user.profile.teamleader_of(ruil.timetableduty.timetable.team):
+  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team):
     # Show error (no access) page
     return HttpResponse(status=404)
 
@@ -204,7 +204,7 @@ def timetable_ruilverzoek_accept(request, id):
   ruil = RuilRequest.objects.get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.user.profile.teamleader_of(ruil.timetableduty.timetable.team):
+  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team):
     # Show error (no access) page
     return HttpResponse(status=404)
 
@@ -213,7 +213,7 @@ def timetable_ruilverzoek_accept(request, id):
   template = get_template('email/ruilverzoek_status.txt')
 
   data = Context({
-    'name': ruil.user.profile.name,
+    'name': ruil.profile.name,
     'status': 'geaccepteerd',
     'timetable': ruil.timetableduty.timetable.title,
     'duty': ruil.timetableduty,
@@ -223,7 +223,7 @@ def timetable_ruilverzoek_accept(request, id):
 
   from_email = settings.DEFAULT_FROM_EMAIL
 
-  to_emails = [ ruil.user.profile.email ]
+  to_emails = [ ruil.profile.email ]
   send_mail("Ruilverzoek geaccepteerd", message, from_email, to_emails)
 
   # Change responsibility
