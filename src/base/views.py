@@ -58,7 +58,7 @@ def profile_detail(request, pk):
   profiel = Profile.objects.get(pk=pk)
   memberships = TeamMember.objects\
                           .prefetch_related("team")\
-                          .filter(user__pk=pk)
+                          .filter(profile__pk=pk)
 
   return render(request, 'profile.html', {
     'p': profiel,
