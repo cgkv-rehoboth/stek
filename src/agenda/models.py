@@ -5,6 +5,10 @@ from django.contrib.contenttypes.models import ContentType
 from livefield.models import LiveModel
 from django.db.models import Count
 
+# Import models of base app
+#from ..base.models import Profile
+from base.models import Profile
+
 class TimestampedModel(models.Model):
 
   class Meta:
@@ -16,7 +20,7 @@ class TimestampedModel(models.Model):
 class Timetable(TimestampedModel, LiveModel, models.Model):
 
   title       = models.CharField(max_length=255)
-  owner       = models.ForeignKey(User)
+  owner       = models.ForeignKey(Profile)
   description = models.TextField(blank=True, null=True)
   team        = models.ForeignKey("Team", related_name="timetables", blank=True, null=True)
   incalendar  = models.BooleanField(default=True)
@@ -30,7 +34,7 @@ class Event(TimestampedModel, LiveModel, models.Model):
   title           = models.CharField(max_length=255, blank=True, null=True)
   startdatetime   = models.DateTimeField()
   enddatetime     = models.DateTimeField(blank=True, null=True)
-  owner           = models.ForeignKey(User, related_name="events")
+  owner           = models.ForeignKey(Profile, related_name="events")
   timetable       = models.ForeignKey(Timetable, related_name="events")
   description     = models.TextField(blank=True, null=True)
 
@@ -46,7 +50,7 @@ class Event(TimestampedModel, LiveModel, models.Model):
 
 class TimetableDuty(models.Model):
 
-  responsible = models.ForeignKey(User, related_name="duties")
+  responsible = models.ForeignKey(Profile, related_name="duties")
   event       = models.ForeignKey(Event, related_name="duties")
   timetable   = models.ForeignKey(Timetable, related_name="duties")
   comments    = models.TextField(blank=True, null=True)
@@ -68,7 +72,7 @@ class Service(Event):
 class Team(models.Model):
 
   name = models.CharField(max_length=255)
-  members = models.ManyToManyField(User, through="TeamMember", related_name="members")
+  members = models.ManyToManyField(Profile, through="TeamMember", related_name="members")
   email = models.EmailField(max_length=255, blank=True)
   description = models.TextField(blank=True)
 
@@ -92,7 +96,7 @@ class TeamMember(models.Model):
   )
 
   team = models.ForeignKey(Team, related_name="teammembers")
-  user = models.ForeignKey(User, related_name="team_membership")
+  profile = models.ForeignKey(Profile, related_name="team_membership")
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
 
   def __str__(self):
@@ -101,8 +105,8 @@ class TeamMember(models.Model):
 class RuilRequest(models.Model):
 
   timetableduty   = models.ForeignKey(TimetableDuty, related_name="ruilen")
-  user            = models.ForeignKey(User, related_name="ruilen")
+  profile         = models.ForeignKey(Profile, related_name="ruilen")
   comments        = models.TextField(blank=True)
 
   class Meta:
-    unique_together = (("timetableduty", "user"),)
+    unique_together = (("timetableduty", "profile"),)

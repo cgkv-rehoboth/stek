@@ -25,7 +25,7 @@ admin.site.register(TimetableDuty, TimetableDutyAdmin)
 
 # Create custom display for RuilRequest
 class RuilRequestAdmin(admin.ModelAdmin):
-  list_display = ['timetableduty', 'user', 'comments']
+  list_display = ['timetableduty', 'profile', 'comments']
 
 admin.site.register(RuilRequest, RuilRequestAdmin)
 
@@ -43,7 +43,7 @@ admin.site.register(Service, ServiceAdmin)
 
 # Team stuff
 class TeamMemberAdmin(admin.ModelAdmin):
-  list_display = ['user', 'team', 'role']
+  list_display = ['profile', 'team', 'role']
 
 admin.site.register(TeamMember, TeamMemberAdmin)
 
@@ -58,7 +58,7 @@ class TeamAdmin(admin.ModelAdmin):
 
   def get_leader_names(self, obj):
     return ", ".join(
-      [ p.user.profile.name() for p in obj.leaders().prefetch_related('user__profile') ]
+      [ p.profile.name() for p in obj.leaders() ]
     )
 
 admin.site.register(Team, TeamAdmin)

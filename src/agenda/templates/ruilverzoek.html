@@ -29,7 +29,7 @@
               <select name="vervanging">
                 <option>--</option>
                 {% for member in members %}
-                <option value="{{ member.user.id }}">{{ member.user.profile.name }}</option>
+                <option value="{{ member.profile.id }}">{{ member.profile.name }}</option>
                 {% endfor %}
               </select>
             </label>

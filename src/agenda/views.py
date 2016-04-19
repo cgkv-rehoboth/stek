@@ -10,6 +10,7 @@ from django.template import Context
 from django.contrib.auth.forms import AuthenticationForm
 from datetime import datetime
 from .models import *
+from base.models import Profile
 
 @login_required
 def add_event(request):
@@ -21,7 +22,7 @@ def timetables(request, id=None):
   # Get all the tables linked to the team(s) the user is in
   mytables = list(Timetable\
     .objects\
-    .filter(team__members__pk=request.user.pk)\
+    .filter(team__members__pk=request.user.profile.pk)\
     .exclude(team__isnull=True))
 
   # Insert special buttons for special persons (teamleaders)
@@ -51,14 +52,14 @@ def timetables(request, id=None):
       # sanity check
       # only a single request can pass this check
       # due to the uniqueness constraint on requests
-      if req.user == duty.responsible:
+      if req.profile == duty.responsible:
         duty.ruilrequest = req
 
   # Get all the other tables
   # that are not really relevant to the user
   notmytables = list(Timetable\
     .objects\
-    .exclude(team__members__pk=request.user.pk)\
+    .exclude(team__members__pk=request.user.profile.pk)\
     .exclude(team__isnull=True)\
     .exclude(pk=id))
 
@@ -107,7 +108,7 @@ def timetable_undo_ruilen_teamleader(request, id):
 
   from_email = settings.DEFAULT_FROM_EMAIL
 
-  to_emails = [ req.user.profile.email ]
+  to_emails = [ req.profile.email ]
   send_mail("Ruilverzoek user", message, from_email, to_emails)
 
   # delete the request
@@ -123,7 +124,7 @@ def timetable_ruilen(request, id):
   # Create record
   record = RuilRequest.objects.create(
     timetableduty=duty,
-    user=request.user,
+    user=request.user.profile,
     comments=request.POST.get("comments", "")
   )
 
@@ -226,7 +227,7 @@ def timetable_ruilverzoek_accept(request, id):
   send_mail("Ruilverzoek geaccepteerd", message, from_email, to_emails)
 
   # Change responsibility
-  ruil.timetableduty.responsible = User.objects.get(pk=request.POST.get("vervanging"))
+  ruil.timetableduty.responsible = Profile.objects.get(pk=request.POST.get("vervanging"))
   ruil.timetableduty.save()
 
   # Remove ruilrequest

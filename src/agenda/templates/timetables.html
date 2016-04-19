@@ -58,12 +58,12 @@
                 <td class="duty-title">{{ duty.event.title }}</td>
                 <td>
                   {% with duty.ruilrequest as ruilen %}
-                    <span class="{% if duty.responsible.pk == user.pk %}current-user{% endif %}
+                    <span class="{% if duty.responsible.pk == profile.pk %}current-user{% endif %}
                                 {% if ruilen %}ruil_requested{% endif %}">
-                      {{ duty.responsible|usernicename }}
+                      {{ duty.responsible|usernicename }} <!-- TODO: usernicename -> profile.name ? -->
                     </span>
-                    {% if duty.responsible.pk == request.user.pk %}
-                      {% if ruilen.user == request.user %}
+                    {% if duty.responsible.pk == request.user.profile.pk %}
+                      {% if ruilen.profile == request.user.profile %}
                         <a href="javascript:void(0)" class="timetable-undo-ruilen"
                           title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
                           data-request-pk="{{ruilen.pk}}"
