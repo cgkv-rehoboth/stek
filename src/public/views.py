@@ -18,6 +18,14 @@ def index(request):
     'recaptcha_publickey': settings.RECAPTCHA_PUBLIC_KEY
   })
 
+def kerktijden(request):
+  return render(request, 'kerktijden.html', {})
+
+def kindercreche(request):
+  return render(request, 'kerktijden.html', {})
+
 urls = [
+  url(r'^kerktijden/$', kerktijden, name='kerktijden'),
+  url(r'^kindercreche/$', kindercreche, name='kindercreche'),
   url(r'^$', index)
 ]
