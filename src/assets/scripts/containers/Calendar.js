@@ -8,6 +8,7 @@ import * as qs from 'querystring';
 
 import Icon from "bootstrap/Icon";
 import * as forms from 'bootstrap/forms';
+import {Link} from 'react-router';
 
 export function generateCalendar(yearno, monthno, f) {
   let month_start = moment([yearno, monthno, 1]);
@@ -48,12 +49,19 @@ class CalEvent extends React.Component {
   render() {
     let {event} = this.props;
     let eventTime = this.eventTimeRange();
-    return <li className="cal-event" style={{backgroundColor: `#${event.timetable_info.color}`}}>
-      <span className="cal-event-timing">
-        {eventTime.start.format("HH:mm")}
-      </span>
-      <span className="cal-event-title">{this.props.event.title}</span>
-    </li>;
+
+    return (
+      <li
+        className="cal-event"
+        style={{backgroundColor: `#${event.timetable_info.color}`}}>
+        <span
+          className="cal-event-timing"
+          style={{backgroundColor: `#${event.timetable_info.color}`}}>
+          {eventTime.start.format("HH:mm")}
+        </span>
+        <span className="cal-event-title">{this.props.event.title}</span>
+      </li>
+    );
   }
 }
 
@@ -86,10 +94,18 @@ class CalDay extends React.Component {
       <ul>
       {
         _.map(this.props.events, (event, i) => 
-          <CalEvent key={i} event={event} day={day.clone()} />
+          <Link to={`/event/${event.id}`}>
+             <CalEvent key={i} event={event} day={day.clone()} />
+          </Link>
         )
       }
       </ul>
+      <span className='day-no'>
+        <span className='day-name'>
+          {day.format("dd")}
+        </span>
+        {day.format("D")}
+      </span>
       <button
         className="add-event btn btn-circle tiny black"
         onClick={() => addEvent(day)}

@@ -25,7 +25,7 @@ class EventSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Event
-    fields = ["title", "description", "timetable_info", "timetable",
+    fields = ["id", "title", "description", "timetable_info", "timetable",
               "startdatetime", "enddatetime", "owner"]
 
 class TeamSerializer(serializers.ModelSerializer):
