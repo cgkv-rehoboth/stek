@@ -110,6 +110,15 @@ let api_obj = {
         }, extra_params));
     },
 
+    get: (id) => {
+      return Q.xhr
+        .get(`${api}/agenda/events/:id/`, {
+          params: {
+            id: id
+          }
+        });
+    },
+
     add: (data) => {
       return http.post(`${api}/agenda/events/`, data);
     }

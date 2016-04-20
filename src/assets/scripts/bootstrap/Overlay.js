@@ -17,9 +17,13 @@ export default class Overlay extends Component {
   }
 
   render() {
-    let {width} = this.props;
+    let {width, minWidth} = this.props;
     return <div className="overlay" onClick={this.props.onClose}>
-      <div className="overlay-content" style={{width: width}}
+      <div className="overlay-content" style={{
+        width: width,
+        minWidth: minWidth,
+        maxWidth: '100%'
+      }}
            onClick={(e) => e.stopPropagation()}>
         <button onClick={this.props.onClose} className="btn-trans overlay-close">
           <Icon name="close" className="fa-2x"/>

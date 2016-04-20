@@ -7,6 +7,7 @@ import { Link, IndexRoute, Router, Route, hashHistory } from 'react-router';
 import Calendar from 'containers/Calendar';
 import EventForm from 'containers/EventForm';
 import Overlay from 'bootstrap/Overlay';
+import Async from 'containers/Async';
 
 class AddEventOverlay extends Component {
   
@@ -19,10 +20,45 @@ class AddEventOverlay extends Component {
 
     let close = () => hashHistory.push('/');
 
-    return <Overlay width="30%" onClose={close}>
+    return <Overlay width="30%" minWidth={600} onClose={close}>
       <h2>Nieuw</h2>
       <EventForm day={daym} onSuccess={close} />
     </Overlay>;
+  }
+}
+
+class EventDetail extends Component {
+  
+  static get propTypes() {
+    return {
+      event: PropTypes.object.isRequired
+    };
+  }
+
+  render() {
+    let {event} = this.props;
+    const FMT = "D MMM YYYY hh:mm"
+
+    return <div>
+      <h4>{moment(event.startdatetime).format(FMT)}-
+          {moment(event.enddatetime).format(FMT)}</h4>
+      <h2>{event.title}</h2>
+      <p>{event.description}</p>
+    </div>;
+  }
+}
+
+class EventDetailOverlay extends Component {
+  
+  render() {
+    let {id} = this.props.params;
+    let close = () => hashHistory.push('/');
+
+    return <Overlay width="30%" minWidth={600} onClose={close}>
+      <Async promise={api.events.get(id).then((resp) => resp.data)}
+        then={(e) => <EventDetail event={e} />}
+      />
+    </Overlay>
   }
 }
 
@@ -60,6 +96,7 @@ export default function calendarMain() {
     <Route path="/" component={CalendarPage}>
       <IndexRoute />
       <Route path="nieuw/:day" component={AddEventOverlay} />
+      <Route path="event/:id" component={EventDetailOverlay} />
     </Route>
   </Router>;
   
