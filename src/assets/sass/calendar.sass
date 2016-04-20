@@ -90,9 +90,17 @@ tr
       width: 100%
       height: 100%
       background-color: $table-bg
+      overflow-y: none
       border:
         bottom: $table-border
         right: $table-border
+
+      ul
+        position: absolute
+        top: 0px
+        right: 0px
+
+        bottom: 30px
 
       span.day-name
         color: #bbb
@@ -146,6 +154,7 @@ tr
         left: -25%
         top: -25%
         background-color: white
+        overflow-y: auto
         padding: 5px
         color: white
         z-index: 1000

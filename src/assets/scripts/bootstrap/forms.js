@@ -3,7 +3,6 @@ import _ from 'underscore';
 import cn from 'classnames';
 import ReCAPTCHA from 'react-google-recaptcha';
 import moment from 'moment';
-import Select from 'react-select';
 
 import {Modal, ModalBody, ModalFooter} from 'bootstrap/Modal';
 import Icon from 'bootstrap/Icon';
@@ -184,7 +183,7 @@ export class Field extends React.Component {
   }
 
   clear() {
-    this.setValue(undefined);
+    this.setValue(this.props.initial);
   }
 
   onSubmit() {}
@@ -260,7 +259,7 @@ export class DateTimeField extends Field {
 
   static get defaultProps() {
     return _.extend({}, Field.defaultProps, {
-      initial: moment()
+      initial: moment().format()
     });
   }
 

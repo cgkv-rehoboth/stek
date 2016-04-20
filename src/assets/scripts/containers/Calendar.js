@@ -48,7 +48,7 @@ class CalEvent extends React.Component {
   render() {
     let {event} = this.props;
     let eventTime = this.eventTimeRange();
-    return <li className="cal-event" style={{backgroundColor: `#${event.timetable.color}`}}>
+    return <li className="cal-event" style={{backgroundColor: `#${event.timetable_info.color}`}}>
       <span className="cal-event-timing">
         {eventTime.start.format("HH:mm")}
       </span>
@@ -83,12 +83,6 @@ class CalDay extends React.Component {
 
     return <td className={clz}>
       <div className="content">
-      <span className='day-no'>
-        <span className='day-name'>
-          {day.format("dd")}
-        </span>
-        {day.format("D")}
-      </span>
       <ul>
       {
         _.map(this.props.events, (event, i) => 

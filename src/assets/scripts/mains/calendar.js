@@ -17,9 +17,11 @@ class AddEventOverlay extends Component {
       daym = moment();
     }
 
-    return <Overlay width="30%" onClose={() => hashHistory.push('/')}>
+    let close = () => hashHistory.push('/');
+
+    return <Overlay width="30%" onClose={close}>
       <h2>Nieuw</h2>
-      <EventForm day={daym} />
+      <EventForm day={daym} onSuccess={close} />
     </Overlay>;
   }
 }

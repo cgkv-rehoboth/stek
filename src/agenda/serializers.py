@@ -19,11 +19,14 @@ class ShortTimetableSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
   owner = ProfileSerializer()
-  timetable = ShortTimetableSerializer()
+  timetable_info = ShortTimetableSerializer(source="timetable", read_only=True)
+  title = serializers.CharField(min_length=5)
+  description = serializers.CharField()
 
   class Meta:
     model = Event
-    read_only_fields = ["owner"]
+    fields = ["title", "description", "timetable_info", "timetable",
+              "startdatetime", "enddatetime", "owner"]
 
 class TeamSerializer(serializers.ModelSerializer):
   members = ProfileSerializer(many=True)

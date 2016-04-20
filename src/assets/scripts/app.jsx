@@ -6,8 +6,6 @@ import moment from 'moment';
 import * as qs from 'querystring';
 
 // localize
-import momentLocalizer from 'react-widgets/lib/localizers/moment';
-momentLocalizer(moment);
 import nl from 'moment/locale/nl';
 
 import ProfileSearchTable from "ProfileSearchTable";
