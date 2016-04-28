@@ -10,6 +10,9 @@ export class LiveButton extends React.Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentWillMount(){
     // Check if player exists
     if(!$("#luisteren-player")[0]){
       // Render player and make it global accessible
@@ -158,6 +161,13 @@ export class LivePlayer extends React.Component {
 
   onloadeddata(){
     console.debug("Media is loaded...");
+
+    // Add intro Luister nu live mee! -button
+    if(window.fixicon && window.player.state.islive) {
+      window.fixicon();
+      // Remove function
+      window.fixicon = null;
+    }
 
     window.player.setState({
       isloading: false
