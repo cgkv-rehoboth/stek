@@ -8,7 +8,8 @@ import ReactDom from "react-dom";
  */
 export class LiveButton extends React.Component {
 
-  constructor() {
+  constructor(props) {
+    super(props);
     // Check if player exists
     if(!$("#luisteren-player")[0]){
       // Render player and make it global accessible
