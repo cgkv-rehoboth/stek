@@ -11,6 +11,7 @@ import nl from 'moment/locale/nl';
 import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
 import * as forms from 'bootstrap/forms';
+import {LiveButton} from "LiveButton";
 
 // bind global jquery instance
 window.jQuery = $;
@@ -168,46 +169,16 @@ window.frontpageMain = () => {
     $form_container[0]
   );
 
-  /* Meeluisteren player */
-  // Get player
-  var player = $("#luisteren-audio")[0];
-
-  // Meelusiter part
-  $(".luisteren-button").click(function(e){
-
-    /* Leuke info:
-     *   if(player.duration == 13.212) -> dienst is NIET live
-     *   if(player.duration == Infinity) -> dienst is live
-     */
-
-    // Check if browser can play, otherwise let the button be a URL
-    if(player.canPlayType('audio/mpeg')) {
-      // Prevent URL action
-      e.preventDefault();
-
-      // Remove any pause-icons
-      $(".luisteren-pause-i").remove();
-
-      // Toggle play/pause
-      if (player.paused) {
-        // Reload player to current time
-        player.load();
-        player.play();
-      } else {
-        player.pause();
-      }
-    }
+  /* <-- Meeluisteren player */
+  window.playerButton = [];
+  // Assign React component to each element with class 'luisteren-button'
+  $(".luisteren-button").map(function(value, i){
+    window.playerButton[value] = ReactDom.render(
+      <LiveButton text={$(i).text()}></LiveButton>,
+      i
+    );
   });
-
-  player.onplaying = function(){
-    // Remove any pause-icons
-    $(".luisteren-pause-i").remove();
-
-    // Add pause-icon
-    $(".luisteren-button").append('<i class="fa fa-pause luisteren-pause-i" aria-hidden="true"></i>');
-  }
-
-  /* End Meeluisteren player */
+  /* --> */
 };
 
 
