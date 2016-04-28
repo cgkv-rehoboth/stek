@@ -169,6 +169,7 @@ window.frontpageMain = () => {
     $form_container[0]
   );
 
+
   /* <-- Meeluisteren player */
   window.playerButton = [];
   // Assign React component to each element with class 'luisteren-button'
@@ -179,6 +180,26 @@ window.frontpageMain = () => {
     );
   });
   /* --> */
+};
+
+/**
+ * Show ListenLive button on top of the front page (next to the logo)
+ * Executed by LivePlayer.ondataloaded()
+ */
+window.fixicon = function(){
+  // Get element with the icon
+  var intro = $(".intro .intro-body .container .row:first-of-type div:first-of-type")[0];
+
+  // Fade the picture out for a smooth transition
+  $(intro).find('img').fadeOut(500, function(){
+    // Change col class
+    $(intro).addClass('col-md-4').removeClass('col-md-8');
+    // Fade the picture in again
+    $(this).fadeIn(500);
+
+    // Add Play button
+    $("#listen-in").fadeIn(1000);
+  });
 };
 
 
