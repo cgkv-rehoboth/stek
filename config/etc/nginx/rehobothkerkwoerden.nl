@@ -14,8 +14,8 @@ server {
       alias /srv/http/rehobothkerkwoerden.nl/static/;
   }
 
-  location /media/ {
-      autoindex on;
+  location /protected-media/ {
+      internal;
       gzip_static on;
       alias /srv/http/rehobothkerkwoerden.nl/media/;
   }

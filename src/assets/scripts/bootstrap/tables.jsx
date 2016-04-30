@@ -67,6 +67,12 @@ export class SearchTable extends React.Component {
       hasPrev: false,
       hasNext: false
     };
+
+    // bind event handlers
+    // this is way convoluted because react pools events...
+    // ...so we have to persist the event before we pass it to the debounced function
+    let debouncedSearchChange = _.debounce(this.searchChange.bind(this), 300);
+    this.onSearchChange = (e) => { e.persist(); return debouncedSearchChange(e); }
   }
 
   loadItems(searchtext="", page=1) {
@@ -88,6 +94,8 @@ export class SearchTable extends React.Component {
 
   searchChange(e) {
     let text = $(e.target).val();
+    let ev = e.nativeEvent;
+    console.log("Made", ev);
     this.setState({ query: text, page: 1});
     this.loadItems(text, this.state.page);
   }
@@ -105,7 +113,7 @@ export class SearchTable extends React.Component {
       <div className="profile-search-table">
         <div>
           <Icon name="search" />
-          <input type="text" onChange={_.debounce(this.searchChange.bind(this), 300)} />
+          <input type="text" onChange={this.onSearchChange} />
         </div>
         <PaginatedTable
           pageno={this.state.page}
