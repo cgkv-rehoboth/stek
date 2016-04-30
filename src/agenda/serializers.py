@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from .models import *
-from base.serializers import ProfileSerializer
+from base.serializers import UserSerializer, ProfileSerializer
 
 class TimetableSerializer(serializers.ModelSerializer):
   owner = ProfileSerializer()
@@ -18,7 +18,7 @@ class ShortTimetableSerializer(serializers.ModelSerializer):
     fields = ["pk", "title", "incalendar", "color"]
 
 class EventSerializer(serializers.ModelSerializer):
-  owner = ProfileSerializer()
+  owner = ProfileSerializer(read_only=True)
   timetable_info = ShortTimetableSerializer(source="timetable", read_only=True)
   title = serializers.CharField(min_length=5)
   description = serializers.CharField()
