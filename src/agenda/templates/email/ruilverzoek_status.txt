@@ -1,0 +1,4 @@
+Beste {{ name }},
+
+Uw verzoek tot ruilen is {{ status }} voor de volgende taak:
+{{ timetable }}: {{ duty }}

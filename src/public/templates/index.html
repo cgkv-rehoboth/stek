@@ -13,8 +13,8 @@
             <div class="col-md-4 col-md-offset-2">
               <img src="{% static 'resources/images/logo-wit.png' %}">
             </div>
-            <div id="listen-in"  "class="col-md-4">
-                <a class="cyan btn-rounded btn"
+            <div id="listen-in" class="col-md-4">
+                <a class="cyan btn-rounded btn luisteren-button"
                    data-toggle="tooltip" data-placement="bottom"
                    href="http://kerkdienstgemist.nl/assets/267"
                    title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
@@ -131,12 +131,12 @@
           <i class="fa fa-coffee fa-round fa-preicon"></i>Koffiedrinken na de ochtenddienst
         </div>
         <div class="col-md-4">
-          <i class="fa fa-soccer-ball-o fa-round fa-preicon"></i>Jeugd kamp!
+          <i class="fa fa-soccer-ball-o fa-round fa-preicon"></i>Jeugdkamp!
         </div>
       </div>
       <div class="row">
         <div class="col-md-4">
-          <i class="fa fa-graduation-cap fa-round fa-preicon"></i>Cathechisatie
+          <i class="fa fa-graduation-cap fa-round fa-preicon"></i>Catechisatie
         </div>
         <div class="col-md-4">
           <i class="fa fa-globe fa-round fa-preicon"></i>Evangelisatie
@@ -160,14 +160,14 @@
     <div id="luisteren" class="row">
       <div class="col-xs-6">
         <p>
-          <a class="btn btn-rounded blue" href="http://kerkdienstgemist.nl/assets/267">
+          <a class="btn btn-rounded blue luisteren-button" href="http://kerkdienstgemist.nl/assets/267">
             Live meeluisteren
           </a>
         </p>
       </div>
       <div class="col-xs-6">
         <p>
-          <a class="btn btn-rounded blue" href="http://kerkdienstgemist.nl/assets/267">
+          <a class="btn btn-rounded blue" href="http://kerkdienstgemist.nl/assets/267" target="_blank">
             Opname archief
           </a>
         </p>
@@ -247,6 +247,12 @@
       </div>
     </div>
   </section>
+
+  <div id="luisteren-audio-div">
+    <audio id="luisteren-audio" loop>
+      <source src="http://kerkdienstgemist.nl/streams/267.mp3" type="audio/mpeg">
+    </audio>
+  </div>
 {% endblock %}
 
 {% block scripts %}

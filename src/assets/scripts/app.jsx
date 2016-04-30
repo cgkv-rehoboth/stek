@@ -6,15 +6,11 @@ import moment from 'moment';
 import * as qs from 'querystring';
 
 // localize
-import momentLocalizer from 'react-widgets/lib/localizers/moment';
-momentLocalizer(moment);
 import nl from 'moment/locale/nl';
 
 import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
 import * as forms from 'bootstrap/forms';
-import Calendar from 'containers/Calendar';
-import EventForm from 'containers/EventForm';
 
 // bind global jquery instance
 window.jQuery = $;
@@ -26,6 +22,8 @@ require('jquery.easing');
 require('bootstrap/dist/js/bootstrap.min');
 require('bootstrap/js/tooltip');
 require('lib/grayscale');
+
+window.calendarMain = calendarMain;
 
 function initListGroupDetail() {
   $('.list-group-item', '.list-group-hide-detail')
@@ -81,31 +79,6 @@ window.favoriteListMain = () => {
   );
 }
 
-window.calendarMain = () => {
-  let query = qs.parse(window.location.search.replace("?", ""));
-  var focus = moment([query.year, query.month || 0, 1]);
-  if(!focus.isValid())
-    focus = moment();
-
-  class MainCal extends React.Component {
-
-    render() {
-      let onMonthChange = (year, month) => {
-        let from = moment([year, month]);
-        let to = from.clone().add(1, 'months');
-
-        return api.events.list(from.unix(), to.unix());
-      };
-
-      return <Calendar
-      tables={[]}
-      onMonthChange={onMonthChange}
-      initFocus={focus} />;
-    }
-  }
-
-  ReactDom.render(<MainCal />, $("#calendar")[0]);
-};
 
 import FavStar from 'containers/FavStar';
 
@@ -194,14 +167,54 @@ window.frontpageMain = () => {
     </forms.Form>,
     $form_container[0]
   );
-};
 
-window.addEventMain = () => {
-  let timestamp = qs.parse(window.location.search.replace("?", "")).datetime;
-  var day = moment.unix(timestamp);
-  if(!day.isValid()) {
-    day = moment();
+  /* Meeluisteren player */
+  // Get player
+  var player = $("#luisteren-audio")[0];
+
+  // Meelusiter part
+  $(".luisteren-button").click(function(e){
+
+    /* Leuke info:
+     *   if(player.duration == 13.212) -> dienst is NIET live
+     *   if(player.duration == Infinity) -> dienst is live
+     */
+
+    // Check if browser can play, otherwise let the button be a URL
+    if(player.canPlayType('audio/mpeg')) {
+      // Prevent URL action
+      e.preventDefault();
+
+      // Remove any pause-icons
+      $(".luisteren-pause-i").remove();
+
+      // Toggle play/pause
+      if (player.paused) {
+        // Reload player to current time
+        player.load();
+        player.play();
+      } else {
+        player.pause();
+      }
+    }
+  });
+
+  player.onplaying = function(){
+    // Remove any pause-icons
+    $(".luisteren-pause-i").remove();
+
+    // Add pause-icon
+    $(".luisteren-button").append('<i class="fa fa-pause luisteren-pause-i" aria-hidden="true"></i>');
   }
 
-  ReactDom.render(<EventForm day={day} />, $('#add-event-form')[0]);
+  /* End Meeluisteren player */
+};
+
+
+//import some main functions
+import calendarMain from 'mains/calendar';
+
+
+window.timetableTeamleader = () => {
+
 };

@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from .models import *
-from base.serializers import UserSerializer
+from base.serializers import ProfileSerializer
 
 class TimetableSerializer(serializers.ModelSerializer):
-  owner = UserSerializer()
+  owner = ProfileSerializer()
 
   class Meta:
     model = Timetable
@@ -18,15 +18,18 @@ class ShortTimetableSerializer(serializers.ModelSerializer):
     fields = ["pk", "title", "incalendar", "color"]
 
 class EventSerializer(serializers.ModelSerializer):
-  owner = UserSerializer()
-  timetable = ShortTimetableSerializer()
+  owner = ProfileSerializer()
+  timetable_info = ShortTimetableSerializer(source="timetable", read_only=True)
+  title = serializers.CharField(min_length=5)
+  description = serializers.CharField()
 
   class Meta:
     model = Event
-    read_only_fields = ["owner"]
+    fields = ["id", "title", "description", "timetable_info", "timetable",
+              "startdatetime", "enddatetime", "owner"]
 
 class TeamSerializer(serializers.ModelSerializer):
-  members = UserSerializer(many=True)
+  members = ProfileSerializer(many=True)
 
   class Meta:
     model = Team
@@ -34,7 +37,7 @@ class TeamSerializer(serializers.ModelSerializer):
 class EventWithDutiesSerializer(EventSerializer):
 
   class CustomDutySerializer(serializers.ModelSerializer):
-    responsible = UserSerializer()
+    responsible = ProfileSerializer()
 
     class Meta:
       model = TimetableDuty
@@ -48,7 +51,7 @@ class ServiceSerializer(EventSerializer):
 
 class DutyReadSerializer(serializers.ModelSerializer):
 
-  responsible = UserSerializer()
+  responsible = ProfileSerializer()
   event = EventSerializer()
   timetable = ShortTimetableSerializer()
 

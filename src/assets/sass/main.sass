@@ -2,18 +2,27 @@
 @import reset
 @import common
 @import colors
+@import overlay
 
 #wrapper
-  min-height: 100%
-  position: relative
+  position: absolute
+  top: 50px
+  left: 0px
+  bottom: 0px
+  width: 100%
 
 #content
-  padding-top: 50px
+  position: relative 
+  min-height: 100%
+  width: 100%
+
+.overlay
+  display: table-cell
 
 .navbar-custom
   background-color: $dark-bg
   padding: 0px
-  
+
   .nav li
     background-color: $dark-bg
 

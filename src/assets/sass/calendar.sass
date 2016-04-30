@@ -67,8 +67,8 @@ tr
 
     .add-event
       position: absolute
-      bottom: 10px
-      left: 10px
+      bottom: 5px
+      left: 5px
       display: none
 
     &:hover 
@@ -87,24 +87,36 @@ tr
       position: absolute
       left: 0px
       top: 0px
+      bottom: 0px
+      overflow: hidden 
       width: 100%
-      height: 100%
       background-color: $table-bg
       border:
         bottom: $table-border
         right: $table-border
 
-      span.day-name
-        color: #bbb
-        padding-right: 4px
-  
+      ul
+        position: absolute
+        top: 0px
+        right: 0px
+        left: 0px
+        bottom: 35px
+        overflow: hidden
+
       span.day-no
         position: absolute
-        bottom: 10px
-        right: 10px
+        bottom: 0px
+        right: 0px
+        padding: 3px
+        padding-right: 5px
         font-size: 20pt
         font-weight: bold
         color: #666
+
+        span.day-name
+          color: #bbb
+          padding-right: 4px
+  
   
   ul
     li.cal-event
@@ -140,15 +152,23 @@ tr
   td.cal-day.hoverable
     &:hover, &.focused
       .content
-        +transition(left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out, background-color 0.2s ease-out)
+        +transition(left 0.2s ease-out, top 0.2s ease-out, width 0.2s ease-out, bottom 0.2s ease-out, background-color 0.5s ease-out)
         width: 180%
-        height: 150%
         left: -25%
+        bottom: -25%
         top: -25%
         background-color: white
+        overflow-y: auto
         padding: 5px
         color: white
         z-index: 1000
+
+        ul
+          top: 5px
+          right: 5px
+          left: 5px
+          bottom: 35px
+          overflow: auto
  
     &:last-child:hover, &:last-child.focused
       .content
@@ -164,7 +184,7 @@ tr
     td.cal-day.hoverable:hover, td.cal-day.focused
       .content
         bottom: -1px
-        top: auto
+        top: -50%
 
   &:first-child
     td.cal-day.hoverable:hover, td.cal-day.focused

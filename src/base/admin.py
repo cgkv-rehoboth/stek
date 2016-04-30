@@ -20,7 +20,7 @@ admin.site.register(Family, FamilyAdmin)
 # Create custom display for User
 class ProfileInline(admin.StackedInline):
   model = Profile
-  extra = 1
+  extra = 0
   max_num = 1
 
 class UserAdmin(BaseUserAdmin):

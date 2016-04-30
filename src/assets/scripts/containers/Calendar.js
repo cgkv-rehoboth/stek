@@ -8,6 +8,7 @@ import * as qs from 'querystring';
 
 import Icon from "bootstrap/Icon";
 import * as forms from 'bootstrap/forms';
+import {Link} from 'react-router';
 
 export function generateCalendar(yearno, monthno, f) {
   let month_start = moment([yearno, monthno, 1]);
@@ -48,12 +49,19 @@ class CalEvent extends React.Component {
   render() {
     let {event} = this.props;
     let eventTime = this.eventTimeRange();
-    return <li className="cal-event" style={{backgroundColor: `#${event.timetable.color}`}}>
-      <span className="cal-event-timing">
-        {eventTime.start.format("HH:mm")}
-      </span>
-      <span className="cal-event-title">{this.props.event.title}</span>
-    </li>;
+
+    return (
+      <li
+        className="cal-event"
+        style={{backgroundColor: `#${event.timetable_info.color}`}}>
+        <span
+          className="cal-event-timing"
+          style={{backgroundColor: `#${event.timetable_info.color}`}}>
+          {eventTime.start.format("HH:mm")}
+        </span>
+        <span className="cal-event-title">{this.props.event.title}</span>
+      </li>
+    );
   }
 }
 
@@ -83,19 +91,21 @@ class CalDay extends React.Component {
 
     return <td className={clz}>
       <div className="content">
+      <ul>
+      {
+        _.map(this.props.events, (event, i) => 
+          <Link to={`/event/${event.id}`}>
+             <CalEvent key={i} event={event} day={day.clone()} />
+          </Link>
+        )
+      }
+      </ul>
       <span className='day-no'>
         <span className='day-name'>
           {day.format("dd")}
         </span>
         {day.format("D")}
       </span>
-      <ul>
-      {
-        _.map(this.props.events, (event, i) => 
-          <CalEvent key={i} event={event} day={day.clone()} />
-        )
-      }
-      </ul>
       <button
         className="add-event btn btn-circle tiny black"
         onClick={() => addEvent(day)}
@@ -148,7 +158,8 @@ export default class Calendar extends Component {
   static get propTypes() {
     return {
       initFocus: React.PropTypes.object,
-      onMonthChange: React.PropTypes.func
+      onMonthChange: React.PropTypes.func,
+      onAddEvent: PropTypes.func
     };
   }
 
@@ -222,8 +233,10 @@ export default class Calendar extends Component {
   }
 
   addEvent(day) {
-    let query = qs.stringify({datetime: day.unix()});
-    window.location = '/kalendar/nieuw/?' + query;
+    // set the default time
+    day.hour(12);
+    day.minute(0);
+    this.props.onAddEvent(day);
   }
 
   render() {

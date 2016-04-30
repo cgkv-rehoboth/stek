@@ -12,7 +12,7 @@ class Slide(LiveModel, models.Model):
   image       = models.CharField(max_length=255)
   title       = models.CharField(max_length=255)
   description = models.TextField(blank=True, null=True)
-  owner       = models.ForeignKey(User)
+  owner       = models.ForeignKey(User) # Todo: replace User with Profile
 
   def __str__(self): return self.title
 
@@ -83,6 +83,10 @@ class Profile(models.Model):
 
   def __str__(self):
     return "Profiel van %s" % self.name()
+
+  def teamleader_of(self, team):
+    # Check if user is teamleader of this timetable's team
+    return self.team_membership.filter(team=team, profile=self).first().role == 'LEI'
 
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)

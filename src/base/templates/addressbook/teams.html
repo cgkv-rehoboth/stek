@@ -33,9 +33,9 @@
               </tr>
               {% for lid in team.teammembers.all %}
                 <tr>
-                  <td><a href="{% url 'profile-detail-page' lid.user.pk %}">
-                    {{ lid.user.first_name }} 
-                    {{ lid.user.last_name }}
+                  <td><a href="{% url 'profile-detail-page' lid.profile.pk %}">
+                    {{ lid.profile.first_name }}
+                    {{ lid.profile.last_name }}
                   </a></td>
                   <td>{{ lid.get_role_display }}</td>
                 </tr>

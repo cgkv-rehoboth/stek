@@ -1,0 +1,48 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Ruilverzoek voldoen</h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Ruilrequests -->
+        <div class="col-sm-12">
+          <strong>Verzoek voor</strong><br/>
+          {{ ruil.timetableduty }}
+          <br/>
+          <br/>
+          <br/>
+
+          <form method="post" action="{% url 'timetable-ruilverzoek-accept' ruil.id %}">
+            {% csrf_token %}
+            <label>
+              Vervanging:
+              <select name="vervanging">
+                <option>--</option>
+                {% for member in members %}
+                <option value="{{ member.profile.id }}">{{ member.profile.name }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <br/>
+            <br/>
+            <a href="{% url 'timetable-teamleader-page' ruil.timetableduty.timetable.id %}" class="btn btn-default black">Annuleren</a>
+            <button type="submit" class="btn btn-default cyan modal-submit-button">Vervangen</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
