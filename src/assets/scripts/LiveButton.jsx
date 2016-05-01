@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Component, PropTypes} from 'react';
 import _ from 'underscore';
 import $ from "jquery";
 import ReactDom from "react-dom";
@@ -21,16 +21,6 @@ export class LiveButton extends React.Component {
     this.props.player.registerButton(this);
   }
 
-  componentWillMount(){
-    // Check if player exists
-    /*
-    if(!$("#luisteren-player")[0]){
-      // Render player and make it global accessible
-      $("#content").append('<div id="luisteren-player"></div>');
-      window.player = ReactDom.render(<LivePlayer></LivePlayer>, $("#luisteren-player")[0]);
-    }*/
-  }
-
   onClick(e){
     let {player} = this.props;
     // Check if browser can play, otherwise let the button be a URL
@@ -51,10 +41,6 @@ export class LiveButton extends React.Component {
   render() {
     let {player} = this.props;
 
-    window.pl = player;
-    //
-    console.log("My player: ");
-    console.log(player);
     // Figure out which icon needs to be displayed
     let html;
     if(player.state.isloading) {
@@ -78,9 +64,13 @@ export class LiveButton extends React.Component {
 
 /**
  * React component to play an audio stream. This player could be controlled by a
- * React LiveButton component, or via console commands
+ * React LiveButton component
  */
 export class LivePlayer extends React.Component {
+
+  static get propTypes() {
+    onDataLoaded: PropTypes.func
+  }
 
   constructor(props) {
     super(props);
@@ -101,7 +91,6 @@ export class LivePlayer extends React.Component {
 
     // Add eventListeners to player
     player.addEventListener('playing', () => this.onplaying());
-    //player.addEventListener('play', this.onplay);
     player.addEventListener('pause', () => this.onpause());
     player.addEventListener('ended', () => this.onended());
     player.addEventListener('waiting', () => this.onwaiting());
@@ -114,7 +103,10 @@ export class LivePlayer extends React.Component {
     player.addEventListener('loadeddata', () => this.onloadeddata());
   }
 
-  /** EventListeners **/
+  /*
+   * EventListeners
+   */
+
   onplaying(){
     console.debug("Media is playing...");
     this.setState({
@@ -183,40 +175,34 @@ export class LivePlayer extends React.Component {
   onloadeddata(){
     console.debug("Media is loaded...");
 
-    // Add intro Luister nu live mee! -button
-    if(window.fixicon && this.state.islive) {
-      window.fixicon();
-      // Remove function to prevent double execution of the function
-      window.fixicon = null;
-    }
-
     this.setState({
       isloading: false
     });
+
+    this.props.onDataLoaded();
   }
 
-  /** (callable) Events **/
-  play(){
-    console.debug("Event play triggered...");
+  /*
+   * Actions
+   */
+
+  play() {
     this.refs.luisterenObject.play();
   }
 
-  pause(){
-    console.debug("Event pause triggered...");
+  pause() {
     this.refs.luisterenObject.pause()
   }
 
-  load(){
-    console.debug("Event load triggered...");
+  load() {
     this.refs.luisterenObject.load();
   }
 
-  canPlayType(type){
+  canPlayType(type) {
     return this.refs.luisterenObject.canPlayType(type);
   }
 
   toggle(){
-    console.debug("Event toggle triggered...");
     if(this.state.isplaying){
       this.pause();
     }else{
@@ -241,7 +227,7 @@ export class LivePlayer extends React.Component {
     this.buttons.push(button);
   }
 
-  render(){
+  render() {
     return (
       <audio id="luisteren-audio" ref="luisterenObject" loop preload="metadata">
         <source src="http://kerkdienstgemist.nl/streams/267.mp3" type="audio/mpeg" />
