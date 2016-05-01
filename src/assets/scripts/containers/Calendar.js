@@ -159,6 +159,7 @@ export default class Calendar extends Component {
     return {
       initFocus: React.PropTypes.object,
       onMonthChange: React.PropTypes.func,
+      tables: React.PropTypes.array.isRequired,
       onAddEvent: PropTypes.func
     };
   }
@@ -241,30 +242,40 @@ export default class Calendar extends Component {
 
   render() {
     let {showEventForm, eventFormDate} = this.state;
-
+    let {tables} = this.props;
     let onCancel = () => this.setState({ showEventForm: false });
 
     return <div className="calendar">
-      <div className="calendar-head">
-        <div>
-          <p className="calendar-month">{this.month().format("MMMM")}</p>
-          <p className="calendar-year">{this.month().format("YYYY")}</p>
-        </div>
-        <span className="prev btn" onClick={this.prevMonth.bind(this)}>
-          <i className="fa fa-chevron-left"></i>
-        </span>
-        <span className="next btn" onClick={this.nextMonth.bind(this)}>
-          <i className="fa fa-chevron-right"></i>
-        </span >
+      <div className="calendar-side">
+        <h3>Kalender</h3>
+        <ul style={{height: "100%"}}>
+          {
+            _.map(tables, (cal) => <li key={cal.id}>{cal.title}</li>)
+          }
+        </ul>
       </div>
+      <div className="calendar-main">
+        <div className="calendar-head">
+          <div>
+            <p className="calendar-month">{this.month().format("MMMM")}</p>
+            <p className="calendar-year">{this.month().format("YYYY")}</p>
+          </div>
+          <span className="prev btn" onClick={this.prevMonth.bind(this)}>
+            <i className="fa fa-chevron-left"></i>
+          </span>
+          <span className="next btn" onClick={this.nextMonth.bind(this)}>
+            <i className="fa fa-chevron-right"></i>
+          </span >
+        </div>
 
-      { showEventForm
-          ? <EventForm day={eventFormDate} onCancel={onCancel}/>
-          : <CalMonth
-              events={this.state.events}
-              addEvent={this.addEvent.bind(this)}
-              month={this.state.month}
-              year={this.state.year} /> }
+        { showEventForm
+            ? <EventForm day={eventFormDate} onCancel={onCancel}/>
+            : <CalMonth
+                events={this.state.events}
+                addEvent={this.addEvent.bind(this)}
+                month={this.state.month}
+                year={this.state.year} /> }
+      </div>
     </div>;
   }
 }

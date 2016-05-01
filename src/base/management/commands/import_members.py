@@ -8,6 +8,7 @@ from collections import Counter
 from datetime import datetime
 import argparse
 import csv
+import re
 
 def parse_lastname(name):
   parts = name.split(' ')
@@ -41,6 +42,10 @@ def parse_families(members):
     email = email.strip()
     if len(email) == 0:
       email = None
+
+    # parse zip
+    # make sure it's only 6 chars long
+    zipno = re.sub(r" ", "", zipno)
 
     # update the family
     key = (street.strip(), zipno.strip(), city.strip(), wijkno)
