@@ -11,7 +11,7 @@ import nl from 'moment/locale/nl';
 import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
 import * as forms from 'bootstrap/forms';
-import {LiveButton} from "LiveButton";
+import {LiveButton, LivePlayer} from "LiveButton";
 
 // bind global jquery instance
 window.jQuery = $;
@@ -171,11 +171,15 @@ window.frontpageMain = () => {
 
 
   /* <-- Meeluisteren player */
+
+  $("#content").append('<div id="luisteren-player"></div>');
+  let player = ReactDom.render(<LivePlayer></LivePlayer>, $("#luisteren-player")[0]);
+
   window.playerButton = [];
   // Assign React component to each element with class 'luisteren-button'
   $(".luisteren-button").map(function(value, i){
     window.playerButton[value] = ReactDom.render(
-      <LiveButton text={$(i).text()}></LiveButton>,
+      <LiveButton text={$(i).text()} player={player}></LiveButton>,
       i
     );
   });
