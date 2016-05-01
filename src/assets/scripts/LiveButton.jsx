@@ -8,27 +8,38 @@ import ReactDom from "react-dom";
  */
 export class LiveButton extends React.Component {
 
+  static get propTypes() {
+    return {
+      text: React.PropTypes.string,
+      player: React.PropTypes.instanceOf(LivePlayer).isRequired
+    };
+  }
+
   constructor(props) {
     super(props);
+
+    this.props.player.registerButton(this);
   }
 
   componentWillMount(){
     // Check if player exists
+    /*
     if(!$("#luisteren-player")[0]){
       // Render player and make it global accessible
       $("#content").append('<div id="luisteren-player"></div>');
       window.player = ReactDom.render(<LivePlayer></LivePlayer>, $("#luisteren-player")[0]);
-    }
+    }*/
   }
 
   onClick(e){
+    let {player} = this.props;
     // Check if browser can play, otherwise let the button be a URL
-    if(window.player.canPlayType('audio/mpeg')) {
+    if(player.canPlayType('audio/mpeg')) {
       // Prevent URL action
       e.preventDefault();
 
       // Toggle player
-      window.player.toggle();
+      player.toggle();
     }
   }
 
@@ -38,20 +49,28 @@ export class LiveButton extends React.Component {
   }
 
   render() {
+    let {player} = this.props;
+
+    window.pl = player;
+    //
+    console.log("My player: ");
+    console.log(player);
     // Figure out which icon needs to be displayed
-    var html = "";
-    if(window.player.state.isloading) {
-      html = '<i class="fa fa-circle-o-notch fa-spin fa-fw luisteren-i" aria-hidden="true"></i>';
-    }else if(window.player.state.isplaying){
-      html = '<i class="fa fa-pause fa-fw luisteren-i" aria-hidden="true"></i>';
-    }else if(window.player.state.islive){
-      html = '<i class="fa fa-play fa-fw luisteren-i" aria-hidden="true"></i>';
+    let html;
+    if(player.state.isloading) {
+      html = <i className="fa fa-circle-o-notch fa-spin fa-fw luisteren-i" ariaHidden="true"></i>;
+    }else if(player.state.isplaying){1
+      html = <i className="fa fa-pause fa-fw luisteren-i" ariaHidden="true"></i>;
+    }else if(player.state.islive){
+      html = <i className="fa fa-play fa-fw luisteren-i" ariaHidden="true"></i>;
+    }else{
+      html = false
     }
 
     return (
       <div onClick={this.onClick.bind(this)} className="luisteren-button" >
         {this.props.text}
-        <span dangerouslySetInnerHTML={this.htmlText(html)} />
+        {html}
       </div>
     );
   }
@@ -71,6 +90,8 @@ export class LivePlayer extends React.Component {
       islive: false,
       isloading: false
     };
+
+    this.buttons = [];
   }
 
   componentDidMount() {
@@ -79,24 +100,24 @@ export class LivePlayer extends React.Component {
     var player = this.refs.luisterenObject;
 
     // Add eventListeners to player
-    player.addEventListener('playing', this.onplaying);
-    player.addEventListener('play', this.onplay);
-    player.addEventListener('pause', this.onpause);
-    player.addEventListener('ended', this.onended);
-    player.addEventListener('waiting', this.onwaiting);
-    player.addEventListener('stalled', this.onstalled);
-    player.addEventListener('suspend', this.onstalled);
-    player.addEventListener('error', this.onerror);
-    player.addEventListener('emptied', this.onerror);
-    player.addEventListener('durationchange', this.ondurationchange);
-    player.addEventListener('loadstart', this.onloadstart);
-    player.addEventListener('loadeddata', this.onloadeddata);
+    player.addEventListener('playing', () => this.onplaying());
+    //player.addEventListener('play', this.onplay);
+    player.addEventListener('pause', () => this.onpause());
+    player.addEventListener('ended', () => this.onended());
+    player.addEventListener('waiting', () => this.onwaiting());
+    player.addEventListener('stalled', () => this.onstalled());
+    player.addEventListener('suspend', () => this.onstalled());
+    player.addEventListener('error', () => this.onerror());
+    player.addEventListener('emptied', () => this.onerror());
+    player.addEventListener('durationchange', () => this.ondurationchange());
+    player.addEventListener('loadstart', () => this.onloadstart());
+    player.addEventListener('loadeddata', () => this.onloadeddata());
   }
 
   /** EventListeners **/
   onplaying(){
     console.debug("Media is playing...");
-    window.player.setState({
+    this.setState({
       isplaying: true,
       isloading: false
     });
@@ -104,7 +125,7 @@ export class LivePlayer extends React.Component {
 
   onpause(){
     console.debug("Media has been paused...");
-    window.player.setState({
+    this.setState({
       isplaying: false,
       isloading: false
     });
@@ -112,28 +133,28 @@ export class LivePlayer extends React.Component {
 
   onended(){
     console.debug("Media has ended...");
-    window.player.setState({
+    this.setState({
       isplaying: false
     });
   }
 
   onwaiting(){
     console.debug("Media is waiting (buffering?)...");
-    window.player.setState({
+    this.setState({
       isplaying: false
     });
   }
 
   onstalled(){
     console.debug("Media has stalled...");
-    window.player.setState({
+    this.setState({
       isplaying: false
     });
   }
 
   onerror(){
     console.debug("Media has an error...");
-    window.player.setState({
+    this.setState({
       isplaying: false
     });
   }
@@ -146,15 +167,15 @@ export class LivePlayer extends React.Component {
      *   if(player.duration == Infinity) -> dienst is live
      */
 
-    window.player.setState({
-      islive: !(window.player.duration() < 20)
+    this.setState({
+      islive: (this.duration() < 20)
     });
   }
 
   onloadstart(){
     console.debug("Media is loading...");
 
-    window.player.setState({
+    this.setState({
       isloading: true
     });
   }
@@ -163,13 +184,13 @@ export class LivePlayer extends React.Component {
     console.debug("Media is loaded...");
 
     // Add intro Luister nu live mee! -button
-    if(window.fixicon && window.player.state.islive) {
+    if(window.fixicon && this.state.islive) {
       window.fixicon();
-      // Remove function
+      // Remove function to prevent double execution of the function
       window.fixicon = null;
     }
 
-    window.player.setState({
+    this.setState({
       isloading: false
     });
   }
@@ -210,9 +231,14 @@ export class LivePlayer extends React.Component {
 
   componentDidUpdate(){
     // Update play buttons
-    $.each(window.playerButton, function(i, v){
+    $.each(this.buttons, function(i, v){
       v.forceUpdate();
     });
+  }
+
+  registerButton(button){
+    console.debug("Registering button...");
+    this.buttons.push(button);
   }
 
   render(){
