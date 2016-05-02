@@ -179,7 +179,9 @@ export class LivePlayer extends React.Component {
       isloading: false
     });
 
-    this.props.onDataLoaded();
+    if(this.state.islive) {
+      this.props.onDataLoaded();
+    }
   }
 
   /*
