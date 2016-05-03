@@ -1,0 +1,132 @@
+{% extends "public_layout.html" %}
+
+{% load staticfiles %}
+
+{% block intro %}
+  <!-- Intro Header -->
+  <header class="intro">
+    <div class="intro-body">
+      <div class="intro-gradient" ></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+            <img src="{% static 'resources/images/logo-wit.png' %}">
+          </div>
+
+          <!-- Hidden button -->
+          <div id="listen-in" class="col-md-4">
+              <a class="cyan btn-rounded btn luisteren-button"
+                 data-toggle="tooltip" data-placement="bottom"
+                 href="http://kerkdienstgemist.nl/assets/267"
+                 title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
+          </div>
+        </div>
+
+        <!-- intro footer -->
+        <div class="row">
+          <div class="col-sm-12">
+            <a id="go-down" href="#about" class="btn btn-circle page-scroll cyan">
+              <i class="fa fa-angle-double-down animated"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <!-- About Section -->
+  <section id="about" class="content-section">
+    <div class="container">
+
+
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Orgel in de Rehobothkerk Woerden</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            <strong>
+              De Rehobothkerk in Woerden is een eenvoudige zaalkerk uit 1986, gebouwd naar ontwerp van architect Frank van Buren.
+            </strong>
+          </p>
+          <p>
+            In deze kerk bevindt zich een oud instrument van onbekende herkomst. Over de oorspronkelijke maker en de ouderdom van het in de Rehobothkerk aanwezige orgel doen verschillende verhalen de ronde. Aan de ene kant wordt Jacobus van den Eynde als bouwer genoemd; aan de andere kant wordt het instrument toegeschreven aan Hendrik Pecheur en gedateerd op circa 1715.
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Geschiedenis orgel</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            Aan het einde van de 19e eeuw werd het orgel geplaatst in de Gereformeerde kerk van Axel. De firma A.S.J. Dekker (Goes) verzorgde in 1918 de overplaatsing van het instrument naar de Hervormde kerk van Baarle. Nadat men daar besloot de oude kerk te vervangen door een nieuwe is het orgel door medewerkers van de firma J.C. Sanders (Utrecht) gedemonteerd en opgeslagen.
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Bekronende beelden zijtorens verdwenen in 1962</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            In 1962 is het orgel door de firma K.B. Blank, die de firma Sanders voortzette, in gewijzigde vorm in de Christelijke Gereformeerde Eben-Haezerkerk in Utrecht geplaatst. De beide grote torens aan weerszijde van de oorspronkelijke kas dateren uit deze periode. Volgens de overlevering zijn bij die gelegenheid ook de bekronende beelden van de zijtorens verdwenen; ze zouden kort daarna een nieuwe bestemming hebben gekregen op het rugpositief van het orgel in het Utrechtse Academiegebouw.
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Sinds 1979 in Rehobothkerk Woerden</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            In 1979 is het orgel door de firma Hendriksen & Reitsma overgeplaatst naar de Christelijke Gereformeerde Rehobothkerk te Woerden. Dezelfde firma verzorgde in 1986 de herplaatsing van het instrument in de huidige kerk. Bij die gelegenheid zijn de in 1962 toegevoegde torens opnieuw geschilderd in de kleur van de oude kas en de van origine roodkoperen frontpijpen met tinfolie belegd. Overigens zijn ook de frontpijpen van de oude kas niet origineel.
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Oorspronkelijk uit zuid Nederland of Vlaanderen</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            Zowel de vormgeving als de oorspronkelijke orgelkas, als de decoratie daarvan wijst op een oorspronkelijke herkomst uit zuid Nederland of Vlaanderen. De combinatie van smalle ongedeelde tussenvelden en inzwenkende bovenlijst komt niet vaak voor. Het meest aannemelijk is een situering in het grensgebied tussen de toenmalige Generaliteitslanden en Zuidelijke Nederlanden, vandaar de mogelijke toeschrijving aan de Antwerpse orgelmaker Pecheur. Ook de decoratie wijst in deze richting. Dit geldt vooral voor de cherubijnkoppen in de vleugelstukken, die verder naar het Noorden voornamelijk te vinden zijn bij de instrumenten van Conrad Ruprecht en Matthias Verhofstadt.
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Gezichten in het blinderingswerk</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            In het snijwerk onder de middentoren zijn twee gevleugelde engelenkopjes te zien. Onder de linkertoren is zeer waarschijnlijk het hoofd van Koning David afgebeeld; vermoedelijk is de vrouwenfiguur onder de rechtertoren Cecilia. In het blinderingswerk zijn gezichten te onderscheiden met ogen, wenkbrauwen en brede neusvleugels, een idee verwant aan de bladkoppen uit de 16e en vroege 17e eeuw. Bijzonder zijn nog de vrij hangende, gebogen slingers tussen de torens.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -24,8 +24,12 @@ def kerktijden(request):
 def kindercreche(request):
   return render(request, 'kerktijden.html', {})
 
+def orgel(request):
+  return render(request, 'orgel.html', {})
+
 urls = [
   url(r'^kerktijden/$', kerktijden, name='kerktijden'),
+  url(r'^orgel/$', orgel, name='orgel'),
   url(r'^kindercreche/$', kindercreche, name='kindercreche'),
   url(r'^$', index)
 ]
