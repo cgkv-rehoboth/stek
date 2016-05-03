@@ -160,7 +160,7 @@ export class LivePlayer extends React.Component {
      */
 
     this.setState({
-      islive: (this.duration() < 20)
+      islive: !(this.duration() < 20)
     });
   }
 
