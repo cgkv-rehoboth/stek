@@ -9,27 +9,23 @@
       <div class="intro-gradient" ></div>
       <div class="container">
         <div class="row">
-          {% if listen_live %}
-            <div class="col-md-4 col-md-offset-2">
-              <img src="{% static 'resources/images/logo-wit.png' %}">
-            </div>
-            <div id="listen-in" class="col-md-4">
-                <a class="cyan btn-rounded btn luisteren-button"
-                   data-toggle="tooltip" data-placement="bottom"
-                   href="http://kerkdienstgemist.nl/assets/267"
-                   title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
-            </div>
-          {% else %}
-            <div class="col-md-8 col-md-offset-2">
-              <img src="{% static 'resources/images/logo-wit.png' %}">
-            </div>
-          {% endif %}
+          <div class="col-md-8 col-md-offset-2">
+            <img src="{% static 'resources/images/logo-wit.png' %}">
+          </div>
+
+          <!-- Hidden button -->
+          <div id="listen-in" class="col-md-4">
+              <a class="cyan btn-rounded btn luisteren-button"
+                 data-toggle="tooltip" data-placement="bottom"
+                 href="http://kerkdienstgemist.nl/assets/267"
+                 title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
+          </div>
         </div>
 
         <!-- intro footer -->
         <div class="row">
           <div class="col-sm-12">
-            <a id="go-down" href="#about" class="btn btn-circle page-scroll cyan">
+            <a id="go-down" href="#content" class="btn btn-circle page-scroll cyan">
               <i class="fa fa-angle-double-down animated"></i>
             </a>
           </div>
@@ -40,10 +36,11 @@
 {% endblock %}
 
 {% block content %}
-  <!-- About Section -->
-  <section id="about" class="content-section">
+  <section class="content-section">
     <div class="container">
+
       <h2>Kerktijden Rehobothkerk Woerden</h2>
+
       <div class="row">
         <div class="col-md-12">
           <p>
@@ -57,7 +54,7 @@
                 <li>Middagdienst: 18:30 uur</li>
               </ul>
               <br/>
-              Tussen 1 juni t/m begin september start de middagdienst om 18.30 uur. In de rest van het jaar start de middagdienst om 16:30 uur.
+              Tussen 1 juni t/m begin september start de middagdienst om 18.30 uur. In de andere maanden van het jaar start de middagdienst om 16:30 uur.
             {% else %}
               <!-- Wintertijd -->
               <ul>
@@ -70,6 +67,7 @@
           </p>
         </div>
       </div>
+
       <div class="row">
         <div class="col-md-12">
           <h3>Meeluisteren kerkdienst</h3>
@@ -82,6 +80,7 @@
           </p>
         </div>
       </div>
+
       <div class="row">
         <div class="col-md-12">
           <h3>Cr&#232;che voor kleine kinderen</h3>
@@ -110,6 +109,7 @@
             </p>
         </div>
       </div>
+
       <div class="row">
         <div class="col-md-12">
           <h3>Contact</h3>
@@ -127,5 +127,4 @@
 {% endblock %}
 
 {% block scripts %}
-  <script>window.kerktijdenPage();</script>
 {% endblock %}
