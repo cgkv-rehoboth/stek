@@ -27,9 +27,13 @@ def kindercreche(request):
 def orgel(request):
   return render(request, 'orgel.html', {})
 
+def anbi(request):
+  return render(request, 'anbi.html', {})
+
 urls = [
   url(r'^kerktijden/$', kerktijden, name='kerktijden'),
   url(r'^orgel/$', orgel, name='orgel'),
+  url(r'^anbi/$', anbi, name='anbi'),
   url(r'^kindercreche/$', kindercreche, name='kindercreche'),
   url(r'^$', index)
 ]
