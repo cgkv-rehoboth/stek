@@ -7,7 +7,12 @@
   </head>
 
   <body>
-    {% include "./header.html" %}
+    {% if user.is_authenticated %}
+      {% include "./header.html" %}
+    {% else %}
+      {% include "../../public/templates/public_header.html" %}
+    {% endif %}
+
     <div id="wrapper" >
       <div id="content" >
         {% block content %}
