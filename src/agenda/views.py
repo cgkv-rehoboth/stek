@@ -17,6 +17,46 @@ def add_event(request):
   return render(request, 'add_event.html', {})
 
 @login_required
+@require_POST
+def add_event_post(request):
+  date = str(request.POST.get("date", ""))
+
+  # Ochtenddienst
+  startdate = "%s 09:30:00" % date
+  enddate = "%s 11:00:00" % date
+  title = "Ochtenddienst"
+  service = Service.objects.create(
+    startdatetime=startdate,
+    enddatetime=enddate,
+    owner=request.profile,
+    title=title,
+    timetable=Timetable.objects.get(title="Diensten"),
+    minister=str(request.POST.get("minister", ""))
+  )
+
+  # Middagdienst
+  if request.POST.get("zomertijd", False):
+    startdate = "%s 18:30:00" % date
+    enddate = "%s 19:30:00" % date
+    title = "Avonddienst"
+  else:
+    startdate = "%s 16:30:00" % date
+    enddate = "%s 17:30:00" % date
+    title = "Middagdienst"
+
+  service = Service.objects.create(
+    startdatetime=startdate,
+    enddatetime=enddate,
+    owner=request.profile,
+    title=title,
+    timetable=Timetable.objects.get(title="Diensten"),
+    minister=str(request.POST.get("minister", ""))
+  )
+
+  return redirect('add-event-page')
+
+
+@login_required
 def timetables(request, id=None):
 
   # Get all the tables linked to the team(s) the user is in
@@ -249,5 +289,6 @@ urls = [
   url(r'^roosters/ruilverzoek/(?P<id>\d+)/$', timetable_ruilverzoek, name='timetable-ruilverzoek'),
   url(r'^roosters/$', timetables, name='timetable-list-page'),
   url(r'^kalender/$', calendar, name='calendar-page'),
-  url(r'^kalendar/nieuw/$', add_event, name='add-event-page'),
+  url(r'^kalender/nieuw/post/$', add_event_post, name='add-event-post'),
+  url(r'^kalender/nieuw/$', add_event, name='add-event-page'),
 ]
