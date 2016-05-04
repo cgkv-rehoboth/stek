@@ -118,7 +118,8 @@ window.timetableMain = () => {
   });
 };
 
-
+// Let the window scroll 1px up (not down, because the menu bar will render in the wrong way), so the menu bar loads correctly
+window.scrollBy(0, -1);
 
 //import some main functions
 import calendarMain from 'mains/calendar';
