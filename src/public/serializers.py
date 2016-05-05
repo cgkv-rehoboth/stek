@@ -16,7 +16,7 @@ class ContactSerializer(serializers.Serializer):
   def save(self):
     sender = '%s %s' % (self.validated_data['first_name'], self.validated_data['first_name'])
     email = self.validated_data['email']
-    to = ['test@cgkvwoerden.nl']
+    to = ['scriba@rehobothkerkwoerden.nl']
     message = self.validated_data['message']
 
     send_mail("Contactformulier: %s" % sender, message, email, to)
