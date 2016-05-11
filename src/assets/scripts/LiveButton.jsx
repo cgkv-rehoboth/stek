@@ -78,7 +78,8 @@ export class LivePlayer extends React.Component {
     this.state = {
       isplaying: false,
       islive: false,
-      isloading: false
+      isloading: false,
+      isfresh: true     // Prevent visible loading (loading icon on LiveButton) on page load
     };
 
     this.buttons = [];
@@ -160,7 +161,7 @@ export class LivePlayer extends React.Component {
      */
 
     this.setState({
-      islive: !(this.duration() < 20)
+      islive: !(this.duration() < 20000)  // Maximale dienstduur van 5,5 uur todo: kijken of dit beter werkt dan 20 sec
     });
   }
 
@@ -168,7 +169,8 @@ export class LivePlayer extends React.Component {
     console.debug("Media is loading...");
 
     this.setState({
-      isloading: true
+      isloading: !this.state.isfresh,    // Prevent visible loading (loading icon on LiveButton) on page load
+      isfresh: false
     });
   }
 
