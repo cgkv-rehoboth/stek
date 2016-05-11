@@ -70,7 +70,7 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
       else:
         return queryset
 
-  queryset = Profile.objects.all()
+  queryset = Profile.objects.all().order_by("family__lastname", "birthday")
   serializer_class = ProfileSerializer
 
   permission_classes = [IsAuthenticated]
