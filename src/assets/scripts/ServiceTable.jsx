@@ -6,6 +6,7 @@ import forms from 'bootstrap/forms';
 import $ from "jquery";
 import { PaginatedTable, SearchTable } from 'bootstrap/tables';
 import Icon from 'bootstrap/Icon';
+import moment from 'moment'
 
 export default class ServiceTable extends React.Component {
 
@@ -17,17 +18,26 @@ export default class ServiceTable extends React.Component {
 
   render() {
     let renderServiceRow = (serv) => {
-      let startdate = new Date(serv.startdatetime)
+      let starttime = moment(serv.startdatetime).format('H:mm');
+      let startdate = moment(serv.startdatetime).format('dddd D MMMM');
 
       return (
         <tr key={serv.id}>
           <td>{serv.title}</td>
-          <td><Time value={startdate} format="HH:mm YYYY/MM/DD" /></td>
+          <td><span className="service-starttime">{starttime}</span> - {startdate}</td>
           <td>{serv.minister}</td>
         </tr>
       );
     };
     
-    return <SearchTable listFunc={this.props.listFunc} renderRow={renderServiceRow} />;
+    return (
+      <SearchTable listFunc={this.props.listFunc} renderRow={renderServiceRow} search={false}>
+        <tr>
+          <th>Dienst</th>
+          <th>Datum</th>
+          <th>Voorganger</th>
+        </tr>
+      </SearchTable>
+    );
   }
 }

@@ -173,23 +173,6 @@
     <br/>
 
     <div id="service-table"></div>
-
-    <table class="table">
-    <thead>
-      <tr>
-      <th>Dienst. {{ ding.startdatetime }}</th>
-      <th>Tijd</th>
-      </tr>
-    </thead>
-
-    {% for service in services %}
-    <tr>
-      <td>{{ service.title }}</td>
-      <td>{{ service.startdatetime|date:"G:i - l d M" }}</td>
-    </tr>
-    {% endfor %}
-
-    </table>
   </div>
   </section>
 

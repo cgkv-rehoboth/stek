@@ -86,8 +86,9 @@ class ServiceViewSet(
         StekViewSet):
 
   model = Service
-  queryset = Service.objects.all()
+  queryset = Service.objects.filter(enddatetime__gte=datetime.today().date()).order_by("startdatetime", "enddatetime")
   serializer_class = ServiceSerializer
+
 
   def retrieve(self, request, *args, **kwargs):
     response = super().retrieve(request, *args, **kwargs)
@@ -97,10 +98,6 @@ class ServiceViewSet(
 
   def list(self, request, *args, **kwargs):
     response = super().list(request, *args, **kwargs)
-
-    #for i , u in enumerate(response.data['results']):
-    #  ab = response.data['results'][i]["startdatetime"].strftime("%H:%M %A %d %B")
-    #  response.data['results'][i]["startdatetime"] = ("bla %s" % ab)
 
     return response
 

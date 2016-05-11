@@ -55,7 +55,8 @@ export class SearchTable extends React.Component {
   static get propTypes() {
     return {
       listFunc: React.PropTypes.func.isRequired, // (searchText, page) => promise<[item]>,
-      renderRow: React.PropTypes.func.isRequired
+      renderRow: React.PropTypes.func.isRequired,
+      search: React.PropTypes.bool
     };
   }
 
@@ -109,18 +110,27 @@ export class SearchTable extends React.Component {
     let { renderRow } = this.props;
     let rows = _.map(this.state.items, renderRow);
 
+    var search = ""
+    if (!(this.props.search === false)) {
+      search = (
+        <div>
+          <Icon name="search"/>
+          <input type="text" onChange={this.onSearchChange}/>
+        </div>
+      );
+    }
+
+
     return (
       <div className="profile-search-table">
-        <div>
-          <Icon name="search" />
-          <input type="text" onChange={this.onSearchChange} />
-        </div>
+        {search}
         <PaginatedTable
           pageno={this.state.page}
           onPageChange={this.pageChange.bind(this)}
           hasPrev={this.state.hasPrev}
           hasNext={this.state.hasNext}>
           <tbody>
+            {this.props.children}
             {rows}
           </tbody>
         </PaginatedTable>
