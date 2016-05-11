@@ -5,28 +5,20 @@ import ReactDom from "react-dom";
 
 class Popup extends React.Component {
 
-  static get propTypes() {
-    return {
-      text: React.PropTypes.string
-    };
+  onClick(){
+    $(".popup").fadeOut(500);
   }
-
-  onClick(e){
-    $(".popup").fadeOut(500)
-  }
-
-  createMarkup() {
-    return {__html: this.props.text};
-  };
 
   componentDidMount(){
-    $(".popup").fadeIn(900)
+    setTimeout(function(){
+      $(".popup").fadeIn(900);
+    }, 1200);
   }
 
   render() {
     return <div className="popup">
       <span className="popup-close"><i onClick={this.onClick.bind(this)} className="fa fa-times-circle" ariaHidden="true"></i></span>
-      <div className="popup-content" dangerouslySetInnerHTML={this.createMarkup()}></div>
+      <div className="popup-content">{this.props.children}</div>
     </div>;
   }
 }
