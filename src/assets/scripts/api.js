@@ -122,6 +122,28 @@ let api_obj = {
     add: (data) => {
       return http.post(`${api}/agenda/events/`, data);
     }
+  },
+
+  services: {
+    list: (search='', page=1, extra_params={}) => {
+      return Q.xhr
+        .get(`${api}/agenda/services`, {
+          params: _.extend({search: search, page: page}, extra_params)
+        });
+    },
+
+    get: (id) => {
+      return Q.xhr
+        .get(`${api}/agenda/services/:id/`, {
+          params: {
+            id: id
+          }
+        });
+    },
+
+    add: (data) => {
+      return http.post(`${api}/agenda/services/`, data);
+    }
   }
 };
 

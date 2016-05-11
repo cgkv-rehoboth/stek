@@ -12,8 +12,12 @@ def index(request):
   now = datetime.now()
   listen_live = now.strftime('%w') == 0
 
+  s = Service.objects.first()
+  s.startdatetime.strftime("%H:%M %A %d %B")
+
   return render(request, 'index.html', {
     'listen_live': listen_live,
+    'ding': s,
     'services': Service.objects.filter(enddatetime__gte=datetime.today().date())\
       .order_by("startdatetime", "enddatetime")[:10],
     'recaptcha_publickey': settings.RECAPTCHA_PUBLIC_KEY

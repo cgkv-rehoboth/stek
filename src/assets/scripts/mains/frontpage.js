@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import ReactDom from "react-dom";
 import * as forms from 'bootstrap/forms';
 import {LiveButton, LivePlayer} from "LiveButton";
+import ServiceTable from "ServiceTable";
+import {SearchTable} from "bootstrap/tables";
 
 class ContactForm extends Component {
   
@@ -49,6 +51,16 @@ class ContactForm extends Component {
 
 export default function frontpageMain() {
   ReactDom.render(<ContactForm />, $('#contact-form')[0]);
+
+  // Service table
+  let searchServices = (query, page) => {
+    return api.services.list(query, page);
+  };
+
+  ReactDom.render(
+    <ServiceTable listFunc={searchServices} />,
+    $("#service-table")[0]
+  );
 
   // Only do this once.
   var loaded = false;

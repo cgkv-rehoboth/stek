@@ -5,6 +5,7 @@ from rest_framework.decorators import detail_route, list_route
 from django.db.models import Q
 from datetime import datetime, timedelta
 from rest_framework import status
+from time import strftime
 
 from base.api import StekViewSet
 from .models import *
@@ -78,10 +79,46 @@ class TimetableViewSet(mixins.ListModelMixin, StekViewSet):
   serializer_class = TimetableSerializer
   pagination_class = None
 
-router = DefaultRouter()
+
+class ServiceViewSet(
+        mixins.RetrieveModelMixin,
+        mixins.ListModelMixin,
+        StekViewSet):
+
+  model = Service
+  queryset = Service.objects.all()
+  serializer_class = ServiceSerializer
+
+  def retrieve(self, request, *args, **kwargs):
+    response = super().retrieve(request, *args, **kwargs)
+
+    return response
+
+
+  def list(self, request, *args, **kwargs):
+    response = super().list(request, *args, **kwargs)
+
+    #for i , u in enumerate(response.data['results']):
+    #  ab = response.data['results'][i]["startdatetime"].strftime("%H:%M %A %d %B")
+    #  response.data['results'][i]["startdatetime"] = ("bla %s" % ab)
+
+    return response
+
+  def create(self, request):
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(owner=request.service)
+    headers = self.get_success_headers(serializer.data)
+    return Response(
+      serializer.data,
+      status=status.HTTP_201_CREATED,
+      headers=headers)
+
+router = DefaultRouter(trailing_slash=False)
 router.register("duties", DutyViewSet, base_name="duties")
 router.register("timetables", TimetableViewSet, base_name="timetable")
 router.register("events", EventViewSet, base_name="events")
 router.register("teams", TeamViewSet, base_name="teams")
+router.register("services", ServiceViewSet, base_name="services")
 
 urls = router.urls
