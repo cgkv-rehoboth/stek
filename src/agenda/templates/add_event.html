@@ -17,11 +17,15 @@
 
     <form method="post" action="{% url 'add-event-post' %}">
       {% csrf_token %}
-      Voorganger: <input type="text" placeholder="Voorganger" name="minister" value="ds. A. Jansen" />
+      Voorganger ochtend: <input type="text" placeholder="Voorganger" name="minister1" value="ds. A. Jansen" />
+      <br/>
+      Voorganger middag: <input type="text" placeholder="Voorganger" name="minister2" value="ds. A. Jansen" />
       <br/>
       Datum: <input type="date" placeholder="Datum" name="date" value="" />
       <br/>
-      <label>Zomertijd? <input type="checkbox" name="zomertijd" /></label>
+      Eerste dienst: <input type="time" placeholder="Tijd" name="time1a" value="09:30" /> - <input type="time" placeholder="Tijd" name="time1b" value="11:00" />
+      <br/>
+      Tweede dienst: <input type="time" placeholder="Tijd" name="time2a" value="16:30" /> - <input type="time" placeholder="Tijd" name="time2b" value="17:30" /> (begin om 18:30 / 06:30 PM voor zomertijd)
       <br/>
       <input type="submit" value="Submit" class="btn"/>
 
