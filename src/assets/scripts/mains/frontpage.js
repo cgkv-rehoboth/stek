@@ -49,7 +49,7 @@ class ContactForm extends Component {
 }
 
 export default function frontpageMain() {
-  ReactDom.render(<Popup>Aanstaande zondagochtend 22 mei begint de dienst om <strong>10:00u</strong>. De dienst wordt gehouden in de <strong>Kruiskerk</strong> i.v.m. de belijdenis van een aantal jongeren.</Popup>, $('#popup')[0]);
+  ReactDom.render(<Popup>Zondagochtend 22 mei begint de dienst om <strong>10:00u</strong>. De dienst wordt gehouden in de <a href="http://www.kerkpleinwoerden.nl/jml33/index.php/kerkgebouwen/kruiskerk" target="_blank" title="Klik hier voor het adres van de Kruiskerk"><strong>Kruiskerk</strong></a> i.v.m. de belijdenis van een aantal jongeren.</Popup>, $('#popup')[0]);
 
   ReactDom.render(<ContactForm />, $('#contact-form')[0]);
 
