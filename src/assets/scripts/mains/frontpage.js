@@ -5,7 +5,7 @@ import {LiveButton, LivePlayer} from "LiveButton";
 import Popup from "Popup";
 
 class ContactForm extends Component {
-  
+
   render() {
     let formBuilder = <div>
       <div className="row" >
@@ -49,8 +49,6 @@ class ContactForm extends Component {
 }
 
 export default function frontpageMain() {
-  ReactDom.render(<Popup>Aanstaande zondagochtend 22 mei begint de dienst om <strong>10:00u</strong>. De dienst wordt gehouden in de <strong>Kruiskerk</strong> i.v.m. de belijdenis van een aantal jongeren.</Popup>, $('#popup')[0]);
-
   ReactDom.render(<ContactForm />, $('#contact-form')[0]);
 
   // Only do this once.
