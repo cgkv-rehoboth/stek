@@ -41,6 +41,7 @@
     "react-google-recaptcha": "^0.5.2",
     "react-router": "^2.2.4",
     "react-tap-event-plugin": "^0.2.1",
+    "react-time": "4.1.0",
     "underscore": "^1.8.3"
   },
   "engine": "node ^5.9.0"
