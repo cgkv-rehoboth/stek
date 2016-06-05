@@ -14,8 +14,6 @@ def index(request):
 
   return render(request, 'index.html', {
     'listen_live': listen_live,
-    'services': Service.objects.filter(enddatetime__gte=datetime.today().date())\
-      .order_by("startdatetime", "enddatetime")[:10],
     'recaptcha_publickey': settings.RECAPTCHA_PUBLIC_KEY
   })
 
