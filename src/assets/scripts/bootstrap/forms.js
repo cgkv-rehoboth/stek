@@ -356,7 +356,7 @@ export class TextField extends CharField {
 export class CaptchaField extends Field {
 
   static get propTypes() {
-    return Object.assign({}, Field.propTypes, {
+    return _.extend({}, Field.propTypes, {
       sitekey: PropTypes.string.isRequired
     });
   }
@@ -380,7 +380,7 @@ export class CaptchaField extends Field {
     if(errs.length > 0)
       alert("Om ons tegen spam te beschermen moet u het vinkje in de witte box aanvinken.");
   }
-  
+
   onChange(e) {
     this.setValue(e);
   }
