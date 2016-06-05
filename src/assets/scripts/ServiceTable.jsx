@@ -24,8 +24,6 @@ export default class ServiceTable extends React.Component {
       let html = serv.comments && serv.comments.length > 0 ? <i className="fa fa-info-circle" ariaHidden="true"></i> : "";
 
       function onClick(e){
-        e = e || window.e; // Cross-browser solution
-
         // Get serviceHiddenItems row
         var tr = $(e.target).closest('tr').next();
 
