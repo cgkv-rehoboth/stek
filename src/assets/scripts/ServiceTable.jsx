@@ -26,6 +26,7 @@ export default class ServiceTable extends React.Component {
           <td>{serv.title}</td>
           <td><span className="service-starttime">{starttime}</span> - {startdate}</td>
           <td>{serv.minister}</td>
+          <td>{serv.comments}</td>
         </tr>
       );
     };
@@ -36,6 +37,7 @@ export default class ServiceTable extends React.Component {
           <th>Dienst</th>
           <th>Datum</th>
           <th>Voorganger</th>
+          <th></th>
         </tr>
       </SearchTable>
     );
