@@ -53,8 +53,7 @@ class ContactForm extends Component {
 export default function frontpageMain() {
   ReactDom.render(
     <Popup>
-      Vanaf zondag 5 juni begint het zomerrooster weer en zal de 2e dienst om half zeven
-      in de avond beginnen.
+      Vanaf zondag 5 juni is het zomerrooster weer begonnen en begint de 2e dienst om 18:30u.
     </Popup>,
     $('#popup')[0]
   );
