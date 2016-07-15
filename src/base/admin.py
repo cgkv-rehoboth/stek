@@ -32,7 +32,6 @@ class UserAdmin(BaseUserAdmin):
   search_fields = ['first_name', 'last_name']
 
 admin.site.unregister(User)
-admin.site.unregister(Group)
 admin.site.register(User, UserAdmin)
 
 # Create custom display for Profile
