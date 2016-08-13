@@ -81,7 +81,7 @@ def timetables(request, id=None):
   if table is not None:
     duties = table.duties\
       .prefetch_related('ruilen')\
-      .filter(event__startdatetime__gte=datetime.today().date())\
+      .filter(event__enddatetime__gte=datetime.today().date())\
       .order_by("event__startdatetime", "event__enddatetime")
   else:
     duties = []
@@ -142,6 +142,7 @@ def timetable_undo_ruilen_teamleader(request, id):
     'status': 'afgewezen',
     'timetable': req.timetableduty.timetable.title,
     'duty': req.timetableduty,
+    'sendtime': datetime.now(),
   })
 
   message = template.render(data)
@@ -180,7 +181,8 @@ def timetable_ruilen(request, id):
     'name': request.profile.name,
     'timetable': duty.timetable.title,
     'duty': duty,
-    'comments': comments
+    'comments': comments,
+    'sendtime': datetime.now(),
   })
 
   message = template.render(data)
@@ -192,6 +194,7 @@ def timetable_ruilen(request, id):
   to_emails = [ t[0] for t in duty.timetable\
                                   .team.leaders()\
                                   .values_list('profile__email') ]
+
   send_mail("Ruilverzoek", message, from_email, to_emails)
 
   # Redirect to timetable-detail page to prevent re-submitting and to show the changes
