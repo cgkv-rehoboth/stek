@@ -26,14 +26,14 @@
             {% endif %}
 
             <li role="presentation" class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true" aria-expanded="false">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" role="button" aria-haspopup="true" aria-expanded="false">
                 Andere roosters <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
                 {% for table in notmytables %}
                   <li role="presentation"><a href="{% url 'timetable-detail-page' table.pk %}">{{ table.title }}</a></li>
                 {% empty %}
-                  <li role="presentation">Niets gevonden</li>
+                  <li role="presentation" class="nav-item-fillup">Niets gevonden</li>
                 {% endfor %}
               </ul>
             </li>
@@ -65,7 +65,7 @@
                     {% if duty.responsible.pk == request.profile.pk %}
                       {% if ruilen.profile == request.profile %}
                         <a href="javascript:void(0)" class="timetable-undo-ruilen"
-                          title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                          title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
                           data-request-pk="{{ruilen.pk}}"
                         >
                           <i class="fa fa-times"></i>
