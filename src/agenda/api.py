@@ -86,8 +86,11 @@ class ServiceViewSet(
         StekViewSet):
 
   model = Service
-  queryset = Service.objects.filter(enddatetime__gte=datetime.today().date()).order_by("startdatetime", "enddatetime")
   serializer_class = ServiceSerializer
+
+  # Get queryset to rerturn updated data on each request
+  def get_queryset(self):
+    return Service.objects.filter(enddatetime__gte=datetime.now()).order_by("startdatetime", "enddatetime")
 
 
   def retrieve(self, request, *args, **kwargs):
