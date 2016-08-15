@@ -48,13 +48,16 @@
                 <th>Event</th>
                 <th>Persoon</th>
                 <th>Opmerkingen</th>
+                {% if current_table.groepsbeheer %}
+                  <th></th>
+                {% endif %}
               </tr>
             </thead>
             <tbody>
             {% for duty in duties %}
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
               <tr class="table-{{ rowday }}">
-                <td class="duty-date">{{ duty.event.startdatetime }}</td>
+                <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td class="duty-title">{{ duty.event.title }}</td>
                 <td>
                   {% with duty.ruilrequest as ruilen %}
@@ -68,7 +71,7 @@
                           title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
                           data-request-pk="{{ruilen.pk}}"
                         >
-                          <i class="fa fa-times"></i>
+                          <i class="fa fa-times fa-fw"></i>
                         </a>
                       {% else %}
                         <a href="javascript:void(0)"
@@ -76,13 +79,22 @@
                           title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
                           data-duty-pk="{{ duty.pk }}"
                         >
-                          <i class="fa fa-pencil"></i>
+                          <i class="fa fa-pencil fa-fw"></i>
                         </a>
                       {% endif %}
                     {% endif %}
                   {% endwith %}
                 </td>
                 <td>{{ duty.comments }}</td>
+                {% if current_table.groepsbeheer %}
+                  <td style="text-align: right;">
+                    <a href="{% url 'timetable-teamleader-duty-edit' duty.pk %}" title="Bewerken">
+                      <i class="fa fa-pencil-square-o fa-fw"></i></a>
+                    <a href="{% url 'timetable-teamleader-duty-delete' duty.pk %}" onclick="return confirm('Weet je zeker dat je dit item wilt verwijderen?')" title="Verwijderen">
+                      <i class="fa fa-times fa-fw"></i>
+                    </a>
+                  </td>
+                {% endif %}
               </tr>
             {% endfor %}
             </tbody>

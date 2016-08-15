@@ -131,3 +131,5 @@ import frontpageMain from 'mains/frontpage';
 window.frontpageMain = frontpageMain;
 
 window.timetableTeamleader = () => {};
+
+window.timetableTeamleaderDuty = () => {};

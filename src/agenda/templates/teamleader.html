@@ -14,6 +14,9 @@
       </div>
 
       <div class="row">
+        <div class="col-sm-12">
+          <a href="{% url 'timetable-detail-page' table.pk %}">< Terug naar het rooster</a>
+        </div>
         <!-- Ruilrequests -->
         <div class="col-sm-12">
           <h3>Ruilverzoeken</h3>
@@ -46,6 +49,11 @@
             Er zijn geen ruilverzoeken ingediend!
           </p>
           {% endif %}
+        </div>
+
+        <div class="col-sm-12">
+          <h3>Inplannen</h3>
+          <a href="{% url 'timetable-teamleader-duty-new' table.id %}" class="btn btn-default cyan modal-submit-button">Inplannen</a>
         </div>
       </div>
     </div>
