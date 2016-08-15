@@ -1,0 +1,63 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>{{ team.name }} <small>Overzicht</small></h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          {{ team.description }}
+        </div>
+
+        <div class="col-sm-12">
+          <h3>Leden
+            {% if isadmin %}
+              <small>
+                <a href="{% url 'teampage-control-members' team.pk %}" title="Leden toevoegen/verwijderen">Beheren</a>
+              </small>
+            {% endif %}
+          </h3>
+          <div class="zoomtools">
+            <i class="fa fa-search-minus zoomout" aria-hidden="true" title="Verkleinen"></i>
+            <i class="fa fa-search-plus zoomin" aria-hidden="true" title="Vergroten"></i>
+          </div>
+          <br/>
+
+          {% for m in members %}
+            <div class="team-usersquare team-role-{{ m.role }}">
+              <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.get_role_display }})" class="team-userlink">
+                <div>
+                  {% if m.profile.photo %}
+                    <img src="{{ MEDIA_URL }}/{{ m.profile.photo }}" atr="Foto van {{ m.profile.name }}" class="team-userimage"/>
+                  {% else %}
+                    <!-- Todo: Default profile picture -->
+                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/328820/profile/profile-512_1.jpg" class="team-userimage"/>
+                  {% endif %}
+                </div>
+
+                <div class="team-userinfo">
+                  {{ m.profile.first_name }}
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.teamPage();
+  </script>
+{% endblock %}

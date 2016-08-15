@@ -279,6 +279,41 @@ def timetable_ruilverzoek_accept(request, id):
 def calendar(request):
   return render(request, 'calendar.html')
 
+
+# Team pages
+
+@login_required
+def teampage_control_members(request, id):
+  team = Team.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  members = TeamMember.objects.filter(team=team).order_by('role')
+
+  # Render that stuff!
+  return render(request, 'teampage/teampage_control_members.html', {
+    'team': team,
+    'members': members,
+  })
+
+@login_required
+def teampage(request, id):
+  team = Team.objects.get(pk=id)
+
+  members = TeamMember.objects.filter(team=team).order_by('role')
+
+  # Render that stuff!
+  return render(request, 'teampage/teampage.html', {
+    'team': team,
+    'isadmin': request.profile.teamleader_of(team),
+    'members': members,
+  })
+
+
+
 urls = [
   url(r'^roosters/ruilen/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
   url(r'^roosters/ruilen-intrekken/(?P<id>\d+)/$', timetable_undo_ruilen, name='timetable-undo-ruilen'),
@@ -291,4 +326,7 @@ urls = [
   url(r'^kalender/$', calendar, name='calendar-page'),
   url(r'^kalender/nieuw/post/$', add_event_post, name='add-event-post'),
   url(r'^kalender/nieuw/$', add_event, name='add-event-page'),
+
+  url(r'^team/(?P<id>\d+)/leden/$', teampage_control_members, name='teampage-control-members'),
+  url(r'^team/(?P<id>\d+)/$', teampage, name='teampage'),
 ]
