@@ -291,7 +291,7 @@ def teampage_control_members(request, id):
     # Show error (no access) page
     return HttpResponse(status=404)
 
-  members = TeamMember.objects.filter(team=team).order_by('role')
+  members = team.teammembers.order_by('role')
 
   # Get all profiles but exclude profiles that are already member
   memberspk = members.values_list('pk', flat=True)
@@ -372,9 +372,9 @@ def teampage_control_members_delete(request, id):
 def teampage(request, id):
   team = Team.objects.get(pk=id)
 
-  members = TeamMember.objects.filter(team=team).order_by('role')
+  members = team.teammembers.order_by('role')
 
-  tables = Timetable.objects.filter(team=team).order_by('title')
+  tables = team.timetables.order_by('title')
 
   # Render that stuff!
   return render(request, 'teampage/teampage.html', {

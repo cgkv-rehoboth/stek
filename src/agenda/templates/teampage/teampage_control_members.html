@@ -58,7 +58,7 @@
               <th></th>
             </thead>
             <tbody>
-              {% for m in members %}
+              {% for m in members.all %}
                 <tr>
                   <td>
                     <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }}" class="team-userlink">{{ m.profile.name }}</a>

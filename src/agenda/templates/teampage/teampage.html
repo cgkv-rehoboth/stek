@@ -28,7 +28,7 @@
           </h3>
 
           <ul class="teampage-tables">
-            {% for t in tables %}
+            {% for t in tables.all %}
               <li>
                 - <a href="{% url 'timetable-detail-page' t.pk %}" title="Bekijk rooster">{{ t.title }}</a>
               </li>
@@ -51,7 +51,7 @@
           </div>
           <br/>
 
-          {% for m in members %}
+          {% for m in members.all %}
             <div class="team-usersquare team-role-{{ m.role }}">
               <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.get_role_display }})" class="team-userlink">
                 <div>
