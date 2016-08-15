@@ -293,13 +293,82 @@ def teampage_control_members(request, id):
 
   members = TeamMember.objects.filter(team=team).order_by('role')
 
+  # Get all profiles but exclude profiles that are already member
+  memberspk = members.values_list('pk', flat=True)
+  profiles = Profile.objects.all().order_by('last_name', 'first_name')\
+    .exclude(team_membership__pk__in=memberspk)
+
+
+  roles = TeamMember.ROLE_CHOICES
+
   # Render that stuff!
   return render(request, 'teampage/teampage_control_members.html', {
     'team': team,
     'members': members,
+    'profiles': profiles,
+    'roles': roles,
+    'selected_role': 'LID',
   })
 
 @login_required
+@require_POST
+def teampage_control_members_add(request):
+  team = request.POST.get("team", "")
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+  elif request.POST.get("profile", "0") is "0":
+    return redirect('teampage-control-members', id=team)
+
+  # Check if profile is valid
+  profile = request.POST.get("profile", "")
+  if TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
+    return HttpResponse(status=404)
+
+  TeamMember.objects.create(
+    team=Team.objects.get(pk=team),
+    profile=Profile.objects.get(pk=profile),
+    role=request.POST.get("role", "")
+  )
+
+  return redirect('teampage-control-members', id=team)
+
+@login_required
+@require_POST
+def teampage_control_members_edit_save(request, id):
+  member = TeamMember.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(member.team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  member.role = request.POST.get("role", "")
+  member.save()
+
+  return redirect('teampage-control-members', id=member.team.pk)
+
+@login_required
+def teampage_control_members_edit(request, id):
+  member = TeamMember.objects.get(pk=id)
+
+  # Render that stuff!
+  return render(request, 'teampage/teampage_control_members_edit.html', {
+    'team': member.team,
+    'member': member,
+    'roles': TeamMember.ROLE_CHOICES,
+  })
+
+@login_required
+def teampage_control_members_delete(request, id):
+  member = TeamMember.objects.get(pk=id)
+  team = member.team.pk
+  member.delete()
+
+  return redirect('teampage-control-members', id=team)
+
 def teampage(request, id):
   team = Team.objects.get(pk=id)
 
@@ -327,6 +396,10 @@ urls = [
   url(r'^kalender/nieuw/post/$', add_event_post, name='add-event-post'),
   url(r'^kalender/nieuw/$', add_event, name='add-event-page'),
 
+  url(r'^team/leden/add/$', teampage_control_members_add, name='teampage-control-members-add'),
+  url(r'^team/leden/(?P<id>\d+)/edit/save/$', teampage_control_members_edit_save, name='teampage-control-members-edit-save'),
+  url(r'^team/leden/(?P<id>\d+)/edit/$', teampage_control_members_edit, name='teampage-control-members-edit'),
+  url(r'^team/leden/(?P<id>\d+)/delete/$', teampage_control_members_delete, name='teampage-control-members-delete'),
   url(r'^team/(?P<id>\d+)/leden/$', teampage_control_members, name='teampage-control-members'),
   url(r'^team/(?P<id>\d+)/$', teampage, name='teampage'),
 ]
