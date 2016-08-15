@@ -374,11 +374,14 @@ def teampage(request, id):
 
   members = TeamMember.objects.filter(team=team).order_by('role')
 
+  tables = Timetable.objects.filter(team=team).order_by('title')
+
   # Render that stuff!
   return render(request, 'teampage/teampage.html', {
     'team': team,
     'isadmin': request.profile.teamleader_of(team),
     'members': members,
+    'tables': tables,
   })
 
 

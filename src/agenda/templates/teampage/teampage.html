@@ -19,7 +19,26 @@
         </div>
 
         <div class="col-sm-12">
-          <h3>Leden
+          <h3>Roosters
+            {% if isadmin %}
+              <small>
+                <a href="{% url 'teampage-control-members' team.pk %}" title="Roosters toevoegen/verwijderen">Beheren</a>
+              </small>
+            {% endif %}
+          </h3>
+
+          <ul class="teampage-tables">
+            {% for t in tables %}
+              <li>
+                - <a href="{% url 'timetable-detail-page' t.pk %}" title="Bekijk rooster">{{ t.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+          <br/>
+        </div>
+
+        <div class="col-sm-12">
+          <h3>Teamleden
             {% if isadmin %}
               <small>
                 <a href="{% url 'teampage-control-members' team.pk %}" title="Leden toevoegen/verwijderen">Beheren</a>

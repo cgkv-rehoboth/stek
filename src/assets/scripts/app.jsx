@@ -135,6 +135,7 @@ window.timetableTeamleader = () => {};
 window.teamPage = () => {
   $(".zoomin").click(function(){
     var width = parseInt($(".team-usersquare").css('width')) + 11;
+
     $(".team-usersquare").css('width', width + 'px');
 
     var fontsize = parseInt($(".team-userinfo").css('font-size')) + 1;
@@ -143,9 +144,12 @@ window.teamPage = () => {
 
   $(".zoomout").click(function(){
     var width = parseInt($(".team-usersquare").css('width')) - 11;
-    $(".team-usersquare").css('width', width + 'px');
 
-    var fontsize = parseInt($(".team-userinfo").css('font-size')) - 1;
-    $(".team-userinfo").css('font-size', fontsize );
+    if(width > 0) {
+      $(".team-usersquare").css('width', width + 'px');
+
+      var fontsize = parseInt($(".team-userinfo").css('font-size')) - 1;
+      $(".team-userinfo").css('font-size', fontsize);
+    }
   });
 };
