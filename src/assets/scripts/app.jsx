@@ -100,7 +100,7 @@ window.timetableMain = () => {
     let modal = $("#ruilModal");
     let pk = elem.data('duty-pk');
     modal.find('form')
-      .attr('action', `/roosters/ruilen/${pk}/`);
+      .attr('action', `/roosters/ruilverzoek/new/${pk}/`);
     modal.find(".modal-event-content")
       .text(elem.attr("title"));
     modal.modal('show');
@@ -111,7 +111,7 @@ window.timetableMain = () => {
     let modal = $("#undoRuilModal");
     let pk = elem.data('request-pk');
     modal.find('form')
-      .attr('action', `/roosters/ruilen-intrekken/${pk}/`);
+      .attr('action', `/roosters/ruilverzoek/${pk}/intrekken/`);
     modal.find(".modal-event-content")
       .text(elem.attr("title"));
     modal.modal('show');

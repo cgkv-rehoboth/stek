@@ -444,20 +444,25 @@ def timetable_teamleader_duty_new(request, id):
 def calendar(request):
   return render(request, 'calendar.html')
 
+# When editting URLs, pay attention for the Ajax call in app.jsx -> window.timetableMain()
 urls = [
-  url(r'^roosters/ruilen/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
-  url(r'^roosters/ruilen-intrekken/(?P<id>\d+)/$', timetable_undo_ruilen, name='timetable-undo-ruilen'),
-  url(r'^roosters/ruilen-intrekken/teamleider/(?P<id>\d+)/$', timetable_undo_ruilen_teamleader, name='timetable-undo-ruilen-teamleader'),
-  url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail-page'),
+  url(r'^roosters/ruilverzoek/new/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
+  url(r'^roosters/ruilverzoek/(?P<id>\d+)/intrekken/$', timetable_undo_ruilen, name='timetable-undo-ruilen'),
+  url(r'^roosters/ruilverzoek/(?P<id>\d+)/afwijzen/$', timetable_undo_ruilen_teamleader, name='timetable-undo-ruilen-teamleader'),
+  url(r'^roosters/ruilverzoek/(?P<id>\d+)/accept/$', timetable_ruilverzoek_accept, name='timetable-ruilverzoek-accept'),
+  url(r'^roosters/ruilverzoek/(?P<id>\d+)/$', timetable_ruilverzoek, name='timetable-ruilverzoek'),
+
   url(r'^roosters/teamleider/duty/add/$', timetable_teamleader_duty_add, name='timetable-teamleader-duty-add'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/save/$', timetable_teamleader_duty_edit_save, name='timetable-teamleader-duty-edit-save'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/$', timetable_teamleader_duty_edit, name='timetable-teamleader-duty-edit'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/delete/$', timetable_teamleader_duty_delete, name='timetable-teamleader-duty-delete'),
   url(r'^roosters/teamleider/(?P<id>\d+)/duty/new/$', timetable_teamleader_duty_new, name='timetable-teamleader-duty-new'),
+
   url(r'^roosters/teamleider/(?P<id>\d+)/$', timetable_teamleader, name='timetable-teamleader-page'),
-  url(r'^roosters/ruilverzoek/(?P<id>\d+)/accept/$', timetable_ruilverzoek_accept, name='timetable-ruilverzoek-accept'),
-  url(r'^roosters/ruilverzoek/(?P<id>\d+)/$', timetable_ruilverzoek, name='timetable-ruilverzoek'),
+
+  url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail-page'),
   url(r'^roosters/$', timetables, name='timetable-list-page'),
+
   url(r'^kalender/$', calendar, name='calendar-page'),
   url(r'^kalender/nieuw/post/$', add_event_post, name='add-event-post'),
   url(r'^kalender/nieuw/$', add_event, name='add-event-page'),
