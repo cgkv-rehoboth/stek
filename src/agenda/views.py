@@ -456,9 +456,9 @@ urls = [
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/save/$', timetable_teamleader_duty_edit_save, name='timetable-teamleader-duty-edit-save'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/$', timetable_teamleader_duty_edit, name='timetable-teamleader-duty-edit'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/delete/$', timetable_teamleader_duty_delete, name='timetable-teamleader-duty-delete'),
-  url(r'^roosters/teamleider/(?P<id>\d+)/duty/new/$', timetable_teamleader_duty_new, name='timetable-teamleader-duty-new'),
+  url(r'^roosters/(?P<id>\d+)/teamleider/duty/new/$', timetable_teamleader_duty_new, name='timetable-teamleader-duty-new'),
 
-  url(r'^roosters/teamleider/(?P<id>\d+)/$', timetable_teamleader, name='timetable-teamleader-page'),
+  url(r'^roosters/(?P<id>\d+)/teamleider/$', timetable_teamleader, name='timetable-teamleader-page'),
 
   url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail-page'),
   url(r'^roosters/$', timetables, name='timetable-list-page'),

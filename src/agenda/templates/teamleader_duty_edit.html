@@ -49,7 +49,7 @@
                 <label>Verantwoordelijke</label><br/>
                 <select name="responsible" required>
                   {% for member in members %}
-                    <option value="{{ member.profile.pk }}" {% if event.pk == selected_member %}selected="selected"{% endif %}>{{ member.profile }}</option>
+                    <option value="{{ member.profile.pk }}" {% if event.pk == selected_member %}selected="selected"{% endif %}>{{ member.profile.name }}</option>
                   {% endfor %}
                 </select>
               </div>
