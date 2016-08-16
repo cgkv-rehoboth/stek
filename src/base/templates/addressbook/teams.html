@@ -21,6 +21,9 @@
 
         <div class="row">
           <div class="col-md-12">
+            {% if team.email %}
+              <p><i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i> <a href="mailto:{{ team.email }}">{{ team.email }}</a></p>
+            {% endif %}
             <p>{{ team.description }}</p>
           </div>
         </div>

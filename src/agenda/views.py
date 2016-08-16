@@ -364,10 +364,31 @@ def teampage_control_members_edit(request, id):
 @login_required
 def teampage_control_members_delete(request, id):
   member = TeamMember.objects.get(pk=id)
+
   team = member.team.pk
   member.delete()
 
   return redirect('teampage-control-members', id=team)
+
+@login_required
+@require_POST
+def teampage_control_email_save(request, id):
+  team = Team.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  team.email = request.POST.get("email", "")
+  team.save()
+
+  return redirect('teampage', id=team.pk)
+
+@login_required
+def teampage_control_email(request, id):
+  # todo: display form to change the email
+  return redirect('teampage')
 
 def teampage(request, id):
   team = Team.objects.get(pk=id)
@@ -404,5 +425,6 @@ urls = [
   url(r'^team/leden/(?P<id>\d+)/edit/$', teampage_control_members_edit, name='teampage-control-members-edit'),
   url(r'^team/leden/(?P<id>\d+)/delete/$', teampage_control_members_delete, name='teampage-control-members-delete'),
   url(r'^team/(?P<id>\d+)/leden/$', teampage_control_members, name='teampage-control-members'),
+  url(r'^team/(?P<id>\d+)/email/save$', teampage_control_email_save, name='teampage-control-email-save'),
   url(r'^team/(?P<id>\d+)/$', teampage, name='teampage'),
 ]
