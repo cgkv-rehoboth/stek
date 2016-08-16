@@ -48,6 +48,19 @@ function initListGroupDetail() {
   }
 }
 
+// Confirmation dialog (mainly used for deletions of table items)
+$(".confirm-dialog-button").click(function(e){
+  e.preventDefault();
+
+  $("#confirm-modal .modal-body").text($(this).attr('data-message'));
+  $("#confirm-modal .modal-footer .modal-ok").attr('href', $(this).attr('href'));
+
+  $("#confirm-modal").modal('show');
+});
+$("#confirm-modal .modal-footer .modal-cancel").click(function(){
+  $("#confirm-modal").modal('hide');
+});
+
 //
 // main functions for different pages
 //

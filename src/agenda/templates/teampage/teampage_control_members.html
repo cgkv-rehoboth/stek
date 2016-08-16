@@ -64,12 +64,14 @@
                     <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }}" class="team-userlink">{{ m.profile.name }}</a>
                   </td>
                   <td>{{ m.get_role_display|capfirst }}</td>
-                  <td style="text-align: right">
-                    <a href="{% url 'teampage-control-members-edit' m.pk %}" title="Bewerken">
-                      <i class="fa fa-pencil-square-o fa-fw"></i></a>
-                    <a href="{% url 'teampage-control-members-delete' m.pk %}" onclick="return confirm('Weet je zeker dat je dit lid wilt verwijderen?')" title="Verwijderen">
-                      <i class="fa fa-times fa-fw"></i>
-                    </a>
+                  <td>
+                    <span class="table-tools">
+                      <a href="{% url 'teampage-control-members-edit' m.pk %}" title="Bewerken">
+                        <i class="fa fa-pencil-square-o fa-fw"></i></a>
+                      <a href="{% url 'teampage-control-members-delete' m.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit lid wilt verwijderen?" title="Verwijderen">
+                        <i class="fa fa-times fa-fw"></i>
+                      </a>
+                    </span>
                   </td>
                 </tr>
               {% endfor %}
@@ -79,6 +81,29 @@
       </div>
     </div>
   </section>
+
+  <!-- Modal for (deletion) confirmation -->
+  <div class="modal fade bs-example-modal-sm" id="confirm-modal" tabindex="-1" role="dialog" aria-labelledby="Bevestiging">
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Sluiten"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Bevestig uw keuze</h4>
+        </div>
+        <div class="modal-body">
+          <!-- Dynamic content inserted by JS -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default black modal-cancel">
+            Annuleren
+          </button>
+          <a href="javascript:void(0)" class="btn btn-default cyan modal-ok">
+            Bevestigen
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block scripts %}
