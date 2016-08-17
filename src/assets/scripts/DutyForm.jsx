@@ -41,6 +41,27 @@ class DutyForm extends React.Component {
     };
 
     return <forms.Form ref="dutyForm" formBuilder={formBuilder} onSubmit={handleSubmit} />;
+
+    /*
+    * Volgens mij werkt dit hieronder wel en dat hierboven niet:
+    *
+    let formBuilder = (
+        <div className="duty-form">
+          <forms.SelectField name="event">
+
+          </forms.SelectField>
+          <forms.SelectField name="responsible">
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </forms.SelectField>
+          <forms.TextField name="comment" />
+          <br />
+          <forms.SubmitButton />
+        </div>
+      );
+
+    return <forms.Form ref="dutyForm" onSubmit={handleSubmit}>{formBuilder}</forms.Form>;
+    */
   }
 }
 
