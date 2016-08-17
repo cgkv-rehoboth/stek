@@ -198,16 +198,6 @@ window.servicePage = () => {
 };
 
 window.teamPage = () => {
-  // Edit email
-  $("#team-form-edit").click(function(){
-    $("#team-form-email").hide();
-    $("#team-form").show();
-  });
-  $("#team-form-cancel").click(function(){
-    $("#team-form").hide();
-    $("#team-form-email").show();
-  });
-
   // Zoom in/out profile pics
   $(".zoomin").click(function(){
     var width = parseInt($(".team-usersquare").css('width')) + 11;
