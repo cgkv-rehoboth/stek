@@ -9,6 +9,7 @@ import * as qs from 'querystring';
 import nl from 'moment/locale/nl';
 
 import ProfileSearchTable from "ProfileSearchTable";
+import ServiceTableManagable from "ServiceTableManagable";
 import {SearchTable} from "bootstrap/tables";
 
 // bind global jquery instance
@@ -141,6 +142,14 @@ window.servicePage = () => {
       $(".service-second input").attr('disabled', true);
   });
 
+  // Prevent enter from submitting the form
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+
   // Switch between summer and wintertime
   checkSummertime();
   $("#services-form input[name='date']").change(function () {
@@ -161,4 +170,14 @@ window.servicePage = () => {
       $('#services-form input[name="endtime2"]').attr('value', '17:45');
     }
   };
+
+  // Service table
+  let searchServices = (query, page) => {
+    return api.services.list(query, page);
+  };
+
+  ReactDom.render(
+    <ServiceTableManagable listFunc={searchServices} />,
+    $("#service-page-table")[0]
+  );
 };

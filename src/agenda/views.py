@@ -237,7 +237,7 @@ def calendar(request):
 
 
 @login_required
-def timetables_services(request):
+def services(request):
   # set default date to next sunday without a service
   # Get last sunday service
   last = Service.objects.filter(startdatetime__week_day=1).order_by('-startdatetime').first()
@@ -254,7 +254,7 @@ def timetables_services(request):
 
 @login_required
 @require_POST
-def timetables_services_add(request):
+def services_add(request):
   date = str(request.POST.get("date", ""))
 
   # Ochtenddienst
@@ -292,6 +292,42 @@ def timetables_services_add(request):
 
   return redirect('services-page')
 
+@login_required
+@require_POST
+def services_edit_save(request, id):
+  service = Service.objects.get(pk=id)
+
+  date = str(request.POST.get("date", service.startdatetime.date()))
+
+  # Ochtenddienst
+  startdate = "%s %s:00" % (date, str(request.POST.get("starttime", service.startdatetime.time())))
+  enddate = "%s %s:00" % (date, str(request.POST.get("endtime", service.enddatetime.time())))
+
+  service.startdatetime = startdate
+  service.enddatetime = enddate
+  service.title = request.POST.get("title", "")
+  service.minister = request.POST.get("minister", "")
+  service.theme = request.POST.get("theme", "")
+  service.comments = request.POST.get("comments", "")
+  service.description = request.POST.get("description", "")
+
+  service.save()
+
+  return redirect('services-page')
+
+@login_required
+def services_edit(request, id):
+
+  return render(request, 'services/edit.html', {
+    'service': Service.objects.get(pk=id),
+  })
+
+@login_required
+def services_delete(request, id):
+  Service.objects.get(pk=id).delete()
+
+  return redirect('services-page')
+
 
 urls = [
   url(r'^roosters/ruilen/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
@@ -304,9 +340,9 @@ urls = [
   url(r'^roosters/$', timetables, name='timetable-list-page'),
   url(r'^kalender/$', calendar, name='calendar-page'),
 
-  url(r'^roosters/diensten/add/$', timetables_services_add, name='services-page-add'),
-  url(r'^roosters/diensten/(?P<id>\d+)/edit/save/$', timetables_services_add, name='services-page-edit-save'),
-  url(r'^roosters/diensten/(?P<id>\d+)/edit/$', timetables_services_add, name='services-page-edit'),
-  url(r'^roosters/diensten/(?P<id>\d+)/delete/$', timetables_services_add, name='services-page-delete'),
-  url(r'^roosters/diensten/$', timetables_services, name='services-page'),
+  url(r'^roosters/diensten/add/$', services_add, name='services-page-add'),
+  url(r'^roosters/diensten/(?P<id>\d+)/edit/save/$', services_edit_save, name='services-page-edit-save'),
+  url(r'^roosters/diensten/(?P<id>\d+)/edit/$', services_edit, name='services-page-edit'),
+  url(r'^roosters/diensten/(?P<id>\d+)/delete/$', services_delete, name='services-page-delete'),
+  url(r'^roosters/diensten/$', services, name='services-page'),
 ]

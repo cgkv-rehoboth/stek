@@ -1,0 +1,88 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Diensten <small>Overzicht</small></h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Nieuwe dienst(en) toevoegen</h3>
+
+          <form class="form-horizontal" id="services-form" method="post" action="{% url 'services-page-edit-save' service.pk %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Titel</label>
+              <div class="col-sm-10">
+                <input type="text" name="title" class="form-control" placeholder="Bijv. Ochtenddienst" value="{{ service.title }}" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Voorganger</label>
+              <div class="col-sm-10">
+                <input type="text" name="minister" class="form-control" placeholder="Bijv. ds. V. Oorbeeld (Amsterdam)" value="{{ service.minister }}" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Thema</label>
+              <div class="col-sm-10">
+                <input type="text" name="theme" class="form-control" placeholder="Thema van de dienst" value="{{ service.theme }}" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Extra informatie</label>
+              <div class="col-sm-10">
+                <input type="text" name="comments" class="form-control" placeholder="Extra informatie welke weergeven moet worden" value="{{ service.comments }}" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Datum</label>
+              <div class="col-sm-10">
+                <input type="date" name="date" class="form-control" value="{{ service.startdatetime|date:'Y-m-d' }}" placeholder="Datum voor de (beide) dienst(en)" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Tijd</label>
+              <div class="col-sm-10">
+                <input type="time" name="starttime" class="form-control" placeholder="Begintijd" value="{{ service.startdatetime|date:'H:i' }}" />
+                <input type="time" name="endtime" class="form-control" placeholder="Eindtijd" value="{{ service.enddatetime|date:'H:i' }}" />
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="form-group">
+              <div class="col-sm-10 col-sm-offset-2">
+                <a href="{% url 'services-page' %}" class="btn btn-default black">Annuleren</a>
+                <button type="submit" class="btn btn-default cyan">
+                  Opslaan
+                </button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.servicePage();
+  </script>
+{% endblock %}

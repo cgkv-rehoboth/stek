@@ -3,9 +3,12 @@
   label
     margin-top: 8px
 
-  .services-form-service input[type="time"]
+  input[type="time"]
     max-width: 150px
     display: inline-block
+
+  input[type="date"]
+    max-width: 200px
 
   .services-form-service
     border-top: 1px solid #ddd
@@ -15,3 +18,65 @@
 
   .services-form-footer
     text-align: center
+
+
+#service-page-table
+  table
+    border: none
+
+    tr
+      background: none
+
+      td, th
+        border: none
+
+        &.serviceInfoIcon
+          padding-right: 0
+
+      td
+        border-top: 1px solid #ddd
+
+        &.service-table-theme
+          font-style: italic
+
+      th
+        border-bottom: 2px solid #ddd
+
+      &.serviceHiddenItems
+        cursor: auto
+        display: none
+        border: none
+
+        td
+          display: none !important
+          padding: 0
+          padding-left: 10px
+
+          div
+            margin: 0
+            padding: 4px 6px 4px 9px
+
+  .service-starttime
+    width: 50px
+    display: inline-block
+    text-align: right
+
+
+@media (max-width: 673px)
+  #service-page-table
+    table
+      tr
+        background: none
+        cursor: pointer
+
+        td, th
+          &.serviceHideOnSmallScreen
+            display: none
+
+        &.serviceHiddenItems
+          display: none
+          border-left: 37px solid #CBD4DA
+          background-color: #FAFAFA
+
+          td
+            display: table-cell !important
