@@ -27,9 +27,8 @@
             <label>
               Vervanging:
               <select name="vervanging">
-                <option>--</option>
                 {% for member in members %}
-                <option value="{{ member.profile.id }}">{{ member.profile.name }}</option>
+                <option value="{{ member.profile.id }}"{% if member.profile.pk == selected_member %}selected="selected"{% endif %}>{{ member.profile.name }}</option>
                 {% endfor %}
               </select>
             </label>
