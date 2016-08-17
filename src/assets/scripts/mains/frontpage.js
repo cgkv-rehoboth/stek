@@ -51,6 +51,7 @@ class ContactForm extends Component {
 }
 
 export default function frontpageMain() {
+  /*
   ReactDom.render(
     <Popup>
       Vanaf zondag 5 juni is het zomerrooster weer begonnen en begint de 2e dienst om 18:30u.
@@ -58,6 +59,7 @@ export default function frontpageMain() {
     $('#popup')[0]
   );
   ReactDom.render(<ContactForm />, $('#contact-form')[0]);
+  */
 
   // Service table
   let searchServices = (query, page) => {

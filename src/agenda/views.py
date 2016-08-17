@@ -23,8 +23,8 @@ def add_event_post(request):
   date = str(request.POST.get("date", ""))
 
   # Ochtenddienst
-  startdate = "%s 09:30:00" % date
-  enddate = "%s 11:00:00" % date
+  startdate = "%s %s:00" % (date, str(request.POST.get("time1a", "09:30")))
+  enddate = "%s %s:00" % (date, str(request.POST.get("timeb", "11:00")))
   title = "Ochtenddienst"
   service = Service.objects.create(
     startdatetime=startdate,
@@ -32,17 +32,17 @@ def add_event_post(request):
     owner=request.profile,
     title=title,
     timetable=Timetable.objects.get(title="Diensten"),
-    minister=str(request.POST.get("minister", ""))
+    minister=str(request.POST.get("minister1", ""))
   )
 
   # Middagdienst
   if request.POST.get("zomertijd", False):
-    startdate = "%s 18:30:00" % date
-    enddate = "%s 19:30:00" % date
+    startdate = "%s %s:00" % (date, str(request.POST.get("time2a", "18:30")))
+    enddate = "%s %s:00" % (date, str(request.POST.get("time2b", "19:30")))
     title = "Avonddienst"
   else:
-    startdate = "%s 16:30:00" % date
-    enddate = "%s 17:30:00" % date
+    startdate = "%s %s:00" % (date, str(request.POST.get("time2a", "16:30")))
+    enddate = "%s %s:00" % (date, str(request.POST.get("time2b", "17:30")))
     title = "Middagdienst"
 
   service = Service.objects.create(
@@ -51,7 +51,7 @@ def add_event_post(request):
     owner=request.profile,
     title=title,
     timetable=Timetable.objects.get(title="Diensten"),
-    minister=str(request.POST.get("minister", ""))
+    minister=str(request.POST.get("minister2", ""))
   )
 
   return redirect('add-event-page')
