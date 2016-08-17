@@ -1,0 +1,47 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>{{ team.name }} <small>Leden beheren</small></h2>
+        </div>
+        <div class="col-sm-12">
+          <a href="{% url 'teampage-control-members' team.pk %}" class="backlink">< Terug naar de beheerpagina</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Lid bewerken</h3>
+          <form method="post" action="{% url 'teampage-control-members-edit-save' member.pk %}" class="team-add-user">
+            {% csrf_token %}
+
+            <input type="text" class="form-control" value="{{ member.profile.name }}" readonly />
+
+            <select name="role" class="form-control">
+              {% for r in roles %}
+                <option value="{{ r.0 }}" {% if r.0 == member.role %}selected="selected"{% endif %}>{{ r.1|capfirst }}</option>
+              {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-default cyan">
+              Wijzigen
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.teamPage();
+  </script>
+{% endblock %}

@@ -9,6 +9,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.contrib.auth.forms import AuthenticationForm
 from datetime import datetime, timedelta
+import random
 from .models import *
 from base.models import Profile
 
@@ -329,6 +330,229 @@ def services_delete(request, id):
   return redirect('services-page')
 
 
+
+# Team pages
+
+@login_required
+def teampage_control_members(request, id):
+  team = Team.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  members = team.teammembers.order_by('role')
+
+  # Get all profiles but exclude profiles that are already member
+  memberspk = members.values_list('pk', flat=True)
+  profiles = Profile.objects.all().order_by('last_name', 'first_name')\
+    .exclude(team_membership__pk__in=memberspk)
+
+
+  roles = TeamMember.ROLE_CHOICES
+
+  # Render that stuff!
+  return render(request, 'teampage/teampage_control_members.html', {
+    'team': team,
+    'members': members,
+    'profiles': profiles,
+    'roles': roles,
+    'selected_role': 'LID',
+  })
+
+@login_required
+@require_POST
+def teampage_control_members_add(request):
+  team = request.POST.get("team", "")
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+  elif request.POST.get("profile", "0") is "0":
+    return redirect('teampage-control-members', id=team)
+
+  # Check if profile is valid
+  profile = request.POST.get("profile", "")
+  if TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
+    return HttpResponse(status=404)
+
+  TeamMember.objects.create(
+    team=Team.objects.get(pk=team),
+    profile=Profile.objects.get(pk=profile),
+    role=request.POST.get("role", "")
+  )
+
+  return redirect('teampage-control-members', id=team)
+
+@login_required
+@require_POST
+def teampage_control_members_edit_save(request, id):
+  member = TeamMember.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(member.team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  member.role = request.POST.get("role", "")
+  member.save()
+
+  return redirect('teampage-control-members', id=member.team.pk)
+
+@login_required
+def teampage_control_members_edit(request, id):
+  member = TeamMember.objects.get(pk=id)
+
+  # Render that stuff!
+  return render(request, 'teampage/teampage_control_members_edit.html', {
+    'team': member.team,
+    'member': member,
+    'roles': TeamMember.ROLE_CHOICES,
+  })
+
+@login_required
+def teampage_control_members_delete(request, id):
+  member = TeamMember.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(member.team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  team = member.team.pk
+  member.delete()
+
+  return redirect('teampage-control-members', id=team)
+
+
+@login_required
+def teampage_control_timetables(request, id):
+  team = Team.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  tables = team.timetables
+
+  return render(request, 'teampage/control_timetables.html', {
+    'team': team,
+    'tables': tables,
+    'random_color': '{:06x}'.format(random.randint(0, 0xffffff)),
+  })
+
+@login_required
+@require_POST
+def teampage_control_timetables_add(request):
+  team = Team.objects.get(pk=request.POST.get("team", ""))
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  if request.POST.get("color", "")[0] is "#":
+    color = request.POST.get("color", "")[1:]
+  else:
+    color = request.POST.get("color", "")
+
+  Timetable.objects.create(
+    team=team,
+    owner=request.profile,
+    title=request.POST.get("title", ""),
+    description=request.POST.get("description", ""),
+    incalendar=request.POST.get("incalendar", ""),
+    color=color,
+  )
+
+  return redirect('teampage-control-timetables', id=team.pk)
+
+@login_required
+def teampage_control_timetables_delete(request, id):
+  table = Timetable.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(table.team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  team = table.team.pk
+  table.delete()
+
+  return redirect('teampage-control-timetables', id=team)
+
+@login_required
+def teampage_control_timetables_edit(request, id):
+  table = Timetable.objects.get(pk=id)
+
+  return render(request, 'teampage/control_timetables_edit.html', {
+    'table': table,
+  })
+
+@login_required
+@require_POST
+def teampage_control_timetables_edit_save(request, id):
+  table = Timetable.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(table.team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  if request.POST.get("color", "")[0] is "#":
+    color = request.POST.get("color", "")[1:]
+  else:
+    color = request.POST.get("color", "")
+
+  table.title = request.POST.get("title", "")
+  table.description = request.POST.get("description", "")
+  table.incalendar = request.POST.get("incalendar", "")
+  table.color = color
+  table.save()
+
+  return redirect('teampage-control-timetables', id=table.team.pk)
+
+
+@login_required
+@require_POST
+def teampage_control_email_save(request, id):
+  team = Team.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Show error (no access) page
+    return HttpResponse(status=404)
+
+  team.email = request.POST.get("email", "")
+  team.save()
+
+  return redirect('teampage', id=team.pk)
+
+@login_required
+def teampage_control_email(request, id):
+  # todo: display form to change the email
+  return redirect('teampage')
+
+def teampage(request, id):
+  team = Team.objects.get(pk=id)
+
+  members = team.teammembers.order_by('role')
+
+  tables = team.timetables.order_by('title')
+
+  # Render that stuff!
+  return render(request, 'teampage/teampage.html', {
+    'team': team,
+    'isadmin': request.profile.teamleader_of(team),
+    'members': members,
+    'tables': tables,
+  })
+
+
+
 urls = [
   url(r'^roosters/ruilen/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
   url(r'^roosters/ruilen-intrekken/(?P<id>\d+)/$', timetable_undo_ruilen, name='timetable-undo-ruilen'),
@@ -338,7 +562,23 @@ urls = [
   url(r'^roosters/ruilverzoek/accept/(?P<id>\d+)/$', timetable_ruilverzoek_accept, name='timetable-ruilverzoek-accept'),
   url(r'^roosters/ruilverzoek/(?P<id>\d+)/$', timetable_ruilverzoek, name='timetable-ruilverzoek'),
   url(r'^roosters/$', timetables, name='timetable-list-page'),
+
   url(r'^kalender/$', calendar, name='calendar-page'),
+
+  url(r'^team/leden/add/$', teampage_control_members_add, name='teampage-control-members-add'),
+  url(r'^team/leden/(?P<id>\d+)/edit/save/$', teampage_control_members_edit_save, name='teampage-control-members-edit-save'),
+  url(r'^team/leden/(?P<id>\d+)/edit/$', teampage_control_members_edit, name='teampage-control-members-edit'),
+  url(r'^team/leden/(?P<id>\d+)/delete/$', teampage_control_members_delete, name='teampage-control-members-delete'),
+  url(r'^team/(?P<id>\d+)/leden/$', teampage_control_members, name='teampage-control-members'),
+
+  url(r'^team/roosters/add/$', teampage_control_timetables_add, name='teampage-control-timetables-add'),
+  url(r'^team/roosters/(?P<id>\d+)/delete/$', teampage_control_timetables_delete, name='teampage-control-timetables-delete'),
+  url(r'^team/roosters/(?P<id>\d+)/edit/save/$', teampage_control_timetables_edit_save, name='teampage-control-timetables-edit-save'),
+  url(r'^team/roosters/(?P<id>\d+)/edit/$', teampage_control_timetables_edit, name='teampage-control-timetables-edit'),
+  url(r'^team/(?P<id>\d+)/roosters/$', teampage_control_timetables, name='teampage-control-timetables'),
+
+  url(r'^team/(?P<id>\d+)/email/save$', teampage_control_email_save, name='teampage-control-email-save'),
+  url(r'^team/(?P<id>\d+)/$', teampage, name='teampage'),
 
   url(r'^roosters/diensten/add/$', services_add, name='services-page-add'),
   url(r'^roosters/diensten/(?P<id>\d+)/edit/save/$', services_edit_save, name='services-page-edit-save'),

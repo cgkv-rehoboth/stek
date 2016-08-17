@@ -49,6 +49,19 @@ function initListGroupDetail() {
   }
 }
 
+// Confirmation dialog (mainly used for deletions of table items)
+$(".confirm-dialog-button").click(function(e){
+  e.preventDefault();
+
+  $("#confirm-modal .modal-body").text($(this).attr('data-message'));
+  $("#confirm-modal .modal-footer .modal-ok").attr('href', $(this).attr('href'));
+
+  $("#confirm-modal").modal('show');
+});
+$("#confirm-modal .modal-footer .modal-cancel").click(function(){
+  $("#confirm-modal").modal('hide');
+});
+
 //
 // main functions for different pages
 //
@@ -180,4 +193,37 @@ window.servicePage = () => {
     <ServiceTableManagable listFunc={searchServices} />,
     $("#service-page-table")[0]
   );
+};
+
+window.teamPage = () => {
+  // Edit email
+  $("#team-form-edit").click(function(){
+    $("#team-form-email").hide();
+    $("#team-form").show();
+  });
+  $("#team-form-cancel").click(function(){
+    $("#team-form").hide();
+    $("#team-form-email").show();
+  });
+
+  // Zoom in/out profile pics
+  $(".zoomin").click(function(){
+    var width = parseInt($(".team-usersquare").css('width')) + 11;
+
+    $(".team-usersquare").css('width', width + 'px');
+
+    var fontsize = parseInt($(".team-userinfo").css('font-size')) + 1;
+    $(".team-userinfo").css('font-size', fontsize);
+  });
+
+  $(".zoomout").click(function(){
+    var width = parseInt($(".team-usersquare").css('width')) - 11;
+
+    if(width > 0) {
+      $(".team-usersquare").css('width', width + 'px');
+
+      var fontsize = parseInt($(".team-userinfo").css('font-size')) - 1;
+      $(".team-userinfo").css('font-size', fontsize);
+    }
+  });
 };

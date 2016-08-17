@@ -101,7 +101,10 @@ class Profile(models.Model):
 
   def teamleader_of(self, team):
     # Check if user is teamleader of this timetable's team
-    return self.team_membership.filter(team=team, profile=self).first().role == 'LEI'
+    if self.team_membership.filter(team=team, profile=self).exists():
+      return self.team_membership.filter(team=team, profile=self).first().role == 'LEI'
+    else:
+      return False
 
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)
