@@ -691,7 +691,7 @@ def teampage_control_timetables_edit_save(request, id):
 
 @login_required
 @require_POST
-def teampage_control_email_save(request, id):
+def teampage_control_edit_save(request, id):
   team = Team.objects.get(pk=id)
 
   # Check if user is teamleader of this team
@@ -699,15 +699,20 @@ def teampage_control_email_save(request, id):
     # Show error (no access) page
     return HttpResponse(status=404)
 
+  team.name = request.POST.get("name", "")
+  team.description = request.POST.get("description", "")
   team.email = request.POST.get("email", "")
   team.save()
 
   return redirect('teampage', id=team.pk)
 
 @login_required
-def teampage_control_email(request, id):
+def teampage_control_edit(request, id):
+  team = Team.objects.get(pk=id)
 
-  return redirect('teampage')
+  return render(request, 'teampage/edit.html', {
+    'team': team,
+  })
 
 def teampage(request, id):
   team = Team.objects.get(pk=id)
@@ -758,7 +763,8 @@ urls = [
   url(r'^team/roosters/(?P<id>\d+)/edit/$', teampage_control_timetables_edit, name='teampage-control-timetables-edit'),
   url(r'^team/(?P<id>\d+)/roosters/$', teampage_control_timetables, name='teampage-control-timetables'),
 
-  url(r'^team/(?P<id>\d+)/email/save$', teampage_control_email_save, name='teampage-control-email-save'),
+  url(r'^team/(?P<id>\d+)/edit/save$', teampage_control_edit_save, name='teampage-control-edit-save'),
+  url(r'^team/(?P<id>\d+)/edit/$', teampage_control_edit, name='teampage-control-edit'),
   url(r'^team/(?P<id>\d+)/$', teampage, name='teampage'),
 
   url(r'^roosters/diensten/add/$', services_add, name='services-page-add'),
