@@ -58,8 +58,8 @@ export default function frontpageMain() {
     </Popup>,
     $('#popup')[0]
   );
-  ReactDom.render(<ContactForm />, $('#contact-form')[0]);
   */
+  ReactDom.render(<ContactForm />, $('#contact-form')[0]);
 
   // Service table
   let searchServices = (query, page) => {
