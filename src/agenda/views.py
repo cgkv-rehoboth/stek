@@ -8,53 +8,9 @@ from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.template import Context
 from django.contrib.auth.forms import AuthenticationForm
-from datetime import datetime
+from datetime import datetime, timedelta
 from .models import *
 from base.models import Profile
-
-@login_required
-def add_event(request):
-  return render(request, 'add_event.html', {})
-
-@login_required
-@require_POST
-def add_event_post(request):
-  date = str(request.POST.get("date", ""))
-
-  # Ochtenddienst
-  startdate = "%s %s:00" % (date, str(request.POST.get("time1a", "09:30")))
-  enddate = "%s %s:00" % (date, str(request.POST.get("timeb", "11:00")))
-  title = "Ochtenddienst"
-  service = Service.objects.create(
-    startdatetime=startdate,
-    enddatetime=enddate,
-    owner=request.profile,
-    title=title,
-    timetable=Timetable.objects.get(title="Diensten"),
-    minister=str(request.POST.get("minister1", ""))
-  )
-
-  # Middagdienst
-  if request.POST.get("zomertijd", False):
-    startdate = "%s %s:00" % (date, str(request.POST.get("time2a", "18:30")))
-    enddate = "%s %s:00" % (date, str(request.POST.get("time2b", "19:30")))
-    title = "Avonddienst"
-  else:
-    startdate = "%s %s:00" % (date, str(request.POST.get("time2a", "16:30")))
-    enddate = "%s %s:00" % (date, str(request.POST.get("time2b", "17:30")))
-    title = "Middagdienst"
-
-  service = Service.objects.create(
-    startdatetime=startdate,
-    enddatetime=enddate,
-    owner=request.profile,
-    title=title,
-    timetable=Timetable.objects.get(title="Diensten"),
-    minister=str(request.POST.get("minister2", ""))
-  )
-
-  return redirect('add-event-page')
-
 
 @login_required
 def timetables(request, id=None):
@@ -279,6 +235,100 @@ def timetable_ruilverzoek_accept(request, id):
 def calendar(request):
   return render(request, 'calendar.html')
 
+
+@login_required
+def services(request):
+  # set default date to next sunday without a service
+  # Get last sunday service
+  last = Service.objects.filter(startdatetime__week_day=1).order_by('-startdatetime').first()
+
+  # Add one week
+  if last:
+    startdatetime = last.startdatetime + timedelta(weeks=1)
+  else:
+    startdatetime = datetime.today().date() + timedelta(weeks=1)
+
+  return render(request, 'services/main.html', {
+    'startdatetime': startdatetime,
+  })
+
+@login_required
+@require_POST
+def services_add(request):
+  date = str(request.POST.get("date", ""))
+
+  # Ochtenddienst
+  startdate = "%s %s:00" % (date, str(request.POST.get("starttime1", "09:30")))
+  enddate = "%s %s:00" % (date, str(request.POST.get("endtime1", "11:00")))
+
+  Service.objects.create(
+    startdatetime=startdate,
+    enddatetime=enddate,
+    owner=request.profile,
+    title=request.POST.get("title1", ""),
+    timetable=Timetable.objects.get(title="Diensten"),
+    minister=request.POST.get("minister1", ""),
+    theme=request.POST.get("theme1", ""),
+    comments=request.POST.get("comments1", ""),
+    description=request.POST.get("description1", ""),
+  )
+
+  if request.POST.get("secondservice", ""):
+    # Middagdienst
+    startdate = "%s %s:00" % (date, str(request.POST.get("starttime2", "16:30")))
+    enddate = "%s %s:00" % (date, str(request.POST.get("endtime2", "17:45")))
+
+    Service.objects.create(
+      startdatetime=startdate,
+      enddatetime=enddate,
+      owner=request.profile,
+      title=request.POST.get("title2", ""),
+      timetable=Timetable.objects.get(title="Diensten"),
+      minister=request.POST.get("minister2", ""),
+      theme=request.POST.get("theme2", ""),
+      comments=request.POST.get("comments2", ""),
+      description=request.POST.get("description2", ""),
+    )
+
+  return redirect('services-page')
+
+@login_required
+@require_POST
+def services_edit_save(request, id):
+  service = Service.objects.get(pk=id)
+
+  date = str(request.POST.get("date", service.startdatetime.date()))
+
+  # Ochtenddienst
+  startdate = "%s %s:00" % (date, str(request.POST.get("starttime", service.startdatetime.time())))
+  enddate = "%s %s:00" % (date, str(request.POST.get("endtime", service.enddatetime.time())))
+
+  service.startdatetime = startdate
+  service.enddatetime = enddate
+  service.title = request.POST.get("title", "")
+  service.minister = request.POST.get("minister", "")
+  service.theme = request.POST.get("theme", "")
+  service.comments = request.POST.get("comments", "")
+  service.description = request.POST.get("description", "")
+
+  service.save()
+
+  return redirect('services-page')
+
+@login_required
+def services_edit(request, id):
+
+  return render(request, 'services/edit.html', {
+    'service': Service.objects.get(pk=id),
+  })
+
+@login_required
+def services_delete(request, id):
+  Service.objects.get(pk=id).delete()
+
+  return redirect('services-page')
+
+
 urls = [
   url(r'^roosters/ruilen/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
   url(r'^roosters/ruilen-intrekken/(?P<id>\d+)/$', timetable_undo_ruilen, name='timetable-undo-ruilen'),
@@ -289,6 +339,10 @@ urls = [
   url(r'^roosters/ruilverzoek/(?P<id>\d+)/$', timetable_ruilverzoek, name='timetable-ruilverzoek'),
   url(r'^roosters/$', timetables, name='timetable-list-page'),
   url(r'^kalender/$', calendar, name='calendar-page'),
-  url(r'^kalender/nieuw/post/$', add_event_post, name='add-event-post'),
-  url(r'^kalender/nieuw/$', add_event, name='add-event-page'),
+
+  url(r'^roosters/diensten/add/$', services_add, name='services-page-add'),
+  url(r'^roosters/diensten/(?P<id>\d+)/edit/save/$', services_edit_save, name='services-page-edit-save'),
+  url(r'^roosters/diensten/(?P<id>\d+)/edit/$', services_edit, name='services-page-edit'),
+  url(r'^roosters/diensten/(?P<id>\d+)/delete/$', services_delete, name='services-page-delete'),
+  url(r'^roosters/diensten/$', services, name='services-page'),
 ]

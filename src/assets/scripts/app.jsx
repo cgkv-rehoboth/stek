@@ -9,6 +9,7 @@ import * as qs from 'querystring';
 import nl from 'moment/locale/nl';
 
 import ProfileSearchTable from "ProfileSearchTable";
+import ServiceTableManagable from "ServiceTableManagable";
 import {SearchTable} from "bootstrap/tables";
 
 // bind global jquery instance
@@ -131,3 +132,52 @@ import frontpageMain from 'mains/frontpage';
 window.frontpageMain = frontpageMain;
 
 window.timetableTeamleader = () => {};
+
+window.servicePage = () => {
+  // Disable input if checkbox is unchecked
+  $(".service-second-trigger").click(function(){
+    if($(this).prop('checked'))
+      $(".service-second input").attr('disabled', false);
+    else
+      $(".service-second input").attr('disabled', true);
+  });
+
+  // Prevent enter from submitting the form
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+
+  // Switch between summer and wintertime
+  checkSummertime();
+  $("#services-form input[name='date']").change(function () {
+    checkSummertime();
+  });
+
+  function checkSummertime(){
+    var month = $("#services-form input[name='date']").val().substring(5,7);
+
+    // If month is in the summer months:
+    if(month > 6 && month < 9) {
+      $('#services-form input[name="title2"]').attr('value', 'Avonddienst');
+      $('#services-form input[name="starttime2"]').attr('value', '18:30');
+      $('#services-form input[name="endtime2"]').attr('value', '19:45');
+    }else{
+      $('#services-form input[name="title2"]').attr('value', 'Middagdienst');
+      $('#services-form input[name="starttime2"]').attr('value', '16:30');
+      $('#services-form input[name="endtime2"]').attr('value', '17:45');
+    }
+  };
+
+  // Service table
+  let searchServices = (query, page) => {
+    return api.services.list(query, page);
+  };
+
+  ReactDom.render(
+    <ServiceTableManagable listFunc={searchServices} />,
+    $("#service-page-table")[0]
+  );
+};
