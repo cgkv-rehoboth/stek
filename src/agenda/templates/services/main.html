@@ -1,0 +1,136 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Diensten <small>Overzicht</small></h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Nieuwe dienst(en) toevoegen</h3>
+
+          <form class="form-horizontal" id="services-form" method="post" action="{% url 'services-page-add' %}">
+            {% csrf_token %}
+
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label class="col-sm-2 control-label">Datum</label>
+                <div class="col-sm-7 col-md-6 col-lg-5">
+                  <input type="date" name="date" class="form-control" value="{{ startdatetime|date:'Y-m-d' }}" placeholder="Datum voor de (beide) dienst(en)" />
+                </div>
+              </div>
+              <div class="col-sm-6 form-group">
+                <div class="col-sm-offset-2 col-sm-10 checkbox">
+                  <label>
+                    <input type="checkbox" name="secondservice" class="service-second-trigger" checked/> Tweede dienst
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- First service -->
+              <div class="col-md-6 services-form-service">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Titel</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="title1" class="form-control" placeholder="Bijv. Ochtenddienst" value="Ochtenddienst" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Voorganger</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="minister1" class="form-control" placeholder="Bijv. ds. V. Oorbeeld (Amsterdam)" value="ds. A. Jansen" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Thema</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="theme1" class="form-control" placeholder="Thema van de dienst" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Extra informatie</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="comments1" class="form-control" placeholder="Extra informatie welke weergeven moet worden" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Tijd</label>
+                  <div class="col-sm-10">
+                    <input type="time" name="starttime1" class="form-control" placeholder="Begintijd" value="09:30" />
+                    <input type="time" name="endtime1" class="form-control" placeholder="Eindtijd" value="11:00" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Second service -->
+              <div class="col-md-6 service-second services-form-service">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Titel</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="title2" class="form-control" placeholder="Bijv. Middagdienst" value="Middagdienst" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Voorganger</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="minister2" class="form-control" placeholder="Bijv. br. W. Elkom" value="ds. A. Jansen" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Thema</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="theme2" class="form-control" placeholder="Thema van de dienst" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Extra informatie</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="comments2" class="form-control" placeholder="Extra informatie welke weergeven moet worden" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Tijd</label>
+                  <div class="col-sm-10">
+                    <input type="time" name="starttime2" class="form-control" placeholder="Begintijd" value="16:30" />
+                    <input type="time" name="endtime2" class="form-control" placeholder="Eindtijd" value="17:45" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="form-group services-form-footer">
+              <button type="reset" class="btn btn-default black">Opnieuw</button>
+              <button type="submit" class="btn btn-default cyan">Opslaan</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.servicePage();
+  </script>
+{% endblock %}
