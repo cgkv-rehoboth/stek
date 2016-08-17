@@ -48,7 +48,7 @@
               <div>
                 <label>Verantwoordelijke</label><br/>
                 <select name="responsible" required>
-                  {% for member in members %}
+                  {% for member in members.all %}
                     <option value="{{ member.profile.pk }}" {% if member.profile.pk == selected_member %}selected="selected"{% endif %}>{{ member.profile.name }}</option>
                   {% endfor %}
                 </select>

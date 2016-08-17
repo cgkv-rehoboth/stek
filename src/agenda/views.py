@@ -373,14 +373,16 @@ def timetable_teamleader_duty_new(request, id):
     selected_event = 0
 
   # Get all teammembers
-  members = table.team.teammembers.all()
+  members = table.team.teammembers
 
   # set default selection to member which is last scheduled
   duties = table.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime", "-event__startdatetime")
   if duties.exists():
-    responsibles = duties.values_list('responsible', flat=True)
-    print(responsibles)
+    # get only users that are still teammembers
+    responsibles = duties.filter(responsible__in=members.values_list('profile', flat=True)).values_list('responsible', flat=True)
+
     unique_responsibles = uniqify(responsibles)
+
     selected_member = unique_responsibles[-1]
   else:
     selected_member = 0
@@ -491,6 +493,9 @@ def services_edit(request, id):
 @login_required
 def services_delete(request, id):
   Service.objects.get(pk=id).delete()
+
+  # Delete all duties of this service
+  TimetableDuty.objects.filter(event=id).delete()
 
   return redirect('services-page')
 
@@ -647,6 +652,9 @@ def teampage_control_timetables_delete(request, id):
   team = table.team.pk
   table.delete()
 
+  # Delete duties belonging to this table
+  TimetableDuty.objects.filter(timetable=id)
+
   return redirect('teampage-control-timetables', id=team)
 
 @login_required
@@ -698,7 +706,7 @@ def teampage_control_email_save(request, id):
 
 @login_required
 def teampage_control_email(request, id):
-  # todo: display form to change the email
+
   return redirect('teampage')
 
 def teampage(request, id):
