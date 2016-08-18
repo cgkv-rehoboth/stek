@@ -50,7 +50,7 @@ function initListGroupDetail() {
 }
 
 // Confirmation dialog (mainly used for deletions of table items)
-$(".confirm-dialog-button").click(function(e){
+$(document).on('click', ".confirm-dialog-button", function(e){
   e.preventDefault();
 
   $("#confirm-modal .modal-body").text($(this).attr('data-message'));
