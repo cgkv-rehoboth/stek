@@ -10,7 +10,11 @@
       </div>
       <div class="col-md-8 ">
         <h1>
-          {% if request.user.is_superuser %}
+          {% if p == request.profile %}
+            <a href="{% url 'profile-detail-page-edit' p.pk %}">
+              <i class="fa fa-edit fa-preicon"></i>
+            </a>
+          {% elif request.user.is_superuser %}
             <a href="{% url 'admin:base_profile_change' p.pk %}">
               <i class="fa fa-edit fa-preicon"></i>
             </a>

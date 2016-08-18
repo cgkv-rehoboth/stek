@@ -1,0 +1,94 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+
+{% block content %}
+  <section class="container" id="profile">
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-8 ">
+        <h1>
+          Profiel bewerken
+        </h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <form method="post" action="{% url 'profile-detail-page-edit-save' p.pk %}" id="profile-detail-form" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="col-md-4">
+          {% if p.photo %}
+            <img class="profile-pic" src="{{ MEDIA_URL }}{{ p.photo}}" />
+          {% else %}
+            <img class="profile-pic" src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" />
+          {% endif %}
+
+          <input type="file" name="photo" />
+        </div>
+        <div class="col-md-8">
+
+          <h3>Persoonlijk</h3>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <th>Voornaam</th>
+                <td>
+                  <input type="text" name="first_name" value="{{ p.first_name }}" />
+                </td>
+              </tr>
+              <tr>
+                <th>Achternaam</th>
+                <td>
+                  <input type="text" name="last_name" value="{{ p.last_name }}" />
+                </td>
+              </tr>
+              <tr>
+                <th>Geboortedatum</th>
+                <td>
+                  <input type="date" name="birthday" value="{{ p.birthday|date:"Y-m-d" }}" placeholder="23-03-1983" />
+                </td>
+              </tr>
+              <tr>
+                <th>E-mail</th>
+                <td>
+                  <input type="email" name="email" value="{{ p.email }}" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <br/>
+
+          <h3>Contact</h3>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <th>Adres</th>
+                <td>{{ p.best_address }}</td>
+              </tr>
+              <tr>
+                <th>Telefoon</th>
+                <td>
+                  <input type="phone" name="phone" value="{{ p.phone }}" placeholder="0348-411830" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="form-group">
+              <a href="{% url 'profile-detail-page' p.pk %}" class="btn btn-default black">Annuleren</a>
+              <button type="submit" class="btn btn-default cyan">
+                Opslaan
+              </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
