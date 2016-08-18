@@ -16,39 +16,58 @@
     </div>
 
     <div class="row">
-      <form method="post" action="{% url 'profile-detail-page-edit-save' p.pk %}" id="profile-detail-form" enctype="multipart/form-data">
-        {% csrf_token %}
 
-        <div class="col-md-4">
-          {% if p.photo %}
-            <img class="profile-pic" src="{{ MEDIA_URL }}{{ p.photo}}" />
-          {% else %}
-            <img class="profile-pic" src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" />
-          {% endif %}
+      <div class="col-md-4">
+        <form method="post" action="{% url 'profile-pic-edit-save' p.pk %}" id="profile-pic-form" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h3>Profielfoto wijzigen <i class="fa fa-circle-o-notch fa-spin fa-fw" id="pic-loader"></i></h3>
+          <label>
+            {% if p.photo %}
+              <img class="profile-pic" src="{{ p.photo.url}}" data-src="{{ p.photo.url }}"/>
+            {% else %}
+              <img class="profile-pic" src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" data-src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" />
+            {% endif %}
 
-          <input type="file" name="photo" />
-        </div>
-        <div class="col-md-8">
+            <input type="file" name="file" accept="image/*" id="pic-input" />
+          </label>
 
+          <div id="pic-info"></div>
+
+          <button type="submit" class="btn btn-default cyan">
+            Opslaan
+          </button>
+
+          <br/>
+          <br/>
+
+          <a href="{% url 'profile-pic-delete' p.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je je profielfoto wilt verwijderen?" title="Verwijderen">
+            Profielfoto verwijderen
+          </a>
+        </form>
+      </div>
+
+      <div class="col-md-8">
+        <form method="post" action="{% url 'profile-detail-page-edit-save' p.pk %}" id="profile-detail-form" enctype="multipart/form-data">
+          {% csrf_token %}
           <h3>Persoonlijk</h3>
           <table class="table table-bordered">
             <tbody>
               <tr>
                 <th>Voornaam</th>
                 <td>
-                  <input type="text" name="first_name" value="{{ p.first_name }}" />
+                  <input type="text" name="first_name" value="{{ p.first_name }}" required />
                 </td>
               </tr>
               <tr>
                 <th>Achternaam</th>
                 <td>
-                  <input type="text" name="last_name" value="{{ p.last_name }}" />
+                  <input type="text" name="last_name" value="{{ p.last_name }}" required />
                 </td>
               </tr>
               <tr>
                 <th>Geboortedatum</th>
                 <td>
-                  <input type="date" name="birthday" value="{{ p.birthday|date:"Y-m-d" }}" placeholder="23-03-1983" />
+                  <input type="date" name="birthday" value="{{ p.birthday|date:"Y-m-d" }}" placeholder="23-03-1983" required />
                 </td>
               </tr>
               <tr>
@@ -84,11 +103,14 @@
                 Opslaan
               </button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </section>
 {% endblock %}
 
 {% block scripts %}
+  <script>
+    window.profileEdit()
+  </script>
 {% endblock %}

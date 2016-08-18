@@ -12,6 +12,8 @@ from django import http
 from agenda.models import *
 from base.models import *
 
+from .forms import UploadImageForm
+
 @login_required
 def profile_list(request):
   return render(request, 'addressbook/profiles.html')
@@ -71,8 +73,6 @@ def profile_detail(request, pk):
 def profile_detail_edit(request, pk):
   profile = Profile.objects.get(pk=pk)
 
-  print(request.profile.pk)
-  print(profile.pk)
   if not request.profile.pk == profile.pk:
     return HttpResponse(status=404)
 
@@ -98,6 +98,33 @@ def profile_detail_edit_save(request, pk):
 
   return redirect('profile-detail-page', pk=pk)
 
+@login_required
+@require_POST
+def profile_pic_edit_save(request, pk):
+  profile = Profile.objects.get(pk=pk)
+
+  if not request.profile.pk == int(pk):
+    return HttpResponse(status=404)
+
+  form = UploadImageForm(request.POST, request.FILES)
+  if form.is_valid():
+    profile.photo.delete()
+    profile.photo=request.FILES['file']
+    profile.save()
+
+  return redirect('profile-detail-page', pk=pk)
+
+@login_required
+def profile_pic_delete(request, pk):
+  profile = Profile.objects.get(pk=pk)
+
+  if not request.profile.pk == int(pk):
+    return HttpResponse(status=404)
+
+  profile.photo.delete()
+
+  return redirect('profile-detail-page', pk=pk)
+
 
 urls = [
   url(r'^login$', auth_views.login, {'template_name':'login.html'}, name='login'),
@@ -108,6 +135,8 @@ urls = [
   url(r'^teams/$', team_list, name='team-list-page'),
   url(r'^teams/(?P<pk>\d+)/$', team_list, name='team-detail-page'),
 
+  url(r'^profiel/(?P<pk>\d+)/foto/save/$', profile_pic_edit_save, name='profile-pic-edit-save'),
+  url(r'^profiel/(?P<pk>\d+)/foto/delete/$', profile_pic_delete, name='profile-pic-delete'),
   url(r'^profiel/(?P<pk>\d+)/edit/save/$', profile_detail_edit_save, name='profile-detail-page-edit-save'),
   url(r'^profiel/(?P<pk>\d+)/edit/$', profile_detail_edit, name='profile-detail-page-edit'),
   url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
