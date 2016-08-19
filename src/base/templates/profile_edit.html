@@ -22,11 +22,13 @@
           {% csrf_token %}
           <h3>Profielfoto wijzigen <i class="fa fa-circle-o-notch fa-spin fa-fw" id="pic-loader"></i></h3>
           <label>
-            {% if p.photo %}
-              <img class="profile-pic" src="{{ p.photo.url}}" data-src="{{ p.photo.url }}"/>
-            {% else %}
-              <img class="profile-pic" src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" data-src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" />
-            {% endif %}
+            <div class="profile-pic-container">
+              {% if p.photo %}
+                <img class="profile-pic" src="{{ p.photo.url}}" data-src="{{ p.photo.url }}"/>
+              {% else %}
+                <img class="profile-pic" src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" data-src="http://www.anz.com/resources/5/1/51effbe1-70cb-4203-b8f2-c1555c306d46/4/profile.png?MOD=AJPERES&CACHEID=51effbe1-70cb-4203-b8f2-c1555c306d46/4" />
+              {% endif %}
+            </div>
 
             <input type="file" name="file" accept="image/*" id="pic-input" />
           </label>
