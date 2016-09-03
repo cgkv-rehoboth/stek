@@ -10,6 +10,7 @@ import nl from 'moment/locale/nl';
 
 import ProfileSearchTable from "ProfileSearchTable";
 import {SearchTable} from "bootstrap/tables";
+import AddressForm from "AddressForm";
 
 // bind global jquery instance
 window.jQuery = $;
@@ -132,7 +133,7 @@ window.frontpageMain = frontpageMain;
 
 window.timetableTeamleader = () => {};
 
-window.profileEdit = () => {
+window.profileEdit = (address) => {
   // Show a preview of the uploaded image
   $("#pic-input").change(function(){
     $("#pic-info").text("");
@@ -170,4 +171,14 @@ window.profileEdit = () => {
       reader.readAsDataURL(this.files[0]);
     }
   });
-};
+
+  // Load adressForm
+  let addressList = (query) => {
+    return api.address.list(query);
+  };
+
+  ReactDom.render(
+    <AddressForm listFunc={addressList} address={address} />,
+    $("#address-form")[0]
+  );
+}

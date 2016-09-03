@@ -113,8 +113,44 @@ class FavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.D
 
   permission_classes = [IsAuthenticated]
 
+
+class AddressViewSet(
+        mixins.RetrieveModelMixin,
+        mixins.ListModelMixin,
+        mixins.CreateModelMixin,
+        StekViewSet):
+
+  queryset = Address.objects.all()
+  serializer_class = AddressSerializer
+
+  permission_classes = [IsAuthenticated]
+  filter_backends = (filters.SearchFilter,)
+  search_fields = ['=zip'] # Get only exact matches
+
+  def retrieve(self, request, *args, **kwargs):
+    response = super().retrieve(request, *args, **kwargs)
+
+    return response
+
+  def list(self, request, *args, **kwargs):
+    response = super().list(request, *args, **kwargs)
+
+    return response
+
+  def create(self, request):
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    headers = self.get_success_headers(serializer.data)
+    return Response(
+      serializer.data,
+      status=status.HTTP_201_CREATED,
+      headers=headers)
+
+
 router = DefaultRouter(trailing_slash=False)
 router.register(r'profiles', ProfileViewSet)
 router.register(r'favorites', FavoriteViewSet)
+router.register(r'address', AddressViewSet)
 
 urls = router.urls

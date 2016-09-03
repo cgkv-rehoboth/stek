@@ -144,7 +144,25 @@ let api_obj = {
     add: (data) => {
       return http.post(`${api}/agenda/services/`, data);
     }
-  }
+  },
+
+  address: {
+    get: (id) => {
+      return Q.xhr
+        .get(`${api}/address/`, {
+          params: {
+            id: id
+          }
+        });
+    },
+
+    list: (search='') => {
+      return Q.xhr
+        .get(`${api}/address`, {
+          params: _.extend({search: search})
+        });
+    },
+  },
 };
 
 window.api = api_obj;

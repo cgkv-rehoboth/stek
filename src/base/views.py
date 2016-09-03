@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.views.decorators.http import *
 from django.conf.urls import patterns, include, url
 from django import http
+from django.core import serializers
 
 from agenda.models import *
 from base.models import *
@@ -71,13 +72,15 @@ def profile_detail(request, pk):
 
 @login_required
 def profile_detail_edit(request, pk):
-  profile = Profile.objects.get(pk=pk)
+  profile = Profile.objects.prefetch_related("address").get(pk=pk)
 
   if not request.profile.pk == profile.pk:
     return HttpResponse(status=404)
 
+
   return render(request, 'profile_edit.html', {
     'p': profile,
+    'a': serializers.serialize('json', [ profile.best_address() ])
   })
 
 @login_required
@@ -88,11 +91,55 @@ def profile_detail_edit_save(request, pk):
   if not request.profile.pk == profile.pk:
     return HttpResponse(status=404)
 
+  # Address
+  zip = request.POST.get("zip", "").replace(" ", "").upper()
+  number = request.POST.get("number", "").replace(" ", "").upper()
+  street = "%s %s" % (request.POST.get("street", ""), number)
+  city = request.POST.get("city", "")
+  country = request.POST.get("country", "")
+  phone = request.POST.get("phone", "").replace(" ", "")
+
+  # Validate
+  if not (zip and street and city and country):
+    # Wrong validation
+    return HttpResponse(status=404)
+
+  # Save address
+  adr, created = Address.objects.get_or_create(zip=zip, street=street, city=city, country=country)
+
+  adr.phone = phone
+  adr.save()
+
+
+  # Check for 'verhuizing'
+  if request.POST.get("verhuizing", False):  # check with current address (profile OR family)
+    if request.POST.get("verhuizing-options", "") is "1":
+      # Check if this is the family address
+      if profile.family.address is adr:
+        profile.address = None
+      else:
+        profile.address = adr
+
+    elif request.POST.get("verhuizing-options", "") is "2":
+      if not hasattr(adr, "family"):
+        profile.address = None
+        profile.family.address = adr
+
+        profile.family.save()
+
+      #else:
+        # Address is already coupled to a other family
+        # todo: mulptiple families may live at the same address (like grandparents, parents and their kids)
+
+
+  # Save rest of the profile stuff
   profile.first_name = request.POST.get("first_name", "")
   profile.last_name = request.POST.get("last_name", "")
   profile.birthday = request.POST.get("birthday", "")
   profile.email = request.POST.get("email", "")
-  profile.phone = request.POST.get("phone", "")
+  profile.phone = request.POST.get("phone-privat", "")
+
+  # todo: add profile validation
 
   profile.save()
 
