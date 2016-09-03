@@ -1,0 +1,110 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+
+{% block content %}
+  <section class="container" id="profile">
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-8 ">
+        <h1>
+          Profiel bewerken
+        </h1>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-4">
+        <form method="post" action="{% url 'profile-pic-edit-save' p.pk %}" id="profile-pic-form" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h3>Profielfoto wijzigen <i class="fa fa-circle-o-notch fa-spin fa-fw" id="pic-loader"></i></h3>
+          <label>
+            <div class="profile-pic-container">
+              {% if p.photo %}
+                <img class="profile-pic" src="{{ p.photo.url}}" data-src="{{ p.photo.url }}"/>
+              {% else %}
+                <img class="profile-pic" src="{% static 'resources/images/default_pf.png' %}" />
+              {% endif %}
+            </div>
+
+            <input type="file" name="file" accept="image/*" id="pic-input" />
+          </label>
+
+          <div id="pic-info"></div>
+
+          <button type="submit" class="btn btn-default cyan">
+            <i class="fa fa-picture-o" aria-hidden="true" style="margin-right: 7px;"></i> Opslaan
+          </button>
+
+          <br/>
+          <br/>
+
+          <a href="{% url 'profile-pic-delete' p.pk %}" class="confirm-dialog-button remove-pfpic" data-message="Weet je zeker dat je je profielfoto wilt verwijderen?" title="Verwijderen">
+            Profielfoto verwijderen
+          </a>
+        </form>
+      </div>
+
+      <div class="col-md-8">
+        <form method="post" action="{% url 'profile-detail-page-edit-save' p.pk %}" id="profile-detail-form" class="form-horizontal" >
+          {% csrf_token %}
+
+          <h3>Persoonlijk</h3>
+          <div class="form-group">
+            <label class="col-sm-3">Voornaam</label>
+            <div class="col-sm-9">
+              <input type="text" name="first_name" value="{{ p.first_name }}" required class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3">Achternaam</label>
+            <div class="col-sm-9">
+              <input type="text" name="last_name" value="{{ p.last_name }}" required class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3">Geboortedatum</label>
+            <div class="col-sm-9">
+              <input type="date" name="birthday" value="{{ p.birthday|date:"Y-m-d" }}" placeholder="bijv. 23-03-1983" required class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3">E-mail</label>
+            <div class="col-sm-9">
+              <input type="email" name="email" value="{{ p.email }}" class="form-control" />
+            </div>
+          </div>
+
+          <br/>
+
+          <h3>Contact</h3>
+          <div id="address-form"></div>
+
+          <div class="form-group">
+            <label class="col-sm-3">Telefoon</label>
+            <div class="col-sm-9">
+              <input type="phone" name="phone-privat" value="{{ p.phone }}" placeholder="bijv. 0348-411830" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <a href="{% url 'profile-detail-page' p.pk %}" class="btn btn-default black">Annuleren</a>
+            <button type="submit" class="btn btn-default cyan">
+              Opslaan
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.profileEdit({{ a|safe }}[0].fields);
+  </script>
+{% endblock %}

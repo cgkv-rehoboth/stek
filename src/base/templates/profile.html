@@ -10,7 +10,11 @@
       </div>
       <div class="col-md-8 ">
         <h1>
-          {% if request.user.is_superuser %}
+          {% if p == request.profile %}
+            <a href="{% url 'profile-detail-page-edit' p.pk %}">
+              <i class="fa fa-edit fa-preicon"></i>
+            </a>
+          {% elif request.user.is_superuser %}
             <a href="{% url 'admin:base_profile_change' p.pk %}">
               <i class="fa fa-edit fa-preicon"></i>
             </a>
@@ -21,9 +25,9 @@
     </div>
 
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-4 profile-pic-container">
         {% if p.photo %}
-          <img class="profile-pic" src="{{ MEDIA_URL }}{{ p.photo}}" />
+          <img class="profile-pic" src="{{ p.photo.url }}" />
         {% endif %}
       </div>
       <div class="col-md-8">
@@ -44,7 +48,11 @@
             </tr>
             <tr>
               <th>E-mail</th>
-              <td>{{ p.email }}</td>
+              <td>{{ p.email }}
+                {% if p.email %}
+                  <a href="mailto:{{ p.email }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+                {% endif %}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -56,11 +64,19 @@
           <tbody>
             <tr>
               <th>Adres</th>
-              <td>{{ p.best_address }}</td>
+              <td>{{ p.best_address }}
+                {% if p.best_address %}
+                  <a href="{{ googlemaps }}" target="_blank" class="make-contact-icon" title="Routebeschrijving"><i class="fa fa-map-marker" aria-hidden="true"></i></a>
+                {% endif %}
+              </td>
             </tr>
             <tr>
               <th>Telefoon</th>
-              <td>{{ p.phone}}</td>
+              <td>{{ p.phone}}
+                {% if p.phone %}
+                  <a href="tel:{{ p.phone }}" class="make-contact-icon" title="Bel {{ p.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
+                {% endif %}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -69,6 +85,12 @@
 
         {% if memberships|length != 0 %}
           <h3>Teams</h3>
+          <ul>
+            {% for m in memberships %}
+              <li><a href="{% url 'team-detail-page' m.team.pk %}">{{ m.team.name }}</li>
+            {% endfor %}
+          </ul>
+          {% comment %}
           <table class="table table-bordered">
             <thead>
               <th>Team</th>
@@ -84,6 +106,7 @@
               {% endfor %}
             </tbody>
           </table>
+          {% endcomment  %}
         {% endif %}
       </div>
     </div>

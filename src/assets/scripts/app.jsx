@@ -11,6 +11,7 @@ import nl from 'moment/locale/nl';
 import ProfileSearchTable from "ProfileSearchTable";
 import ServiceTableManagable from "ServiceTableManagable";
 import {SearchTable} from "bootstrap/tables";
+import AddressForm from "AddressForm";
 
 // bind global jquery instance
 window.jQuery = $;
@@ -219,3 +220,53 @@ window.teamPage = () => {
     }
   });
 };
+
+window.profileEdit = (address) => {
+  // Show a preview of the uploaded image
+  $("#pic-input").change(function(){
+    $("#pic-info").text("");
+
+    if (this.files && this.files[0]) {
+      console.log("Creating preview... ");
+
+      // Checkt filesize
+      if (this.files[0].size > 3 * 1024 * 1024) { // x MB = x * 1024 * 1024
+        $("#pic-info").text("Maximale bestandsgrootte is 3 MB");
+
+        // Clear input
+        $(this).val('');
+
+        // Show current saved pic
+        $(".profile-pic").attr('src', $(".profile-pic").attr('data-src'));
+
+        return false;
+      }
+
+      var reader = new FileReader();
+
+      // Show loading thing
+      $("#pic-loader").css('visibility', 'visible');
+
+      reader.onload = function (e) {
+        $('.profile-pic').attr('src', e.target.result);
+
+        $('.profile-pic').ready(function(){
+          // Remove loading thing when image has been loaded and displayed
+          $("#pic-loader").css('visibility', 'hidden');
+        });
+      }
+
+      reader.readAsDataURL(this.files[0]);
+    }
+  });
+
+  // Load adressForm
+  let addressList = (query) => {
+    return api.address.list(query);
+  };
+
+  ReactDom.render(
+    <AddressForm listFunc={addressList} address={address} />,
+    $("#address-form")[0]
+  );
+}
