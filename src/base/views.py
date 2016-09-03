@@ -65,8 +65,14 @@ def profile_detail(request, pk):
                           .prefetch_related("team")\
                           .filter(profile__pk=pk)
 
+  saddr = request.profile.best_address()
+  daddr = profiel.best_address()
+
+  googlemaps = "https://www.google.com/maps/dir/%s/%s/" % (saddr, daddr)
+
   return render(request, 'profile.html', {
     'p': profiel,
+    'googlemaps': googlemaps,
     'memberships': memberships
   })
 
