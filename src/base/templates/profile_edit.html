@@ -36,13 +36,13 @@
           <div id="pic-info"></div>
 
           <button type="submit" class="btn btn-default cyan">
-            Opslaan
+            <i class="fa fa-picture-o" aria-hidden="true" style="margin-right: 7px;"></i> Opslaan
           </button>
 
           <br/>
           <br/>
 
-          <a href="{% url 'profile-pic-delete' p.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je je profielfoto wilt verwijderen?" title="Verwijderen">
+          <a href="{% url 'profile-pic-delete' p.pk %}" class="confirm-dialog-button remove-pfpic" data-message="Weet je zeker dat je je profielfoto wilt verwijderen?" title="Verwijderen">
             Profielfoto verwijderen
           </a>
         </form>
