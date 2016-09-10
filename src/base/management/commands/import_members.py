@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand, CommandError
-from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from base.models import *
 

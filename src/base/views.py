@@ -66,12 +66,21 @@ def profile_detail(request, pk):
   })
 
 urls = [
+  # auth
   url(r'^login$', auth_views.login, {'template_name':'login.html'}, name='login'),
+  url(r'^wachtwoord_reset/$', auth_views.password_reset, name='password_reset'),
+  url(r'^wachtwoord_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
+
+  # addressbook
   url(r'^adresboek/$', profile_list, name='profile-list-page'),
   url(r'^adresboek/favorieten/$', favorite_list, name='favorite-list-page'),
   url(r'^adresboek/families/$', family_list, name='family-list-page'),
   url(r'^adresboek/families/(?P<pk>\d+)/$', family_list, name='family-detail-page'),
+
+  # profiles
+  url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
+
+  # teams
   url(r'^teams/$', team_list, name='team-list-page'),
   url(r'^teams/(?P<pk>\d+)/$', team_list, name='team-detail-page'),
-  url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
 ]
