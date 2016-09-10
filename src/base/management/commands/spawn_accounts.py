@@ -9,15 +9,18 @@ def collect_accountless(profiles):
         if prof.user is None:
             yield prof
 
-def send_reset_email(profile):
+def send_reset_email(profile, username):
     # create a new user and associate it with the profile
-    user = User.objects.create_user(username=profile.email, email=profile.email)
+    user = User.objects.create_user(username=username, email=profile.email)
     profile.user = user
+    profile.save()
 
     # init the password reset form
     reset_form = PasswordResetForm({ "email": profile.email })
     if reset_form.is_valid():
-        reset_form.save()
+      reset_form.save()
+    else:
+      print("[FAILURE]: Invalid password reset form for email '%s'" % profile.email)
 
 
 class Command(BaseCommand):
@@ -29,17 +32,31 @@ class Command(BaseCommand):
   def handle(self, *args, **options):
     dryrun = options['dryrun']
     if dryrun:
-      print("Dry-run: only reporting")
+      print(">> Dry-run: only reporting")
+      print()
       dryrun = True
 
     profiles = Profile.objects.all()
 
     for prof in collect_accountless(profiles):
       # ensure an email account is set
-      if len(prof.email) == 0 or prof.email is None:
-        print(".. Profile '%s %s' has no account, but no email address is set!" % (prof.first_name, prof.last_name))
+      if prof.email is None or len(prof.email) == 0:
+        print("[FAILURE] Profile '%s %s' has no account, but no email address is set!" % (prof.first_name, prof.last_name))
         continue
 
+      # think of a clever username
+      username = "%s.%s" % (prof.first_name, prof.last_name)
+
+      # ensure the username is not taken
+      if User.objects.filter(username=username).exists():
+        print("[FAILURE] Profile '%s %s' has no account, but the username '%s.%s' is taken." % (
+          prof.first_name,
+          prof.last_name,
+          prof.first_name,
+          prof.last_name
+        ))
+        continue
+
+      print("[SUCCESS] Sending reset email to %s" % prof.email)
       if not dryrun:
-        print(".. Sending reset email to %s" % prof.email)
-        send_reset_email(prof)
+        send_reset_email(prof, username)
