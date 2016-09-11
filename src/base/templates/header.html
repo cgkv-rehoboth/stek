@@ -36,8 +36,13 @@
             <a href="{% url 'timetable-list-page' %}">Roosters</a>
           </li>
           <li>
+            <a href="http://rehobothkerkwoerden.nl/forum/">Forum</a>
+          </li>
+          {% comment "Calendar not yet enabled for our users" %}
+          <li>
             <a href="{% url 'calendar-page' %}">Kalender</a>
           </li>
+          {% endcomment %}
         </ul>
       </div>
     </div>

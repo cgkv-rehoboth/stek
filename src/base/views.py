@@ -69,7 +69,7 @@ urls = [
   # auth
   url(r'^login$', auth_views.login, {'template_name':'login.html'}, name='login'),
   url(r'^wachtwoord_reset/$', auth_views.password_reset, {
-    'html_email_template_name': 'emails/password_reset.html'
+    'html_email_template_name': 'emails/password_reset.html',
   }, name='password_reset'),
   url(r'^wachtwoord_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
   url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
