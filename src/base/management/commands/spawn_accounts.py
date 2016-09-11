@@ -3,6 +3,17 @@ from base.models import Profile
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 
+class NewAccountPasswordResetForm(PasswordResetForm):
+  def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
+    return super().send_mail(
+      subject_template_name,
+      email_template_name,
+      context,
+      from_email,
+      to_email,
+      html_email_template_name="emails/new_account_send_password.html"
+    )
+
 def collect_accountless(profiles):
     for prof in profiles:
         # check if user has an account
@@ -16,11 +27,11 @@ def send_reset_email(profile, username):
     profile.save()
 
     # init the password reset form
-    reset_form = PasswordResetForm({ "email": profile.email })
+    reset_form = NewAccountPasswordResetForm({ "email": profile.email })
     if reset_form.is_valid():
       reset_form.save()
     else:
-      print("[FAILURE]: Invalid password reset form for email '%s'" % profile.email)
+      print("[FAILURE]: Invalid password-reset-form for email '%s'" % profile.email)
 
 
 class Command(BaseCommand):

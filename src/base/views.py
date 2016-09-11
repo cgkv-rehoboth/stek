@@ -68,7 +68,9 @@ def profile_detail(request, pk):
 urls = [
   # auth
   url(r'^login$', auth_views.login, {'template_name':'login.html'}, name='login'),
-  url(r'^wachtwoord_reset/$', auth_views.password_reset, name='password_reset'),
+  url(r'^wachtwoord_reset/$', auth_views.password_reset, {
+    'html_email_template_name': 'emails/password_reset.html'
+  }, name='password_reset'),
   url(r'^wachtwoord_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
 
   # addressbook
