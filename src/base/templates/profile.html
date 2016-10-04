@@ -39,7 +39,7 @@
               <th>Naam</th>
               <td>
                 {{ p.first_name }}
-                <a href="{% url 'family-detail-page' p.family.pk %}">{{ p.last_name }}
+                <a href="{% url 'family-detail-page' p.family.pk %}">{{ p.last_name }}</a>
               </td>
             </tr>
             <tr>
@@ -50,7 +50,7 @@
               <th>E-mail</th>
               <td>{{ p.email }}
                 {% if p.email %}
-                  <a href="mailto:{{ p.email }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+                  <a href="{{ p.email|encodemailHref }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
                 {% endif %}
               </td>
             </tr>
@@ -87,7 +87,7 @@
           <h3>Teams</h3>
           <ul>
             {% for m in memberships %}
-              <li><a href="{% url 'team-detail-page' m.team.pk %}">{{ m.team.name }}</li>
+              <li><a href="{% url 'teampage' m.team.pk %}">{{ m.team.name }}</a></li>
             {% endfor %}
           </ul>
           {% comment %}
@@ -100,7 +100,7 @@
               {% for m in memberships %}
                 <tr>
                   <td>
-                    <a href="{% url 'team-detail-page' m.team.pk %}">{{ m.team.name }}</td>
+                    <a href="{% url 'teampage' m.team.pk %}">{{ m.team.name }}</td>
                   <td>{{ m.get_role_display }}</td>
                 </tr>
               {% endfor %}

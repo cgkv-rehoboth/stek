@@ -63,6 +63,31 @@ $("#confirm-modal .modal-footer .modal-cancel").click(function(){
   $("#confirm-modal").modal('hide');
 });
 
+/* E mail visualizer
+
+Intern in an <a> tag:
+  <a href="yxxoxuxr@xemxaxixlx.cxomx" onmouseover="this.href=this.href.replace(/x/g,'');this.text=this.href.replace(/mailto:/g,'');">link</a>
+
+Global:
+ */
+// Output to href and text
+$('a[href^="5e2nabe5s4"]').on('mouseover mouseup', function(){
+    $(this).attr('href', 'mailto:' + decodeMail($(this).attr('href')));
+    $(this).text(decodeMail($(this).attr('href')));
+});
+// Output only to href
+$('a[href^="p1ec2fx1uz"]').on('mouseover mouseup', function(){
+    $(this).attr('href', 'mailto:' + decodeMail($(this).attr('href')));
+});
+// Output only to text
+$('a[href*="zs39qpz9ti"]').on('mouseover mouseup', function(){
+    $(this).text(decodeMail($(this).text()));
+});
+
+function decodeMail(str){
+  return str.replace(/A/g, '@').replace(/D/g, '.').replace(/[A-Z]/g,'').substr(10);
+}
+
 //
 // main functions for different pages
 //
