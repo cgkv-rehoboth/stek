@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.template import Context
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 from datetime import datetime, timedelta
 import random
 from .models import *
@@ -219,9 +220,13 @@ def timetable_ruilverzoek(request, id):
   duties = ruil.timetableduty.timetable.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime", "-event__startdatetime")
   if duties.exists():
     responsibles = duties.values_list('responsible', flat=True)
-    print(responsibles)
     unique_responsibles = uniqify(responsibles)
-    selected_member = unique_responsibles[-1]
+
+    # Add also the members who aren't scheduled for any duty yet
+    b = members.values_list('profile', flat=True)
+    all_responsibles = uniqify(unique_responsibles + uniqify(b))
+
+    selected_member = all_responsibles[-1]
   else:
     selected_member = 0
 
@@ -383,7 +388,11 @@ def timetable_teamleader_duty_new(request, id):
 
     unique_responsibles = uniqify(responsibles)
 
-    selected_member = unique_responsibles[-1]
+    # Add also the members who aren't scheduled for any duty yet
+    b = members.values_list('profile', flat=True)
+    all_responsibles = uniqify(unique_responsibles + uniqify(b))
+
+    selected_member = all_responsibles[-1]
   else:
     selected_member = 0
 
@@ -429,6 +438,12 @@ def services_add(request):
   startdate = "%s %s:00" % (date, str(request.POST.get("starttime1", "09:30")))
   enddate = "%s %s:00" % (date, str(request.POST.get("endtime1", "11:00")))
 
+  try:
+    datetime.strptime(startdate, '%Y-%m-%d %H:%M:%S')
+    datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
+  except ValueError:
+    messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
+
   Service.objects.create(
     startdatetime=startdate,
     enddatetime=enddate,
@@ -446,6 +461,12 @@ def services_add(request):
     startdate = "%s %s:00" % (date, str(request.POST.get("starttime2", "16:30")))
     enddate = "%s %s:00" % (date, str(request.POST.get("endtime2", "17:45")))
 
+    try:
+      datetime.strptime(startdate, '%Y-%m-%d %H:%M:%S')
+      datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+      messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
+
     Service.objects.create(
       startdatetime=startdate,
       enddatetime=enddate,
@@ -457,6 +478,10 @@ def services_add(request):
       comments=request.POST.get("comments2", ""),
       description=request.POST.get("description2", ""),
     )
+
+    messages.success(request, "Diensten zijn toegevoegd")
+  else:
+    messages.success(request, "Dienst is toegevoegd")
 
   return redirect('services-page')
 

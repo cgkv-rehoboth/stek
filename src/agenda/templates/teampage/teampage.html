@@ -75,8 +75,7 @@
                   {% if m.profile.photo %}
                     <img src="{{ MEDIA_URL }}/{{ m.profile.photo }}" atr="Foto van {{ m.profile.name }}" class="team-userimage"/>
                   {% else %}
-                    <!-- Todo: Default profile picture -->
-                    <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/328820/profile/profile-512_1.jpg" class="team-userimage"/>
+                    <img src="{% static 'resources/images/default_pf.png' %}" class="team-userimage"/>
                   {% endif %}
                 </div>
 
