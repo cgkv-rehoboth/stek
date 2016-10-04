@@ -443,6 +443,7 @@ def services_add(request):
     datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
   except ValueError:
     messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
+    return redirect('services-page')
 
   Service.objects.create(
     startdatetime=startdate,
@@ -466,6 +467,7 @@ def services_add(request):
       datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
     except ValueError:
       messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
+      return redirect('services-page')
 
     Service.objects.create(
       startdatetime=startdate,
@@ -496,6 +498,13 @@ def services_edit_save(request, id):
   startdate = "%s %s:00" % (date, str(request.POST.get("starttime", service.startdatetime.time())))
   enddate = "%s %s:00" % (date, str(request.POST.get("endtime", service.enddatetime.time())))
 
+  try:
+    datetime.strptime(startdate, '%Y-%m-%d %H:%M:%S')
+    datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
+  except ValueError:
+    messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
+    return redirect('services-page-edit', id=id)
+
   service.startdatetime = startdate
   service.enddatetime = enddate
   service.title = request.POST.get("title", "")
@@ -505,6 +514,8 @@ def services_edit_save(request, id):
   service.description = request.POST.get("description", "")
 
   service.save()
+
+  messages.success(request, "Dienst is opgeslagen")
 
   return redirect('services-page')
 
@@ -521,6 +532,8 @@ def services_delete(request, id):
 
   # Delete all duties of this service
   TimetableDuty.objects.filter(event=id).delete()
+
+  messages.success(request, "Dienst is verwijderd")
 
   return redirect('services-page')
 
