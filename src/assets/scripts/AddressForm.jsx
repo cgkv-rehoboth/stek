@@ -119,9 +119,6 @@ export default class AddressForm extends React.Component {
         let item = this.state.item;     // Get current item
         let newzip = false;             // Make restricted fields non-editable
 
-        // Poop out some information
-        console.log("[zipblur] Found a count of: ", items.length);
-
         if (items.length == 1){
           // Fill in everything
           item = jQuery.extend([], items[0]);
@@ -177,8 +174,6 @@ export default class AddressForm extends React.Component {
 
     let str = e.target.value;
 
-    console.log("searching..");
-
     // Find address with this numer in itmes list
     let r = this.state.items.find(function(i){
       // Get house number
@@ -216,8 +211,6 @@ export default class AddressForm extends React.Component {
   }
 
   render() {
-    console.log(this.state);
-
     if (this.state.verhuizing){
       $("#profile-verhuizing").slideDown(300);
     }else{

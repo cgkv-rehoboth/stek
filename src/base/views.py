@@ -142,7 +142,7 @@ def profile_detail_edit_save(request, pk):
   profile.first_name = request.POST.get("first_name", "")
   profile.last_name = request.POST.get("last_name", "")
   profile.birthday = request.POST.get("birthday", "")
-  profile.email = request.POST.get("email", "")
+  profile.email = request.POST.get("email", "").lower()
   profile.phone = request.POST.get("phone-privat", "")
 
   # todo: add profile validation
