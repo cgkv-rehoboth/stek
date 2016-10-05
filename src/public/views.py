@@ -15,7 +15,7 @@ def index(request):
   return render(request, 'index.html', {
     'listen_live': listen_live,
     'recaptcha_publickey': settings.RECAPTCHA_PUBLIC_KEY,
-    'jaarthema_publish_date': (datetime.now() > datetime.strptime('22-08-2016 00:00', '%d-%m-%Y %H:%M'))
+    #'jaarthema_publish_date': (datetime.now() > datetime.strptime('22-08-2016 00:00', '%d-%m-%Y %H:%M'))
   })
 
 def kerktijden(request):
