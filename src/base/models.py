@@ -54,7 +54,11 @@ class Address(models.Model):
 def user_profile_pic(profile, filename):
   _, ext = os.path.splitext(filename)
 
-  return 'profiles/%s_%s%s' % (profile.pk, profile.user.username, ext)
+  name = '%s%s' % (profile.first_name, profile.last_name)
+  # Remove all harmfull chars
+  name = ''.join(e for e in name if e.isalnum())
+
+  return 'profiles/%s_%s%s' % (profile.pk, name, ext)
 
 class Profile(models.Model):
 
@@ -101,7 +105,10 @@ class Profile(models.Model):
 
   def teamleader_of(self, team):
     # Check if user is teamleader of this timetable's team
-    return self.team_membership.filter(team=team, profile=self).first().role == 'LEI'
+    if self.team_membership.filter(team=team, profile=self).exists():
+      return self.team_membership.filter(team=team, profile=self).first().role == 'LEI'
+    else:
+      return False
 
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)
@@ -112,7 +119,7 @@ class Family(models.Model):
 
   lastname    = models.CharField(max_length=255)
   photo       = models.FileField(upload_to=family_pic, null=True, blank=True) #Todo: specify upload dir
-  address     = models.OneToOneField(Address, null=True, blank=True)
+  address     = models.OneToOneField(Address, null=True, blank=True, related_name="family")
 
   def __str__(self):
     return "Familie %s" % (self.lastname,)

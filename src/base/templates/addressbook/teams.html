@@ -12,7 +12,8 @@
     <div class="container-fluid list-group-item">
       <div class="row">
         <p class="col-md-12 list-group-head" id="{{ team.pk }}">
-          {{ team.name }} 
+          {{ team.name }}
+          <span style="float: right;"><a href="{% url 'teampage' team.pk %}" >Teampagina '{{ team.name }}'</a></span>
         </p>
       </div>
       <div class="list-group-detail" data-team-pk="{{ team.pk }}"
@@ -20,6 +21,9 @@
 
         <div class="row">
           <div class="col-md-12">
+            {% if team.email %}
+              <p><i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i> <a href="mailto:{{ team.email }}">{{ team.email }}</a></p>
+            {% endif %}
             <p>{{ team.description }}</p>
           </div>
         </div>
@@ -37,7 +41,7 @@
                     {{ lid.profile.first_name }}
                     {{ lid.profile.last_name }}
                   </a></td>
-                  <td>{{ lid.get_role_display }}</td>
+                  <td>{{ lid.get_role_display|capfirst }}</td>
                 </tr>
               {% endfor %}
             </table>

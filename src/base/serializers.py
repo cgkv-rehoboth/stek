@@ -52,7 +52,13 @@ class UserSerializer(serializers.ModelSerializer):
     model = User
     fields = ('id', 'username', 'first_name', 'last_name', 'email')
 
+class WijkSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Wijk
+
 class AddressSerializer(serializers.ModelSerializer):
+  wijk = WijkSerializer()
+
   class Meta:
     model = Address
 

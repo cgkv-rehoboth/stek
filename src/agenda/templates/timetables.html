@@ -18,7 +18,15 @@
           <!-- Timetable menu/choices -->
           <ul class="nav nav-tabs">
             {% for table in mytables %}
-              <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}><a href={% url 'timetable-detail-page' table.pk %}>{{ table.title }}{% if table.groepsbeheer %}<span class="timetable-gear-link"><i class="fa fa-cog" aria-hidden="true" onclick="document.location.href='{% url 'timetable-teamleader-page' table.pk %}'; return false;" title="Beheer dit rooster"></i></span>{% endif %}</a></li>
+              <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}>
+                <a href={% url 'timetable-detail-page' table.pk %}>{{ table.title }}
+                  {% if table.groepsbeheer %}
+                    <span class="timetable-gear-link" onclick="document.location.href='{% url 'timetable-teamleader-page' table.pk %}'; return false;">
+                      <i class="fa fa-cog" aria-hidden="true" title="Beheer dit rooster"></i>
+                    </span>
+                  {% endif %}
+                </a>
+              </li>
             {% endfor %}
 
             {% if current_table and not current_table in mytables %}
@@ -26,14 +34,14 @@
             {% endif %}
 
             <li role="presentation" class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true" aria-expanded="false">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" role="button" aria-haspopup="true" aria-expanded="false">
                 Andere roosters <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
                 {% for table in notmytables %}
                   <li role="presentation"><a href="{% url 'timetable-detail-page' table.pk %}">{{ table.title }}</a></li>
                 {% empty %}
-                  <li role="presentation">Niets gevonden</li>
+                  <li role="presentation" class="nav-item-fillup">Niets gevonden</li>
                 {% endfor %}
               </ul>
             </li>
@@ -48,13 +56,16 @@
                 <th>Event</th>
                 <th>Persoon</th>
                 <th>Opmerkingen</th>
+                {% if current_table.groepsbeheer %}
+                  <th></th>
+                {% endif %}
               </tr>
             </thead>
             <tbody>
             {% for duty in duties %}
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
               <tr class="table-{{ rowday }}">
-                <td class="duty-date">{{ duty.event.startdatetime }}</td>
+                <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td class="duty-title">{{ duty.event.title }}</td>
                 <td>
                   {% with duty.ruilrequest as ruilen %}
@@ -65,10 +76,10 @@
                     {% if duty.responsible.pk == request.profile.pk %}
                       {% if ruilen.profile == request.profile %}
                         <a href="javascript:void(0)" class="timetable-undo-ruilen"
-                          title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                          title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
                           data-request-pk="{{ruilen.pk}}"
                         >
-                          <i class="fa fa-times"></i>
+                          <i class="fa fa-check fa-fw"></i>
                         </a>
                       {% else %}
                         <a href="javascript:void(0)"
@@ -76,13 +87,23 @@
                           title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
                           data-duty-pk="{{ duty.pk }}"
                         >
-                          <i class="fa fa-pencil"></i>
+                          <i class="fa fa-random fa-fw"></i>
                         </a>
                       {% endif %}
                     {% endif %}
                   {% endwith %}
                 </td>
                 <td>{{ duty.comments }}</td>
+                {% if current_table.groepsbeheer %}
+                  <td style="text-align: right;">
+                    <a href="{% url 'timetable-teamleader-duty-edit' duty.pk %}" title="Bewerken">
+                      <i class="fa fa-pencil-square-o fa-fw"></i>
+                    </a>
+                    <a href="{% url 'timetable-teamleader-duty-delete' duty.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit item wilt verwijderen?" title="Verwijderen">
+                      <i class="fa fa-times fa-fw"></i>
+                    </a>
+                  </td>
+                {% endif %}
               </tr>
             {% endfor %}
             </tbody>
@@ -170,6 +191,8 @@
       </div>
     {% endif %}
   </section>
+
+  {% include "./confirmationmodal.html" %}
 {% endblock %}
 
 {% block scripts %}

@@ -1,0 +1,75 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>{{ table.team.name }} <small>Roosters beheren</small></h2>
+        </div>
+        <!--
+        <div class="col-sm-12">
+          <a href="{% url 'teampage-control-timetables' table.team.pk %}" class="backlink">< Terug naar het roosteroverzicht</a>
+        </div>
+        -->
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Rooster bewerken</h3>
+          <form method="post" action="{% url 'teampage-control-timetables-edit-save' table.pk %}" class="team-add-table form-horizontal">
+            {% csrf_token %}
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Titel</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="title" required="required" placeholder="Bijv. {{ team.name|capfirst }}rooster" value="{{ table.title }}"/>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Beschrijving</label>
+              <div class="col-sm-10">
+                <textarea class="form-control" name="description" placeholder="Een beschrijving van waar dit rooster precies voor zal dienen">{{ table.description }}</textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Kleur</label>
+              <div class="col-sm-10">
+                <input type="color" name="color" value="#{{ table.color }}" class="form-control form-color-minimal"/>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label"></label>
+              <div class="col-sm-10">
+                <label><input type="checkbox" name="incalendar" {% if table.incalendar %}checked{% endif %}/> In kalender</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-sm-10 col-sm-offset-2">
+                <a href="{% url 'teampage-control-timetables' table.team.pk %}" class="btn btn-default black">Annuleren</a>
+                <button type="submit" class="btn btn-default cyan">
+                  Wijzigen
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.teamPage();
+  </script>
+{% endblock %}
