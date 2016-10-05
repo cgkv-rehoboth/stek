@@ -46,7 +46,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/tmp/django-messages'
 
-DEFAULT_FROM_EMAIL = 'info@rehobothkerkwoerden.nl'
+DEFAULT_FROM_EMAIL = 'Rehobothkerk Woerden <info@rehobothkerkwoerden.nl>'
 
 INTERNAL_IPS = ('127.0.0.1',)
 

@@ -13,7 +13,7 @@
             <h2>Inloggen
             </h2>
             {% if form.errors %}
-              <p>Your username and password didn't match. Please try again.</p>
+              <p>De combinatie van gebruikersnaam en wachtwoord is onjuist. Probeer nog een keer.</p>
             {% endif %}
             <form method="post" action="{% url "login" %}">
               {% csrf_token %}
@@ -24,6 +24,10 @@
               <input type="hidden" name="next" value="{{ next }}" />
               <input type="submit" class="btn btn-default" value="Inloggen"/>
             </form>
+            <br/>
+            <div style="margin-top: 30px">
+              <small><a href="{% url 'password_reset' %}">Wachtwoord vergeten?</a></small>
+            </div>
           {% else %}
             <div class="text-center">
               <h2>Hi {{ user }}!</h2>

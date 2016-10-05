@@ -23,7 +23,7 @@ def collect_accountless(profiles):
 
 def send_reset_email(profile, username):
     # create a new user and associate it with the profile
-    user = User.objects.create_user(username=username, email=profile.email)
+    user = User.objects.create_user(username=username, email=profile.email, first_name=profile.first_name, last_name=profile.last_name)
     profile.user = user
     profile.save()
 
@@ -76,11 +76,10 @@ class Command(BaseCommand):
 
       # ensure the username is not taken
       if User.objects.filter(username=username).exists():
-        print("[FAILURE] Profile '%s %s' has no account, but the username '%s.%s' is taken." % (
+        print("[FAILURE] Profile '%s %s' has no account, but the username '%s' is taken." % (
           prof.first_name,
           prof.last_name,
-          prof.first_name,
-          prof.last_name
+          username
         ))
         continue
 
