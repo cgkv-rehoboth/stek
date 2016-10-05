@@ -97,8 +97,9 @@
                 {% if current_table.groepsbeheer %}
                   <td style="text-align: right;">
                     <a href="{% url 'timetable-teamleader-duty-edit' duty.pk %}" title="Bewerken">
-                      <i class="fa fa-pencil-square-o fa-fw"></i></a>
-                    <a href="{% url 'timetable-teamleader-duty-delete' duty.pk %}" onclick="return confirm('Weet je zeker dat je dit item wilt verwijderen?')" title="Verwijderen">
+                      <i class="fa fa-pencil-square-o fa-fw"></i>
+                    </a>
+                    <a href="{% url 'timetable-teamleader-duty-delete' duty.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit item wilt verwijderen?" title="Verwijderen">
                       <i class="fa fa-times fa-fw"></i>
                     </a>
                   </td>
@@ -190,6 +191,8 @@
       </div>
     {% endif %}
   </section>
+
+  {% include "./confirmationmodal.html" %}
 {% endblock %}
 
 {% block scripts %}

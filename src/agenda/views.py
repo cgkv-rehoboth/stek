@@ -9,6 +9,8 @@ from django.template.loader import get_template
 from django.template import Context
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
 import random
 from .models import *
@@ -195,7 +197,7 @@ def timetable_teamleader(request, id):
 
 
   # Render that stuff!
-  return render(request, 'teamleader.html', {
+  return render(request, 'teamleader/teamleader.html', {
     'table': table,
     'ruils': ruils,
     'team': table.team,
@@ -231,7 +233,7 @@ def timetable_ruilverzoek(request, id):
     selected_member = 0
 
   # Render that stuff!
-  return render(request, 'ruilverzoek.html', {
+  return render(request, 'teamleader/ruilverzoek.html', {
     'ruil': ruil,
     'members': members,
     'selected_member': selected_member
@@ -345,7 +347,7 @@ def timetable_teamleader_duty_edit(request, id):
   # Get all teammembers
   members = TeamMember.objects.filter(team=duty.timetable.team)
 
-  return render(request, 'teamleader_duty_edit.html', {
+  return render(request, 'teamleader/teamleader_duty_edit.html', {
     'duty': duty,
     'table': duty.timetable,
     'tables': tables,
@@ -396,7 +398,7 @@ def timetable_teamleader_duty_new(request, id):
   else:
     selected_member = 0
 
-  return render(request, 'teamleader_duty.html', {
+  return render(request, 'teamleader/teamleader_duty.html', {
     'table': table,
     'events': events,
     'members': members,
@@ -579,18 +581,22 @@ def teampage_control_members_add(request):
     # Show error (no access) page
     return HttpResponse(status=404)
   elif request.POST.get("profile", "0") is "0":
+    messages.warning(request, "Er is geen lid gekozen om toe te voegen")
     return redirect('teampage-control-members', id=team)
 
   # Check if profile is valid
   profile = request.POST.get("profile", "")
   if TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
-    return HttpResponse(status=404)
+    messages.error(request, "Het gekozen lid bestaat niet")
+    return redirect('teampage-control-members', id=team)
 
   TeamMember.objects.create(
     team=Team.objects.get(pk=team),
     profile=Profile.objects.get(pk=profile),
     role=request.POST.get("role", "")
   )
+
+  messages.success(request, "Het nieuwe teamlid is toegevoegd")
 
   return redirect('teampage-control-members', id=team)
 
@@ -606,6 +612,8 @@ def teampage_control_members_edit_save(request, id):
 
   member.role = request.POST.get("role", "")
   member.save()
+
+  messages.success(request, "De wijzigingen zijn opgeslagen")
 
   return redirect('teampage-control-members', id=member.team.pk)
 
@@ -631,6 +639,8 @@ def teampage_control_members_delete(request, id):
 
   team = member.team.pk
   member.delete()
+
+  messages.success(request, "Het teamlid is verwijderd")
 
   return redirect('teampage-control-members', id=team)
 
@@ -676,6 +686,8 @@ def teampage_control_timetables_add(request):
     color=color,
   )
 
+  messages.success(request, "Het rooster is toegevoegd")
+
   return redirect('teampage-control-timetables', id=team.pk)
 
 @login_required
@@ -691,7 +703,9 @@ def teampage_control_timetables_delete(request, id):
   table.delete()
 
   # Delete duties belonging to this table
-  TimetableDuty.objects.filter(timetable=id)
+  TimetableDuty.objects.filter(timetable=id).delete()
+
+  messages.success(request, "Het rooster is verwijderd")
 
   return redirect('teampage-control-timetables', id=team)
 
@@ -724,6 +738,8 @@ def teampage_control_timetables_edit_save(request, id):
   table.color = color
   table.save()
 
+  messages.success(request, "Het rooster is opgeslagen")
+
   return redirect('teampage-control-timetables', id=table.team.pk)
 
 
@@ -737,10 +753,21 @@ def teampage_control_edit_save(request, id):
     # Show error (no access) page
     return HttpResponse(status=404)
 
+  email = request.POST.get("email", "").lower()
+
+  if not email is "":
+    try:
+      validate_email(email)
+    except ValidationError:
+      messages.error(request, "Het opgegeven e-mailadres is niet geldig")
+      return redirect('teampage-control-edit', id=team.pk)
+
   team.name = request.POST.get("name", "")
   team.description = request.POST.get("description", "")
-  team.email = request.POST.get("email", "")
+  team.email = email
   team.save()
+
+  messages.success(request, "De instellingen zijn opgeslagen")
 
   return redirect('teampage', id=team.pk)
 

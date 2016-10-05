@@ -14,6 +14,12 @@
       </div>
 
       <div class="row">
+
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+
         <div class="col-sm-12">
           <h3>Algemeen
             {% if isadmin %}
@@ -71,9 +77,9 @@
           {% for m in members.all %}
             <div class="team-usersquare team-role-{{ m.role }}">
               <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.get_role_display }})" class="team-userlink">
-                <div>
+                <div class="team-userimage-div">
                   {% if m.profile.photo %}
-                    <img src="{{ MEDIA_URL }}/{{ m.profile.photo }}" atr="Foto van {{ m.profile.name }}" class="team-userimage"/>
+                    <img src="{{ m.profile.photo.url }}" title="Foto van {{ m.profile.name }}" class="team-userimage"/>
                   {% else %}
                     <img src="{% static 'resources/images/default_pf.png' %}" class="team-userimage"/>
                   {% endif %}

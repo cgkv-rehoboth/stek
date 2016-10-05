@@ -54,7 +54,11 @@ class Address(models.Model):
 def user_profile_pic(profile, filename):
   _, ext = os.path.splitext(filename)
 
-  return 'profiles/%s_%s%s' % (profile.pk, profile.user.username, ext)
+  name = '%s%s' % (profile.first_name, profile.last_name)
+  # Remove all harmfull chars
+  name = ''.join(e for e in name if e.isalnum())
+
+  return 'profiles/%s_%s%s' % (profile.pk, name, ext)
 
 class Profile(models.Model):
 

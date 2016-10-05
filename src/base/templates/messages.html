@@ -1,13 +1,12 @@
 {% if messages %}
 <div class="messages">
+  <div><!-- This will be an empty div because of the loop -->
   {% with 'debug info success warning error' as errortypes %}
     {% for type in errortypes.split %}
       {% for message in messages %}
         {% if type in message.tags %}
           {% ifchanged message.level %}
-            {% if not forloop.parentloop.first %}
-              </div>
-            {% endif %}
+            </div>
             <div class="alert alert-{% if type == 'error' %}danger{% else %}{{ type }}{% endif %} alert-dismissible" role="alert">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           {% endifchanged %}

@@ -226,19 +226,23 @@ window.servicePage = () => {
 window.teamPage = () => {
   // Zoom in/out profile pics
   $(".zoomin").click(function(){
-    var width = parseInt($(".team-usersquare").css('width')) + 11;
+    var width = parseInt($(".team-usersquare").css('width')) + 20;
+    var height = parseInt($(".team-userimage-div").css('height')) + 23;
 
     $(".team-usersquare").css('width', width + 'px');
+    $(".team-userimage-div").css('height', height + 'px');
 
     var fontsize = parseInt($(".team-userinfo").css('font-size')) + 1;
     $(".team-userinfo").css('font-size', fontsize);
   });
 
   $(".zoomout").click(function(){
-    var width = parseInt($(".team-usersquare").css('width')) - 11;
+    var width = parseInt($(".team-usersquare").css('width')) - 20;
+    var height = parseInt($(".team-userimage-div").css('height')) - 23;
 
     if(width > 0) {
       $(".team-usersquare").css('width', width + 'px');
+      $(".team-userimage-div").css('height', height + 'px');
 
       var fontsize = parseInt($(".team-userinfo").css('font-size')) - 1;
       $(".team-userinfo").css('font-size', fontsize);
@@ -249,7 +253,6 @@ window.teamPage = () => {
 window.profileEdit = (address) => {
   // Show a preview of the uploaded image
   $("#pic-input").change(function(){
-    $("#pic-info").text("");
 
     if (this.files && this.files[0]) {
       console.log("Creating preview... ");
@@ -265,6 +268,8 @@ window.profileEdit = (address) => {
         $(".profile-pic").attr('src', $(".profile-pic").attr('data-src'));
 
         return false;
+      }else{
+        $("#pic-info").text("");
       }
 
       var reader = new FileReader();

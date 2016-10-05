@@ -38,7 +38,7 @@
             </a>
           {% endif %}
           {{ v.lastname }} 
-          ({% for w in v.members.all %} {{ w.first_name }}, {% endfor %})
+          ({% for w in v.members.all %} {{ w.first_name }}{% if not forloop.last %},{% endif %} {% endfor %})
         </p>
       </div>
       <div class="row list-group-detail" data-family-pk="{{ v.pk }}"

@@ -19,6 +19,12 @@
       <div class="row">
         <div class="col-sm-12">
           <h3>Informatie bewerken</h3>
+
+          <div class="col-sm-12">
+            <!-- Error handling messages -->
+            {% include "./messages.html" %}
+          </div>
+
           <form method="post" action="{% url 'teampage-control-edit-save' team.pk %}" class="team-add-table form-horizontal">
             {% csrf_token %}
 
