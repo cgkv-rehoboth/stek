@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import views as auth_views
+from django.contrib.auth import logout
 from django.db.models import Prefetch, Q
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -178,10 +179,14 @@ def profile_pic_delete(request, pk):
 
   return redirect('profile-detail-page', pk=pk)
 
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
 urls = [
   # auth
   url(r'^login$', auth_views.login, {'template_name':'login.html'}, name='login'),
+  url(r'^logout', logout_view, name='logout'),
   url(r'^wachtwoord_reset/$', auth_views.password_reset, {
     'html_email_template_name': 'emails/password_reset.html',
   }, name='password_reset'),

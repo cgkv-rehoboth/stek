@@ -28,6 +28,8 @@
             <div class="text-center">
               <h2>Hi {{ user }}!</h2>
               <p>Je bent ingelogd</p>
+              <br/>
+              <p>Klik <a href="{% url 'logout' %}">hier</a> om weer uit te loggen.</p>
             </div>
           {% endif %}
         </div>

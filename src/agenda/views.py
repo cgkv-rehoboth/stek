@@ -779,6 +779,7 @@ def teampage_control_edit(request, id):
     'team': team,
   })
 
+@login_required
 def teampage(request, id):
   team = Team.objects.get(pk=id)
 

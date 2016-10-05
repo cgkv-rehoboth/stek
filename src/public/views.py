@@ -35,5 +35,5 @@ urls = [
   url(r'^orgel/$', orgel, name='orgel'),
   url(r'^anbi/$', anbi, name='anbi'),
   url(r'^kindercreche/$', kindercreche, name='kindercreche'),
-  url(r'^$', index)
+  url(r'^$', index, name='index')
 ]
