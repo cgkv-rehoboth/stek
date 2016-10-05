@@ -40,30 +40,22 @@ class Command(BaseCommand):
 
   def add_arguments(self, parser):
     parser.add_argument('--dryrun', action='store_true')
-    parser.add_argument('--chosenones', action='store_true')
+    parser.add_argument('profiles', nargs="*", default=[])
 
   def handle(self, *args, **options):
     dryrun = options['dryrun']
-    chosenones = options['chosenones']
+    profiles = options['profiles']
     if dryrun:
       print(">> Dry-run: only reporting")
       print()
       dryrun = True
 
-    if chosenones:
-      users = [
-        #386, # André Jansen
-        228, # Corné Mostert
-        #145, # René van Bruggen
-        #319, # Bram Steenbrink
-        #130, # Willeke Boer-de Hoop
-        #377, # Eric Reijm
-        #196, # Max van der Stoel
-        #366, # Anne Schouls
-        #143, # Larissa van der Wal
-      ]
-
-      profiles = Profile.objects.filter(pk__in=users)
+    if len(profiles) > 0:
+      profiles = Profile.objects.filter(pk__in=profiles)
+      print(">> Only spawning accounts for:")
+      for p in profiles:
+        print(".. %s" % p.name)
+      print()
     else:
       profiles = Profile.objects.all()
 
