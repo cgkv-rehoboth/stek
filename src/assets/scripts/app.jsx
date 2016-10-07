@@ -261,7 +261,7 @@ window.profileEdit = (address) => {
       console.log("Creating preview... ");
 
       // Checkt filesize
-      if (this.files[0].size > 3 * 1024 * 1024) { // x MB = x * 1024 * 1024
+      if (this.files[0].size > 20 * 1024 * 1024) { // x MB = x * 1024 * 1024
         $("#pic-info").text("Maximale bestandsgrootte is 3 MB");
 
         // Clear input

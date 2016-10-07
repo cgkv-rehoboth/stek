@@ -25,9 +25,11 @@
     </div>
 
     <div class="row">
-      <div class="col-md-4 profile-pic-container">
+      <div class="col-md-4">
         {% if p.photo %}
-          <img class="profile-pic" src="{{ p.photo.url }}" />
+          <div class="profile-pic-container">
+            <img class="profile-pic" src="{{ p.photo.url }}" />
+          </div>
         {% endif %}
       </div>
       <div class="col-md-8">
