@@ -37,7 +37,10 @@ function initListGroupDetail() {
           .slideUp(100);
 
         // open detail
-        detail.slideToggle(100);
+        detail.slideToggle(100, function(){
+          $('.list-group-head').css('font-weight', 'inherit');
+          $('.list-group-detail:visible').closest('.family-list-item').find('.list-group-head').css('font-weight', 'bold');
+        });
       });
     });
 
