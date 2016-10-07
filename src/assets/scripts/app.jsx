@@ -272,18 +272,32 @@ window.profileEdit = (address) => {
         $("#pic-info").text("");
       }
 
+      // Load image
+
       var reader = new FileReader();
 
       // Show loading thing
       $("#pic-loader").css('visibility', 'visible');
 
       reader.onload = function (e) {
-        $('.profile-pic').attr('src', e.target.result);
+        var image = new Image();
+        image.src = e.target.result;
 
-        $('.profile-pic').ready(function(){
-          // Remove loading thing when image has been loaded and displayed
+        image.onload = function() {
+          // access image size here
+          if(this.width > this.height){
+            $('.profile-pic').css('max-height', '100%');
+            $('.profile-pic').css('max-width', 'none');
+          }else{
+            $('.profile-pic').css('max-height', 'none');
+            $('.profile-pic').css('max-width', '100%');
+          }
+
+          // Make it visible
+          $('.profile-pic').attr('src', this.src);
+
           $("#pic-loader").css('visibility', 'hidden');
-        });
+        };
       }
 
       reader.readAsDataURL(this.files[0]);

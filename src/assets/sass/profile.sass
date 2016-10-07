@@ -11,11 +11,23 @@
     line-height: 1.6
 
   .profile-pic-container
-    text-align: center
+    position: relative
+    overflow: hidden
+    width: 325px
+    height: 325px
 
     .profile-pic
-      max-height: 325px
-      width: 325px
+      // Show image in the center
+      min-width: 325px
+      max-width: 100%
+      min-height: 325px
+      max-height: 100%
+      position: absolute
+      top: -400px
+      left: -400px
+      right: -400px
+      bottom: -400px
+      margin: auto
 
   #profile-left-div
     @media (min-width: 992px)
