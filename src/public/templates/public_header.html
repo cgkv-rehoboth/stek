@@ -32,7 +32,11 @@
           <li>
             <a class="page-scroll" style="height: auto;" href="/login">
               <i class="fa fa-lock fa-preicon" ></i>
-              Aanmelden
+              {% if user.is_authenticated %}
+                Voor leden
+              {% else %}
+                Inloggen
+              {% endif %}
             </a>
           </li>
         </ul>

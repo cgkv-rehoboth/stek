@@ -33,10 +33,10 @@
             </ul>
           </li>
           <li>
-            <a href="{% url 'timetable-list-page' %}">Roosters</a>
+            <a href="{% url 'timetable-list-page' %}" title="Bekijk alle roosters">Roosters</a>
           </li>
           <li>
-            <a href="http://rehobothkerkwoerden.nl/forum/">Forum</a>
+            <a href="http://rehobothkerkwoerden.nl/forum/" title="Bezoek het forum">Forum</a>
           </li>
           {% comment "Calendar not yet enabled for our users" %}
           <li>
@@ -44,7 +44,10 @@
           </li>
           {% endcomment %}
           <li>
-            <a href="{% url 'profile-detail-page' request.profile.id %}">Mijn profiel</a>
+            <a href="{% url 'profile-detail-page' request.profile.id %}" title="Mijn profiel"><i class="fa fa-user" aria-hidden="true"></i></a>
+          </li>
+          <li>
+            <a href="{% url 'login' %}" title="Startpagina"><i class="fa fa-home" aria-hidden="true"></i></a>
           </li>
         </ul>
       </div>
