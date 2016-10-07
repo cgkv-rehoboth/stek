@@ -3,6 +3,7 @@ from base.models import Profile
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 import unidecode
+from django.utils.crypto import get_random_string
 
 class NewAccountPasswordResetForm(PasswordResetForm):
   def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
@@ -22,8 +23,8 @@ def collect_accountless(profiles):
             yield prof
 
 def send_reset_email(profile, username):
-    # create a new user and associate it with the profile
-    user = User.objects.create_user(username=username, email=profile.email, first_name=profile.first_name, last_name=profile.last_name)
+    # create a new user and associate it with the profile, also add a random password, otherwhise the PasswordResetForm won't work
+    user = User.objects.create_user(username=username, email=profile.email, first_name=profile.first_name, last_name=profile.last_name, password=get_random_string(50))
     profile.user = user
     profile.save()
 
