@@ -227,10 +227,10 @@ window.teamPage = () => {
   // Zoom in/out profile pics
   $(".zoomin").click(function(){
     var width = parseInt($(".team-usersquare").css('width')) + 20;
-    var height = parseInt($(".team-userimage-div").css('height')) + 23;
+    var height = parseInt($(".team-userimage-div").css('max-height')) + 23;
 
     $(".team-usersquare").css('width', width + 'px');
-    $(".team-userimage-div").css('height', height + 'px');
+    $(".team-userimage-div").css('max-height', height + 'px');
 
     var fontsize = parseInt($(".team-userinfo").css('font-size')) + 1;
     $(".team-userinfo").css('font-size', fontsize);
@@ -238,11 +238,11 @@ window.teamPage = () => {
 
   $(".zoomout").click(function(){
     var width = parseInt($(".team-usersquare").css('width')) - 20;
-    var height = parseInt($(".team-userimage-div").css('height')) - 23;
+    var height = parseInt($(".team-userimage-div").css('max-height')) - 23;
 
     if(width > 0) {
       $(".team-usersquare").css('width', width + 'px');
-      $(".team-userimage-div").css('height', height + 'px');
+      $(".team-userimage-div").css('max-height', height + 'px');
 
       var fontsize = parseInt($(".team-userinfo").css('font-size')) - 1;
       $(".team-userinfo").css('font-size', fontsize);

@@ -5,6 +5,10 @@ from django.contrib.contenttypes.models import ContentType
 from livefield.models import LiveModel
 from django.db.models import Count
 from datetime import datetime
+from PIL import Image, ImageOps
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import unidecode
 
 import os
 
@@ -56,7 +60,7 @@ def user_profile_pic(profile, filename):
 
   name = '%s%s' % (profile.first_name, profile.last_name)
   # Remove all harmfull chars
-  name = ''.join(e for e in name if e.isalnum())
+  name = ''.join(e for e in unidecode.unidecode(name) if e.isalnum())
 
   return 'profiles/%s_%s%s' % (profile.pk, name, ext)
 
@@ -87,6 +91,36 @@ class Profile(models.Model):
 
   class Meta:
     unique_together = (('first_name', 'last_name', 'birthday'), )
+
+  def save(self, *args, **kwargs):
+    if self.photo:
+      # Compress picture
+      p = Image.open(self.photo)
+
+      # Preferred output image size (in pixels)
+      prefsize = 400, 400
+
+      ## Choose a option to save the profile picture
+      # 1) Scale to max width and height
+      #p.thumbnail(prefsize,Image.ANTIALIAS)
+
+      # 2) Scale to max width or height
+      #if p.size[0]>p.size[1]:
+      #  size = prefsize[0], round(prefsize[1]*p.size[1]/p.size[0])
+      #else:
+      #  size = round(prefsize[0]*p.size[0]/p.size[1]), prefsize[1]
+      #p.resize(size, Image.ANTIALIAS)
+
+      # 3) Cropscale image to max widt and height
+      p = ImageOps.fit(p, prefsize, Image.ANTIALIAS)
+
+      # Save
+      output = BytesIO()
+      p.save(output, format='JPEG', quality=90, optimize=True)
+      output.seek(0, os.SEEK_END)
+      self.photo = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.photo.name, 'image/jpeg', output.tell(), None)
+
+    super().save(*args, **kwargs)
 
   def best_address(self):
     if self.address:
