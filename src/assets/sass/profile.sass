@@ -14,7 +14,8 @@
     text-align: center
 
   #profile-left-div
-    border-right: 1px dashed #ccc
+    @media (min-width: 992px)
+      border-right: 1px dashed #ccc
 
     #profile-pic-form
 
@@ -28,8 +29,13 @@
 
     #change-password-div
       margin-top: 55px
+      margin-bottom: 41px
       padding-top: 20px
+      padding-bottom: 41px
       border-top: 1px dashed #ccc
+
+      @media (max-width: 991px)
+        border-bottom: 1px dashed #ccc
 
   #profile-detail-form
     input
