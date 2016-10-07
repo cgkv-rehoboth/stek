@@ -7,6 +7,9 @@ from django.utils.crypto import get_random_string
 
 class NewAccountPasswordResetForm(PasswordResetForm):
   def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
+    # Set subject of password-reset mail
+    subject_template_name = "emails/new_account_subject.txt"
+
     return super().send_mail(
       subject_template_name,
       email_template_name,
