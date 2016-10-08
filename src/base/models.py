@@ -112,7 +112,14 @@ class Profile(models.Model):
       #p.resize(size, Image.ANTIALIAS)
 
       # 3) Cropscale image to max widt and height
-      p = ImageOps.fit(p, prefsize, Image.ANTIALIAS)
+      # Get center (if specified)
+      center = 0.5,0.5
+      if args[0]:
+        center = args[0].split(',')
+        center = float(center[0]),float(center[1])
+        args = {}
+
+      p = ImageOps.fit(p, prefsize, Image.ANTIALIAS, 0, center)
 
       # Save
       output = BytesIO()

@@ -21,20 +21,21 @@
         <div id="profile-left-div">
           <form method="post" action="{% url 'profile-pic-edit-save' p.pk %}" id="profile-pic-form" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="center" value="0.5,0.5" />
             <h3>Profielfoto wijzigen <i class="fa fa-circle-o-notch fa-spin fa-fw" id="pic-loader"></i></h3>
-            <label>
-              <div class="profile-pic-container">
-                {% if p.photo %}
-                  <img class="profile-pic" src="{{ p.photo.url}}" data-src="{{ p.photo.url }}"/>
-                {% else %}
-                  <img class="profile-pic" src="{% static 'resources/images/default_pf.png' %}" />
-                {% endif %}
-              </div>
 
-              <input type="file" name="file" accept="image/*" id="pic-input" />
-            </label>
+            <div class="profile-pic-container">
+              {% if p.photo %}
+                <img class="profile-pic draggable" src="{{ p.photo.url}}" data-src="{{ p.photo.url }}"/>
+              {% else %}
+                <img class="profile-pic" src="{% static 'resources/images/default_pf.png' %}" />
+              {% endif %}
+            </div>
+
+            <input type="file" name="file" accept="image/*" id="pic-input" />
 
             <div id="pic-info"></div>
+            <div id="profile-pic"></div>
 
             <button type="submit" class="btn btn-default cyan">
               <i class="fa fa-picture-o" aria-hidden="true" style="margin-right: 7px;"></i> Opslaan

@@ -20,6 +20,7 @@ window.$ = $;
 // requires needed for ordering of loading
 // these depend on the global jQuery
 require('jquery.easing');
+require('jquery-ui/jquery-ui.min.js');
 require('bootstrap/dist/js/bootstrap.min');
 require('bootstrap/js/tooltip');
 require('lib/grayscale');
@@ -254,6 +255,7 @@ window.teamPage = () => {
 };
 
 window.profileEdit = (address) => {
+  var maxFileSize = 20; // default: 20M
   // Show a preview of the uploaded image
   $("#pic-input").change(function(){
 
@@ -261,7 +263,7 @@ window.profileEdit = (address) => {
       console.log("Creating preview... ");
 
       // Checkt filesize
-      if (this.files[0].size > 20 * 1024 * 1024) { // x MB = x * 1024 * 1024
+      if (this.files[0].size > maxFileSize * 1024 * 1024) { // x MB = x * 1024 * 1024
         $("#pic-info").text("Maximale bestandsgrootte is 3 MB");
 
         // Clear input
@@ -270,13 +272,15 @@ window.profileEdit = (address) => {
         // Show current saved pic
         $(".profile-pic").attr('src', $(".profile-pic").attr('data-src'));
 
+        // Set default cursor back
+        $('.profile-pic').css('cursor', 'default');
+
         return false;
       }else{
         $("#pic-info").text("");
       }
 
-      // Load image
-
+      //// Load image
       var reader = new FileReader();
 
       // Show loading thing
@@ -287,17 +291,39 @@ window.profileEdit = (address) => {
         image.src = e.target.result;
 
         image.onload = function() {
+
           // access image size here
           if(this.width > this.height){
+            var margin = Math.round(325*this.width/this.height - 325);
+            // Set image size
             $('.profile-pic').css('max-height', '100%');
             $('.profile-pic').css('max-width', 'none');
+
+            // Align in center
+            $('.profile-pic').css('top', '0');
+            $('.profile-pic').css('left', Math.round(margin/2) + 'px');
+
+            // Give some space to move
+            $('.profile-pic').css('margin', '0 ' + margin*-1 + 'px');
           }else{
+            var margin = Math.round(325*this.height/this.width - 325);
+            // Set image size
             $('.profile-pic').css('max-height', 'none');
             $('.profile-pic').css('max-width', '100%');
+
+            // Align in center
+            $('.profile-pic').css('top', Math.round(margin/2) + 'px');
+            $('.profile-pic').css('left', '0');
+
+            // Give some space to move
+            $('.profile-pic').css('margin', margin*-1 + 'px 0');
           }
 
           // Make it visible
           $('.profile-pic').attr('src', this.src);
+
+          // Set move cursor
+          $('.profile-pic').css('cursor', 'move');
 
           $("#pic-loader").css('visibility', 'hidden');
         };
@@ -306,6 +332,37 @@ window.profileEdit = (address) => {
       reader.readAsDataURL(this.files[0]);
     }
   });
+
+  // Being able to move the picture around
+  $('.profile-pic').draggable({containment: ".profile-pic-container", scroll: false});
+
+  $("#profile-pic-form").submit(function(e){
+    // Check file size
+    if ($("#pic-input").prop('files')[0].size > maxFileSize * 1024 * 1024){
+      e.preventDefault();
+      $("#pic-info").text("Maximale bestandsgrootte is 3 MB");
+      return;
+    }
+
+    // Get center
+    var x = 0.5;
+    var y = 0.5;
+
+    var left = parseInt($(".profile-pic").css('left'));
+    var mleft = parseInt($(".profile-pic").css('margin-left'));
+    var top = parseInt($(".profile-pic").css('top'));
+    var mtop = parseInt($(".profile-pic").css('margin-top'));
+
+    // Prevent end of the world by preventing dividing by zero
+    if (mleft != 0) {
+      x = 1 + left / mleft;
+    }
+    if (mtop != 0) {
+      y = 1 + top / mtop;
+    }
+
+    $('#profile-pic-form input[name="center"]').val(x + ',' + y);
+  })
 
   // Load adressForm
   let addressList = (query) => {

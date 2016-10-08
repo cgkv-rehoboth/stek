@@ -167,7 +167,7 @@ def profile_pic_edit_save(request, pk):
   if form.is_valid():
     profile.photo.delete()
     profile.photo=request.FILES['file']
-    profile.save()
+    profile.save(request.POST.get("center", "0.5,0.5"))
     messages.success(request, "Profielfoto is opgeslagen")
 
   return redirect('profile-detail-page', pk=pk)
