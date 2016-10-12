@@ -12,6 +12,8 @@ from django import http
 from django.core import serializers
 from django.contrib import messages
 
+from .forms import LoginForm
+
 from agenda.models import *
 from base.models import *
 
@@ -196,7 +198,7 @@ def change_password_done(request):
 
 urls = [
   # auth
-  url(r'^login$', auth_views.login, {'template_name':'login.html'}, name='login'),
+  url(r'^login$', auth_views.login, {'template_name':'login.html', 'authentication_form': LoginForm}, name='login'),
   url(r'^logout', logout_view, name='logout'),
   url(r'^wachtwoord_wijzigen/done/', change_password_done, name='password_change_done'),
   url(r'^wachtwoord_wijzigen', auth_views.password_change, name='password_change'),
