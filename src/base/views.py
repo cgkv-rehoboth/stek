@@ -112,7 +112,8 @@ def profile_detail_edit_save(request, pk):
   # Validate
   if not (zip and street and city and country):
     # Wrong validation
-    return HttpResponse(status=404)
+    messages.error(request, "Er is geen juist adres ingevuld. Een juist adres bestaat uit een postcode, straatnaam, woonplaats en landnaam.")
+    return redirect('profile-detail-page', pk=pk)
 
   # Save address
   adr, created = Address.objects.get_or_create(zip=zip, street=street, city=city, country=country)

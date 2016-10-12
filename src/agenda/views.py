@@ -111,8 +111,8 @@ def timetable_undo_ruilen_teamleader(request, id):
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(req.timetableduty.timetable.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=req_id)
 
   # Send notification email to the user
   template = get_template('email/ruilverzoek_status.txt')
@@ -188,8 +188,8 @@ def timetable_teamleader(request, id):
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(table.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=id)
 
   # OK, user is teamleader, let's continue:
   # First, get all ruilrequests
@@ -210,8 +210,8 @@ def timetable_ruilverzoek(request, id):
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(ruil.timetableduty.timetable.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=ruil.timetableduty.timetable.team.pk)
 
   # OK, user is teamleader, let's continue:
 
@@ -247,8 +247,8 @@ def timetable_ruilverzoek_accept(request, id):
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(ruil.timetableduty.timetable.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=ruil.timetableduty.timetable.team.pk)
 
   # OK, user is teamleader, let's continue:
   # Sent notification email to the user
@@ -286,8 +286,8 @@ def timetable_teamleader_duty_add(request):
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(table.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=table.team.pk)
 
   event = Event.objects.get(pk=request.POST.get("event", ""))
   responsible = Profile.objects.get(pk=request.POST.get("responsible", ""))
@@ -313,8 +313,8 @@ def timetable_teamleader_duty_edit_save(request, id):
 
   # Check if user is teamleader of the new/old timetable's team
   if not request.profile.teamleader_of(table.team) or not request.profile.teamleader_of(duty.timetable.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=table.team.pk)
 
   event = Event.objects.get(pk=request.POST.get("event", ""))
   responsible = Profile.objects.get(pk=request.POST.get("responsible", ""))
@@ -332,6 +332,11 @@ def timetable_teamleader_duty_edit_save(request, id):
 @login_required
 def timetable_teamleader_duty_edit(request, id):
   duty = TimetableDuty.objects.get(pk=id)
+
+  # Check if user is teamleader of the new/old timetable's team
+  if not request.profile.teamleader_of(duty.timetable.team):
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=duty.timetable.team.pk)
 
   # Return only tables which the user is admin of
   # Get all teams which the user is leader of
@@ -361,6 +366,12 @@ def timetable_teamleader_duty_edit(request, id):
 def timetable_teamleader_duty_delete(request, id):
   duty = TimetableDuty.objects.get(pk=id)
   table = duty.timetable
+
+  # Check if user is teamleader of the new/old timetable's team
+  if not request.profile.teamleader_of(table.team):
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=table.team.pk)
+
   duty.delete()
 
   return redirect('timetable-detail-page', id=table.pk)
@@ -368,6 +379,11 @@ def timetable_teamleader_duty_delete(request, id):
 @login_required
 def timetable_teamleader_duty_new(request, id):
   table = Timetable.objects.get(pk=id)
+
+  # Check if user is teamleader of the new/old timetable's team
+  if not request.profile.teamleader_of(table.team):
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=table.team.pk)
 
   # Get all future events
   events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
@@ -549,8 +565,8 @@ def teampage_control_members(request, id):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=id)
 
   members = team.teammembers.order_by('role')
 
@@ -578,8 +594,8 @@ def teampage_control_members_add(request):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=team.pk)
   elif request.POST.get("profile", "0") is "0":
     messages.warning(request, "Er is geen lid gekozen om toe te voegen")
     return redirect('teampage-control-members', id=team)
@@ -607,8 +623,8 @@ def teampage_control_members_edit_save(request, id):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(member.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=member.team.pk)
 
   member.role = request.POST.get("role", "")
   member.save()
@@ -634,8 +650,8 @@ def teampage_control_members_delete(request, id):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(member.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=id)
 
   team = member.team.pk
   member.delete()
@@ -651,8 +667,8 @@ def teampage_control_timetables(request, id):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=id)
 
   tables = team.timetables
 
@@ -669,8 +685,8 @@ def teampage_control_timetables_add(request):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=team.pk)
 
   if request.POST.get("color", "")[0] is "#":
     color = request.POST.get("color", "")[1:]
@@ -693,13 +709,13 @@ def teampage_control_timetables_add(request):
 @login_required
 def teampage_control_timetables_delete(request, id):
   table = Timetable.objects.get(pk=id)
+  team = table.team.pk
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(table.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=team)
 
-  team = table.team.pk
   table.delete()
 
   # Delete duties belonging to this table
@@ -724,8 +740,8 @@ def teampage_control_timetables_edit_save(request, id):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(table.team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=table.team.pk)
 
   if request.POST.get("color", "")[0] is "#":
     color = request.POST.get("color", "")[1:]
@@ -750,8 +766,8 @@ def teampage_control_edit_save(request, id):
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team):
-    # Show error (no access) page
-    return HttpResponse(status=404)
+    # Redirect to first public page
+    return redirect('teampage', id=id)
 
   email = request.POST.get("email", "").lower()
 
@@ -774,6 +790,11 @@ def teampage_control_edit_save(request, id):
 @login_required
 def teampage_control_edit(request, id):
   team = Team.objects.get(pk=id)
+
+  # Check if user is teamleader of this team
+  if not request.profile.teamleader_of(team):
+    # Redirect to first public page
+    return redirect('teampage', id=id)
 
   return render(request, 'teampage/edit.html', {
     'team': team,
