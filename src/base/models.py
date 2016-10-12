@@ -82,6 +82,7 @@ class Profile(models.Model):
   address     = models.ForeignKey(Address, null=True, blank=True)
   phone       = models.CharField(max_length=15, blank=True)
   first_name  = models.CharField(max_length=255, blank=True)
+  initials    = models.CharField(max_length=64, blank=True, null=True, default="")
   last_name   = models.CharField(max_length=255, blank=True)
   email       = models.CharField(max_length=255, blank=True, null=True)
   birthday    = models.DateField(null=True)
@@ -114,7 +115,7 @@ class Profile(models.Model):
       # 3) Cropscale image to max widt and height
       # Get center (if specified)
       center = 0.5,0.5
-      if args[0]:
+      if args and args[0]:
         center = args[0].split(',')
         center = float(center[0]),float(center[1])
         args = {}
@@ -137,6 +138,12 @@ class Profile(models.Model):
 
   def name(self):
     return "%s %s" % (self.first_name, self.last_name)
+
+  def namei(self):
+    return "%s %s" % (self.initials, self.last_name)
+
+  def first_namei(self):
+    return "%s, %s" % (self.first_name, self.initials)
 
   def is_favorite_for(self, user):
     return self.favorited_by.filter(owner=user).exists()

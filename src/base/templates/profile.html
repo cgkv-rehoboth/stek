@@ -42,8 +42,9 @@
             <tr>
               <th>Naam</th>
               <td>
-                {{ p.first_name }}
+                {{ p.initials }}
                 <a href="{% url 'family-detail-page' p.family.pk %}">{{ p.last_name }}</a>
+                ({{ p.first_name }})
               </td>
             </tr>
             <tr>
