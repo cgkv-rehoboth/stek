@@ -6,8 +6,8 @@
 {% block content %} 
   <div class="container login">
     <div class="row">
-      <div class="col-md-3"></div>
-      <div id="login-column" class="col-md-6">
+      <div class="col-md-1"></div>
+      <div id="login-column" class="col-md-10">
         <div id="login-form" class="text-center" >
           {% if not user.is_authenticated %}
             <h2>Inloggen
@@ -30,7 +30,7 @@
             </div>
           {% else %}
             <div class="text-center">
-              <h2>Hi {{ request.profile.first_name }}!</h2>
+              <h2>Welkom {{ request.profile.first_name }}!</h2>
               <p>Je bent ingelogd</p>
               <br/>
               <p>Klik <a href="{% url 'logout' %}">hier</a> om weer uit te loggen.</p>
@@ -38,7 +38,7 @@
           {% endif %}
         </div>
       </div>
-      <div class="col-md-3"></div>
+      <div class="col-md-1"></div>
     </div>
   </div>
 {% endblock %}
