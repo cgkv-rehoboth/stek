@@ -138,8 +138,10 @@ window.teamListMain = () => {
 };
 
 window.timetableMain = () => {
-  console.debug("Init timetables");
+  window.timetableRuilrequests();
+};
 
+window.timetableRuilrequests = () => {
   $(".timetable-ruilen").click(function(){
     let elem = $(this);
     let modal = $("#ruilModal");
@@ -161,7 +163,7 @@ window.timetableMain = () => {
       .text(elem.attr("title"));
     modal.modal('show');
   });
-};
+}
 
 // Let the window scroll 1px up
 // (not down, because the menu bar will render in the wrong way),
@@ -396,4 +398,8 @@ window.profileEdit = (address) => {
 
     $(this).val(i);
   })
-}
+};
+
+window.dashboard = () => {
+  window.timetableRuilrequests();
+};

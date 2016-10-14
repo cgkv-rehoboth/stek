@@ -1,0 +1,117 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+
+{% block content %}
+  <section class="container" id="dashboard">
+    <!-- User information -->
+    <div class="row greeting">
+      {% if request.profile.photo %}
+        <div class="profile-picture col-md-2 col-md-offset-1">
+          <img src="{{ request.profile.photo.url }}" />
+        </div>
+      {% else %}
+        <div class="col-md-2 col-md-offset-1"></div>
+      {% endif %}
+      <div class="col-md-6">
+        <h2>Welkom {{ request.profile.first_name }},</h2>
+        <p>
+          <small>
+            Klik <a href="{% url 'logout' %}">hier</a> om weer uit te loggen.
+          </small>
+        </p>
+      </div>
+    </div>
+
+    {% if ruilrequests %}
+      <!-- Ruilrequests information -->
+      <div class="row">
+        <h3>Openstaande ruilverzoeken van je rooster(s)</h3>
+
+        <table id="timetable"  class="table table-hover">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Persoon</th>
+              <th>Opmerkingen</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ruil in ruilrequests %}
+            <tr>
+              <td class="duty-date">{{ ruil.timetableduty.event }}</td>
+              <td class="duty-title">{{ ruil.profile.name }}</td>
+              <td>{{ ruil.comments }}</td>
+              <td>
+                <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>
+                <a href="{% url 'timetable-ruilverzoek' ruil.id %}" class="btn btn-default cyan modal-submit-button">Voldoen</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    {% if duties %}
+      <!-- Timetable information -->
+      <div class="row">
+        <h3>Je aankomende rooster(s)</h3>
+
+        <table id="timetable"  class="table table-hover">
+          <thead>
+            <tr>
+              <th>Rooster</th>
+              <th>Datum</th>
+              <th>Naam</th>
+              <th>Opmerkingen</th>
+              <th>Ruilen</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for duty in duties %}
+            {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
+            <tr class="table-{{ rowday }}">
+              <td>{{ duty.timetable.title }}</td>
+              <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
+              <td class="duty-title">{{ duty.event.title }}</td>
+              <td>{{ duty.comments }}</td>
+              <td class="duty-responsible">
+                {% with duty.ruilrequest as ruilen %}
+                  {% if ruilen.profile == request.profile %}
+                    <a href="javascript:void(0)" class="timetable-undo-ruilen"
+                      title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
+                      data-request-pk="{{ruilen.pk}}"
+                    >
+                     <i class="fa fa-check fa-fw"></i> Ongedaan maken
+                    </a>
+                  {% else %}
+                    <a href="javascript:void(0)"
+                      class="timetable-ruilen"
+                      title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                      data-duty-pk="{{ duty.pk }}"
+                    >
+                      <i class="fa fa-random fa-fw"></i> Aanvragen
+                    </a>
+                  {% endif %}
+                {% endwith %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% include "ruilverzoeken.html" %}
+    {% endif %}
+
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.dashboard();
+  </script>
+{% endblock %}

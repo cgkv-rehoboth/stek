@@ -11,6 +11,7 @@ from django.conf.urls import patterns, include, url
 from django import http
 from django.core import serializers
 from django.contrib import messages
+from datetime import datetime
 
 from .forms import LoginForm
 
@@ -198,6 +199,40 @@ def change_password_done(request):
   messages.success(request, "Wachtwoord is gewijzigd")
   return redirect('profile-detail-page', pk=request.profile.pk)
 
+@login_required
+def dashboard(request):
+
+  # Get ruilrequests
+  def filterTeamleaderTables():
+    # Get all the tables linked to the team(s) the user is in
+    for table in Timetable.objects.filter(team__members__pk=request.profile.pk).exclude(team__isnull=True):
+      if request.profile.teamleader_of(table.team):
+        yield table
+
+  mytables = list(filterTeamleaderTables())
+
+  ruilrequests = RuilRequest.objects\
+                   .filter(timetableduty__timetable__in=mytables, timetableduty__event__enddatetime__gte=datetime.today().date())\
+                   .order_by("timetableduty__event__startdatetime", "timetableduty__event__enddatetime")[:4]
+
+  # Get timetableduties
+  duties = TimetableDuty.objects\
+             .prefetch_related('ruilen')\
+             .filter(responsible=request.profile, event__enddatetime__gte=datetime.today().date())\
+             .order_by("event__startdatetime", "event__enddatetime")[:8]
+
+  for duty in duties:
+    for req in duty.ruilen.all():
+      # sanity check
+      # only a single request can pass this check
+      # due to the uniqueness constraint on requests
+      if req.profile == duty.responsible:
+        duty.ruilrequest = req
+
+  return render(request, 'dashboard.html', {
+    'ruilrequests': ruilrequests,
+    'duties': duties
+  })
 
 urls = [
   # auth
@@ -228,4 +263,7 @@ urls = [
   url(r'^profiel/(?P<pk>\d+)/edit/save/$', profile_detail_edit_save, name='profile-detail-page-edit-save'),
   url(r'^profiel/(?P<pk>\d+)/edit/$', profile_detail_edit, name='profile-detail-page-edit'),
   url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
+
+  # dashboard
+  url(r'^dashboard$', dashboard, name='dashboard'),
 ]
