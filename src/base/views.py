@@ -145,9 +145,9 @@ def profile_detail_edit_save(request, pk):
 
 
   # Save rest of the profile stuff
-  profile.first_name = request.POST.get("first_name", "")
+  profile.first_name = request.POST.get("first_name", "").replace('"', '')
   profile.initials = request.POST.get("initials", "")
-  profile.last_name = request.POST.get("last_name", "")
+  profile.last_name = request.POST.get("last_name", "").replace('"', '')
   profile.birthday = request.POST.get("birthday", "")
   profile.email = request.POST.get("email", "").lower()
   profile.phone = request.POST.get("phone-privat", "")

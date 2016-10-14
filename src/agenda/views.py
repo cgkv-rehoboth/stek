@@ -591,19 +591,19 @@ def teampage_control_members(request, id):
 @require_POST
 def teampage_control_members_add(request):
   team = request.POST.get("team", "")
+  profile = request.POST.get("profile", "0")
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team):
     # Redirect to first public page
     return redirect('teampage', id=team.pk)
-  elif request.POST.get("profile", "0") is "0":
-    messages.warning(request, "Er is geen lid gekozen om toe te voegen")
+  elif profile is "0":
+    messages.error(request, "Er is geen (geldig) lid gekozen om toe te voegen")
     return redirect('teampage-control-members', id=team)
 
   # Check if profile is valid
-  profile = request.POST.get("profile", "")
   if TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
-    messages.error(request, "Het gekozen lid bestaat niet")
+    messages.error(request, "Het gekozen lid bestaat niet of maakt al deel uit van dit team")
     return redirect('teampage-control-members', id=team)
 
   TeamMember.objects.create(

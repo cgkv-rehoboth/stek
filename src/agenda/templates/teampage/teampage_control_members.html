@@ -34,12 +34,16 @@
 
             <input type="hidden" name="team" value="{{ team.pk }}" />
 
-            <select name="profile" class="form-control">
-              <option value="0">-- Kies een lid --</option>
-              {% for p in profiles %}
-                <option value="{{ p.pk }}">{{ p.name }}</option>
-              {% endfor %}
-            </select>
+            <div id="profile-search-input"></div>
+
+            {% comment %}
+              <select name="profile" class="form-control">
+                <option value="0">-- Kies een lid --</option>
+                {% for p in profiles %}
+                  <option value="{{ p.pk }}">{{ p.name }}</option>
+                {% endfor %}
+              </select>
+            {% endcomment %}
 
             <select name="role" class="form-control">
               {% for r in roles %}

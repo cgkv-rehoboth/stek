@@ -9,6 +9,7 @@ import * as qs from 'querystring';
 import nl from 'moment/locale/nl';
 
 import ProfileSearchTable from "ProfileSearchTable";
+import ProfileSearchInput from "ProfileSearchInput";
 import ServiceTableManagable from "ServiceTableManagable";
 import {SearchTable} from "bootstrap/tables";
 import AddressForm from "AddressForm";
@@ -252,6 +253,15 @@ window.teamPage = () => {
       $(".team-userinfo").css('font-size', fontsize);
     }
   });
+
+  let searchProfiles = (query) => {
+    return api.profiles.list(query);
+  };
+
+  ReactDom.render(
+    <ProfileSearchInput listFunc={searchProfiles} />,
+    $("#profile-search-input")[0]
+  );
 };
 
 window.profileEdit = (address) => {
