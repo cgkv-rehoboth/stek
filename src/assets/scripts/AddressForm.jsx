@@ -221,6 +221,7 @@ export default class AddressForm extends React.Component {
     let readonly = !this.state.newzip;
 
     return (<div>
+      <input type="hidden" name="form-loaded" value="true" />
       <div className="form-group">
         <label className="col-sm-3">Postcode</label>
         <div className="col-sm-9">

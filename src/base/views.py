@@ -101,46 +101,47 @@ def profile_detail_edit_save(request, pk):
   if not request.profile.pk == profile.pk:
     return HttpResponse(status=404)
 
-  # Address
-  zip = request.POST.get("zip", "").replace(" ", "").upper()
-  number = request.POST.get("number", "").replace(" ", "").upper()
-  street = "%s %s" % (request.POST.get("street", ""), number)
-  city = request.POST.get("city", "")
-  country = request.POST.get("country", "")
-  phone = request.POST.get("phone", "").replace(" ", "")
+  # Address, only save when react form was loaded
+  if request.POST.get("form-loaded", False):
+    zip = request.POST.get("zip", "").replace(" ", "").upper()
+    number = request.POST.get("number", "").replace(" ", "").upper()
+    street = "%s %s" % (request.POST.get("street", ""), number)
+    city = request.POST.get("city", "")
+    country = request.POST.get("country", "")
+    phone = request.POST.get("phone", "").replace(" ", "")
 
-  # Validate
-  if not (zip and street and city and country):
-    # Wrong validation
-    messages.error(request, "Er is geen juist adres ingevuld. Een juist adres bestaat uit een postcode, straatnaam, woonplaats en landnaam.")
-    return redirect('profile-detail-page', pk=pk)
+    # Validate
+    if not (zip and street and city and country):
+      # Wrong validation
+      messages.error(request, "Er is geen juist adres ingevuld. Een juist adres bestaat uit een postcode, straatnaam, woonplaats en landnaam.")
+      return redirect('profile-detail-page', pk=pk)
 
-  # Save address
-  adr, created = Address.objects.get_or_create(zip=zip, street=street, city=city, country=country)
+    # Save address
+    adr, created = Address.objects.get_or_create(zip=zip, street=street, city=city, country=country)
 
-  adr.phone = phone
-  adr.save()
+    adr.phone = phone
+    adr.save()
 
 
-  # Check for 'verhuizing'
-  if request.POST.get("verhuizing", False):  # check with current address (profile OR family)
-    if request.POST.get("verhuizing-options", "") is "1":
-      # Check if this is the family address
-      if profile.family.address is adr:
-        profile.address = None
-      else:
-        profile.address = adr
+    # Check for 'verhuizing'
+    if request.POST.get("verhuizing", False):  # check with current address (profile OR family)
+      if request.POST.get("verhuizing-options", "") is "1":
+        # Check if this is the family address
+        if profile.family.address is adr:
+          profile.address = None
+        else:
+          profile.address = adr
 
-    elif request.POST.get("verhuizing-options", "") is "2":
-      if not hasattr(adr, "family"):
-        profile.address = None
-        profile.family.address = adr
+      elif request.POST.get("verhuizing-options", "") is "2":
+        if not hasattr(adr, "family"):
+          profile.address = None
+          profile.family.address = adr
 
-        profile.family.save()
+          profile.family.save()
 
-      #else:
-        # Address is already coupled to a other family
-        # todo: mulptiple families may live at the same address (like grandparents, parents and their kids)
+        #else:
+          # Address is already coupled to a other family
+          # todo: mulptiple families may live at the same address (like grandparents, parents and their kids)
 
 
   # Save rest of the profile stuff
