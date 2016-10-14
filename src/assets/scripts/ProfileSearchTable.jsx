@@ -24,6 +24,7 @@ export default class ProfileSearchTable extends React.Component {
 
      return (
       <tr key={prof.id}>
+        <td>{prof.initials}</td>
         <td><a href={"/profiel/" + prof.id + "/"}>{prof.first_name}</a></td>
         <td>{family}</td>
         <td>{prof.phone}</td>

@@ -373,4 +373,17 @@ window.profileEdit = (address) => {
     <AddressForm listFunc={addressList} address={address} />,
     $("#address-form")[0]
   );
+
+  // Initials
+  $("input[name='initials']").change(function(){
+    var i = $(this).val().toUpperCase();
+    console.log(i);
+
+    // Filter initals (remove whitespaces and add dots)
+    i = i.replace(/([\.\s]+)+/gi, ".");
+    if(i.length > 0 && i.substr(-1) != ".")
+      i += '.';
+
+    $(this).val(i);
+  })
 }
