@@ -7,7 +7,7 @@ export default class ProfileSearchInput extends React.Component {
 
   static get propTypes() {
     return {
-      listFunc: React.PropTypes.func.isRequired // (searchText) => promise<[item]>,
+      listFunc: React.PropTypes.func.isRequired // (searchText) => promise<[item]>, // todo: add specific filter (i.e. certain teammembers
     };
   }
 

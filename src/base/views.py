@@ -11,7 +11,7 @@ from django.conf.urls import patterns, include, url
 from django import http
 from django.core import serializers
 from django.contrib import messages
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .forms import LoginForm
 
@@ -216,10 +216,11 @@ def dashboard(request):
                    .order_by("timetableduty__event__startdatetime", "timetableduty__event__enddatetime")[:4]
 
   # Get timetableduties
+  maxweeks = datetime.today().date() + timedelta(weeks=4)
   duties = TimetableDuty.objects\
              .prefetch_related('ruilen')\
-             .filter(responsible=request.profile, event__enddatetime__gte=datetime.today().date())\
-             .order_by("event__startdatetime", "event__enddatetime")[:8]
+             .filter(responsible=request.profile, event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)\
+             .order_by("event__startdatetime", "event__enddatetime")
 
   for duty in duties:
     for req in duty.ruilen.all():
