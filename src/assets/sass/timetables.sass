@@ -1,58 +1,64 @@
 
-.timetable-gear-link
-  margin-left: 4px
-  padding: 3px 2px 3px 7px
+.table-odd
+  td
+    background-color: #f6f6f6
 
-  i
-    cursor: pointer
-    transition: all 0.2s
+.duty-responsible, .duty-date, .duty-title, .duty-tools
+  white-space: nowrap
 
-    &:hover
-      color: #337ab7
-      transform: rotate(45deg)
+.duty-tools
+  text-align: right
+
+.duty-comments
+  max-height: 300px
+  overflow-y: auto
+  display: block
+
+#timetables
+  .timetable-gear-link
+    margin-left: 4px
+    padding: 3px 2px 3px 7px
+
+    i
+      cursor: pointer
+      transition: all 0.2s
+
+      &:hover
+        color: #337ab7
+        transform: rotate(45deg)
 
 
-#timetable
+  #timetable
 
-  border: 1px solid #ddd
+    border: 1px solid #ddd
 
-  td, th
-    background-color: #fff
+    td, th
+      background-color: #fff
 
-  .table-odd
-    td
-      background-color: #f6f6f6
+    .ruil_requested
+      text-decoration: line-through
 
-  .duty-responsible, .duty-date, .duty-title, .duty-tools
-    white-space: nowrap
+    .current-user
+      font-weight: bold
 
-  .duty-tools
-    text-align: right
+    .timetable-ruilen i
+      font-size: 10pt
 
-  .ruil_requested
-    text-decoration: line-through
+    .timetable-undo-ruilen i
+      font-size: 11pt
 
-  .current-user
-    font-weight: bold
+  .nav-tabs
+    li
+      margin-right: 2px
 
-  .timetable-ruilen i
-    font-size: 10pt
+      a
+        margin-right: 0px
 
-  .timetable-undo-ruilen i
-    font-size: 11pt
+      .dropdown-menu
+        min-width: 100%
 
-.nav-tabs
-  li
-    margin-right: 2px
-
-    a
-      margin-right: 0px
-
-    .dropdown-menu
-      min-width: 100%
-
-  .nav-item-fillup, .dropdown-menu li a
-    padding: 6px 15px 6px 20px
-    font-weight: 400
-    font-size: 14pt
-    color: #333
+    .nav-item-fillup, .dropdown-menu li a
+      padding: 6px 15px 6px 20px
+      font-weight: 400
+      font-size: 14pt
+      color: #333

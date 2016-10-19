@@ -139,6 +139,20 @@ window.teamListMain = () => {
 
 window.timetableMain = () => {
   window.timetableRuilrequests();
+
+  // Double scroll bar funtcion
+  /*
+  $('.scroll-table').on('scroll', function (e) {
+      $('.double-scroll-bar').scrollLeft($('.scroll-table').scrollLeft());
+  });
+  $('.double-scroll-bar').on('scroll', function (e) {
+      $('.scroll-table').scrollLeft($('.double-scroll-bar').scrollLeft());
+  });
+
+  $(window).on('load', function(e){
+    $('.double-scroll-bar div').width($('.scroll-table thead').width());
+  });
+  */
 };
 
 window.timetableRuilrequests = () => {

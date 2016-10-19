@@ -29,29 +29,31 @@
       <div class="row">
         <h3>Openstaande ruilverzoeken van je rooster(s)</h3>
 
-        <table id="timetable"  class="table table-hover">
-          <thead>
-            <tr>
-              <th>Event</th>
-              <th>Persoon</th>
-              <th>Opmerkingen</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for ruil in ruilrequests %}
-            <tr>
-              <td class="duty-date">{{ ruil.timetableduty.event }}</td>
-              <td class="duty-title">{{ ruil.profile.name }}</td>
-              <td>{{ ruil.comments }}</td>
-              <td>
-                <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>
-                <a href="{% url 'timetable-ruilverzoek' ruil.id %}" class="btn btn-default cyan modal-submit-button">Voldoen</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="scroll-div">
+          <table id="ruilrequests"  class="table table-hover scroll-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Persoon</th>
+                <th>Opmerkingen</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ruil in ruilrequests %}
+              <tr>
+                <td class="duty-date">{{ ruil.timetableduty.event }}</td>
+                <td class="duty-title">{{ ruil.profile.name }}</td>
+                <td><div class="duty-comments">{{ ruil.comments }}</div></td>
+                <td>
+                  <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>
+                  <a href="{% url 'timetable-ruilverzoek' ruil.id %}" class="btn btn-default cyan modal-submit-button">Voldoen</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     {% endif %}
 
@@ -61,48 +63,50 @@
         <h3>Je rooster(s)</h3>
         <p>Een vooruizicht voor de komende vier weken.</p>
 
-        <table id="timetable"  class="table table-hover">
-          <thead>
-            <tr>
-              <th>Rooster</th>
-              <th>Datum</th>
-              <th>Naam</th>
-              <th>Opmerkingen</th>
-              <th>Ruilen</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for duty in duties %}
-            {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
-            <tr class="table-{{ rowday }}">
-              <td>{{ duty.timetable.title }}</td>
-              <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
-              <td class="duty-title">{{ duty.event.title }}</td>
-              <td>{{ duty.comments }}</td>
-              <td class="duty-responsible">
-                {% with duty.ruilrequest as ruilen %}
-                  {% if ruilen.profile == request.profile %}
-                    <a href="javascript:void(0)" class="timetable-undo-ruilen"
-                      title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
-                      data-request-pk="{{ruilen.pk}}"
-                    >
-                     <i class="fa fa-check fa-fw"></i> Ongedaan maken
-                    </a>
-                  {% else %}
-                    <a href="javascript:void(0)"
-                      class="timetable-ruilen"
-                      title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
-                      data-duty-pk="{{ duty.pk }}"
-                    >
-                      <i class="fa fa-random fa-fw"></i> Aanvragen
-                    </a>
-                  {% endif %}
-                {% endwith %}
-              </td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+        <div class="scroll-div">
+          <table id="timetable"  class="table table-hover scroll-table">
+            <thead>
+              <tr>
+                <th>Rooster</th>
+                <th>Datum</th>
+                <th>Naam</th>
+                <th>Opmerkingen</th>
+                <th>Ruilen</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for duty in duties %}
+              {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
+              <tr class="table-{{ rowday }}">
+                <td>{{ duty.timetable.title }}</td>
+                <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
+                <td class="duty-title">{{ duty.event.title }}</td>
+                <td><div class="duty-comments">{{ duty.comments }}</div></td>
+                <td class="duty-responsible">
+                  {% with duty.ruilrequest as ruilen %}
+                    {% if ruilen.profile == request.profile %}
+                      <a href="javascript:void(0)" class="timetable-undo-ruilen"
+                        title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
+                        data-request-pk="{{ruilen.pk}}"
+                      >
+                       <i class="fa fa-check fa-fw"></i> Ongedaan maken
+                      </a>
+                    {% else %}
+                      <a href="javascript:void(0)"
+                        class="timetable-ruilen"
+                        title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                        data-duty-pk="{{ duty.pk }}"
+                      >
+                        <i class="fa fa-random fa-fw"></i> Aanvragen
+                      </a>
+                    {% endif %}
+                  {% endwith %}
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {% include "ruilverzoeken.html" %}
