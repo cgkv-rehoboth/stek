@@ -16,3 +16,9 @@ django-debug-toolbar
 Pillow
 whitenoise==3.0
 unidecode==0.04.19
+
+django-machina
+django-haystack
+django-mptt
+django-markdown
+django-widget-tweaks

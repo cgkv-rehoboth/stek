@@ -1,5 +1,8 @@
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+from machina import get_apps as get_machina_apps
+from machina import MACHINA_MAIN_TEMPLATE_DIR, MACHINA_MAIN_STATIC_DIR
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -13,17 +16,12 @@ DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 
-TEMPLATE_LOADERS = (
-    ('pyjade.ext.django.Loader',(
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+          MACHINA_MAIN_TEMPLATE_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -35,6 +33,7 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
+                "machina.core.context_processors.metadata",
             ],
         },
     },
@@ -58,7 +57,7 @@ CORS_ORIGIN_WHITELIST = (
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
   'flat',
   'django.contrib.admin',
   'django.contrib.sites',
@@ -75,8 +74,11 @@ INSTALLED_APPS = (
   'agenda',
   'base',
   'public',
-  'debug_toolbar'
-)
+  'mptt',
+  'haystack',
+  'widget_tweaks',
+  'django_markdown',
+] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
   'corsheaders.middleware.CorsMiddleware',
@@ -87,7 +89,9 @@ MIDDLEWARE_CLASSES = (
   'django.contrib.messages.middleware.MessageMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'base.middleware.ProfileMiddleware',
-  'whitenoise.middleware.WhiteNoiseMiddleware'
+  'whitenoise.middleware.WhiteNoiseMiddleware',
+  'machina.apps.forum_permission.middleware.ForumPermissionMiddleware',
+
 )
 
 REST_FRAMEWORK = {
@@ -148,6 +152,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "../media/")
 
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, "../dist/"),
+  MACHINA_MAIN_STATIC_DIR
 )
 
 #
@@ -157,6 +162,25 @@ STATICFILES_DIRS = (
 NOCAPTCHA = True
 RECAPTCHA_PUBLIC_KEY = '6LdTEBsTAAAAAEGoRs_P10MVgylFKuxHnKZzB-m1'
 RECAPTCHA_PRIVATE_KEY = '6LdTEBsTAAAAAGdjKkSYNWRSx_5w5fCEZGrZIkyk'
+
+# cache settings
+
+CACHES = {
+  'default': {
+    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+  },
+  'machina_attachments': {
+    'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+    'LOCATION': '/tmp',
+  }
+}
+
+HAYSTACK_CONNECTIONS = {
+  'default': {
+    'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+  },
+}
+
 #
 # localsettings loading
 #
