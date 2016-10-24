@@ -51,9 +51,9 @@ def parse_families(members):
       "initials": voorletter.strip(),
       "lastname": achternaam.strip(),
       "prefix": voorvgsels,
-      "birthday": gebdatum.strip(),
+      "birthday": gebdatum,
       "phone": phone.strip(),
-      "email": email.strip()
+      "email": email
     })
     families[key] = family
 
@@ -61,17 +61,21 @@ def parse_families(members):
   families_named = {}
   for key, members in families.items():
     # include a little piece of the last name to seperate different families in one house
-    straat, postcode, woonplaats, wijk, achternaam[0:3] = key
+    straat, postcode, woonplaats, wijk, lstname = key
 
     # vote: majority lastname
     lastname = max(
-      Counter([m['achternaam'] for m in members]).items(),
-      key=lambda x: x[1])[0] # todo: create better algorithm
+      sorted(Counter(
+              [m['lastname'] if (len(m['prefix']) == 0) else ("%s, %s" % (m['lastname'], m['prefix'])) for m in members]
+      ).items()),
+      key=lambda x: x[1]
+    )[0]
 
     # vote: majority phone
     phone = max(
-      Counter([m['telefoon'] for m in members]).items(),
-      key=lambda x: x[1])[0]
+      Counter([m['phone'] for m in members]).items(),
+      key=lambda x: x[1]
+    )[0]
 
     families_named[(lastname, straat, postcode, woonplaats, phone, wijk)] = members
 
@@ -81,7 +85,7 @@ def print_families(families):
   for fam, members in families.items():
     print("Fam " + str(fam))
     for m in members:
-      print(m)
+      print("   - " + m)
     print()
 
 def insert_families(families):
@@ -90,34 +94,29 @@ def insert_families(families):
 
     wijk = Wijk.objects.get(pk=wijk)
 
-#    address = Address.objects.create(
-#      street=straat,
-#      zip=postcode,
-#      city=woonplaats,
-#      country="Nederland",
-#      wijk=wijk,
-#      phone=phone
-#    )
+    address = Address.objects.create(
+      street=straat,
+      zip=postcode,
+      city=woonplaats,
+      country="Nederland",
+      wijk=wijk,
+      phone=phone
+    )
 
-#    family = Family.objects.create(lastname=lastname, address=address)
-    print("")
-    print(lastname + ": ")
+    family = Family.objects.create(lastname=lastname, address=address)
 
     for m in members:
-      print("   - " + m['firstname'])
-#      profiel = Profile.objects.create(
-#        first_name=m['firstname'],
-#        initials=m['initials'],
-#        last_name=m['lastname'],
-#        prefix=m['prefix'],
-#        email=m['email'],
-#        phone=m['phone'],
-#        birthday=m['birthday'],
-#        family=family,
-#        role_in_family=None
-#      )
-    print("")
-    print("   " + straat + ", " + woonplaats)
+      profiel = Profile.objects.create(
+        first_name=m['firstname'],
+        initials=m['initials'],
+        last_name=m['lastname'],
+        prefix=m['prefix'],
+        email=m['email'],
+        phone=m['phone'],
+        birthday=m['birthday'],
+        family=family,
+        role_in_family=None
+      )
 
 class Command(BaseCommand):
   help = 'Import a .csv members file'
@@ -128,9 +127,14 @@ class Command(BaseCommand):
   def handle(self, *args, **options):
     member_fp = options['member-file'][0]
 
-    with open(member_fp, 'r', encoding='utf-8') as fh:
+    with open(member_fp, 'r', newline='') as fh:
       members = csv.reader(fh, delimiter=';')
       families = parse_families(members)
 
     with transaction.atomic():
       insert_families(families)
+
+      print("\n\n<===== DONE =====>\n")
+      print("Warning: Please correct the familymembers of the family 'Ee, van'. The mother has been given her own family...")
+      print("Warning: Please add Marit and Lianne Zantinge to the family Strijbos...")
+      print()
