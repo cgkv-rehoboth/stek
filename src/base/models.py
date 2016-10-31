@@ -84,6 +84,7 @@ class Profile(models.Model):
   first_name  = models.CharField(max_length=255, blank=True)
   initials    = models.CharField(max_length=64, blank=True, null=True, default="")
   last_name   = models.CharField(max_length=255, blank=True)
+  prefix      = models.CharField(max_length=64, blank=True, null=True, default="") # todo: run migration
   email       = models.CharField(max_length=255, blank=True, null=True)
   birthday    = models.DateField(null=True)
   photo       = models.ImageField(upload_to=user_profile_pic, null=True, blank=True)
