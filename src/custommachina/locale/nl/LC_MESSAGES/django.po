@@ -1425,8 +1425,8 @@ msgstr "aan"
 #, python-format
 msgid "edited %(counter)s time in total."
 msgid_plural "edited %(counter)s times in total."
-msgstr[0] "in totaal %(counter)s keer bewerkt"
-msgstr[1] "in totaal %(counter)s keer bewerkt"
+msgstr[0] "in totaal %(counter)s keer bewerkt."
+msgstr[1] "in totaal %(counter)s keer bewerkt."
 
 #: machina/templates/machina/forum_conversation/topic_detail.html:81
 msgid "Reason:"
@@ -1446,7 +1446,7 @@ msgstr "Dit onderwerp is vergrendeld"
 
 #: machina/templates/machina/forum_conversation/topic_list.html:73
 msgid "There are no topics in this forum."
-msgstr "Er zijn geen onderwerpen in dit forum"
+msgstr "Er zijn geen onderwerpen in dit forum."
 
 #: machina/templates/machina/forum_conversation/topic_pages_inline_list.html:5
 msgid "Go to the page:"
@@ -1650,7 +1650,7 @@ msgstr "%(topic_length)s ongelezen onderwerpen gevonden"
 
 #: machina/templates/machina/forum_tracking/unread_topic_list.html:27
 msgid "There are no unread topics."
-msgstr "Er zijn ongelezen berichten"
+msgstr "Er zijn ongelezen berichten."
 
 #: machina/templates/machina/partials/breadcrumb.html:4
 msgid "Forum index"
