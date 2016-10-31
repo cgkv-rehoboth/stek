@@ -1229,7 +1229,7 @@ msgstr "Je mag hoogstens <b>%(max_options)s</b> opties selecteren"
 
 #: machina/templates/machina/forum_conversation/forum_polls/poll_detail.html:40
 msgid "Vote"
-msgstr "Sem"
+msgstr "Stem"
 
 #: machina/templates/machina/forum_conversation/forum_polls/poll_detail.html:44
 msgid "Change your vote"
