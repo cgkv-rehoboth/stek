@@ -51,5 +51,5 @@ urlpatterns = patterns('',
   # url(r'^', include(static.static("/", document_root=os.path.join(settings.BASE_DIR, "static/")))),
 
   url(r'^markdown/', include( 'django_markdown.urls')),
-  url(r'^forum/', include(board.urls)),
+  url(r'^forum/', include('custommachina.urls')),
 )

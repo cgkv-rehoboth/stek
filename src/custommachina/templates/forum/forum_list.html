@@ -93,7 +93,7 @@
                                     {% endif %}
                                 </div>
                             {% else %}
-                                <div class="col-md-8 col-sm-9 col-xs-11 forum-name" colspan="2">
+                                <div class="col-md-7 col-sm-9 col-xs-11 forum-name" colspan="2">
                                     <table class="forum-data-table">
                                         <tr>
                                             <td class="forum-icon link">
@@ -108,7 +108,7 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-1 forum-count hidden-sm hidden-xs"></div>
+                                <div class="col-md-2 forum-count hidden-sm hidden-xs"></div>
                                 <div class="col-md-1 forum-count hidden-sm hidden-xs"></div>
                                 <div class="col-md-2 col-sm-3 hidden-xs forum-link-redirects">
                                     {% if node.link_redirects %}
@@ -128,7 +128,7 @@
                     {% if node.parent.is_category %}
                         <div class="row panel-row">
                             {% if not node.is_link %}
-                                <div class="col-md-7 col-sm-9 col-xs-11 forum-name">
+                                <div class="col-md-6 col-sm-9 col-xs-11 forum-name">
                                     <table class="forum-data-table">
                                         <tr>
                                             <td class="forum-icon {% if node in unread_forums %}unread{% endif %}">
@@ -152,7 +152,7 @@
                                     </table>
                                 </div>
                                 <div class="col-md-1 forum-syndication hidden-sm hidden-xs"><a href="{% url 'forum_feeds:forum_latest_topics_with_descendants' node.slug node.pk %}" title="{% trans 'RSS feed' %}"><i class="fa fa-rss-square"></i></a></div>
-                                <div class="col-md-1 forum-count hidden-sm hidden-xs">{{ node.topics_count }}</div>
+                                <div class="col-md-2 forum-count hidden-sm hidden-xs">{{ node.topics_count }}</div>
                                 <div class="col-md-1 forum-count hidden-sm hidden-xs">{{ node.posts_count }}</div>
                                 <div class="col-md-2 col-sm-3 hidden-xs forum-last-post">
                                     {% get_forum_last_post node user as last_post %}
@@ -175,7 +175,7 @@
                                     {% endif %}
                                 </div>
                             {% else %}
-                                <div class="col-md-8 col-sm-9 col-xs-11 forum-name" colspan="2">
+                                <div class="col-md-7 col-sm-9 col-xs-11 forum-name" colspan="2">
                                     <table class="forum-data-table">
                                         <tr>
                                             <td class="forum-icon link">
@@ -190,7 +190,7 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="col-md-1 forum-count hidden-sm hidden-xs"></div>
+                                <div class="col-md-2 forum-count hidden-sm hidden-xs"></div>
                                 <div class="col-md-1 forum-count hidden-sm hidden-xs"></div>
                                 <div class="col-md-2 col-sm-3 hidden-xs forum-last-post forum-link-redirects">
                                     {% if node.link_redirects %}
@@ -216,10 +216,10 @@
             <div class="panel panel-default forumlist">
                 <div class="panel-heading">
                     <div class="row panel-row">
-                        <div class="col-md-8 col-sm-9 col-xs-9 forum-name-col">
+                        <div class="col-md-7 col-sm-9 col-xs-9 forum-name-col">
                             <h3 class="panel-title">{% trans "Forums" %}</h3>
                         </div>
-                        <div class="col-md-1 hidden-sm hidden-xs forum-count-col">{% trans "Topics" %}</div>
+                        <div class="col-md-2 hidden-sm hidden-xs forum-count-col">{% trans "Topics" %}</div>
                         <div class="col-md-1 hidden-sm hidden-xs forum-count-col">{% trans "Posts" %}</div>
                         <div class="col-md-2 col-sm-3 hidden-xs forum-last-post-col">{% trans "Last post" %}</div>
                     </div>

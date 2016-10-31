@@ -18,6 +18,8 @@ from .forms import LoginForm
 from agenda.models import *
 from base.models import *
 
+from machina.apps.forum_member.models import *
+
 from .forms import UploadImageForm
 
 @login_required
@@ -64,7 +66,11 @@ def family_list(request, pk=None):
   })
 
 @login_required
-def profile_detail(request, pk):
+def profile_detail(request, pk=None):
+  # Set default pk (when redirected from e.g. Machina)
+  if (pk==None):
+    pk = request.profile.pk
+
   profiel = Profile.objects.get(pk=pk)
   memberships = TeamMember.objects\
                           .prefetch_related("team")\
@@ -175,6 +181,13 @@ def profile_pic_edit_save(request, pk):
     profile.photo=request.FILES['file']
     profile.save(request.POST.get("center", "0.5,0.5"))
     messages.success(request, "Profielfoto is opgeslagen")
+
+    # Save profile pic (avatar) for the forum profile
+    if (profile.user):
+      fp = ForumProfile.objects.get(pk=profile.user.pk)
+      if(fp):
+        fp.avatar = profile.photo
+        fp.save()
 
   return redirect('profile-detail-page', pk=pk)
 

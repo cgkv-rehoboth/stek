@@ -96,7 +96,7 @@ class Profile(models.Model):
   def save(self, *args, **kwargs):
     if self.photo:
       # Compress picture
-      p = Image.open(self.photo)
+      p = Image.open(self.photo).convert('RGB')
 
       # Preferred output image size (in pixels)
       prefsize = 400, 400

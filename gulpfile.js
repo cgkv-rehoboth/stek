@@ -50,7 +50,8 @@ gulp.task('build:sass', function() {
   gulp.src([
     './src/assets/sass/common.sass',
     './src/assets/sass/main.sass',
-    './src/assets/sass/public/main.sass'
+    './src/assets/sass/public/main.sass',
+    './src/assets/sass/machina/main.sass'
   ], {base: './src/assets/sass/'})
     .pipe(sass({
       includePaths : [

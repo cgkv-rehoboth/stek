@@ -191,6 +191,8 @@ HAYSTACK_CONNECTIONS = {
 # Machina settings
 #
 
+MACHINA_FORUM_NAME = "Rehobothkerk Forum"
+
 MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
     'can_see_forum',
     'can_read_forum',
