@@ -20,6 +20,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+          os.path.join(BASE_DIR, "../src/custommachina/templates/"),
           MACHINA_MAIN_TEMPLATE_DIR,
         ],
         'APP_DIRS': True,
@@ -37,6 +38,11 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+LOCALE_PATHS = [
+  # Custom Machina translation
+  os.path.join(BASE_DIR, "../src/custommachina/locale/"),
 ]
 
 ALLOWED_HOSTS = ['*']
@@ -130,7 +136,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'nl-nl'
+LANGUAGE_CODE = 'nl'
 
 TIME_ZONE = None
 
@@ -180,6 +186,10 @@ HAYSTACK_CONNECTIONS = {
     'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
   },
 }
+
+#
+# Machina settings
+#
 
 MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
     'can_see_forum',
