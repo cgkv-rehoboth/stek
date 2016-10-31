@@ -200,6 +200,13 @@ def profile_pic_delete(request, pk):
 
   profile.photo.delete()
 
+  # Save profile pic (avatar) for the forum profile
+  if (profile.user):
+    fp = ForumProfile.objects.get(pk=profile.user.pk)
+    if(fp):
+      fp.avatar = profile.photo
+      fp.save()
+
   messages.success(request, "Profielfoto is verwijderd")
 
   return redirect('profile-detail-page', pk=pk)
