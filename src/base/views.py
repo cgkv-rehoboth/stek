@@ -149,7 +149,11 @@ def profile_detail_edit_save(request, pk):
     print(request.POST.get("birthday", ""))
     bday = datetime.strptime(request.POST.get("birthday", "").strip(), "%d-%m-%Y")
   except ValueError as e:
+<<<<<<< HEAD
     ## Wrong validation
+=======
+    # Wrong validation
+>>>>>>> f6f8d09... Added lastname prefix
 
     # Tell them something went good ...
     if request.POST.get("form-loaded", False):
