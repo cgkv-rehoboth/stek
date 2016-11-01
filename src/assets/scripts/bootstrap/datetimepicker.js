@@ -90,7 +90,7 @@ export default class DatePicker extends Component {
   }
 }
 
-export default class TimePicker extends Component {
+export class TimePicker extends Component {
 
   static get propTypes() {
     return {
@@ -146,7 +146,7 @@ export default class TimePicker extends Component {
   }
 }
 
-export default class DateTimePicker extends Component {
+export class DateTimePicker extends Component {
 
   static get propTypes() {
     return {

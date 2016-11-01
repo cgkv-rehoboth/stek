@@ -75,7 +75,6 @@ INSTALLED_APPS = (
   'agenda',
   'base',
   'public',
-  'debug_toolbar'
 )
 
 MIDDLEWARE_CLASSES = (
