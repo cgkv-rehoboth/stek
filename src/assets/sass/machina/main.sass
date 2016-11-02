@@ -76,11 +76,27 @@ body
 
   #main_container
 
+    .username
+      text-transform: capitalize
+
     .avatar img
       width: 100%
 
       @media (max-width: 991px)
         width: 100px
+
+    .forum-description, .post-content
+      *
+        line-height: 130%
+
+      ul
+        list-style-type: disc
+
+      ol
+        list-style-type: decimal
+
+      ul, ol
+        padding-left: 30px
 
     .forum-data-table, .topic-data-table
 
@@ -99,6 +115,9 @@ body
 
         .forum-description
           min-height: 7px
+
+          p, li
+            font-size: 11pt
 
     .post .panel-body
       .post-sidebar

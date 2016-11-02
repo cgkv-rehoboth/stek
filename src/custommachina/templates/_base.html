@@ -48,5 +48,15 @@
 
     {% block extra_js %}
     {% endblock extra_js %}
+    <script>
+      $(function(){
+        // Transform username
+        $(".username").each(function(i){
+          var v = $(this).find('a').find('b').text();
+          vn = v.split('.')[0];
+          $(this).find('a b').text(vn).after('<br/><small>('+v+')</small>');
+        });
+      });
+    </script>
   </body>
 </html>
