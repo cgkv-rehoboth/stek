@@ -21,20 +21,6 @@ class Slide(LiveModel, models.Model):
 
   def __str__(self): return self.title
 
-class Popup(models.Model):
-
-  title           = models.CharField(max_length=255, blank=True, default="")
-  content         = models.TextField()
-  startdatetime   = models.DateTimeField()  # Todo: set default to today
-  enddatetime     = models.DateTimeField()
-  islive          = models.BooleanField(default=True)
-
-  def __str__(self):
-    return "[%s] %s" % (self.title, self.content)
-
-  def getCurrentVisible(self):
-    return self.filter(startdatetime__gte=datetime.today().date(), enddatetime_lte=datetime.today().date(), islive=True)
-
 class Wijk(models.Model):
 
   id = models.IntegerField(primary_key=True)
