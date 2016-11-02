@@ -160,13 +160,13 @@ def profile_detail_edit_save(request, pk):
     return redirect('profile-detail-page', pk=pk)
 
   # Save rest of the profile stuff
-  profile.first_name = request.POST.get("first_name", "").replace('"', '')
+  profile.first_name = request.POST.get("first_name", "").replace('"', '').strip()
   profile.initials = request.POST.get("initials", "").strip()
-  profile.prefix = request.POST.get("prefix", "")
-  profile.last_name = request.POST.get("last_name", "").replace('"', '')
+  profile.prefix = request.POST.get("prefix", "").strip()
+  profile.last_name = request.POST.get("last_name", "").replace('"', '').strip()
   profile.birthday = bday
-  profile.email = request.POST.get("email", "").lower()
-  profile.phone = request.POST.get("phone-privat", "")
+  profile.email = request.POST.get("email", "").lower().strip()
+  profile.phone = request.POST.get("phone-privat", "").strip()
 
   # todo: add profile validation
 

@@ -94,7 +94,8 @@ class Profile(models.Model):
     unique_together = (('first_name', 'last_name', 'birthday'), )
 
   def save(self, *args, **kwargs):
-    if self.photo:
+    # Only update photo if special args are given (the center args)
+    if self.photo and args and args[0]:
       # Compress picture
       p = Image.open(self.photo)
 
@@ -114,11 +115,9 @@ class Profile(models.Model):
 
       # 3) Cropscale image to max widt and height
       # Get center (if specified)
-      center = 0.5,0.5
-      if args and args[0]:
-        center = args[0].split(',')
-        center = float(center[0]),float(center[1])
-        args = {}
+      center = args[0].split(',')
+      center = float(center[0]),float(center[1])
+      args = {}
 
       p = ImageOps.fit(p, prefsize, Image.ANTIALIAS, 0, center)
 
