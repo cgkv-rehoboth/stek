@@ -58,7 +58,7 @@ class Command(BaseCommand):
       profiles = Profile.objects.filter(pk__in=profiles)
       print(">> Only spawning accounts for:")
       for p in profiles:
-        print(".. %s" % p.name)
+        print(".. %s" % p.name())
       print()
     else:
       profiles = Profile.objects.all()
