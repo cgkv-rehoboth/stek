@@ -97,7 +97,7 @@ class Profile(models.Model):
     # Only update photo if special args are given (the center args)
     if self.photo and args and args[0]:
       # Compress picture
-      p = Image.open(self.photo)
+      p = Image.open(self.photo).convert('RGB')
 
       # Preferred output image size (in pixels)
       prefsize = 400, 400

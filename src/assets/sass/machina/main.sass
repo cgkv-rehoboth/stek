@@ -1,0 +1,127 @@
+@import ../fonts
+@import ../reset
+@import ../common
+
+body
+  background-color: #fff
+
+  div, p
+    font-size: 12pt
+
+  .navbar-fixed-top-spacing
+    height: 73px
+
+  .navbar
+    border: none
+    height: 52px
+    background-color: #1A3242
+    color: #eee
+
+    .navbar-header
+
+      .navbar-toggle
+        background-color: transparent
+
+        &, &:hover, &:active, &:visited
+          background-color: transparent
+
+      .navbar-brand
+        height: 50px
+        white-space: nowrap
+        font-size: 18px
+        text-transform: uppercase
+        letter-spacing: 1px
+        font-family: Montserrat,Helvetica,Arial,sans-serif
+
+        &:hover
+          color: #eee
+
+        img
+          display: inline-block
+          margin-right: 20px
+          vertical-align: middle
+          height: 100%
+
+    .navbar-brand, .btn, .btn-link
+      color: #eee
+
+      &:hover
+        color: #298cae
+
+    .navbar-collapse
+      border: none
+
+      .navbar-form
+        margin: 0px
+        text-align: right
+
+        @media (max-width: 767px)
+          text-align: left
+
+        .header-search-input
+          max-width: 280px
+
+          @media (max-width: 991px)
+            max-width: 225px
+
+          @media (max-width: 767px)
+            max-width: 100%
+
+        .header-search-advanced .btn
+          text-transform: none
+          padding-right: 0
+
+          @media (max-width: 767px)
+            padding-left: 0
+
+  #main_container
+
+    .avatar img
+      width: 100%
+
+      @media (max-width: 991px)
+        width: 100px
+
+    .forum-data-table, .topic-data-table
+
+      td
+        vertical-align: middle
+
+        &.forum-icon
+          vertical-align: top
+
+          .fa
+            position: relative
+            top: 4px
+
+        &.topic-name .topic-created
+          margin-top: 5px
+
+        .forum-description
+          min-height: 7px
+
+    .post .panel-body
+      .post-sidebar
+        .posts-count
+          display: none
+
+        @media (max-width: 991px)
+          margin-top: 8px
+          padding-top: 8px
+          border: none
+          border-top: 1px solid #eee
+
+    .poll-options
+      .well
+        padding: 0
+        padding-left: 9px
+
+        label
+          margin-top: 0
+          padding: 14px
+          padding-left: 25px
+          height: 100%
+          width: 100%
+
+          input
+            margin-top: 0

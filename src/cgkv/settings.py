@@ -1,5 +1,9 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+from machina import get_apps as get_machina_apps
+from machina import MACHINA_MAIN_TEMPLATE_DIR, MACHINA_MAIN_STATIC_DIR
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -13,17 +17,13 @@ DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 
-TEMPLATE_LOADERS = (
-    ('pyjade.ext.django.Loader',(
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+          os.path.join(BASE_DIR, "../src/custommachina/templates/"),
+          MACHINA_MAIN_TEMPLATE_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -35,9 +35,15 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
+                "machina.core.context_processors.metadata",
             ],
         },
     },
+]
+
+LOCALE_PATHS = [
+  # Custom Machina translation
+  os.path.join(BASE_DIR, "../src/custommachina/locale/"),
 ]
 
 ALLOWED_HOSTS = ['*']
@@ -58,7 +64,7 @@ CORS_ORIGIN_WHITELIST = (
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
   'flat',
   'django.contrib.admin',
   'django.contrib.sites',
@@ -75,8 +81,11 @@ INSTALLED_APPS = (
   'agenda',
   'base',
   'public',
-  'debug_toolbar'
-)
+  'mptt',
+  'haystack',
+  'widget_tweaks',
+  'django_markdown',
+] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
   'corsheaders.middleware.CorsMiddleware',
@@ -88,6 +97,8 @@ MIDDLEWARE_CLASSES = (
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'base.middleware.ProfileMiddleware',
   'whitenoise.middleware.WhiteNoiseMiddleware',
+  'machina.apps.forum_permission.middleware.ForumPermissionMiddleware',
+
 )
 
 REST_FRAMEWORK = {
@@ -126,7 +137,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'nl-nl'
+LANGUAGE_CODE = 'nl'
 
 TIME_ZONE = None
 
@@ -148,6 +159,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "../media/")
 
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, "../dist/"),
+  MACHINA_MAIN_STATIC_DIR
 )
 
 #
@@ -157,6 +169,43 @@ STATICFILES_DIRS = (
 NOCAPTCHA = True
 RECAPTCHA_PUBLIC_KEY = '6LdTEBsTAAAAAEGoRs_P10MVgylFKuxHnKZzB-m1'
 RECAPTCHA_PRIVATE_KEY = '6LdTEBsTAAAAAGdjKkSYNWRSx_5w5fCEZGrZIkyk'
+
+# cache settings
+
+CACHES = {
+  'default': {
+    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+  },
+  'machina_attachments': {
+    'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+    'LOCATION': '/tmp',
+  }
+}
+
+HAYSTACK_CONNECTIONS = {
+  'default': {
+    'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+  },
+}
+
+#
+# Machina settings
+#
+
+MACHINA_FORUM_NAME = "Rehobothkerk Forum"
+
+MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
+    'can_see_forum',
+    'can_read_forum',
+    'can_start_new_topics',
+    'can_reply_to_topics',
+    'can_edit_own_posts',
+    'can_post_without_approval',
+    'can_create_polls',
+    'can_vote_in_polls',
+    'can_download_file',
+]
+
 #
 # localsettings loading
 #

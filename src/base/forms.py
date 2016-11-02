@@ -8,5 +8,5 @@ class UploadImageForm(forms.Form):
   file = forms.ImageField(label='')
 
 class LoginForm(AuthenticationForm):
-  username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'placeholder': 'Gebruikersnaam'}))
+  username = forms.CharField(max_length=254, widget=forms.TextInput(attrs={'placeholder': 'Gebruikersnaam', 'autofocus': 'autofocus'}))
   password = forms.CharField(label="Wachtwoord", widget=forms.PasswordInput(attrs={'placeholder': 'Wachtwoord'}))

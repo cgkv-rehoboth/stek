@@ -14,6 +14,8 @@ import agenda.api
 import public.views
 import public.api
 
+from machina.app import board
+
 apipatterns = patterns('',
   url(r'', include(base.api.urls)),
   url(r'', include(public.api.urls)),
@@ -47,4 +49,7 @@ urlpatterns = patterns('',
   # url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
 
   # url(r'^', include(static.static("/", document_root=os.path.join(settings.BASE_DIR, "static/")))),
+
+  url(r'^markdown/', include( 'django_markdown.urls')),
+  url(r'^forum/', include('custommachina.urls')),
 )
