@@ -75,6 +75,7 @@ INSTALLED_APPS = (
   'agenda',
   'base',
   'public',
+  'debug_toolbar'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -86,7 +87,7 @@ MIDDLEWARE_CLASSES = (
   'django.contrib.messages.middleware.MessageMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'base.middleware.ProfileMiddleware',
-  'whitenoise.middleware.WhiteNoiseMiddleware'
+  'whitenoise.middleware.WhiteNoiseMiddleware',
 )
 
 REST_FRAMEWORK = {
