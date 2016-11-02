@@ -56,7 +56,7 @@
                 <th>E-mail</th>
                 <td>
                   {{ p.email }}
-                  <a href="{{ p.email|encodemailHref }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+                  <a href="mailto:{{ p.email }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
                 </td>
               </tr>
             {% endif %}

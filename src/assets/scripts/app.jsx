@@ -108,6 +108,7 @@ $('a[href*="zs39qpz9ti"]').on('mouseover mouseup', function(){
 });
 
 function decodeMail(str){
+  // Todo: Firefox makes it case insensitive
   return str.replace(/A/g, '@').replace(/D/g, '.').replace(/[A-Z]/g,'').substr(10);
 }
 

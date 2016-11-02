@@ -106,7 +106,7 @@ def profile_detail_edit_save(request, pk):
   if request.POST.get("form-loaded", False):
     zip = request.POST.get("zip", "").replace(" ", "").upper()
     number = request.POST.get("number", "").replace(" ", "").upper()
-    street = "%s %s" % (request.POST.get("street", ""), number)
+    street = "%s %s" % (request.POST.get("street", "").strip(), number)
     city = request.POST.get("city", "")
     country = request.POST.get("country", "")
     phone = request.POST.get("phone", "").replace(" ", "")
