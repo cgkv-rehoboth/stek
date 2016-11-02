@@ -79,42 +79,44 @@
         <div class="col-sm-12">
           <h3>Rooster overzicht</h3>
 
-          <table id="usertable" class="table table-hover">
-            <thead>
-              <th><!-- kleur --></th>
-              <th>Titel</th>
-              <th>Beschrijving</th>
-              <th>In kalender</th>
-              <th></th>
-            </thead>
-            <tbody>
-              {% for t in tables.all %}
-                <tr>
-                  <td>
-                    <div class="team-table-color" style="background-color: #{{ t.color }};"></div>
-                  </td>
-                  <td>
-                    <a href="{% url 'timetable-detail-page' t.pk %}" title="{{ t.title }} bekijken" class="team-userlink">{{ t.title }}</a>
-                  </td>
-                  <td>{{ t.description }}</td>
-                  <td>
-                    {% if t.incalendar %}
-                      <i class="fa fa-check team-tablecalender"></i>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <span class="table-tools">
-                      <a href="{% url 'teampage-control-timetables-edit' t.pk %}" title="Bewerken">
-                        <i class="fa fa-pencil-square-o fa-fw"></i></a>
-                      <a href="{% url 'teampage-control-timetables-delete' t.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit rooster wilt verwijderen?" title="Verwijderen">
-                        <i class="fa fa-times fa-fw"></i>
-                      </a>
-                    </span>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          <div class="scroll-div">
+            <table id="usertable" class="table table-hover">
+              <thead>
+                <th><!-- kleur --></th>
+                <th>Titel</th>
+                <th>Beschrijving</th>
+                <th>In kalender</th>
+                <th></th>
+              </thead>
+              <tbody>
+                {% for t in tables.all %}
+                  <tr>
+                    <td>
+                      <div class="team-table-color" style="background-color: #{{ t.color }};"></div>
+                    </td>
+                    <td>
+                      <a href="{% url 'timetable-detail-page' t.pk %}" title="{{ t.title }} bekijken" class="team-userlink">{{ t.title }}</a>
+                    </td>
+                    <td><div class="duty-comments">{{ t.description }}</div></td>
+                    <td>
+                      {% if t.incalendar %}
+                        <i class="fa fa-check team-tablecalender"></i>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span class="table-tools">
+                        <a href="{% url 'teampage-control-timetables-edit' t.pk %}" title="Bewerken">
+                          <i class="fa fa-pencil-square-o fa-fw"></i></a>
+                        <a href="{% url 'teampage-control-timetables-delete' t.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit rooster wilt verwijderen?" title="Verwijderen">
+                          <i class="fa fa-times fa-fw"></i>
+                        </a>
+                      </span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
