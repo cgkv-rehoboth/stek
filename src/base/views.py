@@ -144,12 +144,27 @@ def profile_detail_edit_save(request, pk):
           # Address is already coupled to a other family
           # todo: mulptiple families may live at the same address (like grandparents, parents and their kids)
 
+  # parse gebdatum
+  try:
+    print(request.POST.get("birthday", ""))
+    bday = datetime.strptime(request.POST.get("birthday", "").strip(), "%d-%m-%Y")
+  except ValueError as e:
+    ## Wrong validation
+
+    # Tell them something went good ...
+    if request.POST.get("form-loaded", False):
+      messages.success(request, "Adresgegevens opgeslagen.")
+
+    # ... and something went wrong
+    messages.error(request, "De geboortedatum klopt niet volgens de syntax 'dd-mm-jjjj', zoals 31 december 1999 gescreven wordt als '31-12-1999'.")
+    return redirect('profile-detail-page', pk=pk)
 
   # Save rest of the profile stuff
   profile.first_name = request.POST.get("first_name", "").replace('"', '')
-  profile.initials = request.POST.get("initials", "")
+  profile.initials = request.POST.get("initials", "").strip()
+  profile.prefix = request.POST.get("prefix", "")
   profile.last_name = request.POST.get("last_name", "").replace('"', '')
-  profile.birthday = request.POST.get("birthday", "")
+  profile.birthday = bday
   profile.email = request.POST.get("email", "").lower()
   profile.phone = request.POST.get("phone-privat", "")
 

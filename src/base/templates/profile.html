@@ -43,8 +43,10 @@
               <th>Naam</th>
               <td>
                 {{ p.initials }}
-                <a href="{% url 'family-detail-page' p.family.pk %}">{{ p.last_name }}</a>
+                {{ p.prefix }}
+                {{ p.last_name }}
                 ({{ p.first_name }})
+                <a href="{% url 'family-detail-page' p.family.pk %}" class="make-contact-icon" title="Bekijk de familie"><i class="fa fa-users"></i></a>
               </td>
             </tr>
             <tr>
