@@ -12,6 +12,7 @@ from django import http
 from django.core import serializers
 from django.contrib import messages
 from datetime import datetime, timedelta
+from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import LoginForm
 
@@ -198,11 +199,15 @@ def profile_pic_edit_save(request, pk):
     messages.success(request, "Profielfoto is opgeslagen")
 
     # Save profile pic (avatar) for the forum profile
-    if (profile.user):
-      fp = ForumProfile.objects.get(pk=profile.user.pk)
-      if(fp):
-        fp.avatar = profile.photo
-        fp.save()
+    if profile.user:
+      try:
+        fp = ForumProfile.objects.get(user_id=profile.user.pk)
+        if(fp):
+          fp.avatar = profile.photo
+          fp.save()
+      except ObjectDoesNotExist:
+        pass
+
 
   return redirect('profile-detail-page', pk=pk)
 
@@ -216,11 +221,14 @@ def profile_pic_delete(request, pk):
   profile.photo.delete()
 
   # Save profile pic (avatar) for the forum profile
-  if (profile.user):
-    fp = ForumProfile.objects.get(pk=profile.user.pk)
-    if(fp):
-      fp.avatar = profile.photo
-      fp.save()
+  if profile.user:
+    try:
+      fp = ForumProfile.objects.get(pk=profile.user.pk)
+      if(fp):
+        fp.avatar = profile.photo
+        fp.save()
+    except ObjectDoesNotExist:
+      pass
 
   messages.success(request, "Profielfoto is verwijderd")
 
