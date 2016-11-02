@@ -36,7 +36,7 @@ admin.site.register(User, UserAdmin)
 
 # Create custom display for Profile
 class ProfileAdmin(admin.ModelAdmin):
-  list_display = ['name', 'address', 'phone', 'birthday']
+  list_display = ['name', 'address', 'phone', 'email', 'birthday']
   ordering = ['last_name', 'first_name']
   search_fields = ['first_name', 'last_name']
 
