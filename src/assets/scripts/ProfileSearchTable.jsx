@@ -19,7 +19,7 @@ export default class ProfileSearchTable extends React.Component {
     let renderProfileRow = (prof) => {
      // render some nested optional properties
      let family = prof.family
-      ? <a href={"/adresboek/families/" + prof.family.id + "/"}>{prof.last_name}</a>
+      ? <a href={"/adresboek/families/" + prof.family.id + "/"}>{prof.prefix} {prof.last_name}</a>
       : family = <span></span>;
 
      return (

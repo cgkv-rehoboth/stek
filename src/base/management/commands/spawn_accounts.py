@@ -27,7 +27,7 @@ def collect_accountless(profiles):
 
 def send_reset_email(profile, username):
     # create a new user and associate it with the profile, also add a random password, otherwhise the PasswordResetForm won't work
-    user = User.objects.create_user(username=username, email=profile.email, first_name=profile.first_name, last_name=profile.last_name, password=get_random_string(50))
+    user = User.objects.create_user(username=username, email=profile.email, first_name=profile.first_name, last_name=profile.last_namef(), password=get_random_string(50))
     profile.user = user
     profile.save()
 
@@ -66,13 +66,14 @@ class Command(BaseCommand):
     for prof in collect_accountless(profiles):
       # ensure an email account is set
       if prof.email is None or len(prof.email) == 0:
-        print("[FAILURE] Profile '%s %s' has no account, but no email address is set!" % (prof.first_name, prof.last_name))
+        print("[FAILURE] Profile '%s %s' has no account, but no email address is set!" % (prof.first_name, str(prof.last_namef())))
+        print(prof.last_namef())
         continue
 
       ## think of a clever username
       # Remove all non alphabatic and special chars
       firstname = ''.join(e for e in unidecode.unidecode(prof.first_name.lower()) if e.isalnum())
-      lastname = prof.last_name.split('-').pop()
+      lastname = prof.last_namef().split('-').pop()
       lastname = ''.join(e for e in unidecode.unidecode(lastname.lower()) if e.isalnum())
 
       # Merge it for an username
@@ -82,7 +83,7 @@ class Command(BaseCommand):
       if User.objects.filter(username=username).exists():
         print("[FAILURE] Profile '%s %s' has no account, but the username '%s' is taken." % (
           prof.first_name,
-          prof.last_name,
+          prof.last_namef(),
           username
         ))
         continue

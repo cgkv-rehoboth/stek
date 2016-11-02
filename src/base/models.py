@@ -58,9 +58,8 @@ class Address(models.Model):
 def user_profile_pic(profile, filename):
   _, ext = os.path.splitext(filename)
 
-  name = '%s%s' % (profile.first_name, profile.last_name)
   # Remove all harmfull chars
-  name = ''.join(e for e in unidecode.unidecode(name) if e.isalnum())
+  name = ''.join(e for e in unidecode.unidecode(profile.name()) if e.isalnum())
 
   return 'profiles/%s_%s%s' % (profile.pk, name, ext)
 
@@ -138,13 +137,19 @@ class Profile(models.Model):
       return self.family.address
 
   def name(self):
-    return "%s %s" % (self.first_name, self.last_name)
+    return "%s %s" % (self.first_name, self.last_namef())
 
   def namei(self):
-    return "%s %s" % (self.initials, self.last_name)
+    return "%s %s" % (self.initials, self.last_namef())
 
   def first_namei(self):
     return "%s, %s" % (self.first_name, self.initials)
+
+  def last_namef(self):
+    if self.prefix == "":
+      return self.last_name
+    else:
+      return "%s %s" % (self.prefix, self.last_name)
 
   def is_favorite_for(self, user):
     return self.favorited_by.filter(owner=user).exists()

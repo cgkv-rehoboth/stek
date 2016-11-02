@@ -58,7 +58,7 @@ export default class ProfileSearchInput extends React.Component {
   }
 
   itemClick(prof) {
-    let name = prof.first_name + " " + prof.last_name;
+    let name = prof.first_name + " " + prof.prefix + " " + prof.last_name;
 
     // Set selected value
     this.setState({
@@ -97,7 +97,7 @@ export default class ProfileSearchInput extends React.Component {
     let renderItem = (prof) => {
       return (
         <li key={prof.id} onClick={this.itemClick.bind(this, prof)}>
-          {prof.first_name} {prof.last_name}
+          {prof.first_name} {prof.prefix} {prof.last_name}
         </li>
       )
     };

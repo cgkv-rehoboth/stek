@@ -19,7 +19,7 @@
               <i class="fa fa-edit fa-preicon"></i>
             </a>
           {% endif %}
-          {{ p.first_name }} {{ p.last_name }}
+          {{ p.name }}
         </h1>
       </div>
     </div>
@@ -42,9 +42,7 @@
             <tr>
               <th>Naam</th>
               <td>
-                {{ p.initials }}
-                {{ p.prefix }}
-                {{ p.last_name }}
+                {{ p.namei }}
                 ({{ p.first_name }})
                 <a href="{% url 'family-detail-page' p.family.pk %}" class="make-contact-icon" title="Bekijk de familie"><i class="fa fa-users"></i></a>
               </td>
@@ -53,14 +51,15 @@
               <th>Geboortedatum</th>
               <td>{{ p.birthday }}</td>
             </tr>
-            <tr>
-              <th>E-mail</th>
-              <td>{{ p.email }}
-                {% if p.email %}
+            {% if p.email %}
+              <tr>
+                <th>E-mail</th>
+                <td>
+                  {{ p.email }}
                   <a href="{{ p.email|encodemailHref }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
-                {% endif %}
-              </td>
-            </tr>
+                </td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
 
@@ -77,14 +76,15 @@
                 {% endif %}
               </td>
             </tr>
-            <tr>
-              <th>Telefoon</th>
-              <td>{{ p.phone}}
-                {% if p.phone %}
+            {% if p.phone %}
+              <tr>
+                <th>Telefoon</th>
+                <td>
+                  {{ p.phone}}
                   <a href="tel:{{ p.phone }}" class="make-contact-icon" title="Bel {{ p.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
-                {% endif %}
-              </td>
-            </tr>
+                </td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
 

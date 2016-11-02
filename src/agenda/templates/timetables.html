@@ -78,7 +78,7 @@
                       {% with duty.ruilrequest as ruilen %}
                         <span class="{% if duty.responsible.pk == profile.pk %}current-user{% endif %}
                                     {% if ruilen %}ruil_requested{% endif %}">
-                          {{ duty.responsible|usernicename }}
+                          {{ duty.responsible.name }}
                         </span>
                         {% if duty.responsible.pk == request.profile.pk %}
                           {% if ruilen.profile == request.profile %}
