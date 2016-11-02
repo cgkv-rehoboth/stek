@@ -68,6 +68,24 @@ $("#confirm-modal .modal-footer .modal-cancel").click(function(){
   $("#confirm-modal").modal('hide');
 });
 
+
+/*
+  Default datepicker settings
+*/
+$.datepicker.setDefaults( $.datepicker.regional[ "nl" ] );
+$.datepicker.setDefaults({
+  dateFormat: 'dd-mm-yy',
+  nextText: '<i class="fa fa-angle-right"></i>',
+  prevText: '<i class="fa fa-angle-left"></i>',
+  monthNamesShort: [ "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" ],
+  monthNames: [ "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December" ],
+  dayNames: [ "Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag" ],
+  dayNamesMin: [ "Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za" ],
+  dayNamesShort: [ "Zon", "Maa", "Din", "Woe", "Don", "Vrij", "Zat" ],
+  gotoCurrent: true,
+});
+
+
 /* E mail visualizer
 
 Intern in an <a> tag:
@@ -196,6 +214,12 @@ window.timetableTeamleader = () => {};
 window.timetableTeamleaderDuty = () => {};
 
 window.servicePage = () => {
+  // Set datepicker for service date
+  $("#service-datepicker").datepicker({
+    changeMonth: true,
+    changeYear: true,
+  });
+
   // Disable input if checkbox is unchecked
   $(".service-second-trigger").click(function(){
     if($(this).prop('checked'))
@@ -219,7 +243,7 @@ window.servicePage = () => {
   });
 
   function checkSummertime(){
-    var month = $("#services-form input[name='date']").val().substring(5,7);
+    var month = $("#services-form input[name='date']").val().substring(3,5);
 
     // If month is in the summer months:
     if(month > 6 && month < 9) {
@@ -281,6 +305,19 @@ window.teamPage = () => {
 };
 
 window.profileEdit = (address) => {
+  // Set datepicker for birthday
+  $("#birthday-datepicker").datepicker({
+    changeMonth: true,
+    changeYear: true,
+    minDate: "-120Y",
+    maxDate: 0,
+    defaultDate: "-31y",
+  });
+
+
+  /*
+    Profile picture
+   */
   var maxFileSize = 20; // default: 20M
   // Show a preview of the uploaded image
   $("#pic-input").change(function(){

@@ -88,7 +88,11 @@
           <div class="form-group">
             <label class="col-sm-3">Geboortedatum</label>
             <div class="col-sm-9">
-              <input type="date" name="birthday" value="{{ p.birthday|date:"Y-m-d" }}" placeholder="bijv. 23-03-1983" required class="form-control" />
+              {% comment %}
+                <input type="date" name="birthday" value="{{ p.birthday|date:"Y-m-d" }}" placeholder="bijv. 23-03-1983" required class="form-control" />
+              {% endcomment %}
+
+              <input type="text" name="birthday" value="{{ p.birthday|date:"d-m-Y" }}" placeholder="bijv. 23-03-1983" required class="form-control" id="birthday-datepicker"/>
             </div>
           </div>
           <div class="form-group">

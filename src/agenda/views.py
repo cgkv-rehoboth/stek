@@ -441,7 +441,10 @@ def services(request):
   if last:
     startdatetime = last.startdatetime + timedelta(weeks=1)
   else:
-    startdatetime = datetime.today().date() + timedelta(weeks=1)
+    # Get next upcoming sunday
+    today = datetime.today().date()
+    startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
+    print(startdatetime)
 
   return render(request, 'services/main.html', {
     'startdatetime': startdatetime,
@@ -457,8 +460,8 @@ def services_add(request):
   enddate = "%s %s:00" % (date, str(request.POST.get("endtime1", "11:00")))
 
   try:
-    datetime.strptime(startdate, '%Y-%m-%d %H:%M:%S')
-    datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
+    startdate = datetime.strptime(startdate, '%d-%m-%Y %H:%M:%S')
+    enddate = datetime.strptime(enddate, '%d-%m-%Y %H:%M:%S')
   except ValueError:
     messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
     return redirect('services-page')
@@ -481,8 +484,8 @@ def services_add(request):
     enddate = "%s %s:00" % (date, str(request.POST.get("endtime2", "17:45")))
 
     try:
-      datetime.strptime(startdate, '%Y-%m-%d %H:%M:%S')
-      datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
+      startdate = datetime.strptime(startdate, '%d-%m-%Y %H:%M:%S')
+      enddate = datetime.strptime(enddate, '%d-%m-%Y %H:%M:%S')
     except ValueError:
       messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
       return redirect('services-page')
