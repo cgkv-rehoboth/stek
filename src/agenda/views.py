@@ -146,14 +146,14 @@ def timetable_ruilen(request, id):
   record = RuilRequest.objects.create(
     timetableduty=duty,
     profile=request.profile,
-    comments=request.POST.get("comments", "")
+    comments=request.POST.get("comments", "").strip()
   )
 
   # inform team leader
   template = get_template('email/ruilverzoek.txt')
 
   if request.POST.get("comments"):
-    comments = "Met de volgende redenen: \n %s" % request.POST.get("comments", "")
+    comments = "Met de volgende redenen: \n %s" % request.POST.get("comments", "").strip()
   else:
     comments = "Er is geen reden gegeven."
 
@@ -297,7 +297,7 @@ def timetable_teamleader_duty_add(request):
     timetable=table,
     event=event,
     responsible=responsible,
-    comments=request.POST.get("comments", "")
+    comments=request.POST.get("comments", "").strip()
   )
 
   return redirect('timetable-teamleader-page', id=table.id)
@@ -323,7 +323,7 @@ def timetable_teamleader_duty_edit_save(request, id):
   duty.timetable = table
   duty.event = event
   duty.responsible = responsible
-  duty.comments = request.POST.get("comments", "")
+  duty.comments = request.POST.get("comments", "").strip()
 
   duty.save()
 
@@ -470,12 +470,12 @@ def services_add(request):
     startdatetime=startdate,
     enddatetime=enddate,
     owner=request.profile,
-    title=request.POST.get("title1", ""),
+    title=request.POST.get("title1", "").strip(),
     timetable=Timetable.objects.get(title="Diensten"),
-    minister=request.POST.get("minister1", ""),
-    theme=request.POST.get("theme1", ""),
-    comments=request.POST.get("comments1", ""),
-    description=request.POST.get("description1", ""),
+    minister=request.POST.get("minister1", "").strip(),
+    theme=request.POST.get("theme1", "").strip(),
+    comments=request.POST.get("comments1", "").strip(),
+    description=request.POST.get("description1", "").strip(),
   )
 
   if request.POST.get("secondservice", ""):
@@ -494,12 +494,12 @@ def services_add(request):
       startdatetime=startdate,
       enddatetime=enddate,
       owner=request.profile,
-      title=request.POST.get("title2", ""),
+      title=request.POST.get("title2", "").strip(),
       timetable=Timetable.objects.get(title="Diensten"),
-      minister=request.POST.get("minister2", ""),
-      theme=request.POST.get("theme2", ""),
-      comments=request.POST.get("comments2", ""),
-      description=request.POST.get("description2", ""),
+      minister=request.POST.get("minister2", "").strip(),
+      theme=request.POST.get("theme2", "").strip(),
+      comments=request.POST.get("comments2", "").strip(),
+      description=request.POST.get("description2", "").strip(),
     )
 
     messages.success(request, "Diensten zijn toegevoegd")
@@ -528,11 +528,11 @@ def services_edit_save(request, id):
 
   service.startdatetime = startdate
   service.enddatetime = enddate
-  service.title = request.POST.get("title", "")
-  service.minister = request.POST.get("minister", "")
-  service.theme = request.POST.get("theme", "")
-  service.comments = request.POST.get("comments", "")
-  service.description = request.POST.get("description", "")
+  service.title = request.POST.get("title", "").strip()
+  service.minister = request.POST.get("minister", "").strip()
+  service.theme = request.POST.get("theme", "").strip()
+  service.comments = request.POST.get("comments", "").strip()
+  service.description = request.POST.get("description", "").strip()
 
   service.save()
 
@@ -699,8 +699,8 @@ def teampage_control_timetables_add(request):
   Timetable.objects.create(
     team=team,
     owner=request.profile,
-    title=request.POST.get("title", ""),
-    description=request.POST.get("description", ""),
+    title=request.POST.get("title", "").strip(),
+    description=request.POST.get("description", "").strip(),
     incalendar=request.POST.get("incalendar", ""),
     color=color,
   )
@@ -751,8 +751,8 @@ def teampage_control_timetables_edit_save(request, id):
   else:
     color = request.POST.get("color", "")
 
-  table.title = request.POST.get("title", "")
-  table.description = request.POST.get("description", "")
+  table.title = request.POST.get("title", "").strip()
+  table.description = request.POST.get("description", "").strip()
   table.incalendar = request.POST.get("incalendar", "")
   table.color = color
   table.save()
@@ -772,7 +772,7 @@ def teampage_control_edit_save(request, id):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
-  email = request.POST.get("email", "").lower()
+  email = request.POST.get("email", "").lower().strip()
 
   if not email is "":
     try:
@@ -781,8 +781,8 @@ def teampage_control_edit_save(request, id):
       messages.error(request, "Het opgegeven e-mailadres is niet geldig")
       return redirect('teampage-control-edit', id=team.pk)
 
-  team.name = request.POST.get("name", "")
-  team.description = request.POST.get("description", "")
+  team.name = request.POST.get("name", "").strip()
+  team.description = request.POST.get("description", "").strip()
   team.email = email
   team.save()
 
