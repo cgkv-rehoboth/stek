@@ -58,7 +58,7 @@ export default class ProfileSearchInput extends React.Component {
   }
 
   itemClick(prof) {
-    let name = prof.first_name + " " + prof.prefix + " " + prof.last_name;
+    let name = prof.first_name + " " + ( prof.prefix.length > 0 ? prof.prefix + " " : "") + prof.last_name;
 
     // Set selected value
     this.setState({
