@@ -88,6 +88,10 @@
                 <div class="team-userinfo">
                   {{ m.profile.first_name }}
                 </div>
+
+                <div class="team-userrole">
+                  {{ m.get_role_display|capfirst }}
+                </div>
               </a>
             </div>
           {% endfor %}

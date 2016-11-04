@@ -579,7 +579,7 @@ def teampage_control_members(request, id):
     .exclude(team_membership__pk__in=memberspk)
 
 
-  roles = TeamMember.ROLE_CHOICES
+  roles = sorted(TeamMember.ROLE_CHOICES, key=lambda x: x[0])
 
   # Render that stuff!
   return render(request, 'teampage/teampage_control_members.html', {
@@ -612,7 +612,8 @@ def teampage_control_members_add(request):
   TeamMember.objects.create(
     team=Team.objects.get(pk=team),
     profile=Profile.objects.get(pk=profile),
-    role=request.POST.get("role", "")
+    role=request.POST.get("role", ""),
+    admin=True if request.POST.get("admin", False) else False
   )
 
   messages.success(request, "Het nieuwe teamlid is toegevoegd")
@@ -630,6 +631,7 @@ def teampage_control_members_edit_save(request, id):
     return redirect('teampage', id=member.team.pk)
 
   member.role = request.POST.get("role", "")
+  member.admin=True if request.POST.get("admin", False) else False
   member.save()
 
   messages.success(request, "De wijzigingen zijn opgeslagen")
@@ -640,11 +642,13 @@ def teampage_control_members_edit_save(request, id):
 def teampage_control_members_edit(request, id):
   member = TeamMember.objects.get(pk=id)
 
+  roles = sorted(TeamMember.ROLE_CHOICES, key=lambda x: x[0])
+
   # Render that stuff!
   return render(request, 'teampage/teampage_control_members_edit.html', {
     'team': member.team,
     'member': member,
-    'roles': TeamMember.ROLE_CHOICES,
+    'roles': roles,
   })
 
 @login_required

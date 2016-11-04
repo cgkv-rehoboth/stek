@@ -82,21 +82,57 @@ class Team(models.Model):
     return self.members.all().count()
 
   def leaders(self):
-    return self.teammembers.filter(role='LEI')
+    return self.teammembers.filter(admin=True)
 
 class TeamMember(models.Model):
-
-  LEADER = 'LEI'
+  AMBETLIJKSCRIBAGKVKERKVERBAND = 'AMB'
+  VOORZITTER = 'VOO'
+  JEUGDOUDERLING = 'JEU'
   LID = 'LID'
+  LEIDING = 'LEI'
+  SECRETARIS = 'SEC'
+  SECRETARESSE = 'SEV'
+  PENNINGMEESTER = 'PEN'
+  CONTACTPERSOONCVB = 'CCV'
+  CONTACTPERSOONBEAMERGELUIDMUZIEK = 'CBE'
+  CONTACTPERSOONKERKENRAAD = 'CKE'
+  CONTACTPERSOONCATECHESE = 'CCA'
+  CONTACTPERSOONKINDERKRING = 'CKI'
+  CONTACTPERSOONJEUGDVERENIGINGEN = 'CJE'
+  CONTACTPERSOON = 'CON'
+  ALGEMEENADJUNCT = 'ALA'
+  VERTEGENWOORDIGERKERKENRAAD = 'VKE'
+  ADMINISTRATEUR = 'ADM'
+  BOEKHOUDER = 'BOE'
+  SCRIBA = 'SCR'
 
   ROLE_CHOICES = (
-    (LEADER, 'leiding'),
-    (LID, 'lid'),
+    (AMBETLIJKSCRIBAGKVKERKVERBAND, 'Ambetlijk scriba GKv-kerkverband'),
+    (VOORZITTER, 'Voorzitter'),
+    (JEUGDOUDERLING, 'Jeugdouderling'),
+    (LID, 'Lid'),
+    (LEIDING, 'Leiding'),
+    (SECRETARIS, 'Secretaris'),
+    (SECRETARESSE, 'Secretaresse'),
+    (PENNINGMEESTER, 'Penningmeester'),
+    (CONTACTPERSOONCVB, 'Contactpersoon CvB'),
+    (CONTACTPERSOONBEAMERGELUIDMUZIEK, 'Contactpersoon beamer, geluid, muziek'),
+    (CONTACTPERSOONKERKENRAAD, 'Contactpersoon kerkenraad'),
+    (CONTACTPERSOONCATECHESE, 'Contactpersoon catechese'),
+    (CONTACTPERSOONKINDERKRING, 'Contactpersoon kinderkring'),
+    (CONTACTPERSOONJEUGDVERENIGINGEN, 'Contactpersoon jeugdverenigingen'),
+    (CONTACTPERSOON, 'Contactpersoon'),
+    (ALGEMEENADJUNCT, 'Algemeen adjunct'),
+    (VERTEGENWOORDIGERKERKENRAAD, 'Vertegenwoordiger kerkenraad'),
+    (ADMINISTRATEUR, 'Administrateur'),
+    (BOEKHOUDER, 'Boekhouder'),
+    (SCRIBA, 'Scriba'),
   )
 
   team = models.ForeignKey(Team, related_name="teammembers")
   profile = models.ForeignKey(Profile, related_name="team_membership")
   role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
+  admin = models.BooleanField(default=False)
 
   def __str__(self):
     return "%s %s" % (self.team.name, self.get_role_display())

@@ -30,20 +30,24 @@
         <div class="row">
           <div class="col-md-12">
             <h4>Teamleden</h4>
-            <table class="table table-bordered table-hover">
-              <tr>
-                <th width="50%">Naam</th>
-                <th width="50%">Rol</th>
-              </tr>
-              {% for lid in team.teammembers.all %}
+            {% if team.teammembersSorted %}
+              <table class="table table-bordered table-hover">
                 <tr>
-                  <td><a href="{% url 'profile-detail-page' lid.profile.pk %}">
-                    {{ lid.profile.name }}
-                  </a></td>
-                  <td>{{ lid.get_role_display|capfirst }}</td>
+                  <th width="50%">Naam</th>
+                  <th width="50%">Rol</th>
                 </tr>
-              {% endfor %}
-            </table>
+                {% for lid in team.teammembersSorted.all %}
+                  <tr>
+                    <td><a href="{% url 'profile-detail-page' lid.profile.pk %}">
+                      {{ lid.profile.name }}
+                    </a></td>
+                    <td>{{ lid.get_role_display|capfirst }}</td>
+                  </tr>
+                {% endfor %}
+              </table>
+            {% else %}
+              Dit team bevat geen teamleden.
+            {% endif %}
           </div>
         </div>
       </div>
