@@ -7,6 +7,21 @@
 {% endblock %}
 
 {% block innerContent %}
+  <div class="row">
+
+    <div class="col-sm-12">
+      <!-- Error handling messages -->
+      {% include "./messages.html" %}
+    </div>
+
+    {% if perms.agenda.add_team %}
+      <!-- admin tools -->
+      <div class="col-md-12">
+        <a href="{% url 'team-add' %}" class="btn btn-default cyan">Team toevoegen</a>
+      </div>
+    {% endif %}
+  </div>
+
   <div class="list-group list-group-hide-detail" data-focus="{{ id }}">
   {% for team in teams %}
     <div class="container-fluid list-group-item">
@@ -28,13 +43,21 @@
           </div>
         </div>
         <div class="row">
+
+          {% if perms.agenda.delete_team %}
+            <!-- admin tools -->
+            <div class="col-md-12">
+              <a href="{% url 'team-delete' team.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit <strong>team</strong> met al de bijhorende <strong>roosters</strong> en <strong>teamleden</strong> wilt verwijderen?" title="Team verwijderen">Team verwijderen</a>
+            </div>
+          {% endif %}
+
           <div class="col-md-12">
             <h4>Teamleden</h4>
             {% if team.teammembersSorted %}
               <table class="table table-bordered table-hover">
                 <tr>
                   <th width="50%">Naam</th>
-                  <th width="50%">Rol</th>
+                  <th width="50%">Functie</th>
                 </tr>
                 {% for lid in team.teammembersSorted.all %}
                   <tr>
@@ -54,6 +77,8 @@
     </div>
   {% endfor %}
   </div>
+
+  {% include "./confirmationmodal.html" %}
 {% endblock %}
 
 {% block scripts %}
