@@ -144,7 +144,7 @@ class Profile(models.Model):
 
   def teamleader_of(self, team):
     # Check if user is teamleader of this timetable's team
-    return self.team_membership.filter(team=team, profile=self, admin=True).exists()
+    return self.team_membership.filter(team=team, profile=self, is_admin=True).exists()
 
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)

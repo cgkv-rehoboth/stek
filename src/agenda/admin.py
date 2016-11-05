@@ -41,6 +41,13 @@ class ServiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Service, ServiceAdmin)
 
+# Create custom display for TimetableDuty
+class TeamMemberRoleAdmin(admin.ModelAdmin):
+  list_display = ['name', 'short_name', 'is_active']
+  ordering = ['-is_active', 'name']
+
+admin.site.register(TeamMemberRole, TeamMemberRoleAdmin)
+
 # Team stuff
 class TeamMemberAdmin(admin.ModelAdmin):
   list_display = ['profile', 'team', 'role']

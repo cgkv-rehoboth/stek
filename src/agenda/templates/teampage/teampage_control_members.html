@@ -51,7 +51,7 @@
             <div class="form-group">
               <select name="role" class="form-control">
                 {% for r in roles %}
-                  <option value="{{ r.0 }}" {% if r.0 == selected_role %}selected="selected"{% endif %}>{{ r.1|capfirst }}</option>
+                  <option value="{{ r.pk }}" {% if r.short_name  == selected_role %}selected="selected"{% endif %}>{{ r|capfirst }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -59,7 +59,7 @@
             <div class="form-group">
               <div class="checkbox">
                 <label title="Geef dit teamlid de rechten om dit team te kunnen beheren en wijzigen.">
-                  <input type="checkbox" name="admin" />
+                  <input type="checkbox" name="is_admin" />
                   Beheerrechten
                 </label>
               </div>
@@ -90,9 +90,9 @@
                   <td>
                     <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }}" class="team-userlink">{{ m.profile.name }}</a>
                   </td>
-                  <td>{{ m.get_role_display|capfirst }}</td>
+                  <td>{{ m.role|capfirst }}</td>
                   <td style="text-align:center;">
-                    {% if m.admin %}
+                    {% if m.is_admin %}
                       <i class="fa fa-check"></i>
                     {% endif %}
                   </td>

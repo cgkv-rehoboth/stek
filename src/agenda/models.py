@@ -8,6 +8,11 @@ from django.db.models import Count
 # Import models of base app
 from base.models import Profile
 
+class ActiveManager(models.Manager):
+  # Get online the active ones when calling objects.active()
+  def active(self):
+    return super(ActiveManager, self).get_queryset().filter(is_active=True)
+
 class TimestampedModel(models.Model):
 
   class Meta:
@@ -82,60 +87,28 @@ class Team(models.Model):
     return self.members.all().count()
 
   def leaders(self):
-    return self.teammembers.filter(admin=True)
+    return self.teammembers.filter(is_admin=True)
 
-class TeamMember(models.Model):
-  AMBETLIJKSCRIBAGKVKERKVERBAND = 'AMB'
-  VOORZITTER = 'VOO'
-  JEUGDOUDERLING = 'JEU'
-  LID = 'LID'
-  LEIDING = 'LEI'
-  SECRETARIS = 'SEC'
-  SECRETARESSE = 'SEV'
-  PENNINGMEESTER = 'PEN'
-  CONTACTPERSOONCVB = 'CCV'
-  CONTACTPERSOONBEAMERGELUIDMUZIEK = 'CBE'
-  CONTACTPERSOONKERKENRAAD = 'CKE'
-  CONTACTPERSOONCATECHESE = 'CCA'
-  CONTACTPERSOONKINDERKRING = 'CKI'
-  CONTACTPERSOONJEUGDVERENIGINGEN = 'CJE'
-  CONTACTPERSOON = 'CON'
-  ALGEMEENADJUNCT = 'ALA'
-  VERTEGENWOORDIGERKERKENRAAD = 'VKE'
-  ADMINISTRATEUR = 'ADM'
-  BOEKHOUDER = 'BOE'
-  SCRIBA = 'SCR'
+class TeamMemberRole(models.Model):
 
-  ROLE_CHOICES = (
-    (AMBETLIJKSCRIBAGKVKERKVERBAND, 'Ambetlijk scriba GKv-kerkverband'),
-    (VOORZITTER, 'Voorzitter'),
-    (JEUGDOUDERLING, 'Jeugdouderling'),
-    (LID, 'Lid'),
-    (LEIDING, 'Leiding'),
-    (SECRETARIS, 'Secretaris'),
-    (SECRETARESSE, 'Secretaresse'),
-    (PENNINGMEESTER, 'Penningmeester'),
-    (CONTACTPERSOONCVB, 'Contactpersoon CvB'),
-    (CONTACTPERSOONBEAMERGELUIDMUZIEK, 'Contactpersoon beamer, geluid, muziek'),
-    (CONTACTPERSOONKERKENRAAD, 'Contactpersoon kerkenraad'),
-    (CONTACTPERSOONCATECHESE, 'Contactpersoon catechese'),
-    (CONTACTPERSOONKINDERKRING, 'Contactpersoon kinderkring'),
-    (CONTACTPERSOONJEUGDVERENIGINGEN, 'Contactpersoon jeugdverenigingen'),
-    (CONTACTPERSOON, 'Contactpersoon'),
-    (ALGEMEENADJUNCT, 'Algemeen adjunct'),
-    (VERTEGENWOORDIGERKERKENRAAD, 'Vertegenwoordiger kerkenraad'),
-    (ADMINISTRATEUR, 'Administrateur'),
-    (BOEKHOUDER, 'Boekhouder'),
-    (SCRIBA, 'Scriba'),
-  )
+  name            = models.CharField(max_length=255, unique=True)
+  short_name      = models.CharField(max_length=4)
+  is_active       = models.BooleanField(default=True)
 
-  team = models.ForeignKey(Team, related_name="teammembers")
-  profile = models.ForeignKey(Profile, related_name="team_membership")
-  role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
-  admin = models.BooleanField(default=False)
+  objects         = ActiveManager()
 
   def __str__(self):
-    return "%s %s" % (self.team.name, self.get_role_display())
+    return self.name
+
+class TeamMember(models.Model):
+
+  team        = models.ForeignKey(Team, related_name="teammembers")
+  profile     = models.ForeignKey(Profile, related_name="team_membership")
+  role        = models.ForeignKey(TeamMemberRole, related_name="teammembers", default=1)
+  is_admin    = models.BooleanField(default=False)
+
+  def __str__(self):
+    return "%s %s" % (self.team.name, self.role)
 
 class RuilRequest(models.Model):
 

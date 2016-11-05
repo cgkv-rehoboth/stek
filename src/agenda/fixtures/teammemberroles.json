@@ -1,0 +1,182 @@
+[
+{
+  "fields": {
+    "name": "Lid",
+    "short_name": "LID",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 1
+},
+{
+  "fields": {
+    "name": "Voorzitter",
+    "short_name": "VOO",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 2
+},
+{
+  "fields": {
+    "name": "Jeugdouderling",
+    "short_name": "JEU",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 3
+},
+{
+  "fields": {
+    "name": "Ambetlijk scriba GKv-kerkverband",
+    "short_name": "AMB",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 4
+},
+{
+  "fields": {
+    "name": "Leiding",
+    "short_name": "LEI",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 5
+},
+{
+  "fields": {
+    "name": "Secretaris",
+    "short_name": "SEC",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 6
+},
+{
+  "fields": {
+    "name": "Secretaresse",
+    "short_name": "SEV",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 7
+},
+{
+  "fields": {
+    "name": "Penningmeester",
+    "short_name": "PEN",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 8
+},
+{
+  "fields": {
+    "name": "Contactpersoon CvB",
+    "short_name": "CCV",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 9
+},
+{
+  "fields": {
+    "name": "Contactpersoon beamer, geluid, muziek",
+    "short_name": "CBE",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 10
+},
+{
+  "fields": {
+    "name": "Contactpersoon kerkenraad",
+    "short_name": "CKE",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 11
+},
+{
+  "fields": {
+    "name": "Contactpersoon catechese",
+    "short_name": "CCA",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 12
+},
+{
+  "fields": {
+    "name": "Contactpersoon kinderkring",
+    "short_name": "CKI",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 13
+},
+{
+  "fields": {
+    "name": "Contactpersoon jeugdverenigingen",
+    "short_name": "CJE",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 14
+},
+{
+  "fields": {
+    "name": "Contactpersoon",
+    "short_name": "CON",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 15
+},
+{
+  "fields": {
+    "name": "Algemeen adjunct",
+    "short_name": "ALA",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 16
+},
+{
+  "fields": {
+    "name": "Vertegenwoordiger kerkenraad",
+    "short_name": "VKE",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 17
+},
+{
+  "fields": {
+    "name": "Administrateur",
+    "short_name": "ADM",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 18
+},
+{
+  "fields": {
+    "name": "Boekhouder",
+    "short_name": "BOE",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 19
+},
+{
+  "fields": {
+    "name": "Scriba",
+    "short_name": "SCR",
+    "is_active": true
+  },
+  "model": "agenda.teammemberrole",
+  "pk": 20
+}
+]

@@ -27,7 +27,7 @@
             <div class="form-group">
               <select name="role" class="form-control">
                 {% for r in roles %}
-                  <option value="{{ r.0 }}" {% if r.0 == member.role %}selected="selected"{% endif %}>{{ r.1|capfirst }}</option>
+                  <option value="{{ r.pk }}" {% if r.short_name == selected_role %}selected="selected"{% endif %}>{{ r|capfirst }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -35,7 +35,7 @@
             <div class="form-group">
               <div class="checkbox">
                 <label title="Geef dit teamlid de rechten om dit team te kunnen beheren en wijzigen.">
-                  <input type="checkbox" name="admin" {% if member.admin %}checked{% endif %}/>
+                  <input type="checkbox" name="is_admin" {% if member.is_admin %}checked{% endif %}/>
                   Beheerrechten
                 </label>
               </div>

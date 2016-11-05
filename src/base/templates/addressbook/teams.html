@@ -41,7 +41,7 @@
                     <td><a href="{% url 'profile-detail-page' lid.profile.pk %}">
                       {{ lid.profile.name }}
                     </a></td>
-                    <td>{{ lid.get_role_display|capfirst }}</td>
+                    <td>{{ lid.role|capfirst }}</td>
                   </tr>
                 {% endfor %}
               </table>

@@ -22,13 +22,13 @@
 
         <div class="col-sm-12">
           <h3>Algemeen
-            {% if isadmin %}
+            {% if is_admin %}
               <small>
                 <a href="{% url 'teampage-control-edit' team.pk %}" title="Algemene informatie bewerken">Bewerken</a>
               </small>
             {% endif %}
           </h3>
-          {% if team.email or isadmin %}
+          {% if team.email or is_admin %}
             <p>
               <i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i>
               {% if not team.email %}
@@ -43,7 +43,7 @@
 
         <div class="col-sm-12">
           <h3>Roosters
-            {% if isadmin %}
+            {% if is_admin %}
               <small>
                 <a href="{% url 'teampage-control-timetables' team.pk %}" title="Roosters toevoegen/verwijderen">Beheren</a>
               </small>
@@ -62,7 +62,7 @@
 
         <div class="col-sm-12">
           <h3>Teamleden
-            {% if isadmin %}
+            {% if is_admin %}
               <small>
                 <a href="{% url 'teampage-control-members' team.pk %}" title="Leden toevoegen/verwijderen">Beheren</a>
               </small>
@@ -75,8 +75,8 @@
           <br/>
 
           {% for m in members.all %}
-            <div class="team-usersquare team-role-{{ m.role }}">
-              <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.get_role_display }})" class="team-userlink">
+            <div class="team-usersquare team-role-{{ m.role.short_name }}">
+              <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.role }})" class="team-userlink">
                 <div class="team-userimage-div">
                   {% if m.profile.photo %}
                     <img src="{{ m.profile.photo.url }}" title="Foto van {{ m.profile.name }}" class="team-userimage"/>
@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="team-userrole">
-                  {{ m.get_role_display|capfirst }}
+                  {{ m.role|capfirst }}
                 </div>
               </a>
             </div>
