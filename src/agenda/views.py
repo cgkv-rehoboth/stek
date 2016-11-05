@@ -270,6 +270,11 @@ def timetable_ruilverzoek(request, id):
     b = members.values_list('profile', flat=True)
     all_responsibles = uniqify(unique_responsibles + uniqify(b))
 
+    print(all_responsibles)
+    if len(all_responsibles) > 1:
+      all_responsibles.remove(ruil.timetableduty.responsible.pk)
+    print(all_responsibles)
+
     selected_member = all_responsibles[-1]
   else:
     selected_member = 0
