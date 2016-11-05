@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 import unidecode
 from django.utils.crypto import get_random_string
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 class NewAccountPasswordResetForm(PasswordResetForm):
   def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
@@ -61,7 +63,9 @@ class Command(BaseCommand):
         print(".. %s" % p.name())
       print()
     else:
-      profiles = Profile.objects.all()
+      limitdate = date.today() - relativedelta(years=14)
+      print("Selecting profiles with an birthday date older than %s " % (limitdate))
+      profiles = Profile.objects.filter(birthday__lte=limitdate)
 
     for prof in collect_accountless(profiles):
       # ensure an email account is set

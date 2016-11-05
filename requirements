@@ -16,6 +16,7 @@ django-debug-toolbar
 Pillow
 whitenoise==3.0
 unidecode==0.04.19
+python-dateutil
 
 django-machina
 django-haystack
