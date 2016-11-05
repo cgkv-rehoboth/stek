@@ -192,15 +192,57 @@ def timetable_teamleader(request, id):
     return redirect('timetable-detail-page', id=id)
 
   # OK, user is teamleader, let's continue:
-  # First, get all ruilrequests
+
+  #
+  # Ruil requests
+  #
   ruils = RuilRequest.objects.filter(timetableduty__timetable=id)
 
+
+  #
+  # New duty
+  #
+
+  # Get all future events
+  events = Event.objects.filter(startdatetime__gte=datetime.today().date()) \
+    .order_by("startdatetime", "enddatetime", "title")
+
+  # set default selection to event without duty (belonging to this timetable)
+  if events.exclude(duties__timetable=table.pk).exists():
+    selected_event = events.exclude(duties__timetable=table.pk).first().pk
+  else:
+    selected_event = 0
+
+  # Get all teammembers
+  members = table.team.teammembers
+
+  # set default selection to member which is last scheduled
+  duties = table.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime",
+                                                                                         "-event__startdatetime")
+  if duties.exists():
+    # get only users that are still teammembers
+    responsibles = duties.filter(responsible__in=members.values_list('profile', flat=True)).values_list('responsible',
+                                                                                                        flat=True)
+
+    unique_responsibles = uniqify(responsibles)
+
+    # Add also the members who aren't scheduled for any duty yet
+    b = members.values_list('profile', flat=True)
+    all_responsibles = uniqify(unique_responsibles + uniqify(b))
+
+    selected_member = all_responsibles[-1]
+  else:
+    selected_member = 0
 
   # Render that stuff!
   return render(request, 'teamleader/teamleader.html', {
     'table': table,
     'ruils': ruils,
     'team': table.team,
+    'events': events,
+    'members': members,
+    'selected_event': selected_event,
+    'selected_member': selected_member,
   })
 
 @login_required
@@ -300,6 +342,8 @@ def timetable_teamleader_duty_add(request):
     comments=request.POST.get("comments", "").strip()
   )
 
+  messages.success(request, "%s is ingepland voor '%s'." % (responsible.name(), event))
+
   return redirect('timetable-teamleader-page', id=table.id)
 
 @login_required
@@ -375,52 +419,6 @@ def timetable_teamleader_duty_delete(request, id):
   duty.delete()
 
   return redirect('timetable-detail-page', id=table.pk)
-
-@login_required
-def timetable_teamleader_duty_new(request, id):
-  table = Timetable.objects.get(pk=id)
-
-  # Check if user is teamleader of the new/old timetable's team
-  if not request.profile.teamleader_of(table.team):
-    # Redirect to first public page
-    return redirect('timetable-detail-page', id=table.team.pk)
-
-  # Get all future events
-  events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
-      .order_by("startdatetime", "enddatetime", "title")
-
-  # set default selection to event without duty (belonging to this timetable)
-  if events.exclude(duties__timetable=table.pk).exists():
-    selected_event = events.exclude(duties__timetable=table.pk).first().pk
-  else:
-    selected_event = 0
-
-  # Get all teammembers
-  members = table.team.teammembers
-
-  # set default selection to member which is last scheduled
-  duties = table.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime", "-event__startdatetime")
-  if duties.exists():
-    # get only users that are still teammembers
-    responsibles = duties.filter(responsible__in=members.values_list('profile', flat=True)).values_list('responsible', flat=True)
-
-    unique_responsibles = uniqify(responsibles)
-
-    # Add also the members who aren't scheduled for any duty yet
-    b = members.values_list('profile', flat=True)
-    all_responsibles = uniqify(unique_responsibles + uniqify(b))
-
-    selected_member = all_responsibles[-1]
-  else:
-    selected_member = 0
-
-  return render(request, 'teamleader/teamleader_duty.html', {
-    'table': table,
-    'events': events,
-    'members': members,
-    'selected_event': selected_event,
-    'selected_member': selected_member,
-  })
 
 
 # Calendar
@@ -832,7 +830,6 @@ urls = [
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/save/$', timetable_teamleader_duty_edit_save, name='timetable-teamleader-duty-edit-save'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/$', timetable_teamleader_duty_edit, name='timetable-teamleader-duty-edit'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/delete/$', timetable_teamleader_duty_delete, name='timetable-teamleader-duty-delete'),
-  url(r'^roosters/(?P<id>\d+)/teamleider/duty/new/$', timetable_teamleader_duty_new, name='timetable-teamleader-duty-new'),
 
   url(r'^roosters/(?P<id>\d+)/teamleider/$', timetable_teamleader, name='timetable-teamleader-page'),
 

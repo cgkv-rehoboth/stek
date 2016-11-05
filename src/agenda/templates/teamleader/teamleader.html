@@ -17,6 +17,12 @@
         <div class="col-sm-12">
           <a href="{% url 'timetable-detail-page' table.pk %}">< Terug naar het rooster</a>
         </div>
+
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+
         <!-- Ruilrequests -->
         <div class="col-sm-12">
           <h3>Ruilverzoeken</h3>
@@ -53,10 +59,63 @@
 
         <div class="col-sm-12">
           <h3>Inplannen</h3>
-          <a href="{% url 'timetable-teamleader-duty-new' table.id %}" class="btn btn-default cyan modal-submit-button">Inplannen</a>
+
+          <div id="dutyForm">
+            <form method="post" action="{% url 'timetable-teamleader-duty-add' %}">
+              {% csrf_token %}
+
+              {% if tables %}
+                <div>
+                  <label>Rooster</label><br/>
+                  <select name="timetable" required>
+                    {% for tab in tables %}
+                      <option value="{{ tab.pk }}" {% if tab.pk == table.pk %}selected="selected"{% endif %}>{{ tab.title }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <br/>
+              {% else %}
+                <input type="hidden" name="timetable" value="{{ table.id }}"/>
+              {% endif %}
+
+              <div>
+                <label>Event</label><br/>
+                <select name="event" required>
+                  {% for event in events %}
+                    <option value="{{ event.pk }}" {% if event.pk == selected_event %}selected="selected"{% endif %}>{{ event }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <br/>
+
+              <div>
+                <label>Verantwoordelijke</label><br/>
+                <select name="responsible" required>
+                  {% for member in members.all %}
+                    <option value="{{ member.profile.pk }}" {% if member.profile.pk == selected_member %}selected="selected"{% endif %}>{{ member.profile.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <br/>
+
+              <div>
+                <label>Commentaar</label>
+                <textarea name="comments">{% if duty %}{{ duty.comments }}{% endif %}</textarea>
+              </div>
+
+              <div>
+                <a href="{% url 'timetable-teamleader-page' table.id %}" class="btn btn-default black">Annuleren</a>
+                <button type="submit" class="btn btn-default cyan modal-submit-button">
+                  Inplannen
+                </button>
+              </div>
+            </form>
+          </div>
+
         </div>
       </div>
     </div>
+    <br/>
   </section>
 {% endblock %}
 
