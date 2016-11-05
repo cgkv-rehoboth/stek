@@ -25,6 +25,7 @@ require('jquery-ui/jquery-ui.min.js');
 require('bootstrap/dist/js/bootstrap.min');
 require('bootstrap/js/tooltip');
 require('lib/grayscale');
+require('lib/jscolor');
 
 function initListGroupDetail() {
   $('.list-group-item', '.list-group-hide-detail')
