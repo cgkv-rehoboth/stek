@@ -311,6 +311,7 @@ export default class AddressForm extends React.Component {
           <select
             name="verhuizing-options"
             className="form-control" >
+            <option value="0">-- Kies een optie --</option>
             <option value="1">Alleen ik</option>
             <option value="2">Ook familieleden</option>
           </select>

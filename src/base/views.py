@@ -134,8 +134,13 @@ def profile_detail_edit_save(request, pk):
 
 
     # Check for 'verhuizing'
-    if request.POST.get("verhuizing", False):  # check with current address (profile OR family)
-      if request.POST.get("verhuizing-options", "") is "1":
+    if request.POST.get("verhuizing", False) == "true":  # check with current address (profile OR family)
+      if request.POST.get("verhuizing-options", "") is "0":
+        # Wrong option choosen
+        messages.error(request, "Adreswijziging mislukt. Kies een geldige verhuisoptie.")
+
+      elif request.POST.get("verhuizing-options", "") is "1":
+        print('personal')
         # Check if this is the family address
         if profile.family.address is adr:
           profile.address = None
@@ -143,6 +148,7 @@ def profile_detail_edit_save(request, pk):
           profile.address = adr
 
       elif request.POST.get("verhuizing-options", "") is "2":
+        print('family')
         if not hasattr(adr, "family"):
           profile.address = None
           profile.family.address = adr
@@ -155,7 +161,6 @@ def profile_detail_edit_save(request, pk):
 
   # parse gebdatum
   try:
-    print(request.POST.get("birthday", ""))
     bday = datetime.strptime(request.POST.get("birthday", "").strip(), "%d-%m-%Y")
   except ValueError as e:
     # Wrong validation
