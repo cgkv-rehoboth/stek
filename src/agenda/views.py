@@ -123,7 +123,7 @@ def timetable_undo_ruilen_teamleader(request, id):
     'status': 'afgewezen',
     'timetable': req.timetableduty.timetable.title,
     'duty': req.timetableduty,
-    'sendtime': datetime.now(),
+    'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
   message = template.render(data)
@@ -131,7 +131,7 @@ def timetable_undo_ruilen_teamleader(request, id):
   from_email = settings.DEFAULT_FROM_EMAIL
 
   to_emails = [ req.profile.email ]
-  send_mail("Ruilverzoek user", message, from_email, to_emails)
+  send_mail("Ruilverzoek afgewezen", message, from_email, to_emails)
 
   # delete the request
   req.delete()
@@ -153,7 +153,7 @@ def timetable_ruilen(request, id):
   # inform team leader
   template = get_template('email/ruilverzoek.txt')
 
-  if request.POST.get("comments"):
+  if request.POST.get("comments", ""):
     comments = "Met de volgende redenen: \n %s" % request.POST.get("comments", "").strip()
   else:
     comments = "Er is geen reden gegeven."
@@ -163,7 +163,7 @@ def timetable_ruilen(request, id):
     'timetable': duty.timetable.title,
     'duty': duty,
     'comments': comments,
-    'sendtime': datetime.now(),
+    'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
   message = template.render(data)
@@ -305,6 +305,7 @@ def timetable_ruilverzoek_accept(request, id):
     'status': 'geaccepteerd',
     'timetable': ruil.timetableduty.timetable.title,
     'duty': ruil.timetableduty,
+    'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
   message = template.render(data)

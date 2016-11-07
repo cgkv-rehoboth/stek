@@ -36,7 +36,7 @@ def send_reminder_mail(duty):
 
 
 class Command(BaseCommand):
-  help = 'Generate initials for profiles without.'
+  help = 'Sending email reminders for all upcoming duties in the next week.'
 
   def add_arguments(self, parser):
     parser.add_argument('--dryrun', action='store_true')

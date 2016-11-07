@@ -68,7 +68,7 @@ class TimetableDuty(models.Model):
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
-    return "%s op %s door %s" % (self.event.title, self.event.startdatetime, self.responsible.name())
+    return "%s op %s door %s" % (self.event.title, self.event.startdatetime.strftime("%d-%m-%Y, %H:%M"), self.responsible.name())
 
   def delete(self, *args, **kwargs):
     # Delete ruilrequest belonging to this duty
