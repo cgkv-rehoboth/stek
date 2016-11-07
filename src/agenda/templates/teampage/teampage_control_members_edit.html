@@ -25,9 +25,9 @@
             <input type="text" class="form-control" value="{{ member.profile.name }}" readonly />
 
             <div class="form-group">
-              <select name="role" class="form-control">
+              <select name="role" class="form-control" title="Aan de functie zijn geen rechten verbonden.">
                 {% for r in roles %}
-                  <option value="{{ r.pk }}" {% if r.short_name == selected_role %}selected="selected"{% endif %}>{{ r|capfirst }}</option>
+                  <option value="{{ r.pk }}" {% if r.short_name == member.role.short_name %}selected="selected"{% endif %}>{{ r|capfirst }}</option>
                 {% endfor %}
               </select>
             </div>

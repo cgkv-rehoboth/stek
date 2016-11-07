@@ -49,7 +49,7 @@
             </div>
 
             <div class="form-group">
-              <select name="role" class="form-control">
+              <select name="role" class="form-control" title="Aan de functie zijn geen rechten verbonden.">
                 {% for r in roles %}
                   <option value="{{ r.pk }}" {% if r.short_name  == selected_role %}selected="selected"{% endif %}>{{ r|capfirst }}</option>
                 {% endfor %}
@@ -80,7 +80,7 @@
           <table id="usertable" class="table table-hover">
             <thead>
               <th>Naam</th>
-              <th>Rol</th>
+              <th>Functie</th>
               <th style="text-align:center;">Beheerrechten</th>
               <th></th>
             </thead>

@@ -571,7 +571,7 @@ def teampage_control_members(request, id):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
-  members = team.teammembers.order_by('role__name')
+  members = team.teammembers.order_by('profile__first_name')
 
   # Get all profiles but exclude profiles that are already member
   memberspk = members.values_list('pk', flat=True)
@@ -608,12 +608,22 @@ def teampage_control_members_add(request):
     messages.error(request, "Het gekozen lid bestaat niet of maakt al deel uit van dit team")
     return redirect('teampage-control-members', id=team)
 
-  TeamMember.objects.create(
+  t = TeamMember.objects.create(
     team=Team.objects.get(pk=team),
     profile=Profile.objects.get(pk=profile),
     role=TeamMemberRole.objects.get(pk=request.POST.get("role", "")),
     is_admin=True if request.POST.get("is_admin", False) else False
   )
+
+  print(t)
+
+  print(t.role)
+
+  t.role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
+
+  print(t.role)
+
+  t.save()
 
   messages.success(request, "Het nieuwe teamlid is toegevoegd")
 
@@ -629,7 +639,7 @@ def teampage_control_members_edit_save(request, id):
     # Redirect to first public page
     return redirect('teampage', id=member.team.pk)
 
-  member.role = TeamMemberRole.objects.get(pk=request.POST.get("role", "")),
+  member.role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
   member.is_admin=True if request.POST.get("is_admin", False) else False
   member.save()
 
@@ -810,7 +820,7 @@ def teampage_control_edit(request, id):
 def teampage(request, id):
   team = Team.objects.get(pk=id)
 
-  members = team.teammembers.order_by('role__name')
+  members = team.teammembers.order_by('role__name', 'profile__first_name')
 
   tables = team.timetables.order_by('title')
 
