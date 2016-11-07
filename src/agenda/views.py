@@ -119,7 +119,7 @@ def timetable_undo_ruilen_teamleader(request, id):
   template = get_template('email/ruilverzoek_status.txt')
 
   data = Context({
-    'name': req.profile.name,
+    'name': req.profile.name(),
     'status': 'afgewezen',
     'timetable': req.timetableduty.timetable.title,
     'duty': req.timetableduty,
@@ -159,7 +159,7 @@ def timetable_ruilen(request, id):
     comments = "Er is geen reden gegeven."
 
   data = Context({
-    'name': request.profile.name,
+    'name': request.profile.name(),
     'timetable': duty.timetable.title,
     'duty': duty,
     'comments': comments,
@@ -301,7 +301,7 @@ def timetable_ruilverzoek_accept(request, id):
   template = get_template('email/ruilverzoek_status.txt')
 
   data = Context({
-    'name': ruil.profile.name,
+    'name': ruil.profile.name(),
     'status': 'geaccepteerd',
     'timetable': ruil.timetableduty.timetable.title,
     'duty': ruil.timetableduty,

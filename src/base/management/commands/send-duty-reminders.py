@@ -50,7 +50,7 @@ class Command(BaseCommand):
       dryrun = True
 
     maxweeks = datetime.today().date() + timedelta(weeks=1)
-    duties = TimetableDuty.objects.filter(event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)\
+    duties = TimetableDuty.objects.filter(event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)
 
     for d in duties:
       # ensure email is present
