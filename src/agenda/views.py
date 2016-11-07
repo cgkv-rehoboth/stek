@@ -875,12 +875,8 @@ def teampage(request, id):
 @login_required
 @permission_required('agenda.add_team', raise_exception=True)
 def globalteampage(request):
-  roles = sorted(TeamMember.ROLE_CHOICES, key=lambda x: x[0])
 
-  return render(request, 'globalteamadmin.html', {
-    'roles': roles,
-    'selected_role': 'LID',
-  })
+  return render(request, 'globalteamadmin.html')
 
 @login_required
 @permission_required('agenda.add_team', raise_exception=True)
