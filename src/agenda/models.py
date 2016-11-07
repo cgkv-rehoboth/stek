@@ -32,6 +32,12 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
 
   def __str__(self): return self.title
 
+  def delete(self, *args, **kwargs):
+    # Delete ruilrequest belonging to this table
+    self.duties.all().delete()
+
+    super().delete(*args, **kwargs)
+
 class Event(TimestampedModel, LiveModel, models.Model):
 
   incalendar      = models.BooleanField(default=True)
@@ -61,6 +67,12 @@ class TimetableDuty(models.Model):
 
   def __str__(self):
     return "%s op %s door %s" % (self.event.title, self.event.startdatetime, self.responsible.name())
+
+  def delete(self, *args, **kwargs):
+    # Delete ruilrequest belonging to this duty
+    self.ruilen.all().delete()
+
+    super().delete(*args, **kwargs)
 
 class Service(Event):
 
@@ -99,6 +111,12 @@ class TeamMemberRole(models.Model):
 
   def __str__(self):
     return self.name
+
+  def delete(self, *args, **kwargs):
+    # Delete teammembers
+    self.teammembers.all().delete()
+
+    super().delete(*args, **kwargs)
 
 class TeamMember(models.Model):
 

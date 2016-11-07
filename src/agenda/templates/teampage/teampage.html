@@ -22,7 +22,7 @@
 
         <div class="col-sm-12">
           <h3>Algemeen
-            {% if is_admin %}
+            {% if isadmin or perms.agenda.change_team %}
               <small>
                 <a href="{% url 'teampage-control-edit' team.pk %}" title="Algemene informatie bewerken">Bewerken</a>
               </small>
@@ -43,7 +43,7 @@
 
         <div class="col-sm-12">
           <h3>Roosters
-            {% if is_admin %}
+            {% if isadmin or perms.agenda.change_team %}
               <small>
                 <a href="{% url 'teampage-control-timetables' team.pk %}" title="Roosters toevoegen/verwijderen">Beheren</a>
               </small>
@@ -62,7 +62,7 @@
 
         <div class="col-sm-12">
           <h3>Teamleden
-            {% if is_admin %}
+            {% if isadmin or perms.agenda.change_team %}
               <small>
                 <a href="{% url 'teampage-control-members' team.pk %}" title="Leden toevoegen/verwijderen">Beheren</a>
               </small>

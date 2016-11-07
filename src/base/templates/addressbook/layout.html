@@ -13,6 +13,7 @@
           {% endblock %}
         </h3>
 
+      {% comment %}
         {% if messages %}
           <!-- Status messages -->
           <ul class="messages">
@@ -21,6 +22,7 @@
             {% endfor %}
           </ul>
         {% endif %}
+      {% endcomment %}
       </div>
     </div>
     {% block innerContent %}

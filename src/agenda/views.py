@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
 from django.views.decorators.http import *
 from django.core.mail import send_mail
 from django.shortcuts import render
@@ -270,10 +271,8 @@ def timetable_ruilverzoek(request, id):
     b = members.values_list('profile', flat=True)
     all_responsibles = uniqify(unique_responsibles + uniqify(b))
 
-    print(all_responsibles)
     if len(all_responsibles) > 1:
       all_responsibles.remove(ruil.timetableduty.responsible.pk)
-    print(all_responsibles)
 
     selected_member = all_responsibles[-1]
   else:
@@ -425,6 +424,52 @@ def timetable_teamleader_duty_delete(request, id):
 
   return redirect('timetable-detail-page', id=table.pk)
 
+@login_required
+def timetable_teamleader_duty_new(request, id):
+  table = Timetable.objects.get(pk=id)
+
+  # Check if user is teamleader of the new/old timetable's team
+  if not request.profile.teamleader_of(table.team):
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=table.team.pk)
+
+  # Get all future events
+  events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
+      .order_by("startdatetime", "enddatetime", "title")
+
+  # set default selection to event without duty (belonging to this timetable)
+  if events.exclude(duties__timetable=table.pk).exists():
+    selected_event = events.exclude(duties__timetable=table.pk).first().pk
+  else:
+    selected_event = 0
+
+  # Get all teammembers
+  members = table.team.teammembers
+
+  # set default selection to member which is last scheduled
+  duties = table.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime", "-event__startdatetime")
+  if duties.exists():
+    # get only users that are still teammembers
+    responsibles = duties.filter(responsible__in=members.values_list('profile', flat=True)).values_list('responsible', flat=True)
+
+    unique_responsibles = uniqify(responsibles)
+
+    # Add also the members who aren't scheduled for any duty yet
+    b = members.values_list('profile', flat=True)
+    all_responsibles = uniqify(unique_responsibles + uniqify(b))
+
+    selected_member = all_responsibles[-1]
+  else:
+    selected_member = 0
+
+  return render(request, 'teamleader/teamleader_duty.html', {
+    'table': table,
+    'events': events,
+    'members': members,
+    'selected_event': selected_event,
+    'selected_member': selected_member,
+  })
+
 
 # Calendar
 
@@ -435,6 +480,7 @@ def calendar(request):
 # When editting URLs, pay attention for the Ajax call in app.jsx -> window.timetableMain()
 
 @login_required
+@permission_required('agenda.add_service', raise_exception=True)
 def services(request):
   # set default date to next sunday without a service
   # Get last sunday service
@@ -455,6 +501,7 @@ def services(request):
 
 @login_required
 @require_POST
+@permission_required('agenda.add_service', raise_exception=True)
 def services_add(request):
   date = str(request.POST.get("date", ""))
 
@@ -505,14 +552,15 @@ def services_add(request):
       description=request.POST.get("description2", "").strip(),
     )
 
-    messages.success(request, "Diensten zijn toegevoegd")
+    messages.success(request, "Diensten zijn toegevoegd.")
   else:
-    messages.success(request, "Dienst is toegevoegd")
+    messages.success(request, "Dienst is toegevoegd.")
 
   return redirect('services-page')
 
 @login_required
 @require_POST
+@permission_required('agenda.change_service', raise_exception=True)
 def services_edit_save(request, id):
   service = Service.objects.get(pk=id)
 
@@ -539,11 +587,12 @@ def services_edit_save(request, id):
 
   service.save()
 
-  messages.success(request, "Dienst is opgeslagen")
+  messages.success(request, "Dienst is opgeslagen.")
 
   return redirect('services-page')
 
 @login_required
+@permission_required('agenda.change_service', raise_exception=True)
 def services_edit(request, id):
 
   return render(request, 'services/edit.html', {
@@ -551,13 +600,14 @@ def services_edit(request, id):
   })
 
 @login_required
+@permission_required('agenda.delete_service', raise_exception=True)
 def services_delete(request, id):
   Service.objects.get(pk=id).delete()
 
   # Delete all duties of this service
   TimetableDuty.objects.filter(event=id).delete()
 
-  messages.success(request, "Dienst is verwijderd")
+  messages.success(request, "Dienst is verwijderd.")
 
   return redirect('services-page')
 
@@ -570,7 +620,7 @@ def teampage_control_members(request, id):
   team = Team.objects.get(pk=id)
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(team):
+  if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
@@ -587,7 +637,6 @@ def teampage_control_members(request, id):
   return render(request, 'teampage/teampage_control_members.html', {
     'team': team,
     'members': members,
-    'profiles': profiles,
     'roles': roles,
     'selected_role': 'LID',
   })
@@ -599,36 +648,27 @@ def teampage_control_members_add(request):
   profile = request.POST.get("profile", "0")
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(team):
+  if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=team.pk)
-  elif profile is "0":
-    messages.error(request, "Er is geen (geldig) lid gekozen om toe te voegen")
+
+  if profile is "0":
+    messages.error(request, "Er is geen (geldig) lid gekozen om toe te voegen.")
     return redirect('teampage-control-members', id=team)
 
   # Check if profile is valid
   if TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
-    messages.error(request, "Het gekozen lid bestaat niet of maakt al deel uit van dit team")
+    messages.error(request, "Het gekozen lid bestaat niet of maakt al deel uit van dit team.")
     return redirect('teampage-control-members', id=team)
 
-  t = TeamMember.objects.create(
+  TeamMember.objects.create(
     team=Team.objects.get(pk=team),
     profile=Profile.objects.get(pk=profile),
     role=TeamMemberRole.objects.get(pk=request.POST.get("role", "")),
     is_admin=True if request.POST.get("is_admin", False) else False
   )
 
-  print(t)
-
-  print(t.role)
-
-  t.role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
-
-  print(t.role)
-
-  t.save()
-
-  messages.success(request, "Het nieuwe teamlid is toegevoegd")
+  messages.success(request, "Het nieuwe teamlid is toegevoegd.")
 
   return redirect('teampage-control-members', id=team)
 
@@ -638,7 +678,7 @@ def teampage_control_members_edit_save(request, id):
   member = TeamMember.objects.get(pk=id)
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(member.team):
+  if not request.profile.teamleader_of(member.team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=member.team.pk)
 
@@ -646,7 +686,7 @@ def teampage_control_members_edit_save(request, id):
   member.is_admin=True if request.POST.get("is_admin", False) else False
   member.save()
 
-  messages.success(request, "De wijzigingen zijn opgeslagen")
+  messages.success(request, "De wijzigingen zijn opgeslagen.")
 
   return redirect('teampage-control-members', id=member.team.pk)
 
@@ -668,14 +708,14 @@ def teampage_control_members_delete(request, id):
   member = TeamMember.objects.get(pk=id)
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(member.team):
+  if not request.profile.teamleader_of(member.team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
   team = member.team.pk
   member.delete()
 
-  messages.success(request, "Het teamlid is verwijderd")
+  messages.success(request, "Het teamlid is verwijderd.")
 
   return redirect('teampage-control-members', id=team)
 
@@ -685,7 +725,7 @@ def teampage_control_timetables(request, id):
   team = Team.objects.get(pk=id)
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(team):
+  if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
@@ -703,7 +743,7 @@ def teampage_control_timetables_add(request):
   team = Team.objects.get(pk=request.POST.get("team", ""))
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(team):
+  if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=team.pk)
 
@@ -721,7 +761,7 @@ def teampage_control_timetables_add(request):
     color=color,
   )
 
-  messages.success(request, "Het rooster is toegevoegd")
+  messages.success(request, "Het rooster is toegevoegd.")
 
   return redirect('teampage-control-timetables', id=team.pk)
 
@@ -731,16 +771,13 @@ def teampage_control_timetables_delete(request, id):
   team = table.team.pk
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(table.team):
+  if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=team)
 
   table.delete()
 
-  # Delete duties belonging to this table
-  TimetableDuty.objects.filter(timetable=id).delete()
-
-  messages.success(request, "Het rooster is verwijderd")
+  messages.success(request, "Het rooster is verwijderd.")
 
   return redirect('teampage-control-timetables', id=team)
 
@@ -758,7 +795,7 @@ def teampage_control_timetables_edit_save(request, id):
   table = Timetable.objects.get(pk=id)
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(table.team):
+  if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=table.team.pk)
 
@@ -773,7 +810,7 @@ def teampage_control_timetables_edit_save(request, id):
   table.color = color
   table.save()
 
-  messages.success(request, "Het rooster is opgeslagen")
+  messages.success(request, "Het rooster is opgeslagen.")
 
   return redirect('teampage-control-timetables', id=table.team.pk)
 
@@ -784,7 +821,7 @@ def teampage_control_edit_save(request, id):
   team = Team.objects.get(pk=id)
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(team):
+  if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
@@ -794,7 +831,7 @@ def teampage_control_edit_save(request, id):
     try:
       validate_email(email)
     except ValidationError:
-      messages.error(request, "Het opgegeven e-mailadres is niet geldig")
+      messages.error(request, "Het opgegeven e-mailadres is niet geldig.")
       return redirect('teampage-control-edit', id=team.pk)
 
   team.name = request.POST.get("name", "").strip()
@@ -802,7 +839,7 @@ def teampage_control_edit_save(request, id):
   team.email = email
   team.save()
 
-  messages.success(request, "De instellingen zijn opgeslagen")
+  messages.success(request, "De instellingen zijn opgeslagen.")
 
   return redirect('teampage', id=team.pk)
 
@@ -811,7 +848,7 @@ def teampage_control_edit(request, id):
   team = Team.objects.get(pk=id)
 
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(team):
+  if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
@@ -834,6 +871,65 @@ def teampage(request, id):
     'members': members,
     'tables': tables,
   })
+
+@login_required
+@permission_required('agenda.add_team', raise_exception=True)
+def globalteampage(request):
+  roles = sorted(TeamMember.ROLE_CHOICES, key=lambda x: x[0])
+
+  return render(request, 'globalteamadmin.html', {
+    'roles': roles,
+    'selected_role': 'LID',
+  })
+
+@login_required
+@permission_required('agenda.add_team', raise_exception=True)
+@require_POST
+def globalteampage_add(request):
+  email = request.POST.get("email", "").lower()
+
+  if not email is "":
+    try:
+      validate_email(email)
+    except ValidationError:
+      messages.error(request, "Het opgegeven e-mailadres is niet geldig.")
+      return redirect('team-add')
+
+  name = request.POST.get("name", "").strip()
+
+  if name is "":
+    messages.error(request, "Er moet een naam voor het team ingevuld zijn.")
+    return redirect('team-add')
+
+  team = Team.objects.create(
+    name=name,
+    description=request.POST.get("description", "").strip(),
+    email=email,
+  )
+
+  messages.success(request, "Team is toegevoegd.")
+
+  return redirect('team-list-page')
+
+@login_required
+@permission_required('agenda.delete_team', raise_exception=True)
+def globalteampage_delete(request, id):
+  team = Team.objects.get(pk=id)
+
+  # Delete timetable
+  for table in team.timetables.all():
+    name = table.title
+    table.delete()
+
+    messages.success(request, (" - Het rooster '%s' van team '%s' is verwijderd." % (name, team.name)))
+
+  # Delete team
+  name = team.name
+  team.delete()
+
+  messages.success(request, ("Team '%s' is verwijderd." % (name)))
+
+  return redirect('team-list-page')
 
 
 
@@ -868,9 +964,13 @@ urls = [
   url(r'^team/roosters/(?P<id>\d+)/edit/$', teampage_control_timetables_edit, name='teampage-control-timetables-edit'),
   url(r'^team/(?P<id>\d+)/roosters/$', teampage_control_timetables, name='teampage-control-timetables'),
 
-  url(r'^team/(?P<id>\d+)/edit/save$', teampage_control_edit_save, name='teampage-control-edit-save'),
+  url(r'^team/(?P<id>\d+)/edit/save/$', teampage_control_edit_save, name='teampage-control-edit-save'),
   url(r'^team/(?P<id>\d+)/edit/$', teampage_control_edit, name='teampage-control-edit'),
   url(r'^team/(?P<id>\d+)/$', teampage, name='teampage'),
+
+  url(r'^teams/(?P<id>\d+)/delete/$', globalteampage_delete, name='team-delete'),
+  url(r'^teams/add/save/$', globalteampage_add, name='team-add-save'),
+  url(r'^teams/add/$', globalteampage, name='team-add'),
 
   url(r'^roosters/diensten/add/$', services_add, name='services-page-add'),
   url(r'^roosters/diensten/(?P<id>\d+)/edit/save/$', services_edit_save, name='services-page-edit-save'),

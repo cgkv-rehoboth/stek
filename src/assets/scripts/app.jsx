@@ -60,7 +60,7 @@ function initListGroupDetail() {
 $(document).on('click', ".confirm-dialog-button", function(e){
   e.preventDefault();
 
-  $("#confirm-modal .modal-body").text($(this).attr('data-message'));
+  $("#confirm-modal .modal-body").html($(this).attr('data-message'));
   $("#confirm-modal .modal-footer .modal-ok").attr('href', $(this).attr('href'));
 
   $("#confirm-modal").modal('show');
@@ -455,4 +455,7 @@ window.profileEdit = (address) => {
 
 window.dashboard = () => {
   window.timetableRuilrequests();
+};
+
+window.teamAddPage = () => {
 };
