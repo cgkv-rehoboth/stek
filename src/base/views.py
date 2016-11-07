@@ -94,7 +94,7 @@ def profile_detail(request, pk=None):
 def profile_detail_edit(request, pk):
   profile = Profile.objects.prefetch_related("address").get(pk=pk)
 
-  if not request.profile.pk == profile.pk:
+  if not request.profile.pk == profile.pk and not request.profile.family == profile.family:
     return HttpResponse(status=404)
 
 
@@ -108,7 +108,7 @@ def profile_detail_edit(request, pk):
 def profile_detail_edit_save(request, pk):
   profile = Profile.objects.get(pk=pk)
 
-  if not request.profile.pk == profile.pk:
+  if not request.profile.pk == profile.pk and not request.profile.family == profile.family:
     return HttpResponse(status=404)
 
   # Address, only save when react form was loaded
@@ -190,7 +190,7 @@ def profile_detail_edit_save(request, pk):
 def profile_pic_edit_save(request, pk):
   profile = Profile.objects.get(pk=pk)
 
-  if not request.profile.pk == int(pk):
+  if not request.profile.pk == int(pk) and not request.profile.family == profile.family:
     return HttpResponse(status=404)
 
   form = UploadImageForm(request.POST, request.FILES)
@@ -217,7 +217,7 @@ def profile_pic_edit_save(request, pk):
 def profile_pic_delete(request, pk):
   profile = Profile.objects.get(pk=pk)
 
-  if not request.profile.pk == int(pk):
+  if not request.profile.pk == int(pk) and not request.profile.family == profile.family:
     return HttpResponse(status=404)
 
   profile.photo.delete()

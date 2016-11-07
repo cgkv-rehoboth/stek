@@ -10,7 +10,7 @@
       </div>
       <div class="col-md-8 ">
         <h1>
-          {% if p == request.profile %}
+          {% if p == request.profile or p.family == request.profile.family %}
             <a href="{% url 'profile-detail-page-edit' p.pk %}">
               <i class="fa fa-edit fa-preicon"></i>
             </a>
