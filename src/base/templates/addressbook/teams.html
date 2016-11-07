@@ -47,7 +47,7 @@
           {% if perms.agenda.delete_team %}
             <!-- admin tools -->
             <div class="col-md-12">
-              <a href="{% url 'team-delete' team.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit <strong>team</strong> met al de bijhorende <strong>roosters</strong> en <strong>teamleden</strong> wilt verwijderen?" title="Team verwijderen">Team verwijderen</a>
+              <a href="{% url 'team-delete' team.pk %}" class="confirm-dialog-button" style="color: darkred;" data-message="Weet je zeker dat je dit <strong>team</strong> met al de bijhorende <strong>roosters</strong> en <strong>teamleden</strong> wilt verwijderen?" title="Team verwijderen">Team verwijderen</a>
             </div>
           {% endif %}
 
