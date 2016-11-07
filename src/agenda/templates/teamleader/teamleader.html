@@ -30,7 +30,7 @@
           <table id="timetable"  class="table table-hover">
             <thead>
               <tr>
-                <th>Event</th>
+                <th>Datum</th>
                 <th>Persoon</th>
                 <th>Opmerkingen</th>
                 <th></th>
@@ -39,7 +39,7 @@
             <tbody>
               {% for ruil in ruils %}
               <tr>
-                <td class="duty-date">{{ ruil.timetableduty.event }}</td>
+                <td class="duty-date">({{ ruil.timetableduty.event.title }}) {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td class="duty-title">{{ ruil.profile.name }}</td>
                 <td>{{ ruil.comments }}</td>
                 <td>

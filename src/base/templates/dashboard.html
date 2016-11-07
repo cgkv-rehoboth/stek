@@ -33,8 +33,8 @@
           <table id="ruilrequests"  class="table table-hover scroll-table">
             <thead>
               <tr>
-                <th>Team</th>
-                <th>Event</th>
+                <th>Rooster</th>
+                <th>Datum</th>
                 <th>Persoon</th>
                 <th>Opmerkingen</th>
                 <th></th>
@@ -43,8 +43,8 @@
             <tbody>
               {% for ruil in ruilrequests %}
               <tr>
-                <td class="duty-team">{{ ruil.timetableduty.timetable.team }}</td>
-                <td class="duty-date">{{ ruil.timetableduty.event.title }}, {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u</td>
+                <td class="duty-team">{{ ruil.timetableduty.timetable.title }}</td>
+                <td class="duty-date">({{ ruil.timetableduty.event.title }}) {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td class="duty-title">{{ ruil.profile.name }}</td>
                 <td><div class="duty-comments">{{ ruil.comments }}</div></td>
                 <td>
@@ -66,12 +66,12 @@
         <p>Een vooruitzicht voor de komende vier weken.</p>
 
         <div class="scroll-div">
-          <table id="timetable"  class="table table-hover scroll-table">
+          <table id="timetable" class="table table-hover scroll-table">
             <thead>
               <tr>
                 <th>Rooster</th>
-                <th>Datum</th>
                 <th>Naam</th>
+                <th>Datum</th>
                 <th>Opmerkingen</th>
                 <th>Ruilen</th>
               </tr>
@@ -81,8 +81,8 @@
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
               <tr class="table-{{ rowday }}">
                 <td>{{ duty.timetable.title }}</td>
-                <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td class="duty-title">{{ duty.event.title }}</td>
+                <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td><div class="duty-comments">{{ duty.comments }}</div></td>
                 <td class="duty-responsible">
                   {% with duty.ruilrequest as ruilen %}

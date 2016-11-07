@@ -3,6 +3,7 @@
   td
     background-color: #f6f6f6
 
+
 .duty-responsible, .duty-date, .duty-title, .duty-tools
   white-space: nowrap
 
@@ -32,8 +33,12 @@
 
     border: 1px solid #ddd
 
-    td, th
+    th
       background-color: #fff
+
+    tr:hover
+      &, td
+        background-color: #fcfcfc
 
     .ruil_requested
       text-decoration: line-through
