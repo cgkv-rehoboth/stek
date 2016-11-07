@@ -68,14 +68,16 @@
         <h3>Contact</h3>
         <table class="table table-bordered">
           <tbody>
-            <tr>
-              <th>Adres</th>
-              <td>{{ p.best_address }}
-                {% if p.best_address %}
-                  <a href="{{ googlemaps }}" target="_blank" class="make-contact-icon" title="Routebeschrijving"><i class="fa fa-map-marker" aria-hidden="true"></i></a>
-                {% endif %}
-              </td>
-            </tr>
+            {% if p.best_address %}
+              <tr>
+                <th>Adres</th>
+                <td>
+                  {{ p.best_address }}
+                  <a href="{{ googlemaps }}" target="_blank" class="make-contact-icon" title="Routebeschrijving"><i class="fa fa-map-marker" aria-hidden="true"></i></a><br/>
+                  <span class="wijk">Wijk {{ p.best_address.wijk.id }} ({{ p.best_address.wijk.naam }})</span>
+                </td>
+              </tr>
+            {% endif %}
             {% if p.phone %}
               <tr>
                 <th>Telefoon</th>
