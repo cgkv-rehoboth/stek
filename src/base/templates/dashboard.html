@@ -33,6 +33,7 @@
           <table id="ruilrequests"  class="table table-hover scroll-table">
             <thead>
               <tr>
+                <th>Team</th>
                 <th>Event</th>
                 <th>Persoon</th>
                 <th>Opmerkingen</th>
@@ -42,7 +43,8 @@
             <tbody>
               {% for ruil in ruilrequests %}
               <tr>
-                <td class="duty-date">{{ ruil.timetableduty.event }}</td>
+                <td class="duty-team">{{ ruil.timetableduty.timetable.team }}</td>
+                <td class="duty-date">{{ ruil.timetableduty.event.title }}, {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td class="duty-title">{{ ruil.profile.name }}</td>
                 <td><div class="duty-comments">{{ ruil.comments }}</div></td>
                 <td>

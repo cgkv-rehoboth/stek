@@ -56,7 +56,9 @@ class Event(TimestampedModel, LiveModel, models.Model):
     super().save(*args, **kwargs)
 
   def __str__(self):
-    return "%s, op %s" % (self.title, self.startdatetime)
+    #date = self.startdatetime.strftime("%d %B, %H:%M") # Wrong translation
+    date = self.startdatetime.strftime("%d-%m-%Y, %H:%M")
+    return "%s, op %su" % (self.title, date)
 
 class TimetableDuty(models.Model):
 
