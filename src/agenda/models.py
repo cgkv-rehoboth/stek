@@ -8,6 +8,11 @@ from django.db.models import Count
 # Import models of base app
 from base.models import Profile
 
+class ActiveManager(models.Manager):
+  # Get online the active ones when calling objects.active()
+  def active(self):
+    return super(ActiveManager, self).get_queryset().filter(is_active=True)
+
 class TimestampedModel(models.Model):
 
   class Meta:
@@ -82,24 +87,28 @@ class Team(models.Model):
     return self.members.all().count()
 
   def leaders(self):
-    return self.teammembers.filter(role='LEI')
+    return self.teammembers.filter(is_admin=True)
+
+class TeamMemberRole(models.Model):
+
+  name            = models.CharField(max_length=255, unique=True)
+  short_name      = models.CharField(max_length=4)
+  is_active       = models.BooleanField(default=True)
+
+  objects         = ActiveManager()
+
+  def __str__(self):
+    return self.name
 
 class TeamMember(models.Model):
 
-  LEADER = 'LEI'
-  LID = 'LID'
-
-  ROLE_CHOICES = (
-    (LEADER, 'leiding'),
-    (LID, 'lid'),
-  )
-
-  team = models.ForeignKey(Team, related_name="teammembers")
-  profile = models.ForeignKey(Profile, related_name="team_membership")
-  role = models.CharField(max_length=3, choices=ROLE_CHOICES, default=LID)
+  team        = models.ForeignKey(Team, related_name="teammembers")
+  profile     = models.ForeignKey(Profile, related_name="team_membership")
+  role        = models.ForeignKey(TeamMemberRole, related_name="teammembers", default=1)
+  is_admin    = models.BooleanField(default=False)
 
   def __str__(self):
-    return "%s %s" % (self.team.name, self.get_role_display())
+    return "%s %s" % (self.team.name, self.role)
 
 class RuilRequest(models.Model):
 

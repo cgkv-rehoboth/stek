@@ -389,7 +389,7 @@ def timetable_teamleader_duty_edit(request, id):
 
   # Return only tables which the user is admin of
   # Get all teams which the user is leader of
-  leading_teams = TeamMember.objects.filter(profile=request.profile,role='LEI').prefetch_related('team')
+  leading_teams = TeamMember.objects.filter(profile=request.profile, is_admin=True).prefetch_related('team')
 
   # Get all corresponding timetables
   tables = Timetable.objects.filter(team__in=leading_teams.values('team'))
@@ -574,15 +574,14 @@ def teampage_control_members(request, id):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
-  members = team.teammembers.order_by('role')
+  members = team.teammembers.order_by('profile__first_name')
 
   # Get all profiles but exclude profiles that are already member
   memberspk = members.values_list('pk', flat=True)
   profiles = Profile.objects.all().order_by('last_name', 'first_name')\
     .exclude(team_membership__pk__in=memberspk)
 
-
-  roles = TeamMember.ROLE_CHOICES
+  roles = TeamMemberRole.objects.active().order_by('name')
 
   # Render that stuff!
   return render(request, 'teampage/teampage_control_members.html', {
@@ -612,11 +611,22 @@ def teampage_control_members_add(request):
     messages.error(request, "Het gekozen lid bestaat niet of maakt al deel uit van dit team")
     return redirect('teampage-control-members', id=team)
 
-  TeamMember.objects.create(
+  t = TeamMember.objects.create(
     team=Team.objects.get(pk=team),
     profile=Profile.objects.get(pk=profile),
-    role=request.POST.get("role", "")
+    role=TeamMemberRole.objects.get(pk=request.POST.get("role", "")),
+    is_admin=True if request.POST.get("is_admin", False) else False
   )
+
+  print(t)
+
+  print(t.role)
+
+  t.role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
+
+  print(t.role)
+
+  t.save()
 
   messages.success(request, "Het nieuwe teamlid is toegevoegd")
 
@@ -632,7 +642,8 @@ def teampage_control_members_edit_save(request, id):
     # Redirect to first public page
     return redirect('teampage', id=member.team.pk)
 
-  member.role = request.POST.get("role", "")
+  member.role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
+  member.is_admin=True if request.POST.get("is_admin", False) else False
   member.save()
 
   messages.success(request, "De wijzigingen zijn opgeslagen")
@@ -643,11 +654,13 @@ def teampage_control_members_edit_save(request, id):
 def teampage_control_members_edit(request, id):
   member = TeamMember.objects.get(pk=id)
 
+  roles = TeamMemberRole.objects.active().order_by('name')
+
   # Render that stuff!
   return render(request, 'teampage/teampage_control_members_edit.html', {
     'team': member.team,
     'member': member,
-    'roles': TeamMember.ROLE_CHOICES,
+    'roles': roles,
   })
 
 @login_required
@@ -810,14 +823,14 @@ def teampage_control_edit(request, id):
 def teampage(request, id):
   team = Team.objects.get(pk=id)
 
-  members = team.teammembers.order_by('role')
+  members = team.teammembers.order_by('role__name', 'profile__first_name')
 
   tables = team.timetables.order_by('title')
 
   # Render that stuff!
   return render(request, 'teampage/teampage.html', {
     'team': team,
-    'isadmin': request.profile.teamleader_of(team),
+    'is_admin': request.profile.teamleader_of(team),
     'members': members,
     'tables': tables,
   })

@@ -24,15 +24,28 @@
 
             <input type="text" class="form-control" value="{{ member.profile.name }}" readonly />
 
-            <select name="role" class="form-control">
-              {% for r in roles %}
-                <option value="{{ r.0 }}" {% if r.0 == member.role %}selected="selected"{% endif %}>{{ r.1|capfirst }}</option>
-              {% endfor %}
-            </select>
+            <div class="form-group">
+              <select name="role" class="form-control" title="Aan de functie zijn geen rechten verbonden.">
+                {% for r in roles %}
+                  <option value="{{ r.pk }}" {% if r.short_name == member.role.short_name %}selected="selected"{% endif %}>{{ r|capfirst }}</option>
+                {% endfor %}
+              </select>
+            </div>
 
-            <button type="submit" class="btn btn-default cyan">
-              Wijzigen
-            </button>
+            <div class="form-group">
+              <div class="checkbox">
+                <label title="Geef dit teamlid de rechten om dit team te kunnen beheren en wijzigen.">
+                  <input type="checkbox" name="is_admin" {% if member.is_admin %}checked{% endif %}/>
+                  Beheerrechten
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <button type="submit" class="btn btn-default cyan">
+                Opslaan
+              </button>
+            </div>
           </form>
         </div>
       </div>

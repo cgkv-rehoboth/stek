@@ -33,8 +33,10 @@ def favorite_list(request):
 
 @login_required
 def team_list(request, pk=None):
-  teams = Team.objects.all()\
-                      .prefetch_related("teammembers")
+  teams = Team.objects.all().prefetch_related("teammembers")
+
+  for i, u in enumerate(teams):
+    teams[i].teammembersSorted = teams[i].teammembers.all().order_by('role__name', 'profile__first_name')
 
   if pk is not None:
     pk = int(pk)
