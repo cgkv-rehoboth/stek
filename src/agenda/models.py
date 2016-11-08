@@ -4,6 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from livefield.models import LiveModel
 from django.db.models import Count
+import os
 
 # Import models of base app
 from base.models import Profile
@@ -138,3 +139,64 @@ class RuilRequest(models.Model):
 
   class Meta:
     unique_together = (("timetableduty", "profile"),)
+
+def servicefilepath(instance, filename):
+  return 'servicefiles/%s' % (filename)
+
+class ServiceFile(TimestampedModel, models.Model):
+
+  title       = models.CharField(max_length=255)
+  service     = models.ForeignKey(Service, related_name="files")
+  file        = models.FileField(upload_to=servicefilepath)
+  owner       = models.ForeignKey(Profile, related_name="files")
+
+  def filename(self):
+    return "%s" % os.path.basename(self.file.path)
+
+  def filesize(self):
+    size = self.file.size
+
+    if size == 1:
+      return "%3.0f %s" % (size, 'byte')
+
+    for unit in ['bytes','kB','MB','GB','TB','PB','EB','ZB']:
+      if abs(size) < 1024.0:
+        if unit is 'bytes':
+          return "%3.0f %s" % (size, unit)
+        else:
+          return "%3.1f %s" % (size, unit)
+      size /= 1024.0
+
+    return "%.1f %s" % (size, 'YB')
+
+  def icon(self):
+    ext = os.path.splitext(self.file.path)[1].replace('.', '')
+    type = ''
+    icons = [
+      ('powerpoint', ['ppt', 'pptx', 'pps']),
+      ('word', ['doc', 'docx', 'odt']),
+      ('pdf', ['pdf']),
+      ('image', ['jpg', 'jpeg', 'png', 'gif', 'svg']),
+      ('excel', ['xls', 'xlsx', 'xlr']),
+      ('text', ['txt', 'log']),
+      ('audio', ['mp3', 'wav', '3ga', 'm4a', 'mpa', 'wma', 'mid']),
+      ('video', ['mp4', 'wmv', 'avi', 'mov', 'flv', 'm4v', 'mpg', 'mpeg', '3gp']),
+      ('zip', ['tgz', 'gz', 'zip', 'rar']),
+      ('code', ['html', 'js', 'css', 'py', 'php', 'json', 'xml', 'rtf', 'tex', 'csv', 'vcf']),
+    ]
+    for i in icons:
+      if ext in i[1]:
+        type = i[0]
+        continue
+
+    if type:
+      type += '-'
+
+    return '<i class="fa fa-file-%so" aria-hidden="true"></i>' % type
+
+
+  def delete(self, *args, **kwargs):
+    # Delete file
+    self.file.delete()
+
+    super().delete(*args, **kwargs)

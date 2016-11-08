@@ -1,0 +1,157 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section id="servicefiles">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Diensten <small>Bestanden</small></h2>
+        </div>
+        <div class="col-sm-12">
+          <a href="{% url 'services-page' %}" class="backlink">< Terug naar de dienstenpagina</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          {% if sf %}
+            <h3>Bestand bewerken</h3>
+          {% else %}
+            <h3>Bestand uploaden</h3>
+          {% endif %}
+
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+
+          <!-- Form -->
+
+          <form class="form-horizontal"
+                id="service-file-form"
+                method="post"
+                {% if sf %}
+                  action="{% url 'services-files-edit-save' sf.pk %}"
+                {% else %}
+                  action="{% url 'services-files-add' %}"
+                {% endif %}
+                enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Titel</label>
+              <div class="col-sm-10">
+                <input type="text"
+                       name="title"
+                       title="Laat leeg voor het automatisch laten bepalen van de titel."
+                       class="form-control"
+                       placeholder="Bijv. liturgie ochtenddienst 1 januari. Laat leeg voor het automatisch laten bepalen van de titel."
+                       value="{{ sf.title }}" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Dienst</label>
+              <div class="col-sm-10">
+                <select name="service" required>
+                  <optgroup label="Recente diensten">
+                    {% for service in recent_services %}
+                      <option value="{{ service.pk }}" {% if service.pk == selected_service %}selected="selected"{% endif %}>{{ service }}</option>
+                    {% endfor %}
+
+                  <optgroup label="Aankomende diensten">
+                    {% for service in services %}
+                      <option value="{{ service.pk }}" {% if service.pk == selected_service %}selected="selected"{% endif %}>{{ service }}</option>
+                    {% endfor %}
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Bestanden</label>
+              <div class="col-sm-10">
+                <input type="file" name="file" />
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="form-group">
+              <div class="col-sm-10 col-sm-offset-2">
+                <a href="{% url 'services-files' %}" class="btn btn-default black">Annuleren</a>
+                <button type="submit" class="btn btn-default cyan">
+                  Opslaan
+                </button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+
+      </div>
+
+      {% if not sf %}
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>Overzicht bestaande bestanden <small>(vanaf {{ maxweeks|date:"j F Y" }})</small></h3>
+            {% if sfs %}
+              <div class="scroll-div">
+                <table id="servicefiles-table" class="table table-hover scroll-table">
+                  <thead>
+                    <tr>
+                      <th>Dienst</th>
+                      <th>Naam</th>
+                      <th>Bestand</th>
+                      <th>Laatst bewerkt</th>
+                      {% if perms.agenda.change_servicefile %}
+                        <th></th>
+                      {% endif %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% now "c" as nowdatetime %}
+                  {% for s in sfs %}
+                    {% ifchanged s.service %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
+                    <tr class="table-{{ rowday }} {% if s.service.startdatetime|date:"c" < nowdatetime %}service-old{% endif %}">
+                      <td class="sf-date">{{ s.service.title }}, {{ s.service.startdatetime|date:"j F Y, G:i" }}u</td>
+                      <td class="sf-title">{{ s.title }}</td>
+                      <td class="sf-file">
+                        {{ s.icon|safe }}
+                        <a href="{{ s.file.url }}" target="_blank" title="Klik hier om het bestand te openen">
+                          {{ s.filename }}
+                        </a>
+                        <small>({{ s.filesize }})</small>
+                      </td>
+                      <td class="sf-modified_date" title="Toegevoegd door {{ s.owner.name }} op {{ s.created_date }}">{{ s.modified_date }}</td>
+                      {% if perms.agenda.change_servicefile %}
+                        <td class="duty-tools">
+                          <a href="{% url 'services-files-edit' s.pk %}" title="Bewerken"><i class="fa fa-pencil-square-o fa-fw"></i></a>
+                          <a href="{% url 'services-files-delete' s.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit item wilt verwijderen?" title="Verwijderen">
+                            <i class="fa fa-times fa-fw"></i>
+                          </a>
+                        </td>
+                      {% endif %}
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <p>Geen bestanden aanwezig.</p>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% include "confirmationmodal.html" %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.serviceFilesPage();
+  </script>
+{% endblock %}

@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 import random
 from .models import *
 from base.models import Profile
+from .forms import *
 
 def uniqify(seq, idfun=None):
    # order preserving
@@ -928,6 +929,102 @@ def globalteampage_delete(request, id):
 
   return redirect('team-list-page')
 
+@login_required
+@permission_required('agenda.add_servicefile', raise_exception=True)
+def services_files(request, id=None):
+
+  sf = None
+
+  # Get some recent services
+  maxweeks = datetime.today().date() - timedelta(weeks=3)
+  recent_services = Service.objects.filter(startdatetime__gte=maxweeks, startdatetime__lt=datetime.today().date()) \
+    .order_by("startdatetime", "enddatetime", "title")
+
+  # Get all future services
+  services = Service.objects.filter(startdatetime__gte=datetime.today().date()) \
+    .order_by("startdatetime", "enddatetime", "title")
+
+  # set default selection to event without duty (belonging to this timetable)
+  if id:
+    # Load serviceFile
+    sf = ServiceFile.objects.get(pk=int(id))
+
+    selected_service = sf.service.pk
+
+  else:
+    if services.filter(files=None).exists():
+      selected_service = services.filter(files=None).first().pk
+    else:
+      selected_service = services.first().pk
+
+  maxweeks = datetime.today().date() - timedelta(weeks=2)
+  sfs = ServiceFile.objects.filter(service__startdatetime__gte=maxweeks) \
+    .order_by("-service__startdatetime", "-service__enddatetime", "title")
+
+  return render(request, 'services/files_add.html', {
+    'recent_services': recent_services,
+    'services': services,
+    'selected_service': selected_service,
+    'sf': sf,
+    'sfs': sfs,
+    'maxweeks': maxweeks
+  })
+
+@login_required
+@permission_required('agenda.add_servicefile', raise_exception=True)
+@require_POST
+def services_files_add(request):
+
+  # Set default title
+  if not request.POST.get('title', ''):
+    request.POST['title'] = str(request.FILES.get('file'))
+
+  form = UploadServiceFileForm(request.POST, request.FILES)
+
+  if form.is_valid():
+    # Save object
+    fs = form.save(commit=False)
+
+    fs.owner = request.profile
+
+    fs.save()
+
+    messages.success(request, "Bestand is opgeslagen.")
+  else:
+    messages.error(request, "Vul alle velden in.")
+
+  return redirect('services-files')
+
+@login_required
+@permission_required('agenda.change_servicefile', raise_exception=True)
+@require_POST
+def services_files_edit_save(request, id):
+
+  sf = ServiceFile.objects.get(pk=id)
+
+  # Create update form
+  form = UploadServiceFileForm(request.POST, request.FILES, instance=sf)
+
+  if form.is_valid():
+    # Save object
+    form.save()
+
+    messages.success(request, "Bestand is opgeslagen.")
+  else:
+    messages.error(request, "Vul alle velden in.")
+    return redirect('services-files-edit', id=id)
+
+  return redirect('services-files')
+
+@login_required
+@permission_required('agenda.delete_servicefile', raise_exception=True)
+def services_files_delete(request, id):
+
+  sf = ServiceFile.objects.get(pk=id).delete()
+
+  messages.success(request, 'Bestand is verwijderd.')
+
+  return redirect('services-files')
 
 
 urls = [
@@ -974,4 +1071,10 @@ urls = [
   url(r'^roosters/diensten/(?P<id>\d+)/edit/$', services_edit, name='services-page-edit'),
   url(r'^roosters/diensten/(?P<id>\d+)/delete/$', services_delete, name='services-page-delete'),
   url(r'^roosters/diensten/$', services, name='services-page'),
+
+  url(r'^roosters/diensten/bestanden/(?P<id>\d+)/delete/$', services_files_delete, name='services-files-delete'),
+  url(r'^roosters/diensten/bestanden/(?P<id>\d+)/edit/save/$', services_files_edit_save, name='services-files-edit-save'),
+  url(r'^roosters/diensten/bestanden/(?P<id>\d+)/edit/$', services_files, name='services-files-edit'),
+  url(r'^roosters/diensten/bestanden/add/$', services_files_add, name='services-files-add'),
+  url(r'^roosters/diensten/bestanden/$', services_files, name='services-files'),
 ]

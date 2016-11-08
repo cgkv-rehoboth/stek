@@ -14,14 +14,12 @@ from django.contrib import messages
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 
-from .forms import LoginForm
+from .forms import LoginForm, UploadImageForm
 
 from agenda.models import *
 from base.models import *
 
 from machina.apps.forum_member.models import *
-
-from .forms import UploadImageForm
 
 @login_required
 def profile_list(request):

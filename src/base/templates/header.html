@@ -43,6 +43,14 @@
             <a href="{% url 'calendar-page' %}">Kalender</a>
           </li>
           {% endcomment %}
+          {% if perms.agenda.add_service %}
+            <li>
+              <a href="{% url 'services-page' %}" title="Diensten beheren">
+                <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>
+                <span class="only-smallscreen">Diensten</span>
+              </a>
+            </li>
+          {% endif %}
           <li>
             <a href="{% url 'profile-detail-page' request.profile.id %}" title="Mijn profiel">
               <i class="fa fa-user" aria-hidden="true"></i>
