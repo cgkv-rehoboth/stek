@@ -58,6 +58,7 @@
               <label class="col-sm-2 control-label">Dienst</label>
               <div class="col-sm-10">
                 <select name="event" required>
+                  <option value="none">Kies een dienst</option>
                   <optgroup label="Recente diensten">
                     {% for service in recent_services %}
                       <option value="{{ service.pk }}" {% if service.pk == selected_service %}selected="selected"{% endif %}>{{ service }}</option>
@@ -117,7 +118,7 @@
                   {% for s in efs %}
                     {% ifchanged s.event %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
                     <tr class="table-{{ rowday }} {% if s.event.startdatetime|date:"c" < nowdatetime %}service-old{% endif %}">
-                      <td class="ef-date">{{ s.event.title }}, {{ s.event.startdatetime|date:"j F Y, G:i" }}u</td>
+                      <td class="ef-date">{% ifchanged s.event %}{{ s.event.title }}, {{ s.event.startdatetime|date:"j F Y, G:i" }}u{% endifchanged %} {{ s.event.exists }}</td>
                       <td class="ef-title">{{ s.title }}</td>
                       <td class="ef-file">
                         <i class="fa fa-file-{% if s.type %}{{ s.type }}-{% endif %}o fa-fw" aria-hidden="true"></i>

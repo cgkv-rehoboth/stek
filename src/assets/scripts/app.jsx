@@ -463,14 +463,16 @@ window.teamAddPage = () => {
 window.eventFilesPage = () => {
   // Insert default title
   $('input[name="file"]').change(function(){
-    var name = $(this).val();
+    if ($('input[name="title"]').val().length == 0) {
+      var name = $(this).val();
 
-    // Remove extension
-    name = name.substring(0,name.lastIndexOf('.')).replace(/_/g, ' ');
+      // Remove extension
+      name = name.substring(0, name.lastIndexOf('.')).replace(/_/g, ' ');
 
-    // Capitalize
-    name = name[0].toUpperCase() + name.slice(1);
+      // Capitalize
+      name = name[0].toUpperCase() + name.slice(1);
 
-    $('input[name="title"]').val(name);
+      $('input[name="title"]').val(name);
+    }
   });
 };

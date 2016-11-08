@@ -573,11 +573,11 @@ def services_edit_save(request, id):
   enddate = "%s %s:00" % (date, str(request.POST.get("endtime", service.enddatetime.time())))
 
   try:
-    datetime.strptime(startdate, '%Y-%m-%d %H:%M:%S')
-    datetime.strptime(enddate, '%Y-%m-%d %H:%M:%S')
+    startdate = datetime.strptime(startdate, '%d-%m-%Y %H:%M:%S')
+    enddate = datetime.strptime(enddate, '%d-%m-%Y %H:%M:%S')
   except ValueError:
     messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
-    return redirect('services-page-edit', id=id)
+    return redirect('services-page')
 
   service.startdatetime = startdate
   service.enddatetime = enddate
@@ -959,7 +959,7 @@ def services_files(request, id=None):
 
   maxweeks = datetime.today().date() - timedelta(weeks=2)
   efs = EventFile.objects.filter(event__startdatetime__gte=maxweeks) \
-    .order_by("-event__startdatetime", "-event__enddatetime", "title")
+    .order_by("-event__startdatetime", "-event__enddatetime", "event__title", "event__pk", "title")
 
   return render(request, 'services/files_add.html', {
     'recent_services': recent_services,
