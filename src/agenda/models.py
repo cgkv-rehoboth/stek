@@ -140,14 +140,14 @@ class RuilRequest(models.Model):
   class Meta:
     unique_together = (("timetableduty", "profile"),)
 
-def servicefilepath(instance, filename):
-  return 'servicefiles/%s' % (filename)
+def eventfilepath(instance, filename):
+  return 'eventfiles/%s' % (filename)
 
-class ServiceFile(TimestampedModel, models.Model):
+class EventFile(TimestampedModel, models.Model):
 
   title       = models.CharField(max_length=255)
-  service     = models.ForeignKey(Service, related_name="files")
-  file        = models.FileField(upload_to=servicefilepath)
+  event       = models.ForeignKey(Event, related_name="files")
+  file        = models.FileField(upload_to=eventfilepath)
   owner       = models.ForeignKey(Profile, related_name="files")
 
   def filename(self):
@@ -169,7 +169,7 @@ class ServiceFile(TimestampedModel, models.Model):
 
     return "%.1f %s" % (size, 'YB')
 
-  def icon(self):
+  def type(self):
     ext = os.path.splitext(self.file.path)[1].replace('.', '')
     type = ''
     icons = [
@@ -189,6 +189,11 @@ class ServiceFile(TimestampedModel, models.Model):
         type = i[0]
         continue
 
+    return type
+
+
+  def iconHTML(self):
+    type = self.type()
     if type:
       type += '-'
 

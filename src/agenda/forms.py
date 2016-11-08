@@ -1,12 +1,9 @@
 from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm
-from .models import ServiceFile
+from .models import EventFile
 
-class UploadServiceFileForm(ModelForm):
+class UploadEventFileForm(ModelForm):
   class Meta:
-    model = ServiceFile
-    fields = ('title', 'service', 'file')
+    model = EventFile
+    fields = ('title', 'event', 'file')
 
-  # title = forms.CharField(label='Titel', max_length='255')
-  # service = forms.ModelChoiceField(label='Dienst', queryset=ServiceFile.objects.all())
-  # file = forms.FileField(label='Bestand')

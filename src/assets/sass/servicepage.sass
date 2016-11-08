@@ -33,6 +33,19 @@
         &.serviceInfoIcon
           padding-right: 0
 
+        .service-file-download
+          color: #337ab7
+          margin: auto 3px
+
+          i
+            transition: all 0.2s
+            padding: 0 1px
+
+          &:hover
+            color: #23527c
+            i
+              box-shadow: 0 0 7px -3px #23527c
+
       td
         border-top: 1px solid #ddd
 
@@ -46,6 +59,27 @@
         cursor: auto
         display: none
         border: none
+
+        .serviceHiddenFiles
+          padding: 0
+          padding-left: inherit
+          font-size: 89%
+
+          .service-file-download
+            display: block
+            padding-bottom: 5px
+            margin: 0
+
+            i
+              margin-right: 5px
+              padding: 0
+              font-size: 95%
+
+            &:hover i
+              box-shadow: none
+
+          small
+            font-size: 75%
 
         td
           display: none !important
@@ -78,10 +112,24 @@
           border-left: 37px solid #CBD4DA
           background-color: #FAFAFA
 
+          //border: 0 solid #CBD4DA
+          //border-width: 0px 3px 2px 1px
+
           td
             display: table-cell !important
+            position: relative
 
-#servicefiles-table
+            i.fa-level-up
+              position: absolute
+              top: 6px
+              left: 0px
+              color: #A6B9C6
+              text-shadow: -1px 0px 0px #7F96A5
+
+#eventfiles-table
+  .ef-file i
+    font-size: 86%
+
   .service-old
     color: #8b8b8b
 

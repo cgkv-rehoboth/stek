@@ -5,7 +5,7 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
-  <section id="servicefiles">
+  <section id="eventfiles">
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
@@ -18,7 +18,7 @@
 
       <div class="row">
         <div class="col-sm-12">
-          {% if sf %}
+          {% if ef %}
             <h3>Bestand bewerken</h3>
           {% else %}
             <h3>Bestand uploaden</h3>
@@ -32,8 +32,8 @@
           <form class="form-horizontal"
                 id="service-file-form"
                 method="post"
-                {% if sf %}
-                  action="{% url 'services-files-edit-save' sf.pk %}"
+                {% if ef %}
+                  action="{% url 'services-files-edit-save' ef.pk %}"
                 {% else %}
                   action="{% url 'services-files-add' %}"
                 {% endif %}
@@ -48,14 +48,14 @@
                        title="Laat leeg voor het automatisch laten bepalen van de titel."
                        class="form-control"
                        placeholder="Bijv. liturgie ochtenddienst 1 januari. Laat leeg voor het automatisch laten bepalen van de titel."
-                       value="{{ sf.title }}" />
+                       value="{{ ef.title }}" />
               </div>
             </div>
 
             <div class="form-group">
               <label class="col-sm-2 control-label">Dienst</label>
               <div class="col-sm-10">
-                <select name="service" required>
+                <select name="event" required>
                   <optgroup label="Recente diensten">
                     {% for service in recent_services %}
                       <option value="{{ service.pk }}" {% if service.pk == selected_service %}selected="selected"{% endif %}>{{ service }}</option>
@@ -92,40 +92,40 @@
 
       </div>
 
-      {% if not sf %}
+      {% if not ef %}
         <div class="row">
           <div class="col-sm-12">
             <h3>Overzicht bestaande bestanden <small>(vanaf {{ maxweeks|date:"j F Y" }})</small></h3>
-            {% if sfs %}
+            {% if efs %}
               <div class="scroll-div">
-                <table id="servicefiles-table" class="table table-hover scroll-table">
+                <table id="eventfiles-table" class="table table-hover scroll-table">
                   <thead>
                     <tr>
                       <th>Dienst</th>
                       <th>Naam</th>
                       <th>Bestand</th>
                       <th>Laatst bewerkt</th>
-                      {% if perms.agenda.change_servicefile %}
+                      {% if perms.agenda.change_eventfile %}
                         <th></th>
                       {% endif %}
                     </tr>
                   </thead>
                   <tbody>
                   {% now "c" as nowdatetime %}
-                  {% for s in sfs %}
-                    {% ifchanged s.service %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
-                    <tr class="table-{{ rowday }} {% if s.service.startdatetime|date:"c" < nowdatetime %}service-old{% endif %}">
-                      <td class="sf-date">{{ s.service.title }}, {{ s.service.startdatetime|date:"j F Y, G:i" }}u</td>
-                      <td class="sf-title">{{ s.title }}</td>
-                      <td class="sf-file">
-                        {{ s.icon|safe }}
+                  {% for s in efs %}
+                    {% ifchanged s.event %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
+                    <tr class="table-{{ rowday }} {% if s.event.startdatetime|date:"c" < nowdatetime %}service-old{% endif %}">
+                      <td class="ef-date">{{ s.event.title }}, {{ s.event.startdatetime|date:"j F Y, G:i" }}u</td>
+                      <td class="ef-title">{{ s.title }}</td>
+                      <td class="ef-file">
+                        <i class="fa fa-file-{% if s.type %}{{ s.type }}-{% endif %}o fa-fw" aria-hidden="true"></i>
                         <a href="{{ s.file.url }}" target="_blank" title="Klik hier om het bestand te openen">
                           {{ s.filename }}
                         </a>
                         <small>({{ s.filesize }})</small>
                       </td>
-                      <td class="sf-modified_date" title="Toegevoegd door {{ s.owner.name }} op {{ s.created_date }}">{{ s.modified_date }}</td>
-                      {% if perms.agenda.change_servicefile %}
+                      <td class="ef-modified_date" title="Toegevoegd door {{ s.owner.name }} op {{ s.created_date }}">{{ s.modified_date }}</td>
+                      {% if perms.agenda.change_eventfile %}
                         <td class="duty-tools">
                           <a href="{% url 'services-files-edit' s.pk %}" title="Bewerken"><i class="fa fa-pencil-square-o fa-fw"></i></a>
                           <a href="{% url 'services-files-delete' s.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit item wilt verwijderen?" title="Verwijderen">
@@ -152,6 +152,6 @@
 
 {% block scripts %}
   <script>
-    window.serviceFilesPage();
+    window.eventFilesPage();
   </script>
 {% endblock %}

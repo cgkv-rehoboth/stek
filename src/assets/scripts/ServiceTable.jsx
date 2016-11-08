@@ -43,6 +43,39 @@ export default class ServiceTable extends React.Component {
         */
       }
 
+      let renderFiles = (file) => {
+        console.log(file)
+        var typeC = file.type;
+        var typeI = file.type;
+
+        if (typeC) {
+          typeC += '-';
+          typeI += ', ';
+        }
+
+        return (<a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}><i className={"fa fa-file-" + typeC + "o"} aria-hidden="true"></i></a>);
+      }
+
+      let renderFilesHidden = (file) => {
+        console.log(file)
+        var typeC = file.type;
+        var typeI = file.type;
+
+        if (typeC) {
+          typeC += '-';
+          typeI += ', ';
+        }
+
+        return (
+          <a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}>
+            <i className={"fa fa-file-" + typeC + "o fa-fw"} aria-hidden="true"></i>
+            {file.title} <small>({file.filesize})</small>
+          </a>);
+      }
+
+      let files = _.map(serv.files, renderFiles);
+      let filesHidden = _.map(serv.files, renderFilesHidden);
+
       return ([
         <tr key={serv.id} className="serviceRow" onClick={onClick.bind(this)}>
           <td>{serv.title}</td>
@@ -50,9 +83,14 @@ export default class ServiceTable extends React.Component {
           <td className="serviceHideOnSmallScreen">{serv.minister}</td>
           <td className="serviceInfoIcon">{html}</td>
           <td className="serviceHideOnSmallScreen">{serv.comments}</td>
+          <td className="serviceHideOnSmallScreen">{files}</td>
         </tr>,
         <tr className="serviceHiddenItems">
-          <td colSpan="5"><div>{hiddeninfo}</div></td>
+          <td colSpan="6">
+            <i className="fa fa-level-up fa-rotate-90" aria-hidden="true"></i>
+            <div>{hiddeninfo}</div>
+            <div className="serviceHiddenFiles">{filesHidden}</div>
+          </td>
         </tr>
       ]);
     };
@@ -65,48 +103,9 @@ export default class ServiceTable extends React.Component {
           <th className="serviceHideOnSmallScreen">Voorganger</th>
           <th></th>
           <th className="serviceHideOnSmallScreen"></th>
+          <th className="serviceHideOnSmallScreen"></th>
         </tr>
       </SearchTable>
     );
   }
 }
-
-/*
-
-export class ServiceRow extends React.Component {
-
-  static get propTypes() {
-    return {
-      service: React.PropTypes.object.isRequired // (searchText, page) => promise<[item]>,
-    };
-  }
-
-  constructor(props) {
-    super(props);
-    console.log("Constructed 2");
-    this.state = {
-      fold: true,
-    };
-  }
-
-  onClick(e){
-    console.log("Clicked 2");
-    this.setState({
-      fold: !this.state.fold
-    });
-  }
-
-  render() {
-    let starttime = moment(service.startdatetime).format('H:mm');
-    let startdate = moment(service.startdatetime).format('dddd D MMMM');
-    return (
-      <tr key={service.id} onClick={this.onClick.bind(this)}>
-        <td>{service.title}</td>
-        <td><span className="service-starttime">{starttime}</span> - {startdate}</td>
-        <td>{service.minister}</td>
-        <td>{service.comments}</td>
-      </tr>
-    );
-  }
-}
-  */

@@ -460,7 +460,7 @@ window.dashboard = () => {
 window.teamAddPage = () => {
 };
 
-window.serviceFilesPage = () => {
+window.eventFilesPage = () => {
   // Insert default title
   $('input[name="file"]').change(function(){
     var name = $(this).val();

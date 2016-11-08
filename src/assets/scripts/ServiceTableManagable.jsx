@@ -43,6 +43,39 @@ export default class ServiceTableManagable extends React.Component {
         */
       }
 
+      let renderFiles = (file) => {
+        console.log(file)
+        var typeC = file.type;
+        var typeI = file.type;
+
+        if (typeC) {
+          typeC += '-';
+          typeI += ', ';
+        }
+
+        return (<a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}><i className={"fa fa-file-" + typeC + "o"} aria-hidden="true"></i></a>);
+      }
+
+      let renderFilesHidden = (file) => {
+        console.log(file)
+        var typeC = file.type;
+        var typeI = file.type;
+
+        if (typeC) {
+          typeC += '-';
+          typeI += ', ';
+        }
+
+        return (
+          <a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}>
+            <i className={"fa fa-file-" + typeC + "o fa-fw"} aria-hidden="true"></i>
+            {file.title} <small>({file.filesize})</small>
+          </a>);
+      }
+
+      let files = _.map(serv.files, renderFiles);
+      let filesHidden = _.map(serv.files, renderFilesHidden);
+
       return ([
         <tr key={serv.id} className="serviceRow" onClick={onClick.bind(this)}>
           <td>{serv.title}</td>
@@ -51,6 +84,7 @@ export default class ServiceTableManagable extends React.Component {
           <td className="serviceHideOnSmallScreen service-table-theme">{serv.theme}</td>
           <td className="serviceInfoIcon">{html}</td>
           <td className="serviceHideOnSmallScreen">{serv.comments}</td>
+          <td className="serviceHideOnSmallScreen">{files}</td>
           <td>
             <span className="table-tools">
               <a href={"/roosters/diensten/" + serv.id + "/edit/"} title="Bewerken">
@@ -62,7 +96,11 @@ export default class ServiceTableManagable extends React.Component {
           </td>
         </tr>,
         <tr className="serviceHiddenItems">
-          <td colSpan="5"><div>{hiddeninfo}</div></td>
+          <td colSpan="6">
+            <i className="fa fa-level-up fa-rotate-90" aria-hidden="true"></i>
+            <div>{hiddeninfo}</div>
+            <div className="serviceHiddenFiles">{filesHidden}</div>
+          </td>
         </tr>
       ]);
     };
@@ -74,9 +112,10 @@ export default class ServiceTableManagable extends React.Component {
           <th>Datum</th>
           <th className="serviceHideOnSmallScreen">Voorganger</th>
           <th className="serviceHideOnSmallScreen">Thema</th>
-          <th></th>
-          <th></th>
+          <th colSpan="2" className="serviceHideOnSmallScreen">Extra info</th>
           <th className="serviceHideOnSmallScreen"></th>
+          <th className="serviceHideOnSmallScreen"></th>
+          <th></th>
         </tr>
       </SearchTable>
     );

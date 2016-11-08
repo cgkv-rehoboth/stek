@@ -14,15 +14,15 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ServiceFile',
+            name='EventFile',
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('title', models.CharField(max_length=255)),
-                ('file', models.FileField(upload_to=agenda.models.servicefilepath)),
+                ('file', models.FileField(upload_to=agenda.models.eventfilepath)),
+                ('event', models.ForeignKey(to='agenda.Event', related_name='files')),
                 ('owner', models.ForeignKey(to='base.Profile', related_name='files')),
-                ('service', models.ForeignKey(to='agenda.Service', related_name='files')),
             ],
             options={
                 'abstract': False,

@@ -41,12 +41,12 @@ class ServiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Service, ServiceAdmin)
 
-class ServiceFileAdmin(admin.ModelAdmin):
-  list_display = ['title', 'service', 'file', 'filesize', 'modified_date']
+class EventFileAdmin(admin.ModelAdmin):
+  list_display = ['title', 'event', 'file', 'filesize', 'modified_date']
 
-  ordering = ('-modified_date', '-service', 'title')
+  ordering = ('-modified_date', '-event', 'title')
 
-admin.site.register(ServiceFile, ServiceFileAdmin)
+admin.site.register(EventFile, EventFileAdmin)
 
 # Create custom display for TimetableDuty
 class TeamMemberRoleAdmin(admin.ModelAdmin):

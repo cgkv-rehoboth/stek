@@ -17,16 +17,23 @@ class ShortTimetableSerializer(serializers.ModelSerializer):
     model = Timetable
     fields = ["pk", "title", "incalendar", "color"]
 
+class EventFileSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = EventFile
+    fields = ["pk", "title", "file", "type", "filesize"]
+
 class EventSerializer(serializers.ModelSerializer):
   owner = ProfileSerializer(read_only=True)
   timetable_info = ShortTimetableSerializer(source="timetable", read_only=True)
   title = serializers.CharField(min_length=5)
   description = serializers.CharField()
+  files = EventFileSerializer(many=True, read_only=True)
 
   class Meta:
     model = Event
     fields = ["id", "title", "description", "timetable_info", "timetable",
-              "startdatetime", "enddatetime", "owner"]
+              "startdatetime", "enddatetime", "owner", "files"]
 
 class TeamSerializer(serializers.ModelSerializer):
   members = ProfileSerializer(many=True)
@@ -46,6 +53,7 @@ class EventWithDutiesSerializer(EventSerializer):
   duties = CustomDutySerializer(many=True)
 
 class ServiceSerializer(EventSerializer):
+
   class Meta:
     model = Service
 

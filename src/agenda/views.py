@@ -930,10 +930,10 @@ def globalteampage_delete(request, id):
   return redirect('team-list-page')
 
 @login_required
-@permission_required('agenda.add_servicefile', raise_exception=True)
+@permission_required('agenda.add_EventFile', raise_exception=True)
 def services_files(request, id=None):
 
-  sf = None
+  ef = None
 
   # Get some recent services
   maxweeks = datetime.today().date() - timedelta(weeks=3)
@@ -946,10 +946,10 @@ def services_files(request, id=None):
 
   # set default selection to event without duty (belonging to this timetable)
   if id:
-    # Load serviceFile
-    sf = ServiceFile.objects.get(pk=int(id))
+    # Load EventFile
+    ef = EventFile.objects.get(pk=int(id))
 
-    selected_service = sf.service.pk
+    selected_service = ef.event.pk
 
   else:
     if services.filter(files=None).exists():
@@ -958,20 +958,20 @@ def services_files(request, id=None):
       selected_service = services.first().pk
 
   maxweeks = datetime.today().date() - timedelta(weeks=2)
-  sfs = ServiceFile.objects.filter(service__startdatetime__gte=maxweeks) \
-    .order_by("-service__startdatetime", "-service__enddatetime", "title")
+  efs = EventFile.objects.filter(event__startdatetime__gte=maxweeks) \
+    .order_by("-event__startdatetime", "-event__enddatetime", "title")
 
   return render(request, 'services/files_add.html', {
     'recent_services': recent_services,
     'services': services,
     'selected_service': selected_service,
-    'sf': sf,
-    'sfs': sfs,
+    'ef': ef,
+    'efs': efs,
     'maxweeks': maxweeks
   })
 
 @login_required
-@permission_required('agenda.add_servicefile', raise_exception=True)
+@permission_required('agenda.add_EventFile', raise_exception=True)
 @require_POST
 def services_files_add(request):
 
@@ -979,7 +979,7 @@ def services_files_add(request):
   if not request.POST.get('title', ''):
     request.POST['title'] = str(request.FILES.get('file'))
 
-  form = UploadServiceFileForm(request.POST, request.FILES)
+  form = UploadEventFileForm(request.POST, request.FILES)
 
   if form.is_valid():
     # Save object
@@ -996,14 +996,14 @@ def services_files_add(request):
   return redirect('services-files')
 
 @login_required
-@permission_required('agenda.change_servicefile', raise_exception=True)
+@permission_required('agenda.change_EventFile', raise_exception=True)
 @require_POST
 def services_files_edit_save(request, id):
 
-  sf = ServiceFile.objects.get(pk=id)
+  ef = EventFile.objects.get(pk=id)
 
   # Create update form
-  form = UploadServiceFileForm(request.POST, request.FILES, instance=sf)
+  form = UploadEventFileForm(request.POST, request.FILES, instance=ef)
 
   if form.is_valid():
     # Save object
@@ -1017,10 +1017,10 @@ def services_files_edit_save(request, id):
   return redirect('services-files')
 
 @login_required
-@permission_required('agenda.delete_servicefile', raise_exception=True)
+@permission_required('agenda.delete_EventFile', raise_exception=True)
 def services_files_delete(request, id):
 
-  sf = ServiceFile.objects.get(pk=id).delete()
+  ef = EventFile.objects.get(pk=id).delete()
 
   messages.success(request, 'Bestand is verwijderd.')
 
