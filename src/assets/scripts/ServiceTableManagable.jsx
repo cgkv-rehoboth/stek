@@ -53,7 +53,7 @@ export default class ServiceTableManagable extends React.Component {
           typeI += ', ';
         }
 
-        return (<a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}><i className={"fa fa-file-" + typeC + "o"} aria-hidden="true"></i></a>);
+        return (<a className={"service-file-download sf-public-" + file.is_public} href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}><i className={"fa fa-file-" + typeC + "o"} aria-hidden="true"></i></a>);
       }
 
       let renderFilesHidden = (file) => {
@@ -67,7 +67,7 @@ export default class ServiceTableManagable extends React.Component {
         }
 
         return (
-          <a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}>
+          <a className={"service-file-download sf-public-" + file.is_public} href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}>
             <i className={"fa fa-file-" + typeC + "o fa-fw"} aria-hidden="true"></i>
             {file.title} <small>({file.filesize})</small>
           </a>);

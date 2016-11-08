@@ -44,7 +44,9 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFiles = (file) => {
-        console.log(file)
+        if (!file.is_public)
+          return;
+
         var typeC = file.type;
         var typeI = file.type;
 
@@ -57,7 +59,9 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFilesHidden = (file) => {
-        console.log(file)
+        if (!file.is_public)
+          return;
+
         var typeC = file.type;
         var typeI = file.type;
 
@@ -73,6 +77,7 @@ export default class ServiceTable extends React.Component {
           </a>);
       }
 
+      console.log(files);
       let files = _.map(serv.files, renderFiles);
       let filesHidden = _.map(serv.files, renderFilesHidden);
 

@@ -42,7 +42,7 @@ class ServiceAdmin(admin.ModelAdmin):
 admin.site.register(Service, ServiceAdmin)
 
 class EventFileAdmin(admin.ModelAdmin):
-  list_display = ['title', 'event', 'file', 'filesize', 'modified_date']
+  list_display = ['title', 'event', 'file', 'filesize', 'is_public', 'modified_date']
 
   ordering = ('-modified_date', '-event', 'title')
 

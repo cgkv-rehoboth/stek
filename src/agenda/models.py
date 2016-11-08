@@ -149,6 +149,7 @@ class EventFile(TimestampedModel, models.Model):
   event       = models.ForeignKey(Event, related_name="files")
   file        = models.FileField(upload_to=eventfilepath)
   owner       = models.ForeignKey(Profile, related_name="files")
+  is_public   = models.BooleanField(default=True)
 
   def filename(self):
     return "%s" % os.path.basename(self.file.path)

@@ -21,7 +21,7 @@ class EventFileSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = EventFile
-    fields = ["pk", "title", "file", "type", "filesize"]
+    fields = ["pk", "title", "file", "type", "filesize", "is_public"]
 
 class EventSerializer(serializers.ModelSerializer):
   owner = ProfileSerializer(read_only=True)

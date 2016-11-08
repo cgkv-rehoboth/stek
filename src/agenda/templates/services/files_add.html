@@ -42,19 +42,18 @@
                 enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="form-group">
+            <div class="form-group" title="Laat leeg voor het automatisch laten bepalen van de titel">
               <label class="col-sm-2 control-label">Titel</label>
               <div class="col-sm-10">
                 <input type="text"
                        name="title"
-                       title="Laat leeg voor het automatisch laten bepalen van de titel."
                        class="form-control"
                        placeholder="Bijv. liturgie ochtenddienst 1 januari. Laat leeg voor het automatisch laten bepalen van de titel."
                        value="{{ ef.title }}" />
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" title="Kies een dienst waar dit bestand bij geplaatst moet worden">
               <label class="col-sm-2 control-label">Dienst</label>
               <div class="col-sm-10">
                 <select name="event" required>
@@ -63,6 +62,7 @@
                     {% for service in recent_services %}
                       <option value="{{ service.pk }}" {% if service.pk == selected_service %}selected="selected"{% endif %}>{{ service }}</option>
                     {% endfor %}
+                  </optgroup>
 
                   <optgroup label="Aankomende diensten">
                     {% for service in services %}
@@ -77,6 +77,15 @@
               <label class="col-sm-2 control-label">Bestanden</label>
               <div class="col-sm-10">
                 <input type="file" name="file" />
+              </div>
+            </div>
+
+            <div class="form-group" title="Dit bestand mag door iedereen geopend worden">
+              <label class="col-sm-2 control-label">Openbaar</label>
+              <div class="col-sm-10 checkbox">
+                <label>
+                  <input type="checkbox" name="is_public" {% if ef.is_public or not ef %}checked{% endif %}/>
+                </label>
               </div>
             </div>
 
@@ -104,6 +113,7 @@
                 <table id="eventfiles-table" class="table table-hover scroll-table">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>Dienst</th>
                       <th>Naam</th>
                       <th>Bestand</th>
@@ -118,8 +128,18 @@
                   {% for s in efs %}
                     {% ifchanged s.event %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
                     <tr class="table-{{ rowday }} {% if s.event.startdatetime|date:"c" < nowdatetime %}service-old{% endif %}">
+                      <td class="ef-public">
+                        {% if s.is_public %}
+                          <i class="fa fa-check-square-o fa-fw" aria-hidden="true" title="Openbaar"></i>
+                        {% else %}
+                          <i class="fa fa-square-o fa-fw" aria-hidden="true" title="Niet openbaar"></i>
+                        {% endif %}
+                      </td>
+
                       <td class="ef-date">{% ifchanged s.event %}{{ s.event.title }}, {{ s.event.startdatetime|date:"j F Y, G:i" }}u{% endifchanged %} {{ s.event.exists }}</td>
+
                       <td class="ef-title">{{ s.title }}</td>
+
                       <td class="ef-file">
                         <i class="fa fa-file-{% if s.type %}{{ s.type }}-{% endif %}o fa-fw" aria-hidden="true"></i>
                         <a href="{{ s.file.url }}" target="_blank" title="Klik hier om het bestand te openen">
@@ -127,6 +147,7 @@
                         </a>
                         <small>({{ s.filesize }})</small>
                       </td>
+
                       <td class="ef-modified_date" title="Toegevoegd door {{ s.owner.name }} op {{ s.created_date }}">{{ s.modified_date }}</td>
                       {% if perms.agenda.change_eventfile %}
                         <td class="duty-tools">

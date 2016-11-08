@@ -16,13 +16,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EventFile',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, primary_key=True, serialize=False)),
+                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('title', models.CharField(max_length=255)),
                 ('file', models.FileField(upload_to=agenda.models.eventfilepath)),
-                ('event', models.ForeignKey(to='agenda.Event', related_name='files')),
-                ('owner', models.ForeignKey(to='base.Profile', related_name='files')),
+                ('is_public', models.BooleanField(default=True)),
+                ('event', models.ForeignKey(related_name='files', to='agenda.Event')),
+                ('owner', models.ForeignKey(related_name='files', to='base.Profile')),
             ],
             options={
                 'abstract': False,
