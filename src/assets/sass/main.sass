@@ -3,6 +3,7 @@
 @import common
 @import colors
 @import overlay
+@import header
 
 #wrapper
   position: absolute
@@ -12,48 +13,12 @@
   width: 100%
 
 #content
-  position: relative 
+  position: relative
   min-height: 100%
   width: 100%
 
 .overlay
   display: table-cell
-
-.navbar-custom
-  background-color: $dark-bg
-  padding: 0px
-
-  .nav li
-    background-color: $dark-bg
-
-    &:hover
-      background-color: lighten($dark-bg, 5%)
-
-      & > a
-        color: $blue
-
-    a
-      color: $light-fg
-      width: 100%
-
-    ul.dropdown-menu
-      background-color: $dark-bg
-      padding: 0px
-      margin-right: -4px
-      border: 0px
-
-      li
-        text-align: right
-        padding: 0px
-
-        a
-          padding-top: 8px
-          padding-bottom: 8px
-          min-width: 200px
-
-@media (max-width: 767px)
-  .navbar-custom .nav li ul.dropdown-menu li
-    text-align: left
 
 .paginated-table
   .pages
@@ -76,13 +41,6 @@
 
 .messages
   margin-top: 20px
-
-.only-smallscreen
-  display: none
-
-  @media (max-width: 767px)
-    display: inline-block
-    margin-left: 10px
 
 hr
   border-bottom: 1px solid #bbb

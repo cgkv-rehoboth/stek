@@ -1,80 +1,28 @@
 @import ../fonts
 @import ../reset
 @import ../common
+@import ../overlay
+@import ../header
 
 body
-  background-color: #fff
 
   div, p
     font-size: 12pt
 
-  .navbar-fixed-top-spacing
-    height: 73px
-
-  .navbar
-    border: none
-    height: 52px
-    background-color: #1A3242
-    color: #eee
-
-    .navbar-header
-
-      .navbar-toggle
-        background-color: transparent
-
-        &, &:hover, &:active, &:visited
-          background-color: transparent
-
-      .navbar-brand
-        height: 50px
-        white-space: nowrap
-        font-size: 18px
-        text-transform: uppercase
-        letter-spacing: 1px
-        font-family: Montserrat,Helvetica,Arial,sans-serif
-
-        &:hover
-          color: #eee
-
-        img
-          display: inline-block
-          margin-right: 20px
-          vertical-align: middle
-          height: 100%
-
-    .navbar-brand, .btn, .btn-link
-      color: #eee
-
-      &:hover
-        color: #298cae
-
-    .navbar-collapse
-      border: none
-
-      .navbar-form
-        margin: 0px
-        text-align: right
-
-        @media (max-width: 767px)
-          text-align: left
-
-        .header-search-input
-          max-width: 280px
-
-          @media (max-width: 991px)
-            max-width: 225px
-
-          @media (max-width: 767px)
-            max-width: 100%
-
-        .header-search-advanced .btn
-          text-transform: none
-          padding-right: 0
-
-          @media (max-width: 767px)
-            padding-left: 0
-
   #main_container
+    position: relative
+    top: 70px
+    bottom: 0px
+
+    .breadcrumb
+      border: 1px solid #ddd
+      background-color: #fbfbfb
+
+    .panel-heading
+      background-color: #f9f9f9
+
+    .panel-body
+      background-color: #fff
 
     .username b
       text-transform: capitalize

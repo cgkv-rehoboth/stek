@@ -1,0 +1,46 @@
+@import fonts
+@import reset
+@import common
+@import colors
+@import overlay
+@import navbar
+
+.navbar-custom
+  background-color: $dark-bg
+  padding: 0px
+
+  .nav
+    margin-top: 1px
+
+    li
+      background-color: $dark-bg
+
+      &:hover
+        background-color: lighten($dark-bg, 5%)
+
+        & > a
+          color: $blue
+
+      a
+        color: $light-fg
+        width: 100%
+        font-size: 11pt
+
+      ul.dropdown-menu
+        background-color: $dark-bg
+        padding: 0px
+        margin-right: -4px
+        border: 0px
+
+        li
+          text-align: right
+          padding: 0px
+
+          a
+            padding-top: 8px
+            padding-bottom: 8px
+            min-width: 200px
+
+@media (max-width: 767px)
+  .navbar-custom .nav li ul.dropdown-menu li
+    text-align: left
