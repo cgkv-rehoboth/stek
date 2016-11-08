@@ -51,6 +51,14 @@
               </a>
             </li>
           {% endif %}
+          {% if perms.agenda.add_eventfile and not perms.agenda.add_service %}
+            <li>
+              <a href="{% url 'services-files' %}" title="Bestanden beheren">
+                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                <span class="only-smallscreen">Bestanden</span>
+              </a>
+            </li>
+          {% endif %}
           <li>
             <a href="{% url 'profile-detail-page' request.profile.id %}" title="Mijn profiel">
               <i class="fa fa-user" aria-hidden="true"></i>

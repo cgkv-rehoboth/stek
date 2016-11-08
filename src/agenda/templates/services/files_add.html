@@ -11,9 +11,11 @@
         <div class="col-sm-12">
           <h2>Diensten <small>Bestanden</small></h2>
         </div>
+        {% if perms.agenda.add_service %}
         <div class="col-sm-12">
           <a href="{% url 'services-page' %}" class="backlink">< Terug naar de dienstenpagina</a>
         </div>
+        {% endif %}
       </div>
 
       <div class="row">

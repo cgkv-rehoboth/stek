@@ -930,7 +930,7 @@ def globalteampage_delete(request, id):
   return redirect('team-list-page')
 
 @login_required
-@permission_required('agenda.add_EventFile', raise_exception=True)
+@permission_required('agenda.add_eventfile', raise_exception=True)
 def services_files(request, id=None):
 
   ef = None
@@ -971,7 +971,7 @@ def services_files(request, id=None):
   })
 
 @login_required
-@permission_required('agenda.add_EventFile', raise_exception=True)
+@permission_required('agenda.add_eventfile', raise_exception=True)
 @require_POST
 def services_files_add(request):
 
@@ -996,7 +996,7 @@ def services_files_add(request):
   return redirect('services-files')
 
 @login_required
-@permission_required('agenda.change_EventFile', raise_exception=True)
+@permission_required('agenda.change_eventfile', raise_exception=True)
 @require_POST
 def services_files_edit_save(request, id):
 
@@ -1021,7 +1021,7 @@ def services_files_edit_save(request, id):
   return redirect('services-files')
 
 @login_required
-@permission_required('agenda.delete_EventFile', raise_exception=True)
+@permission_required('agenda.delete_eventfile', raise_exception=True)
 def services_files_delete(request, id):
 
   ef = EventFile.objects.get(pk=id).delete()
