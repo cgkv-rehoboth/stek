@@ -89,7 +89,7 @@ export default class ServiceTableManagable extends React.Component {
             <span className="table-tools">
               <a href={"/roosters/diensten/" + serv.id + "/edit/"} title="Bewerken">
                 <i className="fa fa-pencil-square-o fa-fw"></i></a>
-              <a href={"/roosters/diensten/" + serv.id + "/delete/"} className="confirm-dialog-button" data-message="Weet je zeker dat je deze dienst wilt verwijderen?" title="Verwijderen">
+              <a href={"/roosters/diensten/" + serv.id + "/delete/"} className="confirm-dialog-button" data-message="Weet je zeker dat je deze dienst wilt verwijderen?<br/><br/>De bijhorende bestanden worden niet automatisch verwijderd!" title="Verwijderen">
                 <i className="fa fa-times fa-fw"></i>
               </a>
             </span>

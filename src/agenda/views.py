@@ -1002,6 +1002,10 @@ def services_files_edit_save(request, id):
 
   ef = EventFile.objects.get(pk=id)
 
+  if request.FILES.get('file'):
+    # New file, so delete old one
+    ef.file.delete()
+
   # Create update form
   form = UploadEventFileForm(request.POST, request.FILES, instance=ef)
 
