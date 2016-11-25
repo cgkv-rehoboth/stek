@@ -14,7 +14,7 @@ class ContactSerializer(serializers.Serializer):
   recaptcha = RecaptchaField()
 
   def save(self):
-    sender = '%s %s' % (self.validated_data['first_name'], self.validated_data['first_name'])
+    sender = '%s %s' % (self.validated_data['first_name'], self.validated_data['last_name'])
     email = self.validated_data['email']
     to = ['scriba@rehobothkerkwoerden.nl']
     message = self.validated_data['message']
