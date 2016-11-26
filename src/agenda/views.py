@@ -122,7 +122,7 @@ def timetable_undo_ruilen_teamleader(request, id):
 
   data = Context({
     'name': req.profile.name(),
-    'status': 'afgewezen',
+    'status': 'afgewezen of geannuleerd',
     'timetable': req.timetableduty.timetable.title,
     'duty': req.timetableduty,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),

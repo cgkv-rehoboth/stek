@@ -1,8 +1,10 @@
 Beste {{ name }},
 
-Uw verzoek tot ruilen is {{ status }} voor de volgende taak:
+U heeft voor volgende taak een ruilverzoek ingediend:
 {{ timetable }}: {{ duty }}
 
+Dit verzoek is {{ status }} door de roosteraar.
+
 ___________________
-Dit is een automatisch gegenereerd bericht waarop u niet kunt antwoorden.
+Dit is een automatisch gegenereerd bericht waarop u niet kunt antwoorden. Voor vragen over het rooster, graag contact opnemen met desbetreffende roosteraar.
 Verzonden op {{ sendtime }}.
