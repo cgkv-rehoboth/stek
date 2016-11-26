@@ -92,9 +92,11 @@ export default class ServiceTable extends React.Component {
         </tr>,
         <tr className="serviceHiddenItems">
           <td colSpan="6">
-            <i className="fa fa-level-up fa-rotate-90" aria-hidden="true"></i>
-            <div>{hiddeninfo}</div>
-            <div className="serviceHiddenFiles">{filesHidden}</div>
+            <div className="serviceHiddenDiv">
+              <i className="fa fa-level-up fa-rotate-90" aria-hidden="true"></i>
+              <div>{hiddeninfo}</div>
+              <div className="serviceHiddenFiles">{filesHidden}</div>
+            </div>
           </td>
         </tr>
       ]);
