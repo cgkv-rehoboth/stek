@@ -18,7 +18,13 @@
 
       <div class="row">
         <div class="col-sm-12">
-          Voeg hier roosters toe, wijzig hun rol of verwijder hen van het team. Let wel op: met te veel roosters raakt het overzicht al snel kwijt!
+          {% if tables %}
+            Pas hier de roosters van dit team aan.
+          {% else %}
+            Voeg hier een rooster toe.
+          {% endif %}
+          <br/>
+          <small>Er is maar één rooster per team beschikbaar. Mocht je een extra rooster nodig hebben, neem dan contact op met de websitebeheerder (<a href="mailto:website@rehobothkerkwoerden.nl">website@rehobothkerkwoerden.nl</a>).</small>
         </div>
 
         <div class="col-sm-12">
@@ -27,6 +33,7 @@
         </div>
 
 
+        {% if not tables %}
         <div class="col-sm-12">
           <h3>Nieuw rooster</h3>
           <form method="post" action="{% url 'teampage-control-timetables-add' %}" class="team-add-table form-horizontal">
@@ -74,6 +81,7 @@
             </div>
           </form>
         </div>
+        {% endif %}
 
 
         <div class="col-sm-12">
