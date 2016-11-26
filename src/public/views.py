@@ -32,16 +32,16 @@ def anbi(request):
   return render(request, 'anbi.html', {})
 
 urls = [
-  url(r'^kerktijden$', RedirectView.as_view(url='kerktijden/')),
+  url(r'^kerktijden$', RedirectView.as_view(url='kerktijden/', permanent=True)),
   url(r'^kerktijden/$', kerktijden, name='kerktijden'),
 
-  url(r'^orgel$', RedirectView.as_view(url='admin/')),
+  url(r'^orgel$', RedirectView.as_view(url='orgel/', permanent=True)),
   url(r'^orgel/$', orgel, name='orgel'),
 
-  url(r'^anbi$', RedirectView.as_view(url='anbi/')),
+  url(r'^anbi$', RedirectView.as_view(url='anbi/', permanent=True)),
   url(r'^anbi/$', anbi, name='anbi'),
 
-  url(r'^kindercreche$', RedirectView.as_view(url='kindercreche/')),
+  url(r'^kindercreche$', RedirectView.as_view(url='kindercreche/', permanent=True)),
   url(r'^kindercreche/$', kindercreche, name='kindercreche'),
 
   url(r'^$', index, name='index')

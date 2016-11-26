@@ -1052,10 +1052,10 @@ urls = [
 
   url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail-page'),
 
-  url(r'^roosters$', RedirectView.as_view(url='roosters/')),
+  url(r'^roosters$', RedirectView.as_view(url='roosters/', permanent=True)),
   url(r'^roosters/$', timetables, name='timetable-list-page'),
 
-  url(r'^kalender$', RedirectView.as_view(url='kalender/')),
+  url(r'^kalender$', RedirectView.as_view(url='kalender/', permanent=True)),
   url(r'^kalender/$', calendar, name='calendar-page'),
 
   url(r'^team/leden/add/$', teampage_control_members_add, name='teampage-control-members-add'),
