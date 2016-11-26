@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.conf.urls import patterns, include, url
+from django.views.generic import RedirectView
 from django import forms
 from django.core.mail import send_mail
 from django.conf import settings
@@ -31,9 +32,17 @@ def anbi(request):
   return render(request, 'anbi.html', {})
 
 urls = [
+  url(r'^kerktijden$', RedirectView.as_view(url='kerktijden/')),
   url(r'^kerktijden/$', kerktijden, name='kerktijden'),
+
+  url(r'^orgel$', RedirectView.as_view(url='admin/')),
   url(r'^orgel/$', orgel, name='orgel'),
+
+  url(r'^anbi$', RedirectView.as_view(url='anbi/')),
   url(r'^anbi/$', anbi, name='anbi'),
+
+  url(r'^kindercreche$', RedirectView.as_view(url='kindercreche/')),
   url(r'^kindercreche/$', kindercreche, name='kindercreche'),
+
   url(r'^$', index, name='index')
 ]

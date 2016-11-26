@@ -4,6 +4,7 @@ from django.views.decorators.http import *
 from django.core.mail import send_mail
 from django.shortcuts import render
 from django.conf.urls import include, url
+from django.views.generic import RedirectView
 from django.conf import settings
 from django.shortcuts import redirect
 from django.template.loader import get_template
@@ -1050,8 +1051,11 @@ urls = [
   url(r'^roosters/(?P<id>\d+)/teamleider/$', timetable_teamleader, name='timetable-teamleader-page'),
 
   url(r'^roosters/(?P<id>\d+)/$', timetables, name='timetable-detail-page'),
+
+  url(r'^roosters$', RedirectView.as_view(url='roosters/')),
   url(r'^roosters/$', timetables, name='timetable-list-page'),
 
+  url(r'^kalender$', RedirectView.as_view(url='kalender/')),
   url(r'^kalender/$', calendar, name='calendar-page'),
 
   url(r'^team/leden/add/$', teampage_control_members_add, name='teampage-control-members-add'),

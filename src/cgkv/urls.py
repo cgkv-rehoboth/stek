@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import patterns, include, url, static
+from django.views.generic import RedirectView
 from django.views.static import serve
 from django.contrib import admin
 from django.conf import settings
@@ -45,11 +46,14 @@ urlpatterns = patterns('',
   url(r'^api/v1/', include(apipatterns)),
   url(r'^media/(?P<path>.*)$', media),
 
+  url(r'^admin$', RedirectView.as_view(url='admin/')),
   url(r'^admin/', include(admin.site.urls)),
   # url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
 
   # url(r'^', include(static.static("/", document_root=os.path.join(settings.BASE_DIR, "static/")))),
 
   url(r'^markdown/', include( 'django_markdown.urls')),
+
+  url(r'^forum$', RedirectView.as_view(url='forum/')),
   url(r'^forum/', include('custommachina.urls')),
 )

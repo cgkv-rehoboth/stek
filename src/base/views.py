@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views.decorators.http import *
 from django.conf.urls import patterns, include, url
+from django.views.generic import RedirectView
 from django import http
 from django.core import serializers
 from django.contrib import messages
@@ -285,10 +286,13 @@ def dashboard(request):
 
 urls = [
   # auth
-  url(r'^login$', auth_views.login, {'template_name':'login.html', 'authentication_form': LoginForm}, name='login'),
-  url(r'^logout', logout_view, name='logout'),
-  url(r'^wachtwoord_wijzigen/done/', change_password_done, name='password_change_done'),
-  url(r'^wachtwoord_wijzigen', auth_views.password_change, name='password_change'),
+  url(r'^login$', RedirectView.as_view(url='login/')),
+  url(r'^login/$', auth_views.login, {'template_name':'login.html', 'authentication_form': LoginForm}, name='login'),
+
+  url(r'^logout$', RedirectView.as_view(url='logout/')),
+  url(r'^logout/$', logout_view, name='logout'),
+  url(r'^wachtwoord_wijzigen/done/$', change_password_done, name='password_change_done'),
+  url(r'^wachtwoord_wijzigen/$', auth_views.password_change, name='password_change'),
   url(r'^wachtwoord_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
   url(r'^wachtwoord_reset/$', auth_views.password_reset, {
     'html_email_template_name': 'emails/password_reset.html',
@@ -297,12 +301,14 @@ urls = [
   url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
 
   # addressbook
+  url(r'^adresboek$', RedirectView.as_view(url='adresboek/')),
   url(r'^adresboek/$', profile_list, name='profile-list-page'),
   url(r'^adresboek/favorieten/$', favorite_list, name='favorite-list-page'),
   url(r'^adresboek/families/$', family_list, name='family-list-page'),
   url(r'^adresboek/families/(?P<pk>\d+)/$', family_list, name='family-detail-page'),
 
   # teams
+  url(r'^teams$', RedirectView.as_view(url='teams/')),
   url(r'^teams/$', team_list, name='team-list-page'),
   url(r'^teams/(?P<pk>\d+)/$', team_list, name='team-detail-page'),
 
@@ -314,5 +320,6 @@ urls = [
   url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
 
   # dashboard
-  url(r'^dashboard$', dashboard, name='dashboard'),
+  url(r'^dashboard$', RedirectView.as_view(url='dashboard/')),
+  url(r'^dashboard/$', dashboard, name='dashboard'),
 ]
