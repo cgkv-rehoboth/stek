@@ -40,8 +40,9 @@ export default class FavStar extends React.Component {
 
   render() {
     let starFill = "fa fa-star" + (this.state.favorite ? '' : '-o');
+    let title = "Klik hier om als favoriet " + (this.state.favorite ? 'te verwijderen' : 'toe te voegen');
 
-    return <div className="addressbook-favorite" onClick={this.toggleFavorite.bind(this)}>
+    return <div className="addressbook-favorite" onClick={this.toggleFavorite.bind(this)} title={title}>
             <i className={starFill}></i>
             <i className="fa fa-star-half-o"></i>
           </div>;
