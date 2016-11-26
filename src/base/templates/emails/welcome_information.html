@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p>
+      Hallo {{ name }},
+    </p>
+
+    <p>
+      Je bent succesvol ingelogd op de website! Hoe nu verder? Waar kan ik mijn gegevens wijzigen? Waar kan ik de ledenlijst vinden? Dit zijn allemaal vragen die wij alvast voor je beantwoord hebben.
+    </p>
+
+    <p>
+      Via <a href="{{ protocol}}://{{ domain }}{% url 'forum' %}">deze link</a> kan je een handleiding van de website bekijken. Deze handleiding kan je ook op het forum vinden.
+    </p>
+
+    <p>
+      Mochten er toch nog zaken onduidelijk zijn, dan kan je <a href="{{ protocol}}://{{ domain }}{% url 'forum' %}">hier</a> je vraag achterlaten. Wij hopen dan zo snel mogelijk je vraag te beantwoorden.
+    </p>
+
+    <p>
+      Hartelijke groet,
+      <br />
+      <br />
+      Het website-team
+      <br/>
+      <a href="{{ protocol}}://{{ domain }}">www.rehobothkerkwoerden.nl</a>
+    </p>
+
+    <p>
+      PS: Als de link niet werkt, kopieer dan deze link naar je browser
+      <a href="{{ protocol}}://{{ domain }}{% url 'forum' %}">
+        {{ protocol}}://{{ domain }}{% url 'forum' %}
+      </a>
+    </p>
+  </body>
+</html>

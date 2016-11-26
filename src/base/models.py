@@ -1,5 +1,7 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_in
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from livefield.models import LiveModel
@@ -8,6 +10,10 @@ from datetime import datetime
 from PIL import Image, ImageOps
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.template.loader import get_template
+from django.template import Context
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
 import unidecode
 
 import os
@@ -75,9 +81,35 @@ class Profile(models.Model):
   photo       = models.ImageField(upload_to=user_profile_pic, null=True, blank=True)
   family      = models.ForeignKey("Family", null=True, related_name='members')
   role_in_family = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID, null=True)
+  has_logged_in  = models.NullBooleanField(default=False, null=True)
 
   class Meta:
     unique_together = (('first_name', 'last_name', 'birthday'), )
+
+  def check_firsttime(sender, user, request, **kwargs):
+    p = request.user.profile
+    if not p.has_logged_in:
+      # Send mail with some first-time information
+      template = get_template('emails/welcome_information.html')
+
+      data = Context({
+        'name': p.name(),
+        'protocol': 'https' if request.is_secure() else 'http',
+        'domain': get_current_site(request).domain
+      })
+    
+      message = template.render(data)
+    
+      from_email = settings.DEFAULT_FROM_EMAIL
+    
+      to_emails = [ p.email ]
+      send_mail("Ruilverzoek afgewezen", message, from_email, to_emails)
+
+      # Set to True
+      p.has_logged_in = True
+      p.save()
+
+  user_logged_in.connect(check_firsttime, dispatch_uid="check_firsttime26112016")
 
   def save(self, *args, **kwargs):
     # Only update photo if special args are given (the center args)

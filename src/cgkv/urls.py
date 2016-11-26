@@ -54,6 +54,6 @@ urlpatterns = patterns('',
 
   url(r'^markdown/', include('django_markdown.urls')),
 
-  url(r'^forum$', RedirectView.as_view(url='forum/', permanent=True)),
+  url(r'^forum$', RedirectView.as_view(url='forum/', permanent=True), name='forum'),
   url(r'^forum/', include('custommachina.urls')),
 )

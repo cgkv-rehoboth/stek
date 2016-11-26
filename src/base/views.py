@@ -185,7 +185,7 @@ def profile_detail_edit_save(request, pk):
 
   profile.save()
 
-  messages.success(request, "Gegevens zijn opgeslagen")
+  messages.success(request, "Gegevens zijn opgeslagen.")
 
   return redirect('profile-detail-page', pk=pk)
 
@@ -202,7 +202,7 @@ def profile_pic_edit_save(request, pk):
     profile.photo.delete()
     profile.photo=request.FILES['file']
     profile.save(request.POST.get("center", "0.5,0.5"))
-    messages.success(request, "Profielfoto is opgeslagen")
+    messages.success(request, "Profielfoto is opgeslagen.")
 
     # Save profile pic (avatar) for the forum profile
     if profile.user:
@@ -236,7 +236,7 @@ def profile_pic_delete(request, pk):
     except ObjectDoesNotExist:
       pass
 
-  messages.success(request, "Profielfoto is verwijderd")
+  messages.success(request, "Profielfoto is verwijderd.")
 
   return redirect('profile-detail-page', pk=pk)
 
@@ -245,8 +245,16 @@ def logout_view(request):
   return redirect('login')
 
 def change_password_done(request):
-  messages.success(request, "Wachtwoord is gewijzigd")
+  messages.success(request, "Wachtwoord is gewijzigd.")
   return redirect('profile-detail-page', pk=request.profile.pk)
+
+def email_reset_done(request):
+
+  return render(request, 'registrations/password_reset_done.html')
+
+def reset_password_done(request):
+  messages.success(request, "Het nieuwe wachtwoord is opgeslagen. U kunt nu hieronder inloggen.")
+  return redirect('login')
 
 @login_required
 def dashboard(request):
@@ -292,14 +300,23 @@ urls = [
   url(r'^logout$', RedirectView.as_view(url='logout/', permanent=True)),
   url(r'^logout/$', logout_view, name='logout'),
 
-  url(r'^wachtwoord_wijzigen/done/$', change_password_done, name='password_change_done'),
-  url(r'^wachtwoord_wijzigen/$', auth_views.password_change, name='password_change'),
-  url(r'^wachtwoord_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
-  url(r'^wachtwoord_reset/$', auth_views.password_reset, {
+  url(r'^wachtwoord/wijzigen/done/$', change_password_done, name='password_change_done'),
+  url(r'^wachtwoord/wijzigen/$', auth_views.password_change, {
+    'template_name': 'registrations/password_change_form.html',
+  }, name='password_change'),
+
+  url(r'^wachtwoord/vergeten/done/$', email_reset_done, name='password_reset_done'),
+  url(r'^wachtwoord/vergeten/$', auth_views.password_reset, {
+    'template_name': 'registrations/password_reset_form.html',
     'html_email_template_name': 'emails/password_reset.html',
   }, name='password_reset'),
-  url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
-  url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
+
+  url(r'^reset/done/$', reset_password_done, name='password-reset-done'),
+  #url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
+  url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', auth_views.password_reset_confirm, {
+    'template_name': 'registrations/password_reset_confirm.html',
+    'post_reset_redirect': 'password-reset-done'
+  }, name='password_reset_confirm'),
 
   # addressbook
   url(r'^adresboek$', RedirectView.as_view(url='adresboek/', permanent=True)),
