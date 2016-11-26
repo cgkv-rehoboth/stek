@@ -47,7 +47,7 @@
             <li>
               <a href="{% url 'services-page' %}" title="Diensten beheren">
                 <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>
-                <span class="only-smallscreen">Diensten</span>
+                <span class="only-smallscreen">Diensten beheren</span>
               </a>
             </li>
           {% endif %}
@@ -55,20 +55,33 @@
             <li>
               <a href="{% url 'services-files' %}" title="Bestanden beheren">
                 <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                <span class="only-smallscreen">Bestanden</span>
+                <span class="only-smallscreen">Bestanden beheren</span>
               </a>
             </li>
           {% endif %}
-          <li>
-            <a href="{% url 'profile-detail-page' request.profile.id %}" title="Mijn profiel">
+          <li class="dropdown">
+            <a  href="#"
+                class="dropdown-toggle"
+                data-toggle="dropdown"
+                title="Mijn profiel"
+                role="button" aria-haspopup="true" aria-expanded="false">
               <i class="fa fa-user" aria-hidden="true"></i>
-              <span class="only-smallscreen">Mijn profiel</span>
+              <span class="only-smallscreen">{{ request.profile.name }}</span>
+              <span class="caret"></span>
             </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{% url 'profile-detail-page' request.profile.id %}">
+                  Mijn profiel
+                </a>
+              </li>
+              <li><a href="{% url 'logout' %}">Uitloggen</a></li>
+            </ul>
           </li>
           <li>
-            <a href="{% url 'dashboard' %}" title="Startpagina">
+            <a href="{% url 'dashboard' %}" title="Je startpagina">
               <i class="fa fa-home" aria-hidden="true"></i>
-              <span class="only-smallscreen">Startpagina</span>
+              <span class="only-smallscreen">Dashboard</span>
             </a>
           </li>
         </ul>
