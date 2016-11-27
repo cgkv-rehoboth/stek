@@ -4,6 +4,7 @@
 @import grayscale
 @import ../common
 @import frontpage
+@import ../servicetable
 
 #content
   ol, ul
@@ -39,116 +40,6 @@
 
 .luisteren-i
   margin-left: 10px
-
-#service-table
-  table
-    border: none
-
-    tr
-      background: none
-
-      td, th
-        border: none
-
-        &.serviceInfoIcon
-          padding-right: 0
-
-        .service-file-download
-          color: #337ab7
-          margin: auto 3px
-
-          &.sf-public-false
-            color: #86929c
-
-          i
-            transition: all 0.2s
-            padding: 0 1px
-
-          &:hover
-            color: #23527c
-            i
-              box-shadow: 0 0 7px -3px #23527c
-
-      td
-        border-top: 1px solid #ddd
-
-      th
-        border-bottom: 2px solid #ddd
-
-      &.serviceHiddenItems
-        cursor: auto
-        display: none
-        border: none
-
-        .serviceHiddenDiv
-          position: relative
-          padding: 0
-
-        .serviceHiddenFiles
-          padding: 0
-          padding-left: inherit
-          font-size: 89%
-
-          .service-file-download
-            display: block
-            padding-bottom: 5px
-            margin: 0
-
-            i
-              margin-right: 5px
-              padding: 0
-              font-size: 95%
-
-            &:hover i
-              box-shadow: none
-
-          small
-            font-size: 75%
-
-        td
-          display: none !important
-          padding: 0
-          padding-left: 10px
-
-          div
-            margin: 0
-            padding: 4px 6px 4px 9px
-
-  .service-starttime
-    width: 50px
-    display: inline-block
-    text-align: right
-
-
-@media (max-width: 673px)
-  #service-table
-    table
-      tr
-        background: none
-        cursor: pointer
-
-        td, th
-          &.serviceHideOnSmallScreen
-            display: none
-
-        &.serviceHiddenItems
-          display: none
-          border-left: 37px solid #CBD4DA
-          background-color: #FAFAFA
-
-          //border: 0 solid #CBD4DA
-          //border-width: 0px 3px 2px 1px
-
-          td
-            display: table-cell !important
-
-            i.fa-level-up
-              position: absolute
-              top: 7px
-              left: -30px
-              color: #A6B9C6
-              text-shadow: -1px 0px 0px #7F96A5
-
 
 .popup
   display: none

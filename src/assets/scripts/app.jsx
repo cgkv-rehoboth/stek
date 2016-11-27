@@ -11,6 +11,7 @@ import nl from 'moment/locale/nl';
 import ProfileSearchTable from "ProfileSearchTable";
 import ProfileSearchInput from "ProfileSearchInput";
 import ServiceTableManagable from "ServiceTableManagable";
+import ServiceTableDashboard from "ServiceTableDashboard";
 import {SearchTable} from "bootstrap/tables";
 import AddressForm from "AddressForm";
 
@@ -453,8 +454,13 @@ window.profileEdit = (address) => {
   })
 };
 
-window.dashboard = () => {
+window.dashboard = (services) => {
   window.timetableRuilrequests();
+
+  ReactDom.render(
+    <ServiceTableDashboard data={services} />,
+    $("#service-table")[0]
+  );
 };
 
 window.teamAddPage = () => {

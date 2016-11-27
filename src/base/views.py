@@ -14,6 +14,7 @@ from django.core import serializers
 from django.contrib import messages
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
+import json
 
 from .forms import LoginForm, UploadImageForm
 
@@ -259,7 +260,35 @@ def reset_password_done(request):
 @login_required
 def dashboard(request):
 
-  # Get ruilrequests
+  ## Get services for this week
+  maxweeks = datetime.today().date() + timedelta(weeks=1)
+  services = Service.objects.filter(enddatetime__gte=datetime.today().date(), startdatetime__lte=maxweeks).values()
+
+  for service in services:
+    # Get EvenFiles with all information
+    files = EventFile.objects.filter(event__pk=service['id']).values()
+    for file in files:
+      f = EventFile.objects.get(pk=file['id'])
+      file['filesize'] = f.filesize()
+      file['type'] = f.type()
+      file['url'] = f.type()
+      file['file'] = f.file.url
+
+    # Add files to this service
+    service['files'] = list(files)
+
+  # JSON encoder for the datetime fields
+  class DatetimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+      if isinstance(obj, datetime):
+        return str(obj)
+      return json.JSONEncoder.default(self, obj)
+
+  # Convert it all to JSON
+  servicesJSON = json.dumps(list(services), cls=DatetimeEncoder)
+
+
+  ## Get ruilrequests
   def filterTeamleaderTables():
     # Get all the tables linked to the team(s) the user is in
     for table in Timetable.objects.filter(team__members__pk=request.profile.pk).exclude(team__isnull=True):
@@ -272,7 +301,8 @@ def dashboard(request):
                    .filter(timetableduty__timetable__in=mytables, timetableduty__event__enddatetime__gte=datetime.today().date())\
                    .order_by("timetableduty__event__startdatetime", "timetableduty__event__enddatetime")[:4]
 
-  # Get timetableduties
+
+  ## Get timetableduties
   maxweeks = datetime.today().date() + timedelta(weeks=4)
   duties = TimetableDuty.objects\
              .prefetch_related('ruilen')\
@@ -288,6 +318,7 @@ def dashboard(request):
         duty.ruilrequest = req
 
   return render(request, 'dashboard.html', {
+    'services': servicesJSON,
     'ruilrequests': ruilrequests,
     'duties': duties
   })

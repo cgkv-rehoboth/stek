@@ -4,19 +4,20 @@ import _ from 'underscore';
 import api from 'api';
 import forms from 'bootstrap/forms';
 import $ from "jquery";
-import { PaginatedTable, SearchTable } from 'bootstrap/tables';
+import { Table } from 'bootstrap/tables';
 import Icon from 'bootstrap/Icon';
 import moment from 'moment'
 
-export default class ServiceTable extends React.Component {
+export default class ServiceTableDashboard extends React.Component {
 
   static get propTypes() {
     return {
-      listFunc: React.PropTypes.func.isRequired // (searchText, page) => promise<[item]>,
+      data: React.PropTypes.array
     };
   }
 
   render() {
+
     let renderServiceRow = (serv) => {
       let starttime = moment(serv.startdatetime).format('H:mm');
       let startdate = moment(serv.startdatetime).format('dddd D MMMM');
@@ -44,9 +45,6 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFiles = (file) => {
-        if (!file.is_public)
-          return;
-
         var typeC = file.type;
         var typeI = file.type;
 
@@ -59,9 +57,6 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFilesHidden = (file) => {
-        if (!file.is_public)
-          return;
-
         var typeC = file.type;
         var typeI = file.type;
 
@@ -100,9 +95,12 @@ export default class ServiceTable extends React.Component {
         </tr>
       ]);
     };
-    
+
+    let rows = _.map(this.props.data, renderServiceRow);
+
     return (
-      <SearchTable listFunc={this.props.listFunc} renderRow={renderServiceRow} search={false}>
+      <Table renderRow={renderServiceRow}>
+        <thead>
         <tr>
           <th>Dienst</th>
           <th>Datum</th>
@@ -111,7 +109,11 @@ export default class ServiceTable extends React.Component {
           <th className="serviceHideOnSmallScreen"></th>
           <th className="serviceHideOnSmallScreen"></th>
         </tr>
-      </SearchTable>
+        </thead>
+        <tbody>
+        {rows}
+        </tbody>
+      </Table>
     );
   }
 }

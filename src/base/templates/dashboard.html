@@ -24,6 +24,13 @@
       </div>
     </div>
 
+    <div class="row">
+      <h3>Diensten van de aankomende week</h3>
+
+      <div id="service-table"></div>
+
+    </div>
+
     {% if ruilrequests %}
       <!-- Ruilrequests information -->
       <div class="row">
@@ -119,6 +126,6 @@
 
 {% block scripts %}
   <script>
-    window.dashboard();
+    window.dashboard({{ services|safe }});
   </script>
 {% endblock %}

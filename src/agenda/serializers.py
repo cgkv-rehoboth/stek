@@ -24,16 +24,13 @@ class EventFileSerializer(serializers.ModelSerializer):
     fields = ["pk", "title", "file", "type", "filesize", "is_public"]
 
 class EventSerializer(serializers.ModelSerializer):
-  owner = ProfileSerializer(read_only=True)
-  timetable_info = ShortTimetableSerializer(source="timetable", read_only=True)
   title = serializers.CharField(min_length=5)
   description = serializers.CharField()
   files = EventFileSerializer(many=True, read_only=True)
 
   class Meta:
     model = Event
-    fields = ["id", "title", "description", "timetable_info", "timetable",
-              "startdatetime", "enddatetime", "owner", "files"]
+    fields = ["id", "title", "description", "startdatetime", "enddatetime", "files"]
 
 class TeamSerializer(serializers.ModelSerializer):
   members = ProfileSerializer(many=True)
