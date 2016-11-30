@@ -103,7 +103,7 @@ class Profile(models.Model):
       from_email = settings.DEFAULT_FROM_EMAIL
     
       to_emails = [ p.email ]
-      send_mail("Ruilverzoek afgewezen", message, from_email, to_emails)
+      send_mail("Welkom!", message, from_email, to_emails, html_message=message)
 
       # Set to True
       p.has_logged_in = True
