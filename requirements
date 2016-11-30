@@ -17,6 +17,7 @@ Pillow
 whitenoise==3.0
 unidecode==0.04.19
 python-dateutil
+django-ckeditor
 
 django-machina
 django-haystack

@@ -24,6 +24,10 @@ body
     .panel-body
       background-color: #fff
 
+      .django-ckeditor-widget
+        display: block !important
+        margin-top: 7px
+
     .username b
       text-transform: capitalize
 
@@ -47,8 +51,20 @@ body
         padding-left: 30px
 
       p
-        white-space: pre
-        padding-bottom: 14px
+        padding-bottom: 8px
+
+      table
+        &, td
+          border: 1px solid black
+
+        caption
+          font-weight: bold
+          color: inherit
+          text-align: center
+          padding-bottom: 2px
+
+        td
+          padding: 0 5px
 
     .forum-data-table, .topic-data-table
 

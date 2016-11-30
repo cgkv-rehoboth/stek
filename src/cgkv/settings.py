@@ -85,6 +85,7 @@ INSTALLED_APPS = [
   'haystack',
   'widget_tweaks',
   'django_markdown',
+  'ckeditor',
 ] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
@@ -193,6 +194,9 @@ HAYSTACK_CONNECTIONS = {
 #
 
 MACHINA_FORUM_NAME = "Rehobothkerk Forum"
+
+MACHINA_MARKUP_LANGUAGE = None
+MACHINA_MARKUP_WIDGET = 'ckeditor.widgets.CKEditorWidget'
 
 MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
     'can_see_forum',
