@@ -1,0 +1,46 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Diensten <small>Overzicht</small></h2>
+        </div>
+
+        {% if perms.agenda.add_service or perms.agenda.add_eventfile%}
+        <div class="col-sm-12">
+          {% if perms.agenda.add_service %}
+            <a href="{% url 'services-admin' %}" class="backlink"><i class="fa fa-calendar-plus-o fa-fw" aria-hidden="true"></i> Diensten beheren</a>
+          {% endif %}
+          {% if perms.agenda.add_service and perms.agenda.add_eventfile%}
+            /
+          {% endif %}
+          {% if perms.agenda.add_eventfile %}
+            <a href="{% url 'services-files-admin' %}" class="backlink"><i class="fa fa-file-text-o fa-fw" aria-hidden="true"></i> Bestanden beheren</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Aankomende diensten</h3>
+          <div id="service-table"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% include "./confirmationmodal.html" %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.servicesPage();
+  </script>
+{% endblock %}

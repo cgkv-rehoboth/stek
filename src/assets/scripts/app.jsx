@@ -12,6 +12,7 @@ import ProfileSearchTable from "ProfileSearchTable";
 import ProfileSearchInput from "ProfileSearchInput";
 import ServiceTableManagable from "ServiceTableManagable";
 import ServiceTableDashboard from "ServiceTableDashboard";
+import ServiceTable from "ServiceTable";
 import {SearchTable} from "bootstrap/tables";
 import AddressForm from "AddressForm";
 
@@ -464,6 +465,18 @@ window.dashboard = (services) => {
 };
 
 window.teamAddPage = () => {
+};
+
+window.servicesPage = () => {
+  // Service table
+  let searchServices = (query, page) => {
+    return api.services.list(query, page);
+  };
+
+  ReactDom.render(
+    <ServiceTable listFunc={searchServices} />,
+    $("#service-table")[0]
+  );
 };
 
 window.eventFilesPage = () => {

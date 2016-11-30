@@ -484,7 +484,7 @@ def calendar(request):
 
 @login_required
 @permission_required('agenda.add_service', raise_exception=True)
-def services(request):
+def services_admin(request):
   # set default date to next sunday without a service
   # Get last sunday service
   last = Service.objects.filter(startdatetime__week_day=1).order_by('-startdatetime').first()
@@ -498,14 +498,14 @@ def services(request):
     startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
     print(startdatetime)
 
-  return render(request, 'services/main.html', {
+  return render(request, 'services/admin.html', {
     'startdatetime': startdatetime,
   })
 
 @login_required
 @require_POST
 @permission_required('agenda.add_service', raise_exception=True)
-def services_add(request):
+def services_admin_add(request):
   date = str(request.POST.get("date", ""))
 
   # Ochtenddienst
@@ -517,7 +517,7 @@ def services_add(request):
     enddate = datetime.strptime(enddate, '%d-%m-%Y %H:%M:%S')
   except ValueError:
     messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
-    return redirect('services-page')
+    return redirect('services-admin')
 
   Service.objects.create(
     startdatetime=startdate,
@@ -541,7 +541,7 @@ def services_add(request):
       enddate = datetime.strptime(enddate, '%d-%m-%Y %H:%M:%S')
     except ValueError:
       messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
-      return redirect('services-page')
+      return redirect('services-admin')
 
     Service.objects.create(
       startdatetime=startdate,
@@ -559,12 +559,12 @@ def services_add(request):
   else:
     messages.success(request, "Dienst is toegevoegd.")
 
-  return redirect('services-page')
+  return redirect('services-admin')
 
 @login_required
 @require_POST
 @permission_required('agenda.change_service', raise_exception=True)
-def services_edit_save(request, id):
+def services_admin_edit_save(request, id):
   service = Service.objects.get(pk=id)
 
   date = str(request.POST.get("date", service.startdatetime.date()))
@@ -578,7 +578,7 @@ def services_edit_save(request, id):
     enddate = datetime.strptime(enddate, '%d-%m-%Y %H:%M:%S')
   except ValueError:
     messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
-    return redirect('services-page')
+    return redirect('services-admin')
 
   service.startdatetime = startdate
   service.enddatetime = enddate
@@ -592,11 +592,11 @@ def services_edit_save(request, id):
 
   messages.success(request, "Dienst is opgeslagen.")
 
-  return redirect('services-page')
+  return redirect('services-admin')
 
 @login_required
 @permission_required('agenda.change_service', raise_exception=True)
-def services_edit(request, id):
+def services_admin_edit(request, id):
 
   return render(request, 'services/edit.html', {
     'service': Service.objects.get(pk=id),
@@ -604,7 +604,7 @@ def services_edit(request, id):
 
 @login_required
 @permission_required('agenda.delete_service', raise_exception=True)
-def services_delete(request, id):
+def services_admin_delete(request, id):
   Service.objects.get(pk=id).delete()
 
   # Delete all duties of this service
@@ -612,7 +612,7 @@ def services_delete(request, id):
 
   messages.success(request, "Dienst is verwijderd.")
 
-  return redirect('services-page')
+  return redirect('services-admin')
 
 
 
@@ -936,7 +936,7 @@ def globalteampage_delete(request, id):
 
 @login_required
 @permission_required('agenda.add_eventfile', raise_exception=True)
-def services_files(request, id=None):
+def services_files_admin(request, id=None):
 
   ef = None
 
@@ -978,7 +978,7 @@ def services_files(request, id=None):
 @login_required
 @permission_required('agenda.add_eventfile', raise_exception=True)
 @require_POST
-def services_files_add(request):
+def services_files_admin_add(request):
 
   # Set default title
   if not request.POST.get('title', ''):
@@ -998,12 +998,12 @@ def services_files_add(request):
   else:
     messages.error(request, "Vul alle velden in.")
 
-  return redirect('services-files')
+  return redirect('services-files-admin')
 
 @login_required
 @permission_required('agenda.change_eventfile', raise_exception=True)
 @require_POST
-def services_files_edit_save(request, id):
+def services_files_admin_edit_save(request, id):
 
   ef = EventFile.objects.get(pk=id)
 
@@ -1021,19 +1021,39 @@ def services_files_edit_save(request, id):
     messages.success(request, "Bestand is opgeslagen.")
   else:
     messages.error(request, "Vul alle velden in.")
-    return redirect('services-files-edit', id=id)
+    return redirect('services-files-admin-edit', id=id)
 
-  return redirect('services-files')
+  return redirect('services-files-admin')
 
 @login_required
 @permission_required('agenda.delete_eventfile', raise_exception=True)
-def services_files_delete(request, id):
+def services_files_admin_delete(request, id):
 
   ef = EventFile.objects.get(pk=id).delete()
 
   messages.success(request, 'Bestand is verwijderd.')
 
-  return redirect('services-files')
+  return redirect('services-files-admin')
+
+
+@login_required
+def services_page(request):
+  # set default date to next sunday without a service
+  # Get last sunday service
+  last = Service.objects.filter(startdatetime__week_day=1).order_by('-startdatetime').first()
+
+  # Add one week
+  if last:
+    startdatetime = last.startdatetime + timedelta(weeks=1)
+  else:
+    # Get next upcoming sunday
+    today = datetime.today().date()
+    startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
+    print(startdatetime)
+
+  return render(request, 'services/page.html', {
+    'startdatetime': startdatetime,
+  })
 
 
 urls = [
@@ -1078,15 +1098,17 @@ urls = [
   url(r'^teams/add/save/$', globalteampage_add, name='team-add-save'),
   url(r'^teams/add/$', globalteampage, name='team-add'),
 
-  url(r'^roosters/diensten/add/$', services_add, name='services-page-add'),
-  url(r'^roosters/diensten/(?P<id>\d+)/edit/save/$', services_edit_save, name='services-page-edit-save'),
-  url(r'^roosters/diensten/(?P<id>\d+)/edit/$', services_edit, name='services-page-edit'),
-  url(r'^roosters/diensten/(?P<id>\d+)/delete/$', services_delete, name='services-page-delete'),
-  url(r'^roosters/diensten/$', services, name='services-page'),
+  url(r'^roosters/diensten/beheren/toevoegen/$', services_admin_add, name='services-admin-add'),
+  url(r'^roosters/diensten/beheren/(?P<id>\d+)/edit/save/$', services_admin_edit_save, name='services-admin-edit-save'),
+  url(r'^roosters/diensten/beheren/(?P<id>\d+)/edit/$', services_admin_edit, name='services-admin-edit'),
+  url(r'^roosters/diensten/beheren/(?P<id>\d+)/delete/$', services_admin_delete, name='services-admin-delete'),
+  url(r'^roosters/diensten/beheren/$', services_admin, name='services-admin'),
 
-  url(r'^roosters/diensten/bestanden/(?P<id>\d+)/delete/$', services_files_delete, name='services-files-delete'),
-  url(r'^roosters/diensten/bestanden/(?P<id>\d+)/edit/save/$', services_files_edit_save, name='services-files-edit-save'),
-  url(r'^roosters/diensten/bestanden/(?P<id>\d+)/edit/$', services_files, name='services-files-edit'),
-  url(r'^roosters/diensten/bestanden/add/$', services_files_add, name='services-files-add'),
-  url(r'^roosters/diensten/bestanden/$', services_files, name='services-files'),
+  url(r'^roosters/diensten/$', services_page, name='services-page'),
+
+  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/delete/$', services_files_admin_delete, name='services-files-admin-delete'),
+  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/edit/save/$', services_files_admin_edit_save, name='services-files-admin-edit-save'),
+  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/edit/$', services_files_admin, name='services-files-admin-edit'),
+  url(r'^roosters/diensten/bestanden/beheren/toevoegen/$', services_files_admin_add, name='services-files-admin-add'),
+  url(r'^roosters/diensten/bestanden/beheren/$', services_files_admin, name='services-files-admin'),
 ]

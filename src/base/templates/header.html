@@ -45,7 +45,7 @@
           {% endcomment %}
           {% if perms.agenda.add_service %}
             <li>
-              <a href="{% url 'services-page' %}" title="Diensten beheren">
+              <a href="{% url 'services-admin' %}" title="Diensten beheren">
                 <i class="fa fa-calendar-plus-o" aria-hidden="true"></i>
                 <span class="only-smallscreen">Diensten beheren</span>
               </a>
@@ -53,7 +53,7 @@
           {% endif %}
           {% if perms.agenda.add_eventfile and not perms.agenda.add_service %}
             <li>
-              <a href="{% url 'services-files' %}" title="Bestanden beheren">
+              <a href="{% url 'services-admin-files' %}" title="Bestanden beheren">
                 <i class="fa fa-cloud-upload" aria-hidden="true"></i>
                 <span class="only-smallscreen">Bestanden beheren</span>
               </a>
