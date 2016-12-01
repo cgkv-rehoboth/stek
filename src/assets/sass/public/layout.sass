@@ -4,18 +4,29 @@
   min-height: 100%
   position: relative
 
-$footer-height: 300px
 footer
   background-color: lighten($dark-bg, 10%)
   color: $light-fg
-  position: absolute
-  bottom: 0px
-  height: $footer-height 
   width: 100%
-
-#content
-  padding-bottom: $footer-height
 
 #copyright
   color: lighten($dark-bg, 30%)
   font-size: 12pt
+  margin-bottom: 0px
+  margin-top: 50px
+
+a
+  color: #39bd8c
+
+.sitemap
+  color: #83abc6
+
+  li
+    padding: 8px
+
+    a
+      padding: auto
+      color: #83abc6
+
+      &:hover
+        color: #afd9f5

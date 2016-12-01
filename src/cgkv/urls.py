@@ -7,6 +7,7 @@ from django.views.static import serve
 from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponse
+from django.contrib.sitemaps.views import sitemap
 
 import base.views
 import base.api
@@ -14,6 +15,7 @@ import agenda.views
 import agenda.api
 import public.views
 import public.api
+from .sitemaps import StaticViewSitemap
 
 from machina.app import board
 
@@ -38,10 +40,16 @@ def media(request, path):
 
     return response
 
+sitemaps = {
+    'static': StaticViewSitemap,
+}
+
 urlpatterns = patterns('',
   url(r'^', include(base.views.urls)),
   url(r'^', include(agenda.views.urls)),
   url(r'^', include(public.views.urls)),
+
+  url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
   url(r'^api/v1/', include(apipatterns)),
   url(r'^media/(?P<path>.*)$', media),

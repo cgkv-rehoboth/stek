@@ -7,6 +7,7 @@ from django.conf import settings
 
 from agenda.models import *
 from datetime import datetime
+from cgkv.sitemaps import StaticViewSitemap
 
 def index(request):
   # check if sunday
@@ -16,20 +17,29 @@ def index(request):
   return render(request, 'index.html', {
     'listen_live': listen_live,
     'recaptcha_publickey': settings.RECAPTCHA_PUBLIC_KEY,
+    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
     #'jaarthema_publish_date': (datetime.now() > datetime.strptime('22-08-2016 00:00', '%d-%m-%Y %H:%M'))
   })
 
 def kerktijden(request):
-  return render(request, 'kerktijden.html', {})
+  return render(request, 'kerktijden.html', {
+    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
+  })
 
 def kindercreche(request):
-  return render(request, 'kerktijden.html', {})
+  return render(request, 'kerktijden.html', {
+    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
+  })
 
 def orgel(request):
-  return render(request, 'orgel.html', {})
+  return render(request, 'orgel.html', {
+    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
+  })
 
 def anbi(request):
-  return render(request, 'anbi.html', {})
+  return render(request, 'anbi.html', {
+    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
+  })
 
 urls = [
   url(r'^kerktijden$', RedirectView.as_view(url='kerktijden/', permanent=True)),

@@ -25,6 +25,13 @@
           <div class="row">
             <div class="col-md-12">
               <h2>Sitemap</h2>
+              <ul class="sitemap">
+                {% for site, title in sitemaps.items %}
+                  <li>
+                    <a href="{% url site %}">{{ title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
             </div>
           </div>
         </div>
