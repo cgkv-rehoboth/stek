@@ -117,8 +117,8 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = 'cgkv.urls'
 
-LOGIN_URL = '/login'
-LOGIN_REDIRECT_URL = '/dashboard'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 
 WSGI_APPLICATION = 'cgkv.wsgi.application'
 

@@ -27,6 +27,11 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/$', account_to_profile),
     url(r'^edit/$', account_to_profile_edit),
   ])),
+  url(r'^gebruiker/profiel/', include([
+#    url(r'^(?P<pk>\d+)/posts/$', 'base.views.profile_detail'),
+    url(r'^(?P<pk>\d+)/$', account_to_profile),
+    url(r'^edit/$', account_to_profile_edit),
+  ])),
 
   url(r'', include(board.urls)),
 ]

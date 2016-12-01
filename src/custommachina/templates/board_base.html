@@ -22,6 +22,7 @@
 
 {% endblock header %}
 <div class="container" id="main_container">
+{% if user.is_authenticated %}
   <div class="row">
     <div class="col-xs-12">
       {% block breadcrumb %}{% include "partials/breadcrumb.html" %}{% endblock breadcrumb %}
@@ -46,6 +47,12 @@
   {% block content %}
   {% endblock content %}
 </div>
+{% else %}
+  <center>
+    <h1>Niet ingelogd</h1>
+    Om het forum te kunnen bekijken, moet u eerst ingelogd zijn. Klik <a href="{% url 'login' %}?next={% url 'forum' %}">hier</a> om naar de inlogpagina te gaan.
+  </center>
+{% endif %}
 {% endblock body %}
 
 {% block js %}
