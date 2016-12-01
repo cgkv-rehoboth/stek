@@ -41,6 +41,9 @@ def anbi(request):
     'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
   })
 
+def robots(request):
+  return render(request, 'robots.txt', {})
+
 urls = [
   url(r'^kerktijden$', RedirectView.as_view(url='kerktijden/', permanent=True)),
   url(r'^kerktijden/$', kerktijden, name='kerktijden'),
@@ -53,6 +56,8 @@ urls = [
 
   url(r'^kindercreche$', RedirectView.as_view(url='kindercreche/', permanent=True)),
   url(r'^kindercreche/$', kindercreche, name='kindercreche'),
+
+  url(r'^robots\.txt$', robots, name='robots'),
 
   url(r'^$', index, name='index')
 ]

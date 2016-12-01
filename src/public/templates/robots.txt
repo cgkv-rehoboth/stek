@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /wachtwoord/vergeten/
+Disallow: /forum/
+Disallow: /login/
