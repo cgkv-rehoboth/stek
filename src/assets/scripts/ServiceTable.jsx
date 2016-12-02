@@ -12,7 +12,8 @@ export default class ServiceTable extends React.Component {
 
   static get propTypes() {
     return {
-      listFunc: React.PropTypes.func.isRequired // (searchText, page) => promise<[item]>,
+      listFunc: React.PropTypes.func.isRequired, // (searchText, page) => promise<[item]>,
+      is_public: React.PropTypes.bool
     };
   }
 
@@ -44,7 +45,7 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFiles = (file) => {
-        if (!file.is_public)
+        if (!file.is_public && !this.props.is_public)
           return;
 
         var typeC = file.type;
@@ -59,7 +60,7 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFilesHidden = (file) => {
-        if (!file.is_public)
+        if (!file.is_public && !this.props.is_public)
           return;
 
         var typeC = file.type;

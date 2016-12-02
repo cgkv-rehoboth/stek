@@ -474,7 +474,7 @@ window.servicesPage = () => {
   };
 
   ReactDom.render(
-    <ServiceTable listFunc={searchServices} />,
+    <ServiceTable listFunc={searchServices} is_public={true} />,
     $("#service-table")[0]
   );
 };
