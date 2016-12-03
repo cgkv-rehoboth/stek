@@ -84,7 +84,7 @@
               {% endif %}
 
               <div>
-                <label>Event</label><br/>
+                <label>Dienst</label><br/>
                 <select name="event" required>
                   {% for event in events %}
                     <option value="{{ event.pk }}" {% if event.pk == selected_event %}selected="selected"{% endif %}>{{ event }}</option>

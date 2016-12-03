@@ -89,13 +89,14 @@
                   {{ m.profile.first_name }}
                 </div>
 
-                <div class="team-userrole">
-                  {{ m.role|capfirst }}
+                <div class="team-userrole" title="{% if m.is_admin %}Deze persoon heeft beheerrechten over dit team{% endif %}">
+                  {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
                 </div>
               </a>
             </div>
           {% endfor %}
         </div>
+      <div style="font-size: 65%; margin-left: 20px; margin-bottom: 30px;">* Deze persoon is beheerder van deze teampagina</div>
       </div>
     </div>
   </section>
