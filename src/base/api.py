@@ -75,7 +75,7 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
 
   permission_classes = [IsAuthenticated]
   filter_backends = (FavoriteFilterBackend, filters.SearchFilter, filters.DjangoFilterBackend)
-  search_fields = ('first_name', 'last_name', 'email', 'address__street')
+  search_fields = ('first_name', 'last_name', 'email')
 
   def retrieve(self, request, *args, **kwargs):
     response = super().retrieve(request, *args, **kwargs)
