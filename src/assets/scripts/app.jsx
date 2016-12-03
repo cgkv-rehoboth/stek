@@ -459,7 +459,7 @@ window.dashboard = (services) => {
   window.timetableRuilrequests();
 
   ReactDom.render(
-    <ServiceTableDashboard data={services} />,
+    <ServiceTableDashboard data={services} is_private={true}  />,
     $("#service-table")[0]
   );
 };
@@ -474,7 +474,7 @@ window.servicesPage = () => {
   };
 
   ReactDom.render(
-    <ServiceTable listFunc={searchServices} is_public={true} />,
+    <ServiceTable listFunc={searchServices} is_private={true} />,
     $("#service-table")[0]
   );
 };

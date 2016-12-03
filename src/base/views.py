@@ -14,6 +14,7 @@ from django.core import serializers
 from django.contrib import messages
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 import json
 
 from .forms import LoginForm, UploadImageForm
@@ -262,20 +263,57 @@ def dashboard(request):
 
   ## Get services for this week
   maxweeks = datetime.today().date() + timedelta(weeks=1)
-  services = Service.objects.filter(enddatetime__gte=datetime.today().date(), startdatetime__lte=maxweeks).values()
+  services = Service.objects.filter(enddatetime__gte=datetime.today().date(), startdatetime__lte=maxweeks)
 
+  serviceslist = []
   for service in services:
+    s = vars(service)
+    s['url'] = service.url()
+
+    duties = []
+    for duty in service.duties.all():
+      d = {
+        'comments': duty.comments,
+        'timetable': {
+          'id': duty.timetable.id,
+          'url': reverse('timetable-detail-page', kwargs={'id': duty.timetable.id}),
+          'title': duty.timetable.title,
+          'color': duty.timetable.color,
+          'team': duty.timetable.team.name,
+        },
+        'responsible': {
+          'id': duty.responsible.id,
+          'url': reverse('profile-detail-page', kwargs={'pk': duty.responsible.id}),
+          'name': duty.responsible.name(),
+        },
+      }
+
+      duties.append(d)
+
+    # Add duties to this service
+    s['duties'] = duties
+
     # Get EvenFiles with all information
-    files = EventFile.objects.filter(event__pk=service['id']).values()
-    for file in files:
-      f = EventFile.objects.get(pk=file['id'])
-      file['filesize'] = f.filesize()
-      file['type'] = f.type()
-      file['url'] = f.type()
-      file['file'] = f.file.url
+    files = []
+    for file in service.files.all():
+      f = vars(file)
+
+      f.update({
+        'filesize': file.filesize(),
+        'type': file.type(),
+        'url': file.type(),
+        'file': file.file.url
+      })
+
+      f.pop('_state')
+      f.pop('_event_cache')
+      files.append(f)
 
     # Add files to this service
-    service['files'] = list(files)
+    s['files'] = files
+
+    s.pop('_state')
+    serviceslist.append(s)
 
   # JSON encoder for the datetime fields
   class DatetimeEncoder(json.JSONEncoder):
@@ -285,7 +323,7 @@ def dashboard(request):
       return json.JSONEncoder.default(self, obj)
 
   # Convert it all to JSON
-  servicesJSON = json.dumps(list(services), cls=DatetimeEncoder)
+  servicesJSON = json.dumps(serviceslist, cls=DatetimeEncoder)
 
 
   ## Get ruilrequests

@@ -12,7 +12,8 @@ export default class ServiceTableDashboard extends React.Component {
 
   static get propTypes() {
     return {
-      data: React.PropTypes.array
+      data: React.PropTypes.array,
+      is_private: React.PropTypes.bool
     };
   }
 
@@ -54,7 +55,7 @@ export default class ServiceTableDashboard extends React.Component {
         }
 
         return (<a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}><i className={"fa fa-file-" + typeC + "o"} aria-hidden="true"></i></a>);
-      }
+      };
 
       let renderFilesHidden = (file) => {
         var typeC = file.type;
@@ -70,14 +71,16 @@ export default class ServiceTableDashboard extends React.Component {
             <i className={"fa fa-file-" + typeC + "o fa-fw"} aria-hidden="true"></i>
             {file.title} <small>({file.filesize})</small>
           </a>);
-      }
+      };
 
       let files = _.map(serv.files, renderFiles);
       let filesHidden = _.map(serv.files, renderFilesHidden);
 
+      let title = this.props.is_private ? <a href={serv.url}>{serv.title}</a> : serv.title;
+
       return ([
         <tr key={serv.id} className="serviceRow" onClick={onClick.bind(this)}>
-          <td>{serv.title}</td>
+          <td>{title}</td>
           <td><span className="service-starttime">{starttime}</span> - {startdate}</td>
           <td className="serviceHideOnSmallScreen">{serv.minister}</td>
           <td className="serviceInfoIcon">{html}</td>

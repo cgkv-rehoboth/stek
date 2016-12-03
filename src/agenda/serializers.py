@@ -50,6 +50,7 @@ class EventWithDutiesSerializer(EventSerializer):
   duties = CustomDutySerializer(many=True)
 
 class ServiceSerializer(EventSerializer):
+  url = serializers.CharField()
 
   class Meta:
     model = Service

@@ -76,9 +76,11 @@ export default class ServiceTableManagable extends React.Component {
       let files = _.map(serv.files, renderFiles);
       let filesHidden = _.map(serv.files, renderFilesHidden);
 
+      let title =<a href={serv.url}>{serv.title}</a>;
+
       return ([
         <tr key={serv.id} className="serviceRow" onClick={onClick.bind(this)}>
-          <td>{serv.title}</td>
+          <td>{title}</td>
           <td><span className="service-starttime">{starttime}</span> - {startdate}</td>
           <td className="serviceHideOnSmallScreen">{serv.minister}</td>
           <td className="serviceHideOnSmallScreen service-table-theme">{serv.theme}</td>

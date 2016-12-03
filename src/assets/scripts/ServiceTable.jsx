@@ -13,7 +13,7 @@ export default class ServiceTable extends React.Component {
   static get propTypes() {
     return {
       listFunc: React.PropTypes.func.isRequired, // (searchText, page) => promise<[item]>,
-      is_public: React.PropTypes.bool
+      is_private: React.PropTypes.bool
     };
   }
 
@@ -45,7 +45,7 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFiles = (file) => {
-        if (!file.is_public && !this.props.is_public)
+        if (!file.is_public && !this.props.is_private)
           return;
 
         var typeC = file.type;
@@ -60,7 +60,7 @@ export default class ServiceTable extends React.Component {
       }
 
       let renderFilesHidden = (file) => {
-        if (!file.is_public && !this.props.is_public)
+        if (!file.is_public && !this.props.is_private)
           return;
 
         var typeC = file.type;
@@ -81,9 +81,11 @@ export default class ServiceTable extends React.Component {
       let files = _.map(serv.files, renderFiles);
       let filesHidden = _.map(serv.files, renderFilesHidden);
 
+      let title = this.props.is_private ? <a href={serv.url}>{serv.title}</a> : serv.title;
+
       return ([
         <tr key={serv.id} className="serviceRow" onClick={onClick.bind(this)}>
-          <td>{serv.title}</td>
+          <td>{title}</td>
           <td><span className="service-starttime">{starttime}</span> - {startdate}</td>
           <td className="serviceHideOnSmallScreen">{serv.minister}</td>
           <td className="serviceInfoIcon">{html}</td>

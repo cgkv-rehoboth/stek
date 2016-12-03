@@ -1,0 +1,125 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section id="services-single">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Diensten <small>{{ service.title }}</small></h2>
+        </div>
+
+        {% if perms.agenda.add_service or perms.agenda.add_eventfile%}
+        <div class="col-sm-12">
+          {% if perms.agenda.add_service %}
+            <a href="{% url 'services-admin-edit' service.id %}" class="backlink"><i class="fa fa-calendar-plus-o fa-fw" aria-hidden="true"></i> Dienst bewerken</a>
+          {% endif %}
+          {% if perms.agenda.add_service and perms.agenda.add_eventfile%}
+            /
+          {% endif %}
+          {% if perms.agenda.add_eventfile %}
+            <a href="{% url 'services-files-admin' %}" class="backlink"><i class="fa fa-cloud-upload fa-fw" aria-hidden="true"></i> Bestanden beheren</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Algemeen</h3>
+
+          <table id="info" >
+            <tr>
+              <td>Aanvangstijd</td>
+              <td>{{ service.startdatetime }}</td>
+            </tr>
+            {% if service.description %}
+              <tr>
+                <td>Beschrijving</td>
+                <td>{{ service.description }}</td>
+              </tr>
+            {% endif %}
+            {% if service.minister %}
+              <tr>
+                <td>Voorganger</td>
+                <td>{{ service.minister }}</td>
+              </tr>
+            {% endif %}
+            {% if service.theme %}
+            <tr>
+              <td>Thema</td>
+              <td>{{ service.theme }}</td>
+            </tr>
+            {% endif %}
+            {% if service.comments %}
+              <tr>
+                <td>Extra informatie</td>
+                <td>{{ service.comments }}</td>
+              </tr>
+            {% endif %}
+          </table>
+          <br/>
+        </div>
+
+        {% if service.files.all %}
+          <div class="col-sm-12">
+            <h3>Bestanden</h3>
+
+            <table id="files" class="table table-hover">
+              {% for file in service.files.all %}
+                <tr>
+                  <td>
+                    <span class="icon">
+                      {{ file.iconHTML|safe }}
+                    </span>
+                    <a href="{{ file.file.url }}" target="_blank" title="Klik hier om het bestand te openen">
+                      {{ file.title }}
+                    </a>
+                    <span class="file">({{ file.filesize }})</span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
+
+        {% if service.duties.all %}
+          <div class="col-sm-12">
+            <h3>Taken</h3>
+
+            <table id="duties" class="table table-hover">
+              {% for duty in service.duties.all|dictsort:"timetable.title" %}
+                <tr>
+                  <td>
+                    {% ifchanged duty.timetable %}
+                      {{ duty.timetable.title }}
+                      <a href="{% url 'timetable-detail-page' duty.timetable.id %}" title="Bekijk het rooster">
+                        <i class="fa fa-share" aria-hidden="true"></i>
+                      </a>
+                    {% endifchanged %}
+                  </td>
+                  <td>
+                    <a href="{% url 'profile-detail-page' duty.responsible.id %}" title="Bekijk het profiel">
+                      {{ duty.responsible.name }}
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% include "./confirmationmodal.html" %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.servicesPage();
+  </script>
+{% endblock %}

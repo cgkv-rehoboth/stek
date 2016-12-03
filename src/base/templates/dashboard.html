@@ -51,7 +51,10 @@
               {% for ruil in ruilrequests %}
               <tr>
                 <td class="duty-team">{{ ruil.timetableduty.timetable.title }}</td>
-                <td class="duty-date">({{ ruil.timetableduty.event.title }}) {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u</td>
+                <td class="duty-date">
+                  (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
+                  {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
+                </td>
                 <td class="duty-title">{{ ruil.profile.name }}</td>
                 <td><div class="duty-comments">{{ ruil.comments }}</div></td>
                 <td>
@@ -88,7 +91,9 @@
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
               <tr class="table-{{ rowday }}">
                 <td>{{ duty.timetable.title }}</td>
-                <td class="duty-title">{{ duty.event.title }}</td>
+                <td class="duty-title">
+                  <a href="{% url 'services-single' duty.event.id %}">{{ duty.event.title }}</a>
+                </td>
                 <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td><div class="duty-comments">{{ duty.comments }}</div></td>
                 <td class="duty-responsible">

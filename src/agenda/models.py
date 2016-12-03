@@ -4,6 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from livefield.models import LiveModel
 from django.db.models import Count
+from django.core.urlresolvers import reverse
 import os
 
 # Import models of base app
@@ -87,6 +88,9 @@ class Service(Event):
     if self.title == "": self.title = "Dienst"
 
     super(Service, self).save(*args, **kwargs)
+
+  def url(self, *args, **kwargs):
+    return reverse('services-single', kwargs={'id': self.pk})
 
 class Team(models.Model):
 

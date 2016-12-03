@@ -1051,8 +1051,16 @@ def services_page(request):
     startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
     print(startdatetime)
 
-  return render(request, 'services/page.html', {
+  return render(request, 'services/list.html', {
     'startdatetime': startdatetime,
+  })
+
+@login_required
+def services_single(request, id):
+  service = Service.objects.get(pk=id)
+
+  return render(request, 'services/single.html', {
+    'service': service,
   })
 
 
@@ -1105,6 +1113,7 @@ urls = [
   url(r'^roosters/diensten/beheren/$', services_admin, name='services-admin'),
 
   url(r'^roosters/diensten/$', services_page, name='services-page'),
+  url(r'^roosters/diensten/(?P<id>\d+)/$', services_single, name='services-single'),
 
   url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/delete/$', services_files_admin_delete, name='services-files-admin-delete'),
   url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/edit/save/$', services_files_admin_edit_save, name='services-files-admin-edit-save'),

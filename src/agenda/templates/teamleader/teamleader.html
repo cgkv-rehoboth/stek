@@ -39,7 +39,10 @@
             <tbody>
               {% for ruil in ruils %}
               <tr>
-                <td class="duty-date">({{ ruil.timetableduty.event.title }}) {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u</td>
+                <td class="duty-date">
+                  (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
+                  {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
+                </td>
                 <td class="duty-title">{{ ruil.profile.name }}</td>
                 <td>{{ ruil.comments }}</td>
                 <td>
