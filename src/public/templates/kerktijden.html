@@ -45,25 +45,31 @@
         <div class="col-md-12">
           <p>
             De Rehobothkerk heeft elke zondag twee erediensten. Na de ochtenddienst ben je van harte uitgenodigd voor koffie of thee. De kerktijden zijn:
+            <ul>
+              <li>Ochtenddienst: 09:30 uur</li>
+              <li>Middagdienst: 16:30 uur</li>
+            </ul>
 
-            {% now "n" as current_month %}
-            {% if current_month|get_digit:"1" > 5 and current_month|get_digit:"1" < 9 %}
-              <!-- Zomertijd -->
-              <ul>
-                <li>Ochtenddienst: 09:30 uur</li>
-                <li>Middagdienst: 18:30 uur</li>
-              </ul>
-              <br/>
-              Tussen 1 juni t/m begin september start de middagdienst om 18.30 uur. In de andere maanden van het jaar start de middagdienst om 16:30 uur.
-            {% else %}
-              <!-- Wintertijd -->
-              <ul>
-                <li>Ochtenddienst: 09:30 uur</li>
-                <li>Middagdienst: 16:30 uur</li>
-              </ul>
-              <br/>
-              Van 1 juni t/m begin september start de middagdienst om 18.30 uur.
-            {% endif %}
+            {% comment %}
+              {% now "n" as current_month %}
+              {% if current_month|get_digit:"1" > 5 and current_month|get_digit:"1" < 9 %}
+                <!-- Zomertijd -->
+                <ul>
+                  <li>Ochtenddienst: 09:30 uur</li>
+                  <li>Middagdienst: 18:30 uur</li>
+                </ul>
+                <br/>
+                Tussen 1 juni t/m begin september start de middagdienst om 18.30 uur. In de andere maanden van het jaar start de middagdienst om 16:30 uur.
+              {% else %}
+                <!-- Wintertijd -->
+                <ul>
+                  <li>Ochtenddienst: 09:30 uur</li>
+                  <li>Middagdienst: 16:30 uur</li>
+                </ul>
+                <br/>
+                Van 1 juni t/m begin september start de middagdienst om 18.30 uur.
+              {% endif %}
+            {% endcomment %}
           </p>
         </div>
       </div>
