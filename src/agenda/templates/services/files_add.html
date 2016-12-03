@@ -136,7 +136,12 @@
                         {% endif %}
                       </td>
 
-                      <td class="ef-date">{% ifchanged s.event %}{{ s.event.title }}, {{ s.event.startdatetime|date:"j F Y, G:i" }}u{% endifchanged %} {{ s.event.exists }}</td>
+                      <td class="ef-date">
+                        {% ifchanged s.event %}
+                          <a href="{% url 'services-single' s.event.id %}" class="black-url">{{ s.event.title }}</a>, {{ s.event.startdatetime|date:"j F Y, G:i" }}u
+                        {% endifchanged %}
+                        {{ s.event.exists }}
+                      </td>
 
                       <td class="ef-title">{{ s.title }}</td>
 

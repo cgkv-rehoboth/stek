@@ -43,7 +43,9 @@
                   (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
                   {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
                 </td>
-                <td class="duty-title">{{ ruil.profile.name }}</td>
+                <td class="duty-title">
+                  <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>
+                </td>
                 <td>{{ ruil.comments }}</td>
                 <td>
                   <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>

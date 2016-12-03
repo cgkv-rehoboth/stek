@@ -95,9 +95,8 @@
                 <tr>
                   <td>
                     {% ifchanged duty.timetable %}
-                      {{ duty.timetable.title }}
-                      <a href="{% url 'timetable-detail-page' duty.timetable.id %}" title="Bekijk het rooster">
-                        <i class="fa fa-share" aria-hidden="true"></i>
+                      <a href="{% url 'timetable-detail-page' duty.timetable.id %}" title="Bekijk het rooster" class="black-url">
+                        {{ duty.timetable.title }}
                       </a>
                     {% endifchanged %}
                   </td>

@@ -78,9 +78,8 @@
                     </td>
                     <td class="duty-responsible">
                       {% with duty.ruilrequest as ruilen %}
-                        <span class="{% if duty.responsible.pk == profile.pk %}current-user{% endif %}
-                                    {% if ruilen %}ruil_requested{% endif %}">
-                          {{ duty.responsible.name }}
+                        <span class="{% if duty.responsible.pk == profile.pk %}current-user{% endif %} {% if ruilen %}ruil_requested{% endif %}">
+                          <a href="{% url 'profile-detail-page' duty.responsible.id %}" class="black-url">{{ duty.responsible.name }}</a>
                         </span>
                         {% if duty.responsible.pk == request.profile.pk %}
                           {% if ruilen.profile == request.profile %}
