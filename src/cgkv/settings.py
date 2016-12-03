@@ -215,7 +215,7 @@ HAYSTACK_CONNECTIONS = {
 # Machina settings
 #
 
-MACHINA_FORUM_NAME = "Rehobothkerk Forum"
+MACHINA_FORUM_NAME = "Rehobothkerk Woerden | Forum"
 
 MACHINA_MARKUP_LANGUAGE = None
 MACHINA_MARKUP_WIDGET = 'ckeditor.widgets.CKEditorWidget'
