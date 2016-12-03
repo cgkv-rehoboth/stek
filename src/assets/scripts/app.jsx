@@ -247,6 +247,9 @@ window.servicePage = () => {
   });
 
   function checkSummertime(){
+    // Not necessary anymore, since december 2016
+    return;
+
     var month = $("#services-form input[name='date']").val().substring(3,5);
 
     // If month is in the summer months:
