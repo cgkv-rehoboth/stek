@@ -13,7 +13,8 @@ export default class ServiceTable extends React.Component {
   static get propTypes() {
     return {
       listFunc: React.PropTypes.func.isRequired, // (searchText, page) => promise<[item]>,
-      is_private: React.PropTypes.bool
+      is_private: React.PropTypes.bool,
+      reverseTime: React.PropTypes.bool
     };
   }
 
@@ -105,7 +106,10 @@ export default class ServiceTable extends React.Component {
     };
     
     return (
-      <SearchTable listFunc={this.props.listFunc} renderRow={renderServiceRow} search={false}>
+      <SearchTable listFunc={this.props.listFunc}
+                   renderRow={renderServiceRow}
+                   search={false}
+                   reverseTime={this.props.reverseTime}>
         <tr>
           <th>Dienst</th>
           <th>Datum</th>

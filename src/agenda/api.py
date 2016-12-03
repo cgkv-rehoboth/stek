@@ -90,7 +90,10 @@ class ServiceViewSet(
 
   # Get queryset to rerturn updated data on each request
   def get_queryset(self):
-    return Service.objects.filter(enddatetime__gte=datetime.today().date()).order_by("startdatetime", "enddatetime")
+    if self.request.GET.get('reverseTime') == "true":
+      return Service.objects.filter(enddatetime__lt=datetime.today().date()).order_by("-enddatetime", "-startdatetime")
+    else:
+      return Service.objects.filter(enddatetime__gte=datetime.today().date()).order_by("startdatetime", "enddatetime")
 
 
   def retrieve(self, request, *args, **kwargs):
@@ -101,6 +104,11 @@ class ServiceViewSet(
 
   def list(self, request, *args, **kwargs):
     response = super().list(request, *args, **kwargs)
+
+    if request.GET.get('reverseTime') == "true":
+      temp = response.data['next']
+      response.data['next'] = response.data['previous']
+      response.data['previous'] = temp
 
     return response
 

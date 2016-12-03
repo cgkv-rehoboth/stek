@@ -469,13 +469,18 @@ window.teamAddPage = () => {
 
 window.servicesPage = () => {
   // Service table
-  let searchServices = (query, page) => {
-    return api.services.list(query, page);
+  let searchServices = (query, page, reverseTime) => {
+    return api.services.list(query, page, reverseTime);
   };
 
   ReactDom.render(
     <ServiceTable listFunc={searchServices} is_private={true} />,
     $("#service-table")[0]
+  );
+
+  ReactDom.render(
+    <ServiceTable listFunc={searchServices} is_private={true} reverseTime={true} />,
+    $("#service-table-old")[0]
   );
 };
 

@@ -125,10 +125,10 @@ let api_obj = {
   },
 
   services: {
-    list: (search='', page=1, page_size=8, extra_params={}) => {
+    list: (search='', page=1, reverseTime=false, page_size=8, extra_params={}) => {
       return Q.xhr
         .get(`${api}/agenda/services`, {
-          params: _.extend({search: search, page: page, page_size: page_size}, extra_params)
+          params: _.extend({search: search, page: page, reverseTime: reverseTime, page_size: page_size}, extra_params)
         });
     },
 

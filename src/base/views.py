@@ -263,7 +263,7 @@ def dashboard(request):
 
   ## Get services for this week
   maxweeks = datetime.today().date() + timedelta(weeks=1)
-  services = Service.objects.filter(enddatetime__gte=datetime.today().date(), startdatetime__lte=maxweeks)
+  services = Service.objects.filter(enddatetime__gte=datetime.today().date(), startdatetime__lte=maxweeks).order_by("startdatetime", "enddatetime")
 
   serviceslist = []
   for service in services:

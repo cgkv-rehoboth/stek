@@ -19,19 +19,20 @@ export class PaginatedTable extends React.Component {
       pageno: React.PropTypes.number,
       hasPrev: React.PropTypes.bool,
       hasNext: React.PropTypes.bool,
-      onPageChange: React.PropTypes.func.isRequired
+      onPageChange: React.PropTypes.func.isRequired,
+      reverseTime: React.PropTypes.bool
     };
   }
 
   render() {
-    let prevButton = 
+    let prevButton =
           <Button
-            onClick={() => this.props.onPageChange(this.props.pageno-1)}
+            onClick={() => this.props.onPageChange(this.props.pageno + 1 * (this.props.reverseTime ? +1 : -1))}
             disabled ={!this.props.hasPrev}
           ><Icon name="chevron-left" /></Button>;
     let nextButton =
           <Button
-             onClick={() => this.props.onPageChange(this.props.pageno+1)}
+             onClick={() => this.props.onPageChange(this.props.pageno - 1 * (this.props.reverseTime ? +1 : -1))}
              disabled={!this.props.hasNext}
           ><Icon name="chevron-right" /></Button>;
 
@@ -56,7 +57,8 @@ export class SearchTable extends React.Component {
     return {
       listFunc: React.PropTypes.func.isRequired, // (searchText, page) => promise<[item]>,
       renderRow: React.PropTypes.func.isRequired,
-      search: React.PropTypes.bool
+      search: React.PropTypes.bool,
+      reverseTime: React.PropTypes.bool
     };
   }
 
@@ -78,7 +80,7 @@ export class SearchTable extends React.Component {
 
   loadItems(searchtext="", page=1) {
     // load initial profiles
-    return this.props.listFunc(searchtext, page)
+    return this.props.listFunc(searchtext, page, this.props.reverseTime)
       .then((data) => {
         this.setState({
           items: data.data.results,
@@ -128,7 +130,8 @@ export class SearchTable extends React.Component {
           pageno={this.state.page}
           onPageChange={this.pageChange.bind(this)}
           hasPrev={this.state.hasPrev}
-          hasNext={this.state.hasNext}>
+          hasNext={this.state.hasNext}
+          reverseTime={this.props.reverseTime}>
           <tbody>
             {this.props.children}
             {rows}
