@@ -27,7 +27,7 @@ def kerktijden(request):
   })
 
 def kindercreche(request):
-  return render(request, 'kerktijden.html', {
+  return render(request, 'kindercreche.html', {
     'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
   })
 

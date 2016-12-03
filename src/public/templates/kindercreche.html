@@ -1,0 +1,69 @@
+{% extends "public_layout.html" %}
+
+{% load staticfiles %}
+
+{% block intro %}
+  <!-- Intro Header -->
+  <header class="intro">
+    <div class="intro-body">
+      <div class="intro-gradient" ></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+            <img src="{% static 'resources/images/logo-wit.png' %}">
+          </div>
+
+          <!-- Hidden button -->
+          <div id="listen-in" class="col-md-4">
+              <a class="cyan btn-rounded btn luisteren-button"
+                 data-toggle="tooltip" data-placement="bottom"
+                 href="http://kerkdienstgemist.nl/assets/267"
+                 title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
+          </div>
+        </div>
+
+        <!-- intro footer -->
+        <div class="row">
+          <div class="col-sm-12">
+            <a id="go-down" href="#content" class="btn btn-circle page-scroll cyan">
+              <i class="fa fa-angle-double-down animated"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="content-section">
+    <div class="container">
+
+      <h2>Kindercrèche</h2>
+
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            De crèche is bedoeld voor kinderen tot 4 jaar. We vragen ouders wat drinken mee te geven in een beker die niet makkelijk omvalt en lekt. Als extra kan er een koekje worden meegegeven, geen fruit!
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Contact</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8">
+            <p>
+              Heb je vragen over de Rehobothkerk of de kerkdiensten? Neem gerust contact met ons op via het <a href="/#contact">contactformulier</a>.
+            </p>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
