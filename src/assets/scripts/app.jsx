@@ -362,9 +362,10 @@ window.profileEdit = (address) => {
 
         image.onload = function() {
 
+          var picsize = $('.profile-pic-container').width();
           // access image size here
           if(this.width > this.height){
-            var margin = Math.round(325*this.width/this.height - 325);
+            var margin = Math.round(picsize*this.width/this.height - picsize);
             // Set image size
             $('.profile-pic').css('max-height', '100%');
             $('.profile-pic').css('max-width', 'none');
@@ -376,7 +377,7 @@ window.profileEdit = (address) => {
             // Give some space to move
             $('.profile-pic').css('margin', '0 ' + margin*-1 + 'px');
           }else{
-            var margin = Math.round(325*this.height/this.width - 325);
+            var margin = Math.round(picsize*this.height/this.width - picsize);
             // Set image size
             $('.profile-pic').css('max-height', 'none');
             $('.profile-pic').css('max-width', '100%');
