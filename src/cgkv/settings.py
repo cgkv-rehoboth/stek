@@ -220,6 +220,21 @@ MACHINA_FORUM_NAME = "Rehobothkerk Forum"
 MACHINA_MARKUP_LANGUAGE = None
 MACHINA_MARKUP_WIDGET = 'ckeditor.widgets.CKEditorWidget'
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Format'],
+            ['TextColor', '-', 'Bold', 'Italic', 'Underline', 'Strike'],
+            ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+            ['Link', 'Unlink', 'Image', '-', 'Table', 'HorizontalRule'],
+            ['Smiley', 'SpecialChar'],
+            ['RemoveFormat', 'Source'],
+            ['Undo', 'Redo'],
+        ]
+    }
+}
+
 MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
     'can_see_forum',
     'can_read_forum',
