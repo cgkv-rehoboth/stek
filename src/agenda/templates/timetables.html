@@ -20,7 +20,7 @@
             {% for table in mytables %}
               <li role="presentation" {% if table.pk == current_table.pk %}class="active"{% endif %}>
                 <a href={% url 'timetable-detail-page' table.pk %}>{{ table.title }}
-                  {% if table.groepsbeheer %}
+                  {% if table.groepsbeheer or perms.agenda.change_timetable %}
                     <span class="timetable-gear-link" onclick="document.location.href='{% url 'timetable-teamleader-page' table.pk %}'; return false;">
                       <i class="fa fa-cog" aria-hidden="true" title="Beheer dit rooster"></i>
                     </span>

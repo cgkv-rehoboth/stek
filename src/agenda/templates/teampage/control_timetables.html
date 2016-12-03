@@ -18,7 +18,7 @@
 
       <div class="row">
         <div class="col-sm-12">
-          {% if tables %}
+          {% if tables.all %}
             Pas hier de roosters van dit team aan.
           {% else %}
             Voeg hier een rooster toe.
@@ -33,7 +33,7 @@
         </div>
 
 
-        {% if not tables %}
+        {% if not tables.all %}
         <div class="col-sm-12">
           <h3>Nieuw rooster</h3>
           <form method="post" action="{% url 'teampage-control-timetables-add' %}" class="team-add-table form-horizontal">
