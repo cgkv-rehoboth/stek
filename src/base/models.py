@@ -88,7 +88,7 @@ class Profile(models.Model):
 
   def check_firsttime(sender, user, request, **kwargs):
     p = request.user.profile
-    if not p.has_logged_in:
+    if not p.has_logged_in and p.email:
       # Send mail with some first-time information
       template = get_template('emails/welcome_information.html')
 
