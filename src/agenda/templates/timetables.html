@@ -30,7 +30,15 @@
             {% endfor %}
 
             {% if current_table and not current_table in mytables %}
-              <li role="presentation" class="active"><a href={% url 'timetable-detail-page' current_table.pk %}>{{ current_table.title }}</a></li>
+              <li role="presentation" class="active">
+                <a href={% url 'timetable-detail-page' current_table.pk %}>{{ current_table.title }}
+                  {% if table.groepsbeheer or perms.agenda.change_timetable %}
+                    <span class="timetable-gear-link" onclick="document.location.href='{% url 'timetable-teamleader-page' table.pk %}'; return false;">
+                      <i class="fa fa-cog" aria-hidden="true" title="Beheer dit rooster"></i>
+                    </span>
+                  {% endif %}
+                </a>
+              </li>
             {% endif %}
 
             <li role="presentation" class="dropdown">
