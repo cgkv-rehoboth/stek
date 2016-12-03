@@ -6,6 +6,7 @@ import unidecode
 from django.utils.crypto import get_random_string
 from datetime import date
 from dateutil.relativedelta import relativedelta
+import time
 
 class NewAccountPasswordResetForm(PasswordResetForm):
   def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
@@ -37,8 +38,10 @@ def send_reset_email(profile, username):
     reset_form = NewAccountPasswordResetForm({ "email": profile.email })
     if reset_form.is_valid():
       reset_form.save()
+      return True
     else:
       print("[FAILURE]: Invalid password-reset-form for email '%s'" % profile.email)
+      return False
 
 
 class Command(BaseCommand):
@@ -92,6 +95,10 @@ class Command(BaseCommand):
         ))
         continue
 
-      print("[SUCCESS] Sending reset email to %s" % prof.email)
       if not dryrun:
-        send_reset_email(prof, username)
+        x = send_reset_email(prof, username)
+        if x:
+          print("[SUCCESS] Sending reset email to %s" % prof.email)
+        else:
+          print("[FAILURE] Sending reset email to %s failed" % prof.email)
+        time.sleep(1)
