@@ -41,24 +41,26 @@
           <p>{{ team.description }}</p>
         </div>
 
-        <div class="col-sm-12">
-          <h3>Roosters
-            {% if is_admin or perms.agenda.change_team %}
-              <small>
-                <a href="{% url 'teampage-control-timetables' team.pk %}" title="Roosters toevoegen/verwijderen">Beheren</a>
-              </small>
-            {% endif %}
-          </h3>
+        {% if tables.all %}
+            <div class="col-sm-12">
+              <h3>Roosters
+                {% if is_admin or perms.agenda.change_team %}
+                  <small>
+                    <a href="{% url 'teampage-control-timetables' team.pk %}" title="Roosters toevoegen/verwijderen">Beheren</a>
+                  </small>
+                {% endif %}
+              </h3>
 
-          <ul class="teampage-tables">
-            {% for t in tables.all %}
-              <li>
-                - <a href="{% url 'timetable-detail-page' t.pk %}" title="Bekijk rooster">{{ t.title }}</a>
-              </li>
-            {% endfor %}
-          </ul>
-          <br/>
-        </div>
+              <ul class="teampage-tables">
+                {% for t in tables.all %}
+                  <li>
+                    - <a href="{% url 'timetable-detail-page' t.pk %}" title="Bekijk rooster">{{ t.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+              <br/>
+            </div>
+        {% endif %}
 
         <div class="col-sm-12">
           <h3>Teamleden
@@ -68,33 +70,37 @@
               </small>
             {% endif %}
           </h3>
-          <div class="zoomtools">
-            <i class="fa fa-search-minus zoomout" aria-hidden="true" title="Verkleinen"></i>
-            <i class="fa fa-search-plus zoomin" aria-hidden="true" title="Vergroten"></i>
-          </div>
-          <br/>
-
-          {% for m in members.all %}
-            <div class="team-usersquare team-role-{{ m.role.short_name }}">
-              <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.role }})" class="team-userlink">
-                <div class="team-userimage-div">
-                  {% if m.profile.photo %}
-                    <img src="{{ m.profile.photo.url }}" title="Foto van {{ m.profile.name }}" class="team-userimage"/>
-                  {% else %}
-                    <img src="{% static 'resources/images/default_pf.png' %}" class="team-userimage"/>
-                  {% endif %}
-                </div>
-
-                <div class="team-userinfo">
-                  {{ m.profile.first_name }}
-                </div>
-
-                <div class="team-userrole" title="{% if m.is_admin %}Deze persoon heeft beheerrechten over dit team{% endif %}">
-                  {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
-                </div>
-              </a>
+          {% if members.all %}
+            <div class="zoomtools">
+              <i class="fa fa-search-minus zoomout" aria-hidden="true" title="Verkleinen"></i>
+              <i class="fa fa-search-plus zoomin" aria-hidden="true" title="Vergroten"></i>
             </div>
-          {% endfor %}
+            <br/>
+
+            {% for m in members.all %}
+              <div class="team-usersquare team-role-{{ m.role.short_name }}">
+                <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.role }})" class="team-userlink">
+                  <div class="team-userimage-div">
+                    {% if m.profile.photo %}
+                      <img src="{{ m.profile.photo.url }}" title="Foto van {{ m.profile.name }}" class="team-userimage"/>
+                    {% else %}
+                      <img src="{% static 'resources/images/default_pf.png' %}" class="team-userimage"/>
+                    {% endif %}
+                  </div>
+
+                  <div class="team-userinfo">
+                    {{ m.profile.first_name }}
+                  </div>
+
+                  <div class="team-userrole" title="{% if m.is_admin %}Deze persoon heeft beheerrechten over dit team{% endif %}">
+                    {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          {% else %}
+            Geen leden gevonden.
+          {% endif %}
         </div>
       <div style="font-size: 65%; margin-left: 20px; margin-bottom: 30px;">* Deze persoon is beheerder van deze teampagina</div>
       </div>
