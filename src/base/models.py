@@ -178,6 +178,12 @@ class Profile(models.Model):
     # Check if user is teamleader of this timetable's team
     return self.team_membership.filter(team=team, profile=self, is_admin=True).exists()
 
+  def age(self):
+    today = datetime.today().date()
+    years = today.year - self.birthday.year
+    is_before_birthday = (today.month, today.day) < (self.birthday.month, self.birthday.day)
+    return years - int(is_before_birthday)
+
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)
 

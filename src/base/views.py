@@ -358,7 +358,10 @@ def dashboard(request):
       if req.profile == duty.responsible:
         duty.ruilrequest = req
 
+  is_birthday = request.profile.birthday.strftime('%d-%m') == datetime.today().date().strftime('%d-%m')
+
   return render(request, 'dashboard.html', {
+    'is_birthday': is_birthday,
     'services': servicesJSON,
     'ruilrequests': ruilrequests,
     'duties': duties

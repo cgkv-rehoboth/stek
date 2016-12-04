@@ -4,7 +4,17 @@
 {% load utils %}
 
 {% block content %}
-  <section class="container" id="dashboard">
+  <section class="container" id="dashboard"
+  {% if is_birthday %}
+    style="
+      background-image: url('{% static 'resources/images/banner-birthday.png' %}');
+      background-repeat: no-repeat;
+      background-position-x: center;
+      background-position-y: -11px;
+      padding-top: 31px;
+    "
+  {% endif %}
+  >
     <!-- User information -->
     <div class="row greeting">
       {% if request.profile.photo %}
@@ -16,6 +26,12 @@
       {% endif %}
       <div class="col-md-6">
         <h2>Welkom {{ request.profile.first_name }},</h2>
+
+        {% if is_birthday %}
+          <p>
+            Van harte gefeliciteerd met je verjaardag!
+          </p>
+        {% endif %}
       </div>
     </div>
 
