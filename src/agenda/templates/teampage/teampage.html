@@ -41,7 +41,7 @@
           <p>{{ team.description }}</p>
         </div>
 
-        {% if tables.all %}
+        {% if tables.all or is_admin or perms.agenda.change_team %}
             <div class="col-sm-12">
               <h3>Roosters
                 {% if is_admin or perms.agenda.change_team %}
