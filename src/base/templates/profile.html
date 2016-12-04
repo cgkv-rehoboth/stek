@@ -78,6 +78,15 @@
                 </td>
               </tr>
             {% endif %}
+            {% if p.best_address.phone %}
+              <tr>
+                <th>Huistelefoon</th>
+                <td>
+                  {{ p.best_address.phone}}
+                  <a href="tel:{{ p.best_address.phone }}" class="make-contact-icon" title="Bel {{ p.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
+                </td>
+              </tr>
+            {% endif %}
             {% if p.phone %}
               <tr>
                 <th>Telefoon</th>

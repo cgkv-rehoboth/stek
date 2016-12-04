@@ -47,20 +47,24 @@
           <!-- Familymembers + details -->
           <h3>Gezinsleden</h3>
           <table class="table table-bordered table-hover">
-            <tr>
-              <th>Voornaam</th>
-              <th>Geboortedatum</th>
-              <th>Mobiele telefoon</th>
-            </tr>
-            {% for w in v.members.all %}
+            <thead>
               <tr>
-                <td><a href="{% url 'profile-detail-page' w.pk %}">
-                  {{ w.first_name }}
-                </a></td>
-                <td>{{ w.birthday }}</td>
-                <td>{{ w.phone }}</td>
+                <th>Voornaam</th>
+                <th>Geboortedatum</th>
+                <th>Telefoon</th>
               </tr>
-            {% endfor %}
+            </thead>
+            <tbody>
+              {% for w in v.members.all %}
+                <tr>
+                  <td><a href="{% url 'profile-detail-page' w.pk %}">
+                    {{ w.first_name }}
+                  </a></td>
+                  <td>{{ w.birthday }}</td>
+                  <td>{{ w.phone }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
           </table>
 
             <!-- Contact info -->
