@@ -20,6 +20,8 @@
             </a>
           {% endif %}
           {{ p.name }}
+
+          <div id="profile-favorite"></div>
         </h1>
       </div>
     </div>
@@ -134,4 +136,5 @@
 {% endblock %}
 
 {% block scripts %}
+  <script>window.profileMain({{ p.pk }}, {{ is_my_favorite|lower }});</script>
 {% endblock %}

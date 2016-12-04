@@ -168,8 +168,8 @@ class Profile(models.Model):
     else:
       return "%s %s" % (self.prefix, self.last_name)
 
-  def is_favorite_for(self, user):
-    return self.favorited_by.filter(owner=user).exists()
+  def is_favorite_for(self, profile):
+    return self.favorited_by.filter(owner=profile).exists()
 
   def __str__(self):
     return "Profiel van %s" % self.name()

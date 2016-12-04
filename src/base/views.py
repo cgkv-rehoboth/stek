@@ -80,6 +80,8 @@ def profile_detail(request, pk=None):
                           .prefetch_related("team")\
                           .filter(profile__pk=pk)
 
+  is_my_favorite = profiel.is_favorite_for(request.profile)
+
   saddr = request.profile.best_address()
   daddr = profiel.best_address()
 
@@ -87,6 +89,7 @@ def profile_detail(request, pk=None):
 
   return render(request, 'profile.html', {
     'p': profiel,
+    'is_my_favorite': is_my_favorite,
     'googlemaps': googlemaps,
     'memberships': memberships
   })

@@ -504,3 +504,12 @@ window.eventFilesPage = () => {
     }
   });
 };
+
+window.profileMain = (pk, favorite) => {
+  console.log(pk);
+  console.log(favorite);
+  ReactDom.render(
+    <FavStar pk={pk} favorite={favorite}/>,
+    $("#profile-favorite")[0]
+  );
+};
