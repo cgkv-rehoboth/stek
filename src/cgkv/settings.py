@@ -215,10 +215,26 @@ HAYSTACK_CONNECTIONS = {
 # Machina settings
 #
 
-MACHINA_FORUM_NAME = "Rehobothkerk Forum"
+MACHINA_FORUM_NAME = "Rehobothkerk Woerden | Forum"
 
 MACHINA_MARKUP_LANGUAGE = None
 MACHINA_MARKUP_WIDGET = 'ckeditor.widgets.CKEditorWidget'
+
+CKEDITOR_CONFIGS = {
+  'default': {
+    'toolbar': 'Custom',
+    'toolbar_Custom': [
+      ['Format'],
+      ['TextColor', '-', 'Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat'],
+      ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+      ['Link', 'Unlink', 'Image', '-', 'Table', 'HorizontalRule'],
+      ['Smiley', 'SpecialChar'],
+      ['Undo', 'Redo'],
+    ],
+    'width': '100%',
+    #'allowedContent': ['p', 'strong', 'i', 's', 'u', 'span', 'div', 'ul', 'li', 'ol', 'em', 'a', 'table', 'thead', 'tbody', 'caption', 'tr', 'td', 'th', 'img', 'br', 'hr', 'pr', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+  }
+}
 
 MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
     'can_see_forum',

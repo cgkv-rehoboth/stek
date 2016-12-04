@@ -113,7 +113,7 @@ def timetable_undo_ruilen_teamleader(request, id):
   req_id = req.timetableduty.timetable.pk
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(req.timetableduty.timetable.team):
+  if not request.profile.teamleader_of(req.timetableduty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=req_id)
 
@@ -190,7 +190,7 @@ def timetable_teamleader(request, id):
   table = Timetable.objects.prefetch_related('team__members').get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(table.team):
+  if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=id)
 
@@ -254,7 +254,7 @@ def timetable_ruilverzoek(request, id):
   ruil = RuilRequest.objects.get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team):
+  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=ruil.timetableduty.timetable.team.pk)
 
@@ -294,7 +294,7 @@ def timetable_ruilverzoek_accept(request, id):
   ruil = RuilRequest.objects.get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team):
+  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=ruil.timetableduty.timetable.team.pk)
 
@@ -334,7 +334,7 @@ def timetable_teamleader_duty_add(request):
   table = Timetable.objects.get(pk=request.POST.get("timetable", ""))
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(table.team):
+  if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=table.team.pk)
 
@@ -363,7 +363,7 @@ def timetable_teamleader_duty_edit_save(request, id):
     table = Timetable.objects.get(pk=request.POST.get("timetable", ""))
 
   # Check if user is teamleader of the new/old timetable's team
-  if not request.profile.teamleader_of(table.team) or not request.profile.teamleader_of(duty.timetable.team):
+  if (not request.profile.teamleader_of(table.team) or not request.profile.teamleader_of(duty.timetable.team)) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=table.team.pk)
 
@@ -385,16 +385,19 @@ def timetable_teamleader_duty_edit(request, id):
   duty = TimetableDuty.objects.get(pk=id)
 
   # Check if user is teamleader of the new/old timetable's team
-  if not request.profile.teamleader_of(duty.timetable.team):
+  if not request.profile.teamleader_of(duty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=duty.timetable.team.pk)
 
-  # Return only tables which the user is admin of
-  # Get all teams which the user is leader of
-  leading_teams = TeamMember.objects.filter(profile=request.profile, is_admin=True).prefetch_related('team')
-
   # Get all corresponding timetables
-  tables = Timetable.objects.filter(team__in=leading_teams.values('team'))
+  if request.user.has_perm('agenda.change_timetable'):
+    tables = Timetable.objects.all()
+  else:
+    # Return only tables which the user is admin of
+    # Get all teams which the user is leader of
+    leading_teams = TeamMember.objects.filter(profile=request.profile, is_admin=True).prefetch_related('team')
+
+    tables = Timetable.objects.filter(team__in=leading_teams.values('team'))
 
   # Get all future events
   events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
@@ -419,7 +422,7 @@ def timetable_teamleader_duty_delete(request, id):
   table = duty.timetable
 
   # Check if user is teamleader of the new/old timetable's team
-  if not request.profile.teamleader_of(table.team):
+  if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=table.team.pk)
 
@@ -432,7 +435,7 @@ def timetable_teamleader_duty_new(request, id):
   table = Timetable.objects.get(pk=id)
 
   # Check if user is teamleader of the new/old timetable's team
-  if not request.profile.teamleader_of(table.team):
+  if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=table.team.pk)
 
@@ -496,7 +499,6 @@ def services_admin(request):
     # Get next upcoming sunday
     today = datetime.today().date()
     startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
-    print(startdatetime)
 
   return render(request, 'services/admin.html', {
     'startdatetime': startdatetime,
@@ -755,7 +757,7 @@ def teampage_control_timetables_add(request):
   else:
     color = request.POST.get("color", "")
 
-  if len(team.timetables):
+  if len(team.timetables.all()):
     messages.error(request, "Je hebt al een rooster voor dit team toegevoegd. Het limiet staat op één rooster per team.")
     return redirect('teampage-control-timetables', id=team.pk)
 
@@ -1049,7 +1051,6 @@ def services_page(request):
     # Get next upcoming sunday
     today = datetime.today().date()
     startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
-    print(startdatetime)
 
   return render(request, 'services/list.html', {
     'startdatetime': startdatetime,
