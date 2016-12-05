@@ -33,7 +33,7 @@
         </div>
 
 
-        {% if not tables.all %}
+        {% if not tables.all or perms.agenda.change_team %}
         <div class="col-sm-12">
           <h3>Nieuw rooster</h3>
           <form method="post" action="{% url 'teampage-control-timetables-add' %}" class="team-add-table form-horizontal">

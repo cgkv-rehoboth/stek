@@ -757,7 +757,7 @@ def teampage_control_timetables_add(request):
   else:
     color = request.POST.get("color", "")
 
-  if len(team.timetables.all()):
+  if len(team.timetables.all()) and not request.user.has_perm('agenda.change_team'):
     messages.error(request, "Je hebt al een rooster voor dit team toegevoegd. Het limiet staat op één rooster per team.")
     return redirect('teampage-control-timetables', id=team.pk)
 
