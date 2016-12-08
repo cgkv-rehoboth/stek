@@ -24,6 +24,23 @@ from base.models import *
 
 from machina.apps.forum_member.models import *
 
+
+def uniqify(seq, idfun=None):
+   # order preserving
+   if idfun is None:
+       def idfun(x): return x
+   seen = {}
+   result = []
+   for item in seq:
+       marker = idfun(item)
+       # in old Python versions:
+       # if seen.has_key(marker)
+       # but in new ones:
+       if marker in seen: continue
+       seen[marker] = 1
+       result.append(item)
+   return result
+
 @login_required
 def profile_list(request):
   return render(request, 'addressbook/profiles.html')
@@ -37,7 +54,7 @@ def team_list(request, pk=None):
   teams = Team.objects.all().prefetch_related("teammembers").order_by('name')
 
   for i, u in enumerate(teams):
-    teams[i].teammembersSorted = teams[i].teammembers.all().order_by('role__name', 'profile__first_name')
+    teams[i].teammembersSorted = teams[i].teammembers.all().order_by('role__name', 'family__lastname', 'profile__first_name')
 
   if pk is not None:
     pk = int(pk)
@@ -78,7 +95,10 @@ def profile_detail(request, pk=None):
   profiel = Profile.objects.get(pk=pk)
   memberships = TeamMember.objects\
                           .prefetch_related("team")\
-                          .filter(profile__pk=pk)
+                          .filter(Q(profile=profiel)|Q(family=profiel.family))
+
+  # Remove double memberships (like profile AND family), filter on (i.)team
+  memberships = uniqify(memberships, lambda i: i.team)
 
   is_my_favorite = profiel.is_favorite_for(request.profile)
 
@@ -284,11 +304,11 @@ def dashboard(request):
           'color': duty.timetable.color,
           'team': duty.timetable.team.name,
         },
-        'responsible': {
-          'id': duty.responsible.id,
-          'url': reverse('profile-detail-page', kwargs={'pk': duty.responsible.id}),
-          'name': duty.responsible.name(),
-        },
+#        'responsible': {
+#          'id': duty.responsible.id,
+#          'url': reverse('profile-detail-page', kwargs={'pk': duty.responsible.id}),
+#          'name': duty.responsible.name(),
+#        },
       }
 
       duties.append(d)
@@ -346,8 +366,7 @@ def dashboard(request):
   ## Get timetableduties
   maxweeks = datetime.today().date() + timedelta(weeks=4)
   duties = TimetableDuty.objects\
-             .prefetch_related('ruilen')\
-             .filter(responsible=request.profile, event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)\
+             .filter(Q(responsible=request.profile) | Q(responsible_family=request.profile.family), event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)\
              .order_by("event__startdatetime", "event__enddatetime")
 
   for duty in duties:
@@ -355,7 +374,7 @@ def dashboard(request):
       # sanity check
       # only a single request can pass this check
       # due to the uniqueness constraint on requests
-      if req.profile == duty.responsible:
+      if req.profile == duty.responsible or req.profile.family == duty.responsible_family:
         duty.ruilrequest = req
 
   is_birthday = request.profile.birthday.strftime('%d-%m') == datetime.today().date().strftime('%d-%m')

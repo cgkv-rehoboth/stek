@@ -14,25 +14,26 @@ from django.contrib import messages
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
+from django.db.models import Q
 import random
 from .models import *
-from base.models import Profile
+from base.models import Profile, Family
 from .forms import *
 
 def uniqify(seq, idfun=None):
    # order preserving
    if idfun is None:
-       def idfun(x): return x
+     def idfun(x): return x
    seen = {}
    result = []
    for item in seq:
-       marker = idfun(item)
-       # in old Python versions:
-       # if seen.has_key(marker)
-       # but in new ones:
-       if marker in seen: continue
-       seen[marker] = 1
-       result.append(item)
+     marker = idfun(item)
+     # in old Python versions:
+     # if seen.has_key(marker)
+     # but in new ones:
+     if marker in seen: continue
+     seen[marker] = 1
+     result.append(item)
    return result
 
 @login_required
@@ -41,8 +42,10 @@ def timetables(request, id=None):
   # Get all the tables linked to the team(s) the user is in
   mytables = list(Timetable\
     .objects\
-    .filter(team__members__pk=request.profile.pk)\
+    .filter(Q(team__teammembers__profile__pk=request.profile.pk) | Q(team__teammembers__family__pk=request.profile.family.pk))\
     .exclude(team__isnull=True))
+
+  mytables = uniqify(mytables)
 
   # Insert special buttons for special persons (teamleaders)
   for table in mytables:
@@ -54,7 +57,8 @@ def timetables(request, id=None):
     id = mytables[0].pk
 
   # Get current table
-  table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
+  #table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
+  table = Timetable.objects.filter(pk=id).first()
 
   # Get duties
   if table is not None:
@@ -75,14 +79,16 @@ def timetables(request, id=None):
       # sanity check
       # only a single request can pass this check
       # due to the uniqueness constraint on requests
-      if req.profile == duty.responsible:
+      if req.profile == duty.responsible or req.profile.family == duty.responsible_family:
         duty.ruilrequest = req
 
   # Get all the other tables
   # that are not really relevant to the user
+  # also filter out special tables, like Diensten
   notmytables = list(Timetable\
     .objects\
     .exclude(team__members__pk=request.profile.pk)\
+    .exclude(team__teammembers__family__pk=request.profile.family.pk)\
     .exclude(team__isnull=True)\
     .exclude(pk=id))
 
@@ -163,10 +169,12 @@ def timetable_ruilen(request, id):
   data = Context({
     'name': request.profile.name(),
     'timetable': duty.timetable.title,
-    'duty': duty,
+    'duty': str(duty),
     'comments': comments,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
+
+  print(data)
 
   message = template.render(data)
 
@@ -176,6 +184,7 @@ def timetable_ruilen(request, id):
 
   to_emails = [ t[0] for t in duty.timetable\
                                   .team.leaders()\
+                                  .exclude(profile__email=None)
                                   .values_list('profile__email') ]
 
   send_mail("Ruilverzoek", message, from_email, to_emails)
@@ -201,13 +210,12 @@ def timetable_teamleader(request, id):
   #
   ruils = RuilRequest.objects.filter(timetableduty__timetable=id)
 
-
   #
   # New duty
   #
 
   # Get all future events
-  events = Event.objects.filter(startdatetime__gte=datetime.today().date()) \
+  events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
     .order_by("startdatetime", "enddatetime", "title")
 
   # set default selection to event without duty (belonging to this timetable)
@@ -217,25 +225,44 @@ def timetable_teamleader(request, id):
     selected_event = 0
 
   # Get all teammembers
-  members = table.team.teammembers
+  profiles = table.team.teammembers.filter(family=None)
+  # Get all teamfamilies
+  families = table.team.teammembers.filter(profile=None)
+
+  members = table.team.teammembers.values_list('profile', 'family')
+
+  # Look only in the past `limit` duties
+  limit = 2 * len(members)
+  duties = table.duties.order_by("-event__enddatetime", "-event__startdatetime")[:limit]
 
   # set default selection to member which is last scheduled
-  duties = table.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime",
-                                                                                         "-event__startdatetime")
-  if duties.exists():
+  if len(duties):
+    profiles_values = profiles.values_list('profile', flat=True)
+    families_values = families.values_list('family', flat=True)
+
+    resps = []
     # get only users that are still teammembers
-    responsibles = duties.filter(responsible__in=members.values_list('profile', flat=True)).values_list('responsible',
-                                                                                                        flat=True)
+    for d in duties:
+      if d.responsible and d.responsible.pk in profiles_values:
+        resps.append((d.responsible.pk, None))
+      elif d.responsible_family and d.responsible_family.pk in families_values:
+        resps.append((None, d.responsible_family.pk))
 
-    unique_responsibles = uniqify(responsibles)
+    # Add remaining members
+    # This is a list with all members of the past `limit` duties, ordered by time
+    resps = uniqify(list(resps) + list(members))
 
-    # Add also the members who aren't scheduled for any duty yet
-    b = members.values_list('profile', flat=True)
-    all_responsibles = uniqify(unique_responsibles + uniqify(b))
+    lastone = resps[-1]
+    if lastone[0] is None:
+      selected_family = lastone[1]
+      selected_member = 0
+    else:
+      selected_family = 0
+      selected_member = lastone[0]
 
-    selected_member = all_responsibles[-1]
   else:
     selected_member = 0
+    selected_family = 0
 
   # Render that stuff!
   return render(request, 'teamleader/teamleader.html', {
@@ -243,9 +270,11 @@ def timetable_teamleader(request, id):
     'ruils': ruils,
     'team': table.team,
     'events': events,
-    'members': members,
+    'members': profiles,
+    'families': families,
     'selected_event': selected_event,
     'selected_member': selected_member,
+    'selected_family': selected_family,
   })
 
 @login_required
@@ -261,30 +290,67 @@ def timetable_ruilverzoek(request, id):
   # OK, user is teamleader, let's continue:
 
   # Get all teammembers
-  members = ruil.timetableduty.timetable.team.teammembers.all()
+  profiles = ruil.timetableduty.timetable.team.teammembers.filter(family=None)
+  # Get all teamfamilies
+  families = ruil.timetableduty.timetable.team.teammembers.filter(profile=None)
+
+  members = ruil.timetableduty.timetable.team.teammembers.values_list('profile', 'family')
+
+  # Look only in the past {limit} duties
+  limit = 2 * len(members)
+  # And also include next week
+  maxweeks = ruil.timetableduty.event.startdatetime + timedelta(weeks=1)
+  duties = ruil.timetableduty.timetable.duties.filter(event__startdatetime__lte=maxweeks).order_by("-event__enddatetime", "-event__startdatetime")[:limit]
 
   # set default selection to member which is last scheduled
-  duties = ruil.timetableduty.timetable.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime", "-event__startdatetime")
-  if duties.exists():
-    responsibles = duties.values_list('responsible', flat=True)
-    unique_responsibles = uniqify(responsibles)
+  if len(duties):
+    profiles_values = profiles.values_list('profile', flat=True)
+    families_values = families.values_list('family', flat=True)
 
-    # Add also the members who aren't scheduled for any duty yet
-    b = members.values_list('profile', flat=True)
-    all_responsibles = uniqify(unique_responsibles + uniqify(b))
+    resps = []
+    # get only users that are still teammembers
+    for d in duties:
+      if d.responsible and d.responsible.pk in profiles_values:
+        resps.append((d.responsible.pk, None))
+      elif d.responsible_family and d.responsible_family.pk in families_values:
+        resps.append((None, d.responsible_family.pk))
 
-    if len(all_responsibles) > 1:
-      all_responsibles.remove(ruil.timetableduty.responsible.pk)
+    # Add remaining members
+    # This is a list with all members of the past `limit` duties, ordered by time
+    resps = uniqify(list(resps) + list(members))
 
-    selected_member = all_responsibles[-1]
+    lastone = resps[-1]
+    if lastone[0] is None:
+      selected_member = 0
+      selected_family = lastone[1]
+    else:
+      selected_member = lastone[0]
+      selected_family = 0
+
+    # Filter out current user
+    if ((ruil.timetableduty.responsible and ruil.timetableduty.responsible.pk is selected_member)\
+        or (ruil.timetableduty.responsible_family and ruil.timetableduty.responsible_family.pk is selected_family))\
+        and len(resps) > 1:
+      lastone = resps[-2]
+
+      if lastone[0] is None:
+        selected_member = 0
+        selected_family = lastone[1]
+      else:
+        selected_member = lastone[0]
+        selected_family = 0
+
   else:
     selected_member = 0
+    selected_family = 0
 
   # Render that stuff!
   return render(request, 'teamleader/ruilverzoek.html', {
     'ruil': ruil,
-    'members': members,
-    'selected_member': selected_member
+    'members': profiles,
+    'families': families,
+    'selected_member': selected_member,
+    'selected_family': selected_family,
   })
 
 @login_required
@@ -299,14 +365,14 @@ def timetable_ruilverzoek_accept(request, id):
     return redirect('timetable-detail-page', id=ruil.timetableduty.timetable.team.pk)
 
   # OK, user is teamleader, let's continue:
-  # Sent notification email to the user
+  # Sent notification email  to the user
   template = get_template('email/ruilverzoek_status.txt')
 
   data = Context({
     'name': ruil.profile.name(),
     'status': 'geaccepteerd',
     'timetable': ruil.timetableduty.timetable.title,
-    'duty': ruil.timetableduty,
+    'duty': str(ruil.timetableduty),
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
@@ -317,8 +383,18 @@ def timetable_ruilverzoek_accept(request, id):
   to_emails = [ ruil.profile.email ]
   send_mail("Ruilverzoek geaccepteerd", message, from_email, to_emails)
 
-  # Change responsibility
-  ruil.timetableduty.responsible = Profile.objects.get(pk=request.POST.get("vervanging"))
+  # Get selected user
+  resp_id = request.POST.get("responsible")[1:]
+
+  if request.POST.get("responsible")[0] is "f":
+    prof = None
+    fam = Family.objects.get(pk=resp_id)
+  else:
+    prof = Profile.objects.get(pk=resp_id)
+    fam = None
+
+  ruil.timetableduty.responsible = prof
+  ruil.timetableduty.responsible_family = fam
   ruil.timetableduty.save()
 
   # Remove ruilrequest
@@ -336,20 +412,28 @@ def timetable_teamleader_duty_add(request):
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
-    return redirect('timetable-detail-page', id=table.team.pk)
+    return redirect('timetable-detail-page', id=table.pk)
 
   event = Event.objects.get(pk=request.POST.get("event", ""))
-  responsible = Profile.objects.get(pk=request.POST.get("responsible", ""))
+  resp_id = request.POST.get("responsible")[1:]
+
+  if request.POST.get("responsible")[0] is "f":
+    prof = None
+    fam = Family.objects.get(pk=resp_id)
+  else:
+    prof = Profile.objects.get(pk=resp_id)
+    fam = None
 
   # Create new duty
-  TimetableDuty.objects.create(
+  duty = TimetableDuty.objects.create(
     timetable=table,
     event=event,
-    responsible=responsible,
+    responsible=prof,
+    responsible_family=fam,
     comments=request.POST.get("comments", "").strip()
   )
 
-  messages.success(request, "%s is ingepland voor '%s'." % (responsible.name(), event))
+  messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
 
   return redirect('timetable-teamleader-page', id=table.id)
 
@@ -367,16 +451,28 @@ def timetable_teamleader_duty_edit_save(request, id):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=table.team.pk)
 
+  # Get selected user
+  resp_id = request.POST.get("responsible")[1:]
+
+  if request.POST.get("responsible")[0] is "f":
+    prof = None
+    fam = Family.objects.get(pk=resp_id)
+  else:
+    prof = Profile.objects.get(pk=resp_id)
+    fam = None
+
   event = Event.objects.get(pk=request.POST.get("event", ""))
-  responsible = Profile.objects.get(pk=request.POST.get("responsible", ""))
 
   # Edit duty
   duty.timetable = table
   duty.event = event
-  duty.responsible = responsible
+  duty.responsible = prof
+  duty.responsible_family = fam
   duty.comments = request.POST.get("comments", "").strip()
 
   duty.save()
+
+  messages.success(request, "Taak opgeslagen.")
 
   return redirect('timetable-detail-page', id=table.id)
 
@@ -404,7 +500,9 @@ def timetable_teamleader_duty_edit(request, id):
       .order_by("startdatetime", "enddatetime", "title")
 
   # Get all teammembers
-  members = TeamMember.objects.filter(team=duty.timetable.team)
+  members = duty.timetable.team.teammembers.filter(family=None)
+  # Get all teamfamilies
+  families = duty.timetable.team.teammembers.filter(profile=None)
 
   return render(request, 'teamleader/teamleader_duty_edit.html', {
     'duty': duty,
@@ -412,8 +510,8 @@ def timetable_teamleader_duty_edit(request, id):
     'tables': tables,
     'events': events,
     'members': members,
+    'families': families,
     'selected_event': duty.event.pk,
-    'selected_responsible': duty.responsible.pk,
   })
 
 @login_required
@@ -430,51 +528,53 @@ def timetable_teamleader_duty_delete(request, id):
 
   return redirect('timetable-detail-page', id=table.pk)
 
-@login_required
-def timetable_teamleader_duty_new(request, id):
-  table = Timetable.objects.get(pk=id)
-
-  # Check if user is teamleader of the new/old timetable's team
-  if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
-    # Redirect to first public page
-    return redirect('timetable-detail-page', id=table.team.pk)
-
-  # Get all future events
-  events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
-      .order_by("startdatetime", "enddatetime", "title")
-
-  # set default selection to event without duty (belonging to this timetable)
-  if events.exclude(duties__timetable=table.pk).exists():
-    selected_event = events.exclude(duties__timetable=table.pk).first().pk
-  else:
-    selected_event = 0
-
-  # Get all teammembers
-  members = table.team.teammembers
-
-  # set default selection to member which is last scheduled
-  duties = table.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime", "-event__startdatetime")
-  if duties.exists():
-    # get only users that are still teammembers
-    responsibles = duties.filter(responsible__in=members.values_list('profile', flat=True)).values_list('responsible', flat=True)
-
-    unique_responsibles = uniqify(responsibles)
-
-    # Add also the members who aren't scheduled for any duty yet
-    b = members.values_list('profile', flat=True)
-    all_responsibles = uniqify(unique_responsibles + uniqify(b))
-
-    selected_member = all_responsibles[-1]
-  else:
-    selected_member = 0
-
-  return render(request, 'teamleader/teamleader_duty.html', {
-    'table': table,
-    'events': events,
-    'members': members,
-    'selected_event': selected_event,
-    'selected_member': selected_member,
-  })
+#  Not being used anymore, because it's integrated in the main teamleader page
+#
+# @login_required
+# def timetable_teamleader_duty_new(request, id):
+#   table = Timetable.objects.get(pk=id)
+#
+#   # Check if user is teamleader of the new/old timetable's team
+#   if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
+#     # Redirect to first public page
+#     return redirect('timetable-detail-page', id=table.team.pk)
+#
+#   # Get all future events
+#   events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
+#       .order_by("startdatetime", "enddatetime", "title")
+#
+#   # set default selection to event without duty (belonging to this timetable)
+#   if events.exclude(duties__timetable=table.pk).exists():
+#     selected_event = events.exclude(duties__timetable=table.pk).first().pk
+#   else:
+#     selected_event = 0
+#
+#   # Get all teammembers
+#   members = table.team.teammembers
+#
+#   # set default selection to member which is last scheduled
+#   duties = table.duties.filter(event__enddatetime__gte=datetime.today().date()).order_by("-event__enddatetime", "-event__startdatetime")
+#   if duties.exists():
+#     # get only users that are still teammembers
+#     responsibles = duties.filter(responsible__in=members.values_list('profile', flat=True)).values_list('responsible', flat=True)
+#
+#     unique_responsibles = uniqify(responsibles)
+#
+#     # Add also the members who aren't scheduled for any duty yet
+#     b = members.values_list('profile', flat=True)
+#     all_responsibles = uniqify(unique_responsibles + uniqify(b))
+#
+#     selected_member = all_responsibles[-1]
+#   else:
+#     selected_member = 0
+#
+#   return render(request, 'teamleader/teamleader_duty.html', {
+#     'table': table,
+#     'events': events,
+#     'members': members,
+#     'selected_event': selected_event,
+#     'selected_member': selected_member,
+#   })
 
 
 # Calendar
@@ -629,12 +729,7 @@ def teampage_control_members(request, id):
     # Redirect to first public page
     return redirect('teampage', id=id)
 
-  members = team.teammembers.order_by('profile__first_name')
-
-  # Get all profiles but exclude profiles that are already member
-  memberspk = members.values_list('pk', flat=True)
-  profiles = Profile.objects.all().order_by('last_name', 'first_name')\
-    .exclude(team_membership__pk__in=memberspk)
+  members = team.teammembers.order_by('family__lastname', 'profile__first_name')
 
   roles = TeamMemberRole.objects.active().order_by('name')
 
@@ -651,24 +746,37 @@ def teampage_control_members(request, id):
 def teampage_control_members_add(request):
   team = request.POST.get("team", "")
   profile = request.POST.get("profile", "0")
+  family = request.POST.get("family", "0")
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=team.pk)
 
-  if profile is "0":
-    messages.error(request, "Er is geen (geldig) lid gekozen om toe te voegen.")
+  # Check if profile is valid
+  if family is "0" and TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
+    messages.error(request, "Het gekozen lid maakt al deel uit van dit team.")
     return redirect('teampage-control-members', id=team)
 
   # Check if profile is valid
-  if TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
-    messages.error(request, "Het gekozen lid bestaat niet of maakt al deel uit van dit team.")
+  if profile is "0" and TeamMember.objects.filter(team_id=team, family_id=family).exists():
+    messages.error(request, "De gekozen familie maakt al deel uit van dit team.")
+    return redirect('teampage-control-members', id=team)
+
+  if Profile.objects.filter(pk=profile).exists():
+    prof = Profile.objects.get(pk=profile)
+    fam = None
+  elif Family.objects.filter(pk=family).exists():
+    prof = None
+    fam = Family.objects.get(pk=family)
+  else:
+    messages.error(request, "Er is geen (geldig) lid/familie gekozen om toe te voegen.")
     return redirect('teampage-control-members', id=team)
 
   TeamMember.objects.create(
     team=Team.objects.get(pk=team),
-    profile=Profile.objects.get(pk=profile),
+    profile=prof,
+    family=fam,
     role=TeamMemberRole.objects.get(pk=request.POST.get("role", "")),
     is_admin=True if request.POST.get("is_admin", False) else False
   )
@@ -688,7 +796,7 @@ def teampage_control_members_edit_save(request, id):
     return redirect('teampage', id=member.team.pk)
 
   member.role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
-  member.is_admin=True if request.POST.get("is_admin", False) else False
+  member.is_admin = True if request.POST.get("is_admin", False) else False
   member.save()
 
   messages.success(request, "De wijzigingen zijn opgeslagen.")
@@ -869,7 +977,7 @@ def teampage_control_edit(request, id):
 def teampage(request, id):
   team = Team.objects.get(pk=id)
 
-  members = team.teammembers.order_by('role__name', 'profile__first_name')
+  members = team.teammembers.order_by('role__name', 'family__lastname', 'profile__first_name')
 
   tables = team.timetables.order_by('title')
 

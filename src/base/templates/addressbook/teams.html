@@ -55,18 +55,30 @@
             <h4>Teamleden</h4>
             {% if team.teammembersSorted %}
               <table class="table table-bordered table-hover">
-                <tr>
-                  <th width="50%">Naam</th>
-                  <th width="50%">Functie</th>
-                </tr>
-                {% for lid in team.teammembersSorted.all %}
+                <thead>
                   <tr>
-                    <td><a href="{% url 'profile-detail-page' lid.profile.pk %}">
-                      {{ lid.profile.name }}
-                    </a></td>
-                    <td>{{ lid.role|capfirst }}</td>
+                    <th width="50%">Naam</th>
+                    <th width="50%">Functie</th>
                   </tr>
-                {% endfor %}
+                </thead>
+                <tbody>
+                  {% for lid in team.teammembersSorted.all %}
+                    <tr>
+                      <td>
+                        {% if lid.family %}
+                          <a href="{% url 'family-detail-page' lid.family.pk %}">
+                            {{ lid.name }}
+                          </a>
+                        {% else %}
+                          <a href="{% url 'profile-detail-page' lid.profile.pk %}">
+                            {{ lid.name }}
+                          </a>
+                        {% endif %}
+                      </td>
+                      <td>{{ lid.role|capfirst }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
               </table>
             {% else %}
               Dit team bevat geen teamleden.

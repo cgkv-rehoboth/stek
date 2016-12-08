@@ -100,10 +100,16 @@
                       </a>
                     {% endifchanged %}
                   </td>
-                  <td>
-                    <a href="{% url 'profile-detail-page' duty.responsible.id %}" title="Bekijk het profiel">
-                      {{ duty.responsible.name }}
-                    </a>
+                  <td class="{% if duty.responsible == request.profile or duty.responsible_family == request.profile.family  %}current-user{% endif %}">
+                    {% if duty.responsible_family %}
+                      <a href="{% url 'family-detail-page' duty.responsible_family.id %}" title="Bekijk de familie">
+                        {{ duty.resp_name }}
+                      </a>
+                    {% else %}
+                      <a href="{% url 'profile-detail-page' duty.responsible.id %}" title="Bekijk het profiel">
+                        {{ duty.resp_name }}
+                      </a>
+                    {% endif %}
                   </td>
                 </tr>
               {% endfor %}

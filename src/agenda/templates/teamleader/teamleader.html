@@ -44,7 +44,13 @@
                   {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
                 </td>
                 <td class="duty-title">
-                  <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>
+                  {% if ruil.timetableduty.responsible_family %}
+                    <a href="{% url 'family-detail-page' ruil.profile.family.id %}" class="black-url">{{ ruil.timetableduty.resp_name }}</a>
+                  {% elif ruil.profile %}
+                    <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>
+                  {% else %}
+                    Onbekend persoon
+                  {% endif %}
                 </td>
                 <td>{{ ruil.comments }}</td>
                 <td>
@@ -65,57 +71,74 @@
         <div class="col-sm-12">
           <h3>Inplannen</h3>
 
-          <div id="dutyForm">
-            <form method="post" action="{% url 'timetable-teamleader-duty-add' %}">
-              {% csrf_token %}
+          {% if members.all or families.all %}
+            <div id="dutyForm">
+              <form method="post" action="{% url 'timetable-teamleader-duty-add' %}">
+                {% csrf_token %}
 
-              {% if tables %}
+                {% if tables %}
+                  <div>
+                    <label>Rooster</label><br/>
+                    <select name="timetable" required>
+                      {% for tab in tables %}
+                        <option value="{{ tab.pk }}" {% if tab.pk == table.pk %}selected="selected"{% endif %}>{{ tab.title }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <br/>
+                {% else %}
+                  <input type="hidden" name="timetable" value="{{ table.id }}"/>
+                {% endif %}
+
                 <div>
-                  <label>Rooster</label><br/>
-                  <select name="timetable" required>
-                    {% for tab in tables %}
-                      <option value="{{ tab.pk }}" {% if tab.pk == table.pk %}selected="selected"{% endif %}>{{ tab.title }}</option>
+                  <label>Dienst</label><br/>
+                  <select name="event" required>
+                    {% for event in events %}
+                      <option value="{{ event.pk }}" {% if event.pk == selected_event %}selected="selected"{% endif %}>{{ event }}</option>
                     {% endfor %}
                   </select>
                 </div>
                 <br/>
-              {% else %}
-                <input type="hidden" name="timetable" value="{{ table.id }}"/>
-              {% endif %}
 
-              <div>
-                <label>Dienst</label><br/>
-                <select name="event" required>
-                  {% for event in events %}
-                    <option value="{{ event.pk }}" {% if event.pk == selected_event %}selected="selected"{% endif %}>{{ event }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <br/>
+                <div>
+                  <label>Verantwoordelijke</label><br/>
+                  <select name="responsible">
+                    {% if members.all %}
+                      <optgroup label="Personen">
+                      {% for member in members.all %}
+                        <option value="p{{ member.profile.pk }}" {% if member.profile.pk == selected_member %}selected="selected"{% endif %}>{{ member.name }}</option>
+                      {% endfor %}
+                      </optgroup>
+                    {% endif %}
+                    {% if families.all %}
+                      <optgroup label="Families">
+                      {% for member in families.all %}
+                        <option value="f{{ member.family.pk }}" {% if member.family.pk == selected_family %}selected="selected"{% endif %}>{{ member.family.name_initials }}</option>
+                      {% endfor %}
+                      </optgroup>
+                    {% endif %}
+                  </select>
+                </div>
+                <br/>
 
-              <div>
-                <label>Verantwoordelijke</label><br/>
-                <select name="responsible" required>
-                  {% for member in members.all %}
-                    <option value="{{ member.profile.pk }}" {% if member.profile.pk == selected_member %}selected="selected"{% endif %}>{{ member.profile.name }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <br/>
+                <div>
+                  <label>Commentaar</label>
+                  <textarea name="comments">{% if duty %}{{ duty.comments }}{% endif %}</textarea>
+                </div>
 
-              <div>
-                <label>Commentaar</label>
-                <textarea name="comments">{% if duty %}{{ duty.comments }}{% endif %}</textarea>
-              </div>
-
-              <div>
-                <a href="{% url 'timetable-teamleader-page' table.id %}" class="btn btn-default black">Annuleren</a>
-                <button type="submit" class="btn btn-default cyan modal-submit-button">
-                  Inplannen
-                </button>
-              </div>
-            </form>
-          </div>
+                <div>
+                  <a href="{% url 'timetable-teamleader-page' table.id %}" class="btn btn-default black">Annuleren</a>
+                  <button type="submit" class="btn btn-default cyan modal-submit-button">
+                    Inplannen
+                  </button>
+                </div>
+              </form>
+            </div>
+          {% else %}
+            <p>
+              Er kan alleen ingepland worden als er teamleden zijn. Dit team heeft geen teamleden. Deze kun je <a href="{% url 'teampage-control-members' table.team.pk %}">hier</a> toevoegen.
+            </p>
+          {% endif %}
 
         </div>
       </div>

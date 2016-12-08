@@ -22,7 +22,7 @@
           <form method="post" action="{% url 'teampage-control-members-edit-save' member.pk %}" class="team-add-user">
             {% csrf_token %}
 
-            <input type="text" class="form-control" value="{{ member.profile.name }}" readonly />
+            <input type="text" class="form-control" value="{{ member.name }}" readonly />
 
             <div class="form-group">
               <select name="role" class="form-control" title="Aan de functie zijn geen rechten verbonden.">

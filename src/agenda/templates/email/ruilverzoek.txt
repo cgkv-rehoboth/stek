@@ -1,7 +1,7 @@
 Beste teamleider(s),
 
 Er is een ruilverzoek binnen gekomen van {{ name }} voor de volgende taak:
-{{ timetable}}: {{ duty }}.
+{{ timetable }}: {{ duty }}.
 
 {{ comments }}
 

@@ -26,12 +26,23 @@
             {% csrf_token %}
             <label>
               Vervanging:
-              <select name="vervanging">
-                {% for member in members %}
-                <option value="{{ member.profile.id }}"{% if member.profile.pk == selected_member %}selected="selected"{% endif %}>{{ member.profile.name }}</option>
-                {% endfor %}
-              </select>
             </label>
+            <select name="responsible">
+              {% if members.all %}
+                <optgroup label="Personen">
+                {% for member in members.all %}
+                  <option value="p{{ member.profile.pk }}" {% if member.profile.pk == selected_member %}selected="selected"{% endif %}>{{ member.name }}</option>
+                {% endfor %}
+                </optgroup>
+              {% endif %}
+              {% if families.all %}
+                <optgroup label="Families">
+                {% for member in families.all %}
+                  <option value="f{{ member.family.pk }}" {% if member.family.pk == selected_family %}selected="selected"{% endif %}>{{ member.family.name_initials }}</option>
+                {% endfor %}
+                </optgroup>
+              {% endif %}
+            </select>
             <br/>
             <br/>
             <a href="{% url 'timetable-teamleader-page' ruil.timetableduty.timetable.id %}" class="btn btn-default black">Annuleren</a>

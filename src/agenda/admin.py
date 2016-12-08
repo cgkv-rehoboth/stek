@@ -19,7 +19,7 @@ admin.site.register(Timetable, TimetableAdmin)
 
 # Create custom display for TimetableDuty
 class TimetableDutyAdmin(admin.ModelAdmin):
-  list_display = ['responsible', 'event', 'timetable', 'comments']
+  list_display = ['resp_name', 'event', 'timetable', 'comments']
 
 admin.site.register(TimetableDuty, TimetableDutyAdmin)
 

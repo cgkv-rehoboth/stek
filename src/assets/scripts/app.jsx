@@ -10,6 +10,7 @@ import nl from 'moment/locale/nl';
 
 import ProfileSearchTable from "ProfileSearchTable";
 import ProfileSearchInput from "ProfileSearchInput";
+import FamilySearchInput from "FamilySearchInput";
 import ServiceTableManagable from "ServiceTableManagable";
 import ServiceTableDashboard from "ServiceTableDashboard";
 import ServiceTable from "ServiceTable";
@@ -308,6 +309,15 @@ window.teamPage = () => {
   ReactDom.render(
     <ProfileSearchInput listFunc={searchProfiles} />,
     $("#profile-search-input")[0]
+  );
+
+  let searchFamilies = (query) => {
+    return api.families.list(query);
+  };
+
+  ReactDom.render(
+    <FamilySearchInput listFunc={searchFamilies} />,
+    $("#family-search-input")[0]
   );
 };
 

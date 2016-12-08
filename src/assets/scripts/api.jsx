@@ -74,6 +74,15 @@ let api_obj = {
     }
   },
 
+  families: {
+    list: (search='', page=1, extra_params={}) => {
+      return Q.xhr
+        .get(`${api}/families`, {
+          params: _.extend({search: search, page: page}, extra_params)
+        });
+    }
+  },
+
   teams: {
     list: (search='', page=1, extra_params={}) => {
       return Q.xhr

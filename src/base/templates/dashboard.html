@@ -74,7 +74,14 @@
                   {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
                 </td>
                 <td class="duty-title">
-                  <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>
+                  {% if ruil.timetableduty.family %}
+                    <a href="{% url 'family-detail-page' ruil.profile.family.id %}" class="black-url">{{ ruil.profile.family.lastname }}</a>
+                    <small>
+                      (door <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>)
+                    </small>
+                  {% else %}
+                    <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>
+                  {% endif %}
                 </td>
                 <td><div class="duty-comments">{{ ruil.comments }}</div></td>
                 <td>
@@ -111,12 +118,17 @@
               {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
               <tr class="table-{{ rowday }}">
                 <td>
-                  <a href="{% url 'timetable-detail-page' duty.timetable.id %}" class="black-url">{{ duty.timetable.title }}</a></td>
+                  <a href="{% url 'timetable-detail-page' duty.timetable.id %}" class="black-url">{{ duty.timetable.title }}</a>
+                </td>
                 <td class="duty-title">
                   <a href="{% url 'services-single' duty.event.id %}">{{ duty.event.title }}</a>
                 </td>
                 <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
-                <td><div class="duty-comments">{{ duty.comments }}</div></td>
+                <td>
+                  <div class="duty-comments">
+                    {{ duty.comments }}
+                  </div>
+                </td>
                 <td class="duty-responsible">
                   {% with duty.ruilrequest as ruilen %}
                     {% if ruilen.profile == request.profile %}

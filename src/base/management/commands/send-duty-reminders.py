@@ -50,12 +50,13 @@ class Command(BaseCommand):
       dryrun = True
 
     maxweeks = datetime.today().date() + timedelta(weeks=1)
-    duties = TimetableDuty.objects.filter(event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)
+    # Select only profiles and not families
+    duties = TimetableDuty.objects.filter(responsible_family=None, event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)
 
     for d in duties:
       # ensure email is present
       if d.responsible.email is None or len(d.responsible.email) == 0:
-        print("[FAILURE] Profile '%s' has no emailaddress." % (d.responsible))
+        print("[FAILURE] Profile '%s' has no emailaddress." % (d.responsible.name()))
         continue
 
       # Send mail

@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 import os
 
 # Import models of base app
-from base.models import Profile
+from base.models import Profile, Family
 
 class ActiveManager(models.Manager):
   # Get online the active ones when calling objects.active()
@@ -64,19 +64,33 @@ class Event(TimestampedModel, LiveModel, models.Model):
 
 class TimetableDuty(models.Model):
 
-  responsible = models.ForeignKey(Profile, related_name="duties")
+  responsible = models.ForeignKey(Profile, related_name="duties", blank=True, null=True)
+  responsible_family = models.ForeignKey(Family, related_name="duties", blank=True, null=True)
   event       = models.ForeignKey(Event, related_name="duties")
   timetable   = models.ForeignKey(Timetable, related_name="duties")
   comments    = models.TextField(blank=True, null=True)
 
   def __str__(self):
-    return "%s op %s door %s" % (self.event.title, self.event.startdatetime.strftime("%d-%m-%Y, %H:%M"), self.responsible.name())
+    if self.responsible:
+      return "%s op %s door %s" % (self.event.title, self.event.startdatetime.strftime("%d-%m-%Y, %H:%M"), self.responsible.name())
+    elif self.responsible_family:
+      return "%s op %s door familie %s" % (self.event.title, self.event.startdatetime.strftime("%d-%m-%Y, %H:%M"), self.responsible_family.lastname)
+    else:
+      return "%s op %s door %s" % (self.event.title, self.event.startdatetime.strftime("%d-%m-%Y, %H:%M"), "niemand")
 
   def delete(self, *args, **kwargs):
     # Delete ruilrequest belonging to this duty
     self.ruilen.all().delete()
 
     super().delete(*args, **kwargs)
+
+  def resp_name(self):
+    if self.responsible:
+      return self.responsible.name()
+    elif self.responsible_family:
+      return str(self.responsible_family)
+    else:
+      return "niemand"
 
 class Service(Event):
 
@@ -128,12 +142,19 @@ class TeamMemberRole(models.Model):
 class TeamMember(models.Model):
 
   team        = models.ForeignKey(Team, related_name="teammembers")
-  profile     = models.ForeignKey(Profile, related_name="team_membership")
+  profile     = models.ForeignKey(Profile, related_name="team_membership", blank=True, null=True)
+  family      = models.ForeignKey(Family, related_name="team_membership", blank=True, null=True)
   role        = models.ForeignKey(TeamMemberRole, related_name="teammembers", default=1)
   is_admin    = models.BooleanField(default=False)
 
   def __str__(self):
     return "%s %s" % (self.team.name, self.role)
+
+  def name(self):
+    if self.family:
+      return "Famlie %s" % self.family.lastname
+    else:
+      return self.profile.name()
 
 class RuilRequest(models.Model):
 

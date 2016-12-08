@@ -42,17 +42,8 @@ class RecaptchaField(serializers.Field):
 
     return Recaptcha(resp, resp_data, return_code)
 
-class FamilySerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Family
-
-class UserSerializer(serializers.ModelSerializer):
-
-  class Meta:
-    model = User
-    fields = ('id', 'username', 'first_name', 'last_name', 'email')
-
 class WijkSerializer(serializers.ModelSerializer):
+
   class Meta:
     model = Wijk
 
@@ -61,6 +52,25 @@ class AddressSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Address
+
+class FamilyProfileSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = Profile
+    fields = ('id', 'first_name', 'initials')
+
+class FamilySerializer(serializers.ModelSerializer):
+  address = AddressSerializer()
+  members = FamilyProfileSerializer(many=True, read_only=True)
+
+  class Meta:
+    model = Family
+
+class UserSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = User
+    fields = ('id', 'username', 'first_name', 'last_name', 'email')
 
 class ProfileSerializer(serializers.ModelSerializer):
   user = UserSerializer()

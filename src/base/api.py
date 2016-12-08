@@ -15,6 +15,7 @@ from .serializers import *
 
 from rest_framework.permissions import IsAuthenticated
 
+
 class MinimalMetadata(metadata.BaseMetadata):
 
   def determine_metadata(self, request, view):
@@ -22,6 +23,7 @@ class MinimalMetadata(metadata.BaseMetadata):
       name=view.get_view_name(),
       description=view.get_view_description()
     )
+
 
 class StekPaginator(PageNumberPagination):
   page_size = 100
@@ -35,6 +37,7 @@ class StekPaginator(PageNumberPagination):
     resp.data['pageno'] = self.page.number
 
     return resp
+
 
 class StekViewSet(viewsets.GenericViewSet):
 
@@ -60,6 +63,7 @@ class StekViewSet(viewsets.GenericViewSet):
     kwargs['context'] = self.get_serializer_context()
 
     return cls(*args, **kwargs)
+
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewSet):
 
@@ -88,7 +92,7 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
 
     is_favorite = dict(
       [ (v.favorite.pk, True) for v in Favorites.objects.filter(owner=request.profile) ])
-    
+
     for i , u in enumerate(response.data['results']):
       response.data['results'][i]["is_favorite"] = is_favorite.get(u['id'], False)
 
@@ -106,6 +110,7 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
     fav.delete()
 
     return Response(status=status.HTTP_200_OK)
+
 
 class FavoriteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin, StekViewSet):
   queryset = Favorites.objects.all()
@@ -148,9 +153,24 @@ class AddressViewSet(
       headers=headers)
 
 
+class FamilyViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewSet):
+  queryset = Family.objects.all().order_by("lastname")
+  serializer_class = FamilySerializer
+
+  permission_classes = [IsAuthenticated]
+  filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend)
+  search_fields = ('lastname',)
+
+  def retrieve(self, request, *args, **kwargs):
+    return super().retrieve(request, *args, **kwargs)
+
+  def list(self, request, *args, **kwargs):
+    return super().list(request, *args, **kwargs)
+
 router = DefaultRouter(trailing_slash=False)
 router.register(r'profiles', ProfileViewSet)
 router.register(r'favorites', FavoriteViewSet)
 router.register(r'address', AddressViewSet)
+router.register(r'families', FamilyViewSet)
 
 urls = router.urls

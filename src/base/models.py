@@ -17,6 +17,7 @@ from django.contrib.sites.shortcuts import get_current_site
 import unidecode
 
 import os
+from agenda.models import *
 
 class Slide(LiveModel, models.Model):
 
@@ -85,6 +86,10 @@ class Profile(models.Model):
 
   class Meta:
     unique_together = (('first_name', 'last_name', 'birthday'), )
+
+  def delete(self, *args, **kwargs):
+    # remove all ruilrequests
+    RuilRequest.objects.filter(profile=self).delete()
 
   def check_firsttime(sender, user, request, **kwargs):
     p = request.user.profile
@@ -175,8 +180,9 @@ class Profile(models.Model):
     return "Profiel van %s" % self.name()
 
   def teamleader_of(self, team):
-    # Check if user is teamleader of this timetable's team
-    return self.team_membership.filter(team=team, profile=self, is_admin=True).exists()
+    # Check if user of users family is teamleader of this timetable's team
+    return self.team_membership.filter(team=team, profile=self, is_admin=True).exists() or \
+           self.family.team_membership.filter(team=team, family=self.family, is_admin=True).exists()
 
   def age(self):
     today = datetime.today().date()
@@ -198,8 +204,23 @@ class Family(models.Model):
   def __str__(self):
     return "Familie %s" % (self.lastname,)
 
+  def name_initials(self):
+    initials = ""
+    for m in self.members.all()[:2]:
+      if len(initials) > 0:
+        initials += ", "
+      initials += m.initials
+    if len(initials) > 0:
+      initials = " (%s)" % initials
+
+    return "Familie %s%s" % (self.lastname, initials)
+
   def size(self):
     return self.members.all().count()
+
+  def delete(self, *args, **kwargs):
+    # remove all ruilrequests
+    RuilRequest.objects.filter(profile__family=self).delete()
 
 class Favorites(models.Model):
 

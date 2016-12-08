@@ -14,6 +14,12 @@
       </div>
 
       <div class="row">
+
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+
         <div class="col-sm-12">
           <!-- Timetable menu/choices -->
           <ul class="nav nav-tabs">
@@ -79,30 +85,34 @@
                 <tbody>
                 {% for duty in duties %}
                   {% ifchanged duty.event.startdatetime|date:"Y-m-d" %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
-                  <tr class="table-{{ rowday }}">
+                  <tr class="table-{{ rowday }} {% if duty.responsible == request.profile or duty.responsible_family == request.profile.family  %}current-user{% endif %}">
                     <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                     <td class="duty-title">
                       <a href="{% url 'services-single' duty.event.id %}">{{ duty.event.title }}</a>
                     </td>
                     <td class="duty-responsible">
                       {% with duty.ruilrequest as ruilen %}
-                        <span class="{% if duty.responsible.pk == profile.pk %}current-user{% endif %} {% if ruilen %}ruil_requested{% endif %}">
-                          <a href="{% url 'profile-detail-page' duty.responsible.id %}" class="black-url">{{ duty.responsible.name }}</a>
-                        </span>
-                        {% if duty.responsible.pk == request.profile.pk %}
-                          {% if ruilen.profile == request.profile %}
+                        {% if duty.responsible_family %}
+                          <span class="{% if ruilen %}ruil_requested{% endif %}">
+                            <a href="{% url 'family-detail-page' duty.responsible_family.id %}" class="black-url">{{ duty.resp_name }}</a>
+                          </span>
+                        {% else %}
+                          <span class="{% if ruilen %}ruil_requested{% endif %}">
+                            <a href="{% url 'profile-detail-page' duty.responsible.id %}" class="black-url">{{ duty.resp_name }}</a>
+                          </span>
+                        {% endif %}
+                        {% if duty.responsible.pk == request.profile.pk or duty.responsible_family.pk == request.profile.family.pk %}
+                          {% if ruilen.profile == request.profile or ruilen.profile.family.pk == request.profile.family.pk %}
                             <a href="javascript:void(0)" class="timetable-undo-ruilen"
-                              title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
-                              data-request-pk="{{ruilen.pk}}"
-                            >
+                                title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
+                                data-request-pk="{{ruilen.pk}}">
                               <i class="fa fa-check fa-fw"></i>
                             </a>
                           {% else %}
                             <a href="javascript:void(0)"
-                              class="timetable-ruilen"
-                              title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
-                              data-duty-pk="{{ duty.pk }}"
-                            >
+                                class="timetable-ruilen"
+                                title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                                data-duty-pk="{{ duty.pk }}">
                               <i class="fa fa-random fa-fw"></i>
                             </a>
                           {% endif %}

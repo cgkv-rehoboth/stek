@@ -79,26 +79,46 @@
 
             {% for m in members.all %}
               <div class="team-usersquare team-role-{{ m.role.short_name }}">
-                <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.role }})" class="team-userlink">
-                  <div class="team-userimage-div">
-                    {% if m.profile.photo %}
-                      <img src="{{ m.profile.photo.url }}" title="Foto van {{ m.profile.name }}" class="team-userimage"/>
-                    {% else %}
-                      <img src="{% static 'resources/images/default_pf.png' %}" class="team-userimage"/>
-                    {% endif %}
-                  </div>
+                {% if m.family %}
+                  <a href="{% url 'family-detail-page' m.family.pk %}" title="{{ m.family }} ({{ m.role }})" class="team-userlink">
+                    <div class="team-userimage-div">
+                      {% if m.family.photo %}
+                        <img src="{{ m.family.photo.url }}" title="Foto van {{ m.name }}" class="team-userimage"/>
+                      {% else %}
+                        <img src="{% static 'resources/images/default_family_pf.png' %}" class="team-userimage"/>
+                      {% endif %}
+                    </div>
 
-                  <div class="team-userinfo">
-                    {{ m.profile.first_name }}
-                  </div>
+                    <div class="team-userinfo">
+                      {{ m.family }}
+                    </div>
 
-                  <div class="team-userrole" title="{% if m.is_admin %}Deze persoon heeft beheerrechten over dit team{% endif %}">
-                    {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
-                  </div>
-                </a>
+                    <div class="team-userrole" title="{% if m.is_admin %}Deze persoon heeft beheerrechten over dit team{% endif %}">
+                      {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
+                    </div>
+                  </a>
+                {% else %}
+                  <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.role }})" class="team-userlink">
+                    <div class="team-userimage-div">
+                      {% if m.profile.photo %}
+                        <img src="{{ m.profile.photo.url }}" title="Foto van {{ m.profile.name }}" class="team-userimage"/>
+                      {% else %}
+                        <img src="{% static 'resources/images/default_pf.png' %}" class="team-userimage"/>
+                      {% endif %}
+                    </div>
+
+                    <div class="team-userinfo">
+                      {{ m.profile.first_name }}
+                    </div>
+
+                    <div class="team-userrole" title="{% if m.is_admin %}Dit lid heeft beheerrechten over dit team{% endif %}">
+                      {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
+                    </div>
+                  </a>
+                {% endif %}
               </div>
             {% endfor %}
-            <div style="font-size: 65%; margin-left: 20px; margin-bottom: 30px;">* Deze persoon is beheerder van deze teampagina</div>
+            <div style="font-size: 65%; margin-left: 20px; margin-bottom: 30px;">* Dit lid is beheerder van deze teampagina</div>
           {% else %}
             Geen leden gevonden.
           {% endif %}
