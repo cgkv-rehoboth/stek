@@ -98,7 +98,7 @@ export class SearchTable extends React.Component {
   searchChange(e) {
     let text = $(e.target).val();
     let ev = e.nativeEvent;
-    console.log("Made", ev);
+
     this.setState({ query: text, page: 1});
     this.loadItems(text, this.state.page);
   }
@@ -112,7 +112,7 @@ export class SearchTable extends React.Component {
     let { renderRow } = this.props;
     let rows = _.map(this.state.items, renderRow);
 
-    var search = ""
+    var search = "";
     if (!(this.props.search === false)) {
       search = (
         <div>

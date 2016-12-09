@@ -4,7 +4,6 @@ let $ = require('jquery');
 let api = require('api');
 let http = require('utils/http');
 
-console.log("hi!");
 /*
 // init forms
 $("form").each((form) => {

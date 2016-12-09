@@ -174,8 +174,6 @@ def timetable_ruilen(request, id):
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
-  print(data)
-
   message = template.render(data)
 
   #from_email = request.profile.email

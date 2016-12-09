@@ -44,7 +44,6 @@ export default class ServiceTableManagable extends React.Component {
       }
 
       let renderFiles = (file) => {
-        console.log(file)
         var typeC = file.type;
         var typeI = file.type;
 
@@ -54,10 +53,9 @@ export default class ServiceTableManagable extends React.Component {
         }
 
         return (<a className={"service-file-download sf-public-" + file.is_public} href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}><i className={"fa fa-file-" + typeC + "o"} aria-hidden="true"></i></a>);
-      }
+      };
 
       let renderFilesHidden = (file) => {
-        console.log(file)
         var typeC = file.type;
         var typeI = file.type;
 
@@ -71,7 +69,7 @@ export default class ServiceTableManagable extends React.Component {
             <i className={"fa fa-file-" + typeC + "o fa-fw"} aria-hidden="true"></i>
             {file.title} <small>({file.filesize})</small>
           </a>);
-      }
+      };
 
       let files = _.map(serv.files, renderFiles);
       let filesHidden = _.map(serv.files, renderFilesHidden);

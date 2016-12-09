@@ -58,7 +58,7 @@ export default class ServiceTable extends React.Component {
         }
 
         return (<a className="service-file-download" href={file.file} target="_blank" title={"Download '" + file.title + "' ("+ typeI + file.filesize + ")"}><i className={"fa fa-file-" + typeC + "o"} aria-hidden="true"></i></a>);
-      }
+      };
 
       let renderFilesHidden = (file) => {
         if (!file.is_public && !this.props.is_private)
@@ -77,7 +77,7 @@ export default class ServiceTable extends React.Component {
             <i className={"fa fa-file-" + typeC + "o fa-fw"} aria-hidden="true"></i>
             {file.title} <small>({file.filesize})</small>
           </a>);
-      }
+      };
 
       let files = _.map(serv.files, renderFiles);
       let filesHidden = _.map(serv.files, renderFilesHidden);

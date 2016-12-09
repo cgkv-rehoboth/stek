@@ -340,7 +340,7 @@ window.profileEdit = (address) => {
   $("#pic-input").change(function(){
 
     if (this.files && this.files[0]) {
-      console.log("Creating preview... ");
+      //Creating preview...
 
       // Checkt filesize
       if (this.files[0].size > maxFileSize * 1024 * 1024) { // x MB = x * 1024 * 1024
@@ -443,7 +443,7 @@ window.profileEdit = (address) => {
     }
 
     $('#profile-pic-form input[name="center"]').val(x + ',' + y);
-  })
+  });
 
   // Load adressForm
   let addressList = (query) => {
@@ -458,7 +458,6 @@ window.profileEdit = (address) => {
   // Initials
   $("input[name='initials']").change(function(){
     var i = $(this).val().toUpperCase();
-    console.log(i);
 
     // Filter initals (remove whitespaces and add dots)
     i = i.replace(/([\.\s]+)+/gi, ".");
@@ -516,8 +515,6 @@ window.eventFilesPage = () => {
 };
 
 window.profileMain = (pk, favorite) => {
-  console.log(pk);
-  console.log(favorite);
   ReactDom.render(
     <FavStar pk={pk} favorite={favorite}/>,
     $("#profile-favorite")[0]

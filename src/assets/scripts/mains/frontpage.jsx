@@ -75,7 +75,7 @@ export default function frontpageMain() {
   var loaded = false;
   let onDataLoaded = () => {
     if(!loaded) {
-      console.log("Loading");
+      // Loading
       loaded = true;
 
       // Get element with the icon

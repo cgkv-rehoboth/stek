@@ -164,7 +164,6 @@ def profile_detail_edit_save(request, pk):
         messages.error(request, "Adreswijziging mislukt. Kies een geldige verhuisoptie.")
 
       elif request.POST.get("verhuizing-options", "") is "1":
-        print('personal')
         # Check if this is the family address
         if profile.family.address is adr:
           profile.address = None
@@ -172,7 +171,6 @@ def profile_detail_edit_save(request, pk):
           profile.address = adr
 
       elif request.POST.get("verhuizing-options", "") is "2":
-        print('family')
         if not hasattr(adr, "family"):
           profile.address = None
           profile.family.address = adr

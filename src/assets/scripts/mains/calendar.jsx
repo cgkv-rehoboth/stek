@@ -37,7 +37,7 @@ class EventDetail extends Component {
 
   render() {
     let {event} = this.props;
-    const FMT = "D MMM YYYY hh:mm"
+    const FMT = "D MMM YYYY hh:mm";
 
     return <div>
       <h4>{moment(event.startdatetime).format(FMT)}-
