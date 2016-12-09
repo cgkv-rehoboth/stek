@@ -33,6 +33,9 @@ class Wijk(models.Model):
   id = models.IntegerField(primary_key=True)
   naam = models.CharField(max_length=255)
 
+  class Meta:
+    ordering = ('id',)
+
   def __str__(self):
     return "%s (%s)" % (self.naam, self.id)
 
@@ -44,6 +47,9 @@ class Address(models.Model):
   country     = models.CharField(max_length=255, default="Nederland")
   phone       = models.CharField(max_length=15, blank=True)
   wijk        = models.ForeignKey(Wijk, null=True, blank=True)
+
+  class Meta:
+    ordering = ('street', 'city',)
 
   def __str__(self):
     return "%s, %s, %s (%s)" % (self.street, self.zip, self.city, self.country)
@@ -201,12 +207,15 @@ class Family(models.Model):
   photo       = models.FileField(upload_to=family_pic, null=True, blank=True) #Todo: specify upload dir
   address     = models.OneToOneField(Address, null=True, blank=True, related_name="family")
 
+  class Meta:
+    ordering = ('lastname',)
+
   def __str__(self):
-    return "Familie %s" % (self.lastname,)
+    return self.name_initials()
 
   def name_initials(self):
     initials = ""
-    for m in self.members.all()[:2]:
+    for m in self.members.order_by('birthday')[:2]:
       if len(initials) > 0:
         initials += ", "
       initials += m.initials

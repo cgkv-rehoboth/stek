@@ -223,7 +223,7 @@ def timetable_teamleader(request, id):
     selected_event = 0
 
   # Get all teammembers
-  profiles = table.team.teammembers.filter(family=None)
+  profiles = table.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name', 'profile__birthday')
   # Get all teamfamilies
   families = table.team.teammembers.filter(profile=None)
 
@@ -288,7 +288,7 @@ def timetable_ruilverzoek(request, id):
   # OK, user is teamleader, let's continue:
 
   # Get all teammembers
-  profiles = ruil.timetableduty.timetable.team.teammembers.filter(family=None)
+  profiles = ruil.timetableduty.timetable.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name', 'profile__birthday')
   # Get all teamfamilies
   families = ruil.timetableduty.timetable.team.teammembers.filter(profile=None)
 
@@ -498,7 +498,7 @@ def timetable_teamleader_duty_edit(request, id):
       .order_by("startdatetime", "enddatetime", "title")
 
   # Get all teammembers
-  members = duty.timetable.team.teammembers.filter(family=None)
+  members = duty.timetable.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name', 'profile__birthday')
   # Get all teamfamilies
   families = duty.timetable.team.teammembers.filter(profile=None)
 

@@ -95,7 +95,8 @@ def profile_detail(request, pk=None):
   profiel = Profile.objects.get(pk=pk)
   memberships = TeamMember.objects\
                           .prefetch_related("team")\
-                          .filter(Q(profile=profiel)|Q(family=profiel.family))
+                          .filter(Q(profile=profiel)|Q(family=profiel.family))\
+                          .order_by('team__name')
 
   # Remove double memberships (like profile AND family), filter on (i.)team
   memberships = uniqify(memberships, lambda i: i.team)

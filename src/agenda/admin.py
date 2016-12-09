@@ -57,7 +57,7 @@ admin.site.register(TeamMemberRole, TeamMemberRoleAdmin)
 
 # Team stuff
 class TeamMemberAdmin(admin.ModelAdmin):
-  list_display = ['profile', 'team', 'role', 'is_admin']
+  list_display = ['name', 'team', 'role', 'is_admin']
 
 admin.site.register(TeamMember, TeamMemberAdmin)
 

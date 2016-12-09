@@ -32,7 +32,11 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
   incalendar  = models.BooleanField(default=True)
   color       = models.CharField(max_length=6, default='268bd2')
 
-  def __str__(self): return self.title
+  class Meta:
+    ordering = ('title',)
+
+  def __str__(self):
+    return self.title
 
   def delete(self, *args, **kwargs):
     # Delete ruilrequest belonging to this table
@@ -50,6 +54,9 @@ class Event(TimestampedModel, LiveModel, models.Model):
   timetable       = models.ForeignKey(Timetable, related_name="events")
   description     = models.TextField(blank=True, null=True)
 
+  class Meta:
+    ordering = ('-startdatetime', '-enddatetime',)
+
   def save(self, *args, **kwargs):
     # default enddate if not set
     if self.enddatetime == None:
@@ -64,11 +71,14 @@ class Event(TimestampedModel, LiveModel, models.Model):
 
 class TimetableDuty(models.Model):
 
-  responsible = models.ForeignKey(Profile, related_name="duties", blank=True, null=True)
-  responsible_family = models.ForeignKey(Family, related_name="duties", blank=True, null=True)
-  event       = models.ForeignKey(Event, related_name="duties")
-  timetable   = models.ForeignKey(Timetable, related_name="duties")
-  comments    = models.TextField(blank=True, null=True)
+  responsible         = models.ForeignKey(Profile, related_name="duties", blank=True, null=True)
+  responsible_family  = models.ForeignKey(Family, related_name="duties", blank=True, null=True)
+  event               = models.ForeignKey(Event, related_name="duties")
+  timetable           = models.ForeignKey(Timetable, related_name="duties")
+  comments            = models.TextField(blank=True, null=True)
+
+  class Meta:
+    ordering = ('-event__startdatetime', '-event__enddatetime', 'responsible_family__lastname', 'responsible__last_name',)
 
   def __str__(self):
     if self.responsible:
@@ -88,7 +98,7 @@ class TimetableDuty(models.Model):
     if self.responsible:
       return self.responsible.name()
     elif self.responsible_family:
-      return str(self.responsible_family)
+      return "Familie " + self.responsible_family.lastname
     else:
       return "niemand"
 
@@ -113,6 +123,9 @@ class Team(models.Model):
   email = models.EmailField(max_length=255, blank=True)
   description = models.TextField(blank=True)
 
+  class Meta:
+    ordering = ('name',)
+
   def __str__(self):
     return "%s" % self.name
 
@@ -129,6 +142,9 @@ class TeamMemberRole(models.Model):
   is_active       = models.BooleanField(default=True)
 
   objects         = ActiveManager()
+
+  class Meta:
+    ordering = ('name',)
 
   def __str__(self):
     return self.name
@@ -147,6 +163,9 @@ class TeamMember(models.Model):
   role        = models.ForeignKey(TeamMemberRole, related_name="teammembers", default=1)
   is_admin    = models.BooleanField(default=False)
 
+  class Meta:
+    ordering = ('family__lastname', 'profile__last_name', 'team__name',)
+
   def __str__(self):
     return "%s %s" % (self.team.name, self.role)
 
@@ -164,6 +183,7 @@ class RuilRequest(models.Model):
 
   class Meta:
     unique_together = (("timetableduty", "profile"),)
+    ordering = ('timetableduty',)
 
 def eventfilepath(instance, filename):
   return 'eventfiles/%s' % (filename)
@@ -175,6 +195,9 @@ class EventFile(TimestampedModel, models.Model):
   file        = models.FileField(upload_to=eventfilepath)
   owner       = models.ForeignKey(Profile, related_name="files")
   is_public   = models.BooleanField(default=True)
+
+  class Meta:
+    ordering = ('-event__startdatetime', '-event__enddatetime', 'title',)
 
   def filename(self):
     return "%s" % os.path.basename(self.file.path)
@@ -217,14 +240,12 @@ class EventFile(TimestampedModel, models.Model):
 
     return type
 
-
   def iconHTML(self):
     type = self.type()
     if type:
       type += '-'
 
     return '<i class="fa fa-file-%so" aria-hidden="true"></i>' % type
-
 
   def delete(self, *args, **kwargs):
     # Delete file
