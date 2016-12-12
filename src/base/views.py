@@ -165,7 +165,7 @@ def profile_detail_edit_save(request, pk):
 
       adr = Address.objects.filter(family=None, profile=None, zip=zip, street=street, city=city, country=country).first()
       if not adr:
-        print('Doesnt exists')
+        # Create address if it doesn't exists
         adr = Address.objects.create(zip=zip, street=street, city=city, country=country)
 
       adr.phone = phone

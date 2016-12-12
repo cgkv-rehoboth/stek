@@ -96,19 +96,9 @@ export default class FamilySearchInput extends React.Component {
   render() {
 
     let renderItem = (fam) => {
-      let mem = "";
-      for (let i = 0; i < fam.members.length && i < 2; i++){
-        if (mem.length > 0)
-          mem += ", ";
-        mem += fam.members[i].initials;
-      }
-      if (mem.length > 0){
-        mem = "("+mem+")";
-      }
-
       return (
         <li key={fam.id} onClick={this.itemClick.bind(this, fam)}>
-          {fam.lastname} {mem}
+          {fam.name_initials}
         </li>
       )
     };
