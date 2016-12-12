@@ -37,8 +37,12 @@
               <i class="fa fa-edit fa-preicon"></i>
             </a>
           {% endif %}
-          {{ v.lastname }} 
-          ({% for w in v.members.all %} {{ w.first_name }}{% if not forloop.last %},{% endif %} {% endfor %})
+          {{ v.lastname }}
+          {% if v.members_sorted %}
+            (
+              {% for w in v.members_sorted %} {{ w.first_name }}{% if not forloop.last %},{% endif %} {% endfor %}
+            )
+          {% endif %}
         </p>
       </div>
       <div class="row list-group-detail" data-family-pk="{{ v.pk }}"
@@ -46,26 +50,30 @@
         <div class="col-md-8">
           <!-- Familymembers + details -->
           <h3>Gezinsleden</h3>
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Voornaam</th>
-                <th>Geboortedatum</th>
-                <th>Telefoon</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for w in v.members.all %}
+          {% if v.members_sorted %}
+            <table class="table table-bordered table-hover">
+              <thead>
                 <tr>
-                  <td><a href="{% url 'profile-detail-page' w.pk %}">
-                    {{ w.first_name }}
-                  </a></td>
-                  <td>{{ w.birthday }}</td>
-                  <td>{{ w.phone }}</td>
+                  <th>Voornaam</th>
+                  <th>Geboortedatum</th>
+                  <th>Telefoon</th>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {% for w in v.members_sorted %}
+                  <tr>
+                    <td><a href="{% url 'profile-detail-page' w.pk %}">
+                      {{ w.first_name }}
+                    </a></td>
+                    <td>{{ w.birthday }}</td>
+                    <td>{{ w.phone }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            Geen leden gevonden.
+          {% endif %}
 
             <!-- Contact info -->
           {% if v.address %}

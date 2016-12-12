@@ -7,7 +7,7 @@ from django.template import Context
 from django.conf import settings
 
 
-def send_reminder_mail(duty):
+def send_reminder_mail(duty, resp):
   template = get_template('emails/remind_timetableduties.txt')
 
   if duty.comments:
@@ -15,11 +15,15 @@ def send_reminder_mail(duty):
   else:
     comments = ""
 
+  event = str(duty.event)
+  if duty.responsible_family:
+    event += " door familie %s" % str(duty.responsible_family.lastname)
+
   data = Context({
-    'name': duty.responsible.name(),
+    'name': resp.name(),
     'date': duty.event.startdatetime.strftime("%d-%m-%Y"),
     'timetable': duty.timetable,
-    'event': duty.event,
+    'event': event,
     'comments': comments,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
@@ -30,7 +34,7 @@ def send_reminder_mail(duty):
 
   from_email = settings.DEFAULT_FROM_EMAIL
 
-  to_emails = [duty.responsible.email, ]
+  to_emails = [resp.email, ]
 
   send_mail(subject, message, from_email, to_emails)
 
@@ -51,15 +55,25 @@ class Command(BaseCommand):
 
     maxweeks = datetime.today().date() + timedelta(weeks=1)
     # Select only profiles and not families
-    duties = TimetableDuty.objects.filter(responsible_family=None, event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)
+    duties = TimetableDuty.objects.filter(event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)
 
     for d in duties:
+      if d.responsible_family:
+        resp = d.responsible_family.members_sorted()[0]
+
+        if not resp:
+          print("[FAILURE] Could not get a profile for family %s." % d.responsible_family.lastname)
+          continue
+
+      else:
+        resp = d.responsible
+
       # ensure email is present
-      if d.responsible.email is None or len(d.responsible.email) == 0:
-        print("[FAILURE] Profile '%s' has no emailaddress." % (d.responsible.name()))
+      if resp.email is None or len(resp.email) == 0:
+        print("[FAILURE] Profile '%s' has no emailaddress." % (resp.name()))
         continue
 
       # Send mail
-      print("[SUCCESS] Sending reminder to %s for duty %s." % (d.responsible.name(), d))
+      print("[SUCCESS] Sending reminder to %s for duty %s." % (resp.name(), d))
       if not dryrun:
-        send_reminder_mail(d)
+        send_reminder_mail(d, resp)

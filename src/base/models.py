@@ -14,6 +14,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
+from itertools import chain
 import unidecode
 
 import os
@@ -102,6 +103,7 @@ class Profile(models.Model):
   def delete(self, *args, **kwargs):
     # remove all ruilrequests
     RuilRequest.objects.filter(profile=self).delete()
+    super().delete(*args, **kwargs)
 
   def check_firsttime(sender, user, request, **kwargs):
     p = request.user.profile
@@ -219,23 +221,40 @@ class Family(models.Model):
   def __str__(self):
     return self.name_initials()
 
+  def dads(self):
+    return self.members.filter(role_in_family='DAD').order_by('birthday')
+
+  def mums(self):
+    return self.members.filter(role_in_family='MUM').order_by('birthday')
+
+  def kids(self):
+    return self.members.filter(role_in_family='KID').order_by('birthday')
+
   def name_initials(self):
     initials = ""
-    for m in self.members.order_by('birthday')[:2]:
-      if len(initials) > 0:
+
+    for d in list(chain(self.dads(), self.mums())):
+      if len(initials):
         initials += ", "
-      initials += m.initials
+      initials += d.initials
+
     if len(initials) > 0:
       initials = " (%s)" % initials
 
     return "Familie %s%s" % (self.lastname, initials)
+
+  def members_sorted(self):
+    return list(chain(self.dads(), self.mums(), self.kids()))
 
   def size(self):
     return self.members.all().count()
 
   def delete(self, *args, **kwargs):
     # remove all ruilrequests
-    RuilRequest.objects.filter(profile__family=self).delete()
+    for m in self.members.all():
+      RuilRequest.objects.filter(profile=m).delete()
+
+    super().delete(*args, **kwargs)
 
 class Favorites(models.Model):
 
