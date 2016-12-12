@@ -140,31 +140,33 @@ def profile_detail_edit_save(request, pk):
   if request.POST.get("form-loaded", False):
     zip = request.POST.get("zip", "").replace(" ", "").upper()
     number = request.POST.get("number", "").replace(" ", "").upper()
-    street = "%s %s" % (request.POST.get("street", "").strip(), number)
+    street = request.POST.get("street", "").strip()
     city = request.POST.get("city", "")
     country = request.POST.get("country", "")
     phone = request.POST.get("phone", "").replace(" ", "")
 
     # Validate
-    if not (zip and street and city and country):
+    if not (zip and number and street and city and country):
       # Wrong validation
       messages.error(request, "Er is geen juist adres ingevuld. Een juist adres bestaat uit een postcode, straatnaam, woonplaats en landnaam.")
       return redirect('profile-detail-page', pk=pk)
 
-    # Save address
-    adr, created = Address.objects.get_or_create(zip=zip, street=street, city=city, country=country)
-
-    adr.phone = phone
-    adr.save()
-
+    street = "%s %s" % (street, number)
 
     # Check for 'verhuizing'
     if request.POST.get("verhuizing", False) == "true":  # check with current address (profile OR family)
       if request.POST.get("verhuizing-options", "") is "0":
         # Wrong option choosen
         messages.error(request, "Adreswijziging mislukt. Kies een geldige verhuisoptie.")
+        return redirect('profile-detail-page', pk=pk)
 
-      elif request.POST.get("verhuizing-options", "") is "1":
+      # Save address
+      adr, created = Address.objects.get_or_create(zip=zip, street=street, city=city, country=country)
+
+      adr.phone = phone
+      adr.save()
+
+      if request.POST.get("verhuizing-options", "") is "1":
         # Check if this is the family address
         if profile.family.address is adr:
           profile.address = None
