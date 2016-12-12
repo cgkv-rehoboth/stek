@@ -501,7 +501,14 @@ window.eventFilesPage = () => {
   // Insert default title
   $('input[name="file"]').change(function(){
     if ($('input[name="title"]').val().length == 0) {
-      var name = $(this).val();
+      let name = $(this).val();
+
+      // Remove full path
+      let startIndex = (name.indexOf('\\') >= 0 ? name.lastIndexOf('\\') : name.lastIndexOf('/'));
+      name = name.substring(startIndex);
+      if (name.indexOf('\\') === 0 || name.indexOf('/') === 0) {
+          name = name.substring(1);
+      }
 
       // Remove extension
       name = name.substring(0, name.lastIndexOf('.')).replace(/_/g, ' ');
