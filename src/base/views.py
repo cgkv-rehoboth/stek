@@ -161,7 +161,12 @@ def profile_detail_edit_save(request, pk):
         return redirect('profile-detail-page', pk=pk)
 
       # Save address
-      adr, created = Address.objects.get_or_create(zip=zip, street=street, city=city, country=country)
+      #adr, created = Address.objects.filter(family=None, profile=None).get_or_create(zip=zip, street=street, city=city, country=country)
+
+      adr = Address.objects.filter(family=None, profile=None, zip=zip, street=street, city=city, country=country).first()
+      if not adr:
+        print('Doesnt exists')
+        adr = Address.objects.create(zip=zip, street=street, city=city, country=country)
 
       adr.phone = phone
       adr.save()

@@ -76,7 +76,9 @@
                 <td>
                   {{ p.best_address }}
                   <a href="{{ googlemaps }}" target="_blank" class="make-contact-icon" title="Routebeschrijving"><i class="fa fa-map-marker" aria-hidden="true"></i></a><br/>
-                  <span class="wijk">Wijk {{ p.best_address.wijk.id }} ({{ p.best_address.wijk.naam }})</span>
+                  {% if p.best_address.wijk.id %}
+                    <span class="wijk">Wijk {{ p.best_address.wijk.id }} ({{ p.best_address.wijk.naam }})</span>
+                  {% endif %}
                 </td>
               </tr>
             {% endif %}

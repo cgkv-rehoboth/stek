@@ -8,7 +8,7 @@ admin.site.register(Favorites)
 
 # Create custom display for Address
 class AddressAdmin(admin.ModelAdmin):
-  list_display = ['street', 'zip', 'city', 'country']
+  list_display = ['street', 'zip', 'city', 'country', 'occupant']
 
 admin.site.register(Address, AddressAdmin)
 

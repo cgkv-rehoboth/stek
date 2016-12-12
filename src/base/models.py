@@ -54,6 +54,12 @@ class Address(models.Model):
   def __str__(self):
     return "%s, %s, %s (%s)" % (self.street, self.zip, self.city, self.country)
 
+  def occupant(self):
+    if self.family:
+      return self.family
+    else:
+      return self.profile
+
 def user_profile_pic(profile, filename):
   _, ext = os.path.splitext(filename)
 
@@ -77,7 +83,7 @@ class Profile(models.Model):
   )
 
   user        = models.OneToOneField(User, null=True, blank=True, related_name="profile")
-  address     = models.ForeignKey(Address, null=True, blank=True)
+  address     = models.ForeignKey(Address, null=True, blank=True, related_name="profile")
   phone       = models.CharField(max_length=15, blank=True)
   first_name  = models.CharField(max_length=255, blank=True)
   initials    = models.CharField(max_length=64, blank=True, null=True, default="")
