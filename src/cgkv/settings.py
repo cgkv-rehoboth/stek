@@ -90,6 +90,7 @@ INSTALLED_APPS = [
 ] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
+  'django.middleware.security.SecurityMiddleware',
   'corsheaders.middleware.CorsMiddleware',
   'django.middleware.common.CommonMiddleware',
   'django.middleware.csrf.CsrfViewMiddleware',
