@@ -38,7 +38,9 @@
               {% endif %}
             </p>
           {% endif %}
-          <p>{{ team.description }}</p>
+          {% if team.description %}
+            <p class="team-description">{{ team.description }}</p>
+          {% endif %}
         </div>
 
         {% if tables.all or is_admin or perms.agenda.change_team %}
@@ -82,7 +84,9 @@
                 {% if m.family %}
                   <a href="{% url 'family-detail-page' m.family.pk %}" title="{{ m.family }} ({{ m.role }})" class="team-userlink">
                     <div class="team-userimage-div">
-                      {% if m.family.photo %}
+                      {% if m.family.thumbnail %}
+                        <img src="{{ m.family.thumbnail.url }}" title="Foto van {{ m.name }}" class="team-userimage"/>
+                      {% elif m.family.photo %}
                         <img src="{{ m.family.photo.url }}" title="Foto van {{ m.name }}" class="team-userimage"/>
                       {% else %}
                         <img src="{% static 'resources/images/default_family_pf.png' %}" class="team-userimage"/>
