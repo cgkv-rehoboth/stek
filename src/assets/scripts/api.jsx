@@ -1,4 +1,4 @@
-let apiurl = "http://localhost:8000/api/v1/";
+let apiurl = "https://localhost:8000/api/v1/";
 let Q = require('q-xhr')(window.XMLHttpRequest, require('q'));
 let Cookies = require('cookies-js');
 let _ = require('underscore');

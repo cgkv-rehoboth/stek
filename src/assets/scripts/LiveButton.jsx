@@ -234,7 +234,7 @@ export class LivePlayer extends React.Component {
   render() {
     return (
       <audio id="luisteren-audio" ref="luisterenObject" loop preload="metadata">
-        <source src="http://kerkdienstgemist.nl/streams/267.mp3" type="audio/mpeg" />
+        <source src="https://kerkdienstgemist.nl/streams/267.mp3" type="audio/mpeg" />
       </audio>
     );
   }
