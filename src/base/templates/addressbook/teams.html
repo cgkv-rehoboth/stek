@@ -35,21 +35,24 @@
            {% if id == team.pk %}style="display: block;"{% endif %}>
 
         <div class="row">
+          {% if perms.agenda.delete_team %}
+            <!-- admin tools -->
+            <div class="col-md-12 team-delete">
+              <a href="{% url 'team-delete' team.pk %}" class="confirm-dialog-button" style="color: darkred; float: right;" data-message="Weet je zeker dat je dit <strong>team</strong> met al de bijhorende <strong>roosters</strong> en <strong>teamleden</strong> wilt verwijderen?" title="Team verwijderen">Team verwijderen</a>
+            </div>
+          {% endif %}
+
           <div class="col-md-12">
             {% if team.email %}
-              <p><i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i> <a href="mailto:{{ team.email }}">{{ team.email }}</a></p>
+              <p class="nowrap"><i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i> <a href="mailto:{{ team.email }}">{{ team.email }}</a></p>
             {% endif %}
-            <p>{{ team.description }}</p>
+            {% if team.description %}
+              <p class="team-description">{{ team.description }}</p>
+            {% endif %}
           </div>
         </div>
         <div class="row">
 
-          {% if perms.agenda.delete_team %}
-            <!-- admin tools -->
-            <div class="col-md-12">
-              <a href="{% url 'team-delete' team.pk %}" class="confirm-dialog-button" style="color: darkred;" data-message="Weet je zeker dat je dit <strong>team</strong> met al de bijhorende <strong>roosters</strong> en <strong>teamleden</strong> wilt verwijderen?" title="Team verwijderen">Team verwijderen</a>
-            </div>
-          {% endif %}
 
           <div class="col-md-12">
             <h4>Teamleden</h4>
