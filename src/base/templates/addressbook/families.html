@@ -33,9 +33,7 @@
       <div class="row">
         <p class="col-md-12 list-group-head" id="{{ v.pk }}">
           {% if request.user.is_superuser or perms.base.change_family  %}
-            <a href="{% url 'admin:base_family_change' v.pk %}">
-              <i class="fa fa-edit fa-preicon"></i>
-            </a>
+            <a href="{% url 'admin:base_family_change' v.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
           {% endif %}
           {{ v.lastname }}
           {% if v.members_sorted %}
@@ -79,9 +77,7 @@
           {% if v.address %}
             <h3>
               {% if request.user.is_superuser or perms.base.change_address %}
-                <a href="{% url 'admin:base_address_change' v.address.pk %}">
-                  <i class="fa fa-edit fa-preicon"></i>
-                </a>
+                <a href="{% url 'admin:base_address_change' v.address.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
               {% endif %}
               Adres
             </h3>
@@ -103,8 +99,10 @@
 
         <div class="col-md-4 text-center">
           <!-- Family photo -->
-          {% if v.photo %}
-            <img src="{{ MEDIA_URL }}/{{ v.photo }}" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+          {% if v.thumbnail or v.photo %}
+            <a href="{{ v.photo.url }}" title="Klik hier om de foto te vergroten" target="_blank">
+              <img src="{% if v.thumbnail %}{{ v.thumbnail.url }}{% else %}{{ v.photo.url }}{% endif %}" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+            </a>
           {% endif %}
         </div>
       </div>

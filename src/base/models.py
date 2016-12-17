@@ -103,6 +103,10 @@ class Profile(models.Model):
   def delete(self, *args, **kwargs):
     # remove all ruilrequests
     RuilRequest.objects.filter(profile=self).delete()
+
+    # Delete photo file
+    self.photo.delete()
+
     super().delete(*args, **kwargs)
 
   def check_firsttime(sender, user, request, **kwargs):
@@ -133,7 +137,7 @@ class Profile(models.Model):
   def save(self, *args, **kwargs):
     # Only update photo if special args are given (the center args)
     if self.photo and args and args[0]:
-      # Compress picture
+      # Convert picture
       p = Image.open(self.photo).convert('RGB')
 
       # Preferred output image size (in pixels)
@@ -141,21 +145,20 @@ class Profile(models.Model):
 
       ## Choose a option to save the profile picture
       # 1) Scale to max width and height
-      #p.thumbnail(prefsize,Image.ANTIALIAS)
+      #p = p.thumbnail(prefsize,Image.ANTIALIAS)
 
       # 2) Scale to max width or height
       #if p.size[0]>p.size[1]:
       #  size = prefsize[0], round(prefsize[1]*p.size[1]/p.size[0])
       #else:
       #  size = round(prefsize[0]*p.size[0]/p.size[1]), prefsize[1]
-      #p.resize(size, Image.ANTIALIAS)
+      #p = p.resize(size, Image.ANTIALIAS)
 
-      # 3) Cropscale image to max widt and height
+      # 3) Cropscale image to max width and height
       # Get center (if specified)
       center = args[0].split(',')
       center = float(center[0]),float(center[1])
       args = {}
-
       p = ImageOps.fit(p, prefsize, Image.ANTIALIAS, 0, center)
 
       # Save
@@ -207,12 +210,24 @@ class Profile(models.Model):
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)
 
-  return 'families/%s%s' % (fam.pk, ext)
+  # Remove all harmfull chars
+  name = ''.join(e for e in unidecode.unidecode(fam.lastname) if e.isalnum())
+
+  return 'families/%s_%s%s' % (fam.pk, name, ext)
+
+def family_pic_thumb(fam, filename):
+  _, ext = os.path.splitext(filename)
+
+  # Remove all harmfull chars
+  name = ''.join(e for e in unidecode.unidecode(fam.lastname) if e.isalnum())
+
+  return 'families/thumbnails/%s_%s%s' % (fam.pk, name, ext)
 
 class Family(models.Model):
 
   lastname    = models.CharField(max_length=255)
-  photo       = models.FileField(upload_to=family_pic, null=True, blank=True) #Todo: specify upload dir
+  photo       = models.FileField(upload_to=family_pic, null=True, blank=True)
+  thumbnail   = models.FileField(upload_to=family_pic_thumb, null=True, blank=True)
   address     = models.OneToOneField(Address, null=True, blank=True, related_name="family")
 
   class Meta:
@@ -254,7 +269,61 @@ class Family(models.Model):
     for m in self.members.all():
       RuilRequest.objects.filter(profile=m).delete()
 
+    # Delete photo files
+    self.photo.delete()
+    self.thumbnail.delete()
+
     super().delete(*args, **kwargs)
+
+  def save(self, *args, **kwargs):
+    # Check if a new photo/thumnail has been submitted
+    if args and args[0] and ((args[0] == 'photo' and self.photo) or (args[0] == 'thumbnail' and self.thumbnail)):
+      # Convert picture
+      if args[0] == 'thumbnail' and self.thumbnail:
+        p = Image.open(self.thumbnail).convert('RGB')
+      else:
+        p = Image.open(self.photo).convert('RGB')
+
+      ## Thumbnail photo
+      # Preferred output image size (in pixels)
+      prefsize = 300, 300
+
+      # 2) Scale to max width or height
+      if p.size[0]>p.size[1]:
+        size = prefsize[0], round(prefsize[1]*p.size[1]/p.size[0])
+      else:
+        size = round(prefsize[0]*p.size[0]/p.size[1]), prefsize[1]
+      p_thumbnail = p.resize(size, Image.ANTIALIAS)
+
+      # Save
+      output_thumbnail = BytesIO()
+      p_thumbnail.save(output_thumbnail, format='JPEG', quality=90, optimize=True)
+      output_thumbnail.seek(0, os.SEEK_END)
+      self.thumbnail = InMemoryUploadedFile(output_thumbnail, 'ImageField', "%s.jpg" % self.photo.name, 'image/jpeg', output_thumbnail.tell(), None)
+
+      ## Full photo
+      if args[0] == 'photo':
+        # Preferred output image size (in pixels)
+        prefsize = 800, 800
+
+        # 2) Scale to max width or height
+        if p.size[0] > p.size[1]:
+          size = prefsize[0], round(prefsize[1] * p.size[1] / p.size[0])
+        else:
+          size = round(prefsize[0] * p.size[0] / p.size[1]), prefsize[1]
+        p_full = p.resize(size, Image.ANTIALIAS)
+
+        # Save
+        output_full = BytesIO()
+        p_full.save(output_full, format='JPEG', quality=90, optimize=True)
+        output_full.seek(0, os.SEEK_END)
+        self.photo = InMemoryUploadedFile(output_full, 'ImageField', "%s.jpg" % self.photo.name, 'image/jpeg',
+                                          output_full.tell(), None)
+
+      # Reset arguments
+      args = {}
+
+    super().save(*args, **kwargs)
 
 class Favorites(models.Model):
 

@@ -15,6 +15,19 @@ admin.site.register(Address, AddressAdmin)
 class FamilyAdmin(admin.ModelAdmin):
   list_display = ['lastname', 'size']
 
+  def save_model(self, request, obj, form, change):
+    args = {}
+    # Remove old photo
+    if request.FILES.get('photo'):
+      Family.objects.get(pk=obj.pk).photo.delete()
+      Family.objects.get(pk=obj.pk).thumbnail.delete()
+      args = 'photo'
+    if request.FILES.get('thumbnail'):
+      Family.objects.get(pk=obj.pk).thumbnail.delete()
+      args = 'thumbnail'
+
+    obj.save(args)
+
 admin.site.register(Family, FamilyAdmin)
 
 # Create custom display for User
