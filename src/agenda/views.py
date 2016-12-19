@@ -15,7 +15,9 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
 from django.db.models import Q
+from django.core.urlresolvers import reverse
 import random
+
 from .models import *
 from base.models import Profile, Family
 from .forms import *
@@ -413,27 +415,39 @@ def timetable_teamleader_duty_add(request):
     return redirect('timetable-detail-page', id=table.pk)
 
   event = Event.objects.get(pk=request.POST.get("event", ""))
-  resp_id = request.POST.get("responsible")[1:]
 
-  if request.POST.get("responsible")[0] is "f":
-    prof = None
-    fam = Family.objects.get(pk=resp_id)
-  else:
-    prof = Profile.objects.get(pk=resp_id)
-    fam = None
+  # Get all responsibles
+  resps = request.POST.getlist("responsible[]")
 
-  # Create new duty
-  duty = TimetableDuty.objects.create(
-    timetable=table,
-    event=event,
-    responsible=prof,
-    responsible_family=fam,
-    comments=request.POST.get("comments", "").strip()
-  )
+  if len(resps) is 0:
+    messages.error(request, "Kies tenminste één persoon of familie.")
+    return redirect('timetable-teamleader-page', id=table.id)
 
-  messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
+  # Create duty for each responsible
+  for r in resps:
+    # Strip ID
+    resp_id = r[1:]
 
-  return redirect('timetable-teamleader-page', id=table.id)
+    # Strip type
+    if r[0] is "f":
+      prof = None
+      fam = Family.objects.get(pk=resp_id)
+    else:
+      prof = Profile.objects.get(pk=resp_id)
+      fam = None
+
+    # Create new duty
+    duty = TimetableDuty.objects.create(
+      timetable=table,
+      event=event,
+      responsible=prof,
+      responsible_family=fam,
+      comments=request.POST.get("comments", "").strip()
+    )
+
+    messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
+
+  return redirect(reverse('timetable-teamleader-page', kwargs={'id': table.id}) + "#inplannen")
 
 @login_required
 def timetable_teamleader_duty_edit_save(request, id):

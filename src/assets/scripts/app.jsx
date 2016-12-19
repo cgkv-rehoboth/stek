@@ -129,7 +129,7 @@ window.profileListMain = () => {
     <ProfileSearchTable listFunc={searchProfiles} />,
     $("#profile-search-table")[0]
   );
-}
+};
 
 window.favoriteListMain = () => {
   let favoriteProfiles = (query, page) => {
@@ -142,7 +142,7 @@ window.favoriteListMain = () => {
       <ProfileSearchTable listFunc={favoriteProfiles} />,
     $("#profile-search-table")[0]
   );
-}
+};
 
 
 import FavStar from 'containers/FavStar';
@@ -200,7 +200,7 @@ window.timetableRuilrequests = () => {
       .text(elem.attr("title"));
     modal.modal('show');
   });
-}
+};
 
 // Let the window scroll 1px up
 // (not down, because the menu bar will render in the wrong way),
@@ -214,7 +214,46 @@ window.calendarMain = calendarMain;
 import frontpageMain from 'mains/frontpage';
 window.frontpageMain = frontpageMain;
 
-window.timetableTeamleader = () => {};
+window.timetableTeamleader = () => {
+  // Make responsible input form multiple/single input
+  $("#switch-multi-user-select input").change(function(){
+    if ($(this).prop('checked')) {
+      $('.multi-user-select input').attr('type', 'checkbox');
+    }else{
+      $('.multi-user-select input').attr('type', 'radio');
+    }
+    updateMultiUser();
+  });
+
+  function updateMultiUser(){
+    // Combine all selected values
+    let r = $(".multi-user-select input:checked")
+      .map(function(){
+        // Decide which URL to use
+        let url;
+        if (this.value.substring(0,1) == 'f'){
+          url = family_url.replace('1234', this.value.substring(1));
+        }else{
+          url = profile_url.replace('1234', this.value.substring(1));
+        }
+
+        // Get and strip text
+        let text = $(this).closest('label').text().trim();
+
+        // Show it
+        return '<a href="' + url + '" class="black-url" target="_blank">' + text + '</a>';
+      })
+      .get()
+      .join('; ');
+    $("#multi-user-result").html(r);
+  }
+
+  updateMultiUser();
+
+  $(".multi-user-select input").change(function(){
+    updateMultiUser();
+  });
+};
 
 window.timetableTeamleaderDuty = () => {};
 
@@ -263,7 +302,7 @@ window.servicePage = () => {
       $('#services-form input[name="starttime2"]').attr('value', '16:30');
       $('#services-form input[name="endtime2"]').attr('value', '17:45');
     }
-  };
+  }
 
   // Service table
   let searchServices = (query, page) => {

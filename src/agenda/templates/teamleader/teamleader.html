@@ -69,7 +69,7 @@
         </div>
 
         <div class="col-sm-12">
-          <h3>Inplannen</h3>
+          <h3 id="inplannen">Inplannen</h3>
 
           {% if members.all or families.all %}
             <div id="dutyForm">
@@ -101,7 +101,45 @@
                 <br/>
 
                 <div>
-                  <label>Verantwoordelijke</label><br/>
+                  <label>Verantwoordelijke</label>
+                  <br/>
+                  <span id="switch-multi-user-select">
+                    <label>
+                      <input type="checkbox" /> Meervoudig
+                    </label>
+                  </span>
+                  <br/>
+
+                  <div class="multi-user-select">
+                    {% if members.all %}
+                      <div>
+                        <label class="heading">Pesonen</label>
+                      </div>
+                      {% for member in members.all %}
+                        <div>
+                          <label>
+                            <input type="radio" name="responsible[]" value="p{{ member.profile.pk }}" {% if member.profile.pk == selected_member %}checked{% endif %} />
+                            {{ member.name }}
+                          </label>
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                    {% if families.all %}
+                      <div>
+                        <label class="heading">Families</label>
+                      </div>
+                      {% for member in families.all %}
+                        <div>
+                          <label>
+                            <input type="radio" name="responsible[]" value="f{{ member.family.pk }}" {% if member.family.pk == selected_family %}checked{% endif %} />
+                            {{ member.family.name_initials }}
+                          </label>
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                  </div>
+                  <div id="multi-user-result"></div>
+<!--
                   <select name="responsible">
                     {% if members.all %}
                       <optgroup label="Personen">
@@ -117,7 +155,7 @@
                       {% endfor %}
                       </optgroup>
                     {% endif %}
-                  </select>
+                  </select> -->
                 </div>
                 <br/>
 
@@ -149,6 +187,8 @@
 
 {% block scripts %}
   <script>
+    var profile_url = '{% url 'profile-detail-page' 1234 %}';
+    var family_url = '{% url 'family-detail-page' 1234 %}';
     window.timetableTeamleader();
   </script>
 {% endblock %}
