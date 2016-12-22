@@ -175,7 +175,7 @@ AUTH_PASSWORD_VALIDATORS = [
   {
     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     'OPTIONS': {
-      'min_length': 9,
+      'min_length': 8,
     }
   },
   {
@@ -186,6 +186,8 @@ AUTH_PASSWORD_VALIDATORS = [
   },
 ]
 
+SECURE_SSL_REDIRECT = True
+
 #
 # application settings
 #
@@ -193,8 +195,6 @@ AUTH_PASSWORD_VALIDATORS = [
 NOCAPTCHA = True
 RECAPTCHA_PUBLIC_KEY = '6LdTEBsTAAAAAEGoRs_P10MVgylFKuxHnKZzB-m1'
 RECAPTCHA_PRIVATE_KEY = '6LdTEBsTAAAAAGdjKkSYNWRSx_5w5fCEZGrZIkyk'
-
-SECURE_SSL_REDIRECT = True
 
 # cache settings
 
