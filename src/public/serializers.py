@@ -12,7 +12,7 @@ class ContactSerializer(serializers.Serializer):
   first_name = serializers.CharField()
   last_name = serializers.CharField()
   recipient = serializers.CharField()
-  #recaptcha = RecaptchaField()
+  recaptcha = RecaptchaField()
 
   def save(self):
     sender = '%s %s' % (self.validated_data['first_name'], self.validated_data['last_name'])
