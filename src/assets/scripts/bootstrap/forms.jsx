@@ -423,3 +423,38 @@ export class SubmitButton extends React.Component {
     return <input className="btn btn-rounded dark" type="submit" onClick={this.submitForm.bind(this)} value={label}/>;
   }
 }
+
+export class RadioField extends Field{
+
+  onChange(e) {
+    this.setValue(e.target.value);
+  }
+
+  render() {
+    return <div onChange={this.onChange.bind(this)}>
+        {this.props.children}
+      </div>;
+  }
+}
+
+export class RadioButton extends React.Component{
+
+  componentDidMount(){
+    // Handles initial checked state
+    if (this.props.checked) {
+      // Also trigger the event for the parent element
+      $('input[type="radio"][value="' + this.props.value + '"]').prop('checked', true).trigger("click");
+    }
+  }
+
+  render() {
+    let { name, label, value } = this.props;
+
+    return <label>
+      <input type="radio" value={value} name={name} />
+      <span>
+        {label}
+      </span>
+    </label>;
+  }
+}

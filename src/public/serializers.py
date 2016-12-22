@@ -11,12 +11,19 @@ class ContactSerializer(serializers.Serializer):
   message = serializers.CharField()
   first_name = serializers.CharField()
   last_name = serializers.CharField()
-  recaptcha = RecaptchaField()
+  recipient = serializers.CharField()
+  #recaptcha = RecaptchaField()
 
   def save(self):
     sender = '%s %s' % (self.validated_data['first_name'], self.validated_data['last_name'])
     email = self.validated_data['email']
-    to = ['scriba@rehobothkerkwoerden.nl']
+
+    # Check to whom the mail must be send (default to scriba)
+    if self.validated_data['recipient'] == "predikant":
+      to = ['predikant.woerden@gmail.com']
+    else:
+      to = ['scriba@rehobothkerkwoerden.nl']
+
     message = self.validated_data['message']
 
     send_mail("Contactformulier: %s" % sender, message, email, to)

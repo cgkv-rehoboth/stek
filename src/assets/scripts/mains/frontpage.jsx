@@ -30,6 +30,21 @@ class ContactForm extends Component {
           <forms.TextField name="message" label="Bericht" />
         </div>
       </div>
+
+      <div className="row" >
+        <div className="col-sm-3 col-md-2" style={{marginTop: 10 + "px"}}>
+          Versturen naar
+        </div>
+
+        <div className="col-sm-7 col-md-10">
+          <forms.RadioField name="recipient">
+            <forms.RadioButton name="recipient[]" value="scriba" label="Scriba" checked="checked"/>
+            <br/>
+            <forms.RadioButton name="recipient[]" value="predikant" label="Predikant (dr. A. Jansen)" />
+          </forms.RadioField>
+        </div>
+      </div>
+
       <div className="vspace" ></div>
       <div className="row" >
         <div className="col-sm-6">
@@ -44,7 +59,7 @@ class ContactForm extends Component {
     return <forms.Form
       action={api.contact}
       onSuccess={(resp) => {
-        alert("Uw email is succesvol verstuurd naar de gemeente! " +
+        alert("Uw email is verstuurd! " +
               "U zult spoedig antwoord ontvangen op " + resp.data.email);
       }}>{formBuilder}</forms.Form>;
   }
