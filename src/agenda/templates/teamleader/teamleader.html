@@ -132,7 +132,7 @@
                         <div>
                           <label>
                             <input type="radio" name="responsible[]" value="f{{ member.family.pk }}" {% if member.family.pk == selected_family %}checked{% endif %} />
-                            {{ member.family.name_initials }}
+                            {{ member.family }}
                           </label>
                         </div>
                       {% endfor %}
@@ -151,7 +151,7 @@
                     {% if families.all %}
                       <optgroup label="Families">
                       {% for member in families.all %}
-                        <option value="f{{ member.family.pk }}" {% if member.family.pk == selected_family %}selected="selected"{% endif %}>{{ member.family.name_initials }}</option>
+                        <option value="f{{ member.family.pk }}" {% if member.family.pk == selected_family %}selected="selected"{% endif %}>{{ member.family }}</option>
                       {% endfor %}
                       </optgroup>
                     {% endif %}

@@ -30,6 +30,14 @@
               <li><a href="{% url 'family-list-page' %}">Families</a></li>
               <li><a href="{% url 'team-list-page' %}">Teams</a></li>
               <li><a href="{% url 'favorite-list-page' %}">Favorieten</a></li>
+            {% if perms.base.add_profile %}
+              <li class="hr"></li>
+              <li>
+                <a href="{% url 'addressbook-management' %}" title="Adresboek beheer">
+                  Beheer
+                </a>
+              </li>
+            {% endif %}
             </ul>
           </li>
           <li>

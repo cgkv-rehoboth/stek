@@ -10,7 +10,7 @@
             <div class="alert alert-{% if type == 'error' %}danger{% else %}{{ type }}{% endif %} alert-dismissible" role="alert">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           {% endifchanged %}
-          {{ message }}<br/>
+          {{ message|safe }}<br/>
         {% endif %}
       {% endfor %}
     {% endfor %}

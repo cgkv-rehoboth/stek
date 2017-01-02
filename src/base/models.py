@@ -77,10 +77,10 @@ class Profile(models.Model):
   INDEPENDENT_KID = 'IKI'
 
   ROLE_CHOICES = (
-    (DAD, 'Father'),
-    (MUM, 'Mother'),
-    (KID, 'Kid'),
-    (INDEPENDENT_KID, 'Independent kid'),
+    (DAD, 'Vader'),
+    (MUM, 'Moeder'),
+    (KID, 'Kind'),
+    (INDEPENDENT_KID, 'Onafhankelijk kind'),
   )
 
   user        = models.OneToOneField(User, null=True, blank=True, related_name="profile")
@@ -234,7 +234,7 @@ class Family(models.Model):
     ordering = ('lastname',)
 
   def __str__(self):
-    return self.name_initials()
+    return "Familie %s" % self.name_initials()
 
   def dads(self):
     return self.members.filter(role_in_family='DAD').order_by('birthday')
@@ -256,7 +256,7 @@ class Family(models.Model):
     if len(initials) > 0:
       initials = " (%s)" % initials
 
-    return "Familie %s%s" % (self.lastname, initials)
+    return "%s%s" % (self.lastname, initials)
 
   def members_sorted(self):
     return list(chain(self.dads(), self.mums(), self.kids()))

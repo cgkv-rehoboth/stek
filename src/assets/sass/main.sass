@@ -45,7 +45,8 @@
   margin-top: 20px
 
 hr
-  border-bottom: 1px solid #bbb
+  border: 1px solid #dedede
+  border-width: 1px 0 0 1px
 
 #profile-search-input, #family-search-input
   display: inline-block
@@ -101,6 +102,17 @@ hr
     color: inherit
     text-decoration: inherit
 
+
+ul.list
+  list-style-type: disc
+  padding-left: 40px
+  line-height: 1.6
+
+ol.list
+  list-style-type: decimal
+  padding-left: 40px
+  line-height: 1.3
+
 // pages
 @import timetables
 @import calendar
@@ -111,3 +123,4 @@ hr
 @import teampage
 @import dashboard
 @import datepicker
+@import importusers

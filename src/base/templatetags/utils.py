@@ -8,7 +8,9 @@ def klass(ob):
 
 @register.filter('get')
 def get(ob, name):
-    return ob[name]
+    if name in ob:
+        return ob[name]
+    return ''
 
 @register.filter('usernicename')
 def usernicename(ob):

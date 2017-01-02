@@ -1,0 +1,268 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section id="import-users-overview">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Mutaties gemeente</h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <a href="{% url 'addressbook-management' %}">< Nieuw bestand uploaden</a>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="col-sm-12 introduction">
+          Hieronder is het overzicht te vinden van alle verschillen die gevonden zijn. Oranje gekleurde vakjes geven aan dat er een verandering in waarde is. Weergegeven kolomnamen welke volledig bestaan uit hoofdletters komen overeen met de kolomnamen uit het geüploade CSV-bestand.
+          <br/>
+          <br/>
+          <br/>
+          <strong>Navigatie:</strong>
+          <ul class="list">
+            <li>
+              <a href="#errors">Opmerkingen</a>
+            </li>
+            <li>
+              <strong>Nieuw</strong>
+              <ul class="list">
+                <li>
+                  <a href="#new-families">Families</a>
+                </li>
+                <li>
+                  <a href="#new-profiles">Leden</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Wijzigingen</strong>
+              <ul class="list">
+                <li>
+                  <a href="#diff-families">Families</a>
+                </li>
+                <li>
+                  <a href="#diff-profiles">Leden</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+
+        <div class="col-sm-12 overview">
+          <h3 id="errors">Opmerkingen</h3>
+          {% if errors %}
+            <i>Indien er geen online profiel gevonden is, is de kans groot dat er nog geen online profiel is aangemaakt voor het betreffende lid. Indien er wel een online profiel bestaat, maar het niet gelukt is om deze te vinden, zal deze bij de <a href="#new-profiles">nieuwe leden</a> staan.</i><br/><br/>
+            {% for error in errors %}
+              {{ error }}<br/>
+            {% endfor %}
+          {% else %}
+            Geen.
+          {% endif %}
+        </div>
+
+        <div class="col-sm-12 overview">
+          <h3>Nieuw</h3>
+          <i>Hieronder staan de families en leden welke wel aanwezig zijn in de online database, maar niet in het geüploade CSV-bestand.</i><br/><br/>
+
+          <h4 id="new-families">Families</h4>
+          {% if new_families %}
+            <table class="table table-hover">
+              <colgroup>
+                <!-- Change color of the manual inserterd columns -->
+                <col class="fixed"/>
+              </colgroup>
+
+              <thead>
+                <tr>
+                  <th><div><span>Familie</span></div></th>
+                  {% for header in family_headers %}
+                    <th><div><span>{{ header }}</span></div></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in new_families %}
+                  <tr>
+                    <td><a href="{% url 'family-detail-page' item.family.pk %}" title="Bekijk familie" target="_blank" class="black-url">{{ item.family.name_initials }}</a></td>
+                    {% for header in family_headers %}
+                      <td class="changed">
+                        {% if header == "GEZINSNAAM" %}
+                          <a href="{% url 'family-detail-page' item.family.pk %}" target="_blank" class="black-url">{{ item|get:header }}</a>
+                        {% else %}
+                          {{ item|get:header }}
+                        {% endif %}
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            Geen.
+          {% endif %}
+
+          <h4 id="new-profiles">Leden</h4>
+          {% if new_profiles %}
+            <table class="table table-hover">
+              <colgroup>
+                <!-- Change color of the manual inserterd columns -->
+                <col class="fixed"/>
+                <col class="fixed"/>
+              </colgroup>
+
+              <thead>
+                <tr>
+                  <th><div><span>Profiel</span></div></th>
+                  <th><div><span>Familie</span></div></th>
+                  {% for header in headers %}
+                    <th><div><span>{{ header }}</span></div></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in new_profiles %}
+                  <tr>
+                    <td><a href="{% url 'profile-detail-page' item.profile.pk %}" title="Bekijk profiel" target="_blank" class="black-url">{{ item.profile.name }}</a></td>
+                    <td><a href="{% url 'family-detail-page' item.profile.family.pk %}" title="Bekijk familie" target="_blank" class="black-url">{{ item.profile.family.name_initials }}</a></td>
+                    {% for header in headers %}
+                      <td class="changed">
+                        {% if header == "GEZINSNAAM" or header == "ACHTERNAAM" %}
+                          <a href="{% url 'family-detail-page' item.profile.family.pk %}" target="_blank" class="black-url">{{ item|get:header }}</a>
+                        {% elif header == "ROEPNAAM" %}
+                          <a href="{% url 'profile-detail-page' item.profile.pk %}" target="_blank" class="black-url">{{ item|get:header }}</a>
+                        {% else %}
+                          {{ item|get:header }}
+                        {% endif %}
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            Geen.
+          {% endif %}
+
+        </div>
+
+        <div class="col-sm-12">
+          <h3>Wijzigingen</h3>
+          <i>Alle verschillen die gevonden zijn, zijn weergeven in onderstaande overzichten. De (nieuwe) waarde uit de online database wordt weergeven. Door met de muis over het betreffende vakje te zweven, zal er een popup verschijnen waarin de andere waarde uit het geüploade CSV-bestand te zien is.</i><br/><br/>
+
+          <h4 id="diff-families">Families</h4>
+          {% if family_differences %}
+            <table class="table table-hover">
+              <colgroup>
+                <!-- Change color of the manual inserterd columns -->
+                <col class="fixed"/>
+                <col class="fixed"/>
+              </colgroup>
+
+              <thead>
+                <tr>
+                  <th><div><span>GEZINSNR</span></div></th>
+                  <th><div><span>Familie</span></div></th>
+                  {% for header in family_headers %}
+                    <th><div><span>{{ header }}</span></div></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for key, item in family_differences.items %}
+                  <tr>
+                    <td>{{ key }}</td>
+                    <td><a href="{% url 'family-detail-page' item.family.pk %}" title="Bekijk familie" target="_blank" class="black-url">{{ item.family.name_initials }}</a></td>
+                    {% for header in family_headers %}
+                      {% if header in item %}
+                        {% with value=item|get:header %}
+                          <td title="CSV waarde: {{ value.0 }}" class="changed">
+                            {% if header == "GEZINSNAAM" %}
+                              <a href="{% url 'family-detail-page' item.family.pk %}" target="_blank" class="black-url">{{ value.1 }}</a>
+                            {% else %}
+                              {{ value.1 }}
+                            {% endif %}
+                          </td>
+                        {% endwith %}
+                      {% else %}
+                        <td></td>
+                      {% endif %}
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            Geen.
+          {% endif %}
+
+          <h4 id="diff-profiles">Leden</h4>
+          {% if profile_differences %}
+            <table class="table table-hover">
+              <colgroup>
+                <!-- Change color of the manual inserterd columns -->
+                <col class="fixed"/>
+                <col class="fixed"/>
+              </colgroup>
+
+              <thead>
+                <tr>
+                  <th><div><span>LIDNR</span></div></th>
+                  <th><div><span>Profiel</span></div></th>
+                  {% for header in headers %}
+                    <th><div><span>{{ header }}</span></div></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for key, item in profile_differences.items %}
+                  <tr>
+                    <td>{{ key }}</td>
+                    <td><a href="{% url 'profile-detail-page' item.profile.pk %}" title="Bekijk profiel" target="_blank" class="black-url">{{ item.profile.name }}</a></td>
+                    {% for header in headers %}
+                      {% if header in item %}
+                        {% with value=item|get:header %}
+                          <td title="CSV waarde: {{ value.0 }}" class="changed">
+                            {% if header == "GEZINSNAAM" or header == "ACHTERNAAM" %}
+                              <a href="{% url 'family-detail-page' item.profile.family.pk %}" target="_blank" class="black-url">{{ value.1 }}</a>
+                            {% elif header == "ROEPNAAM" %}
+                              <a href="{% url 'profile-detail-page' item.profile.pk %}" target="_blank" class="black-url">{{ value.1 }}</a>
+                            {% else %}
+                              {{ value.1 }}
+                            {% endif %}
+                          </td>
+                        {% endwith %}
+                      {% else %}
+                        <td></td>
+                      {% endif %}
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            Geen.
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    //window.teamAddPage();
+  </script>
+{% endblock %}
