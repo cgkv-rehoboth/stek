@@ -1,0 +1,223 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section id="add-overview">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Leden toevoegen</h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <a href="{% url 'addressbook-management' %}">< Adresboek beheer</a>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="col-sm-12 introduction">
+          Dit zijn de nieuw toegevoegde leden en/of families.
+        </div>
+
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+
+        {% if errors %}
+          <div class="col-sm-12 overview">
+            <h3 id="errors">Opmerkingen</h3>
+              {% for error in errors %}
+                {{ error|safe }}<br/>
+              {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="col-sm-12 overview">
+          <br/>
+          {% if created_families or created_profiles %}
+            {% if created_families %}
+              <h3 id="new-families">
+                Families
+                <span class="badge">{{ created_families|length }}</span>
+              </h3>
+
+              {% for f in created_families %}
+                <h4 title="Gezinsnummer: {{ f.gezinsnr }}">
+                  {% if perms.base.change_family  %}
+                    <a href="{% url 'admin:base_family_change' f.pk %}" target="_blank">
+                      <i class="fa fa-edit fa-preicon"></i></a>
+                  {% endif %}
+                  <a href="{% url 'family-detail-page' f.pk %}" class="black-url" target="_blank">
+                    {{ f.prefix }} {{ f.lastnamep }}
+                  </a>
+                </h4>
+
+                <div class="subdiv">
+                  <p>
+                    <strong>
+                      {% if perms.base.change_address %}
+                        <a href="{% url 'admin:base_address_change' f.address.pk %}" target="_blank">
+                          <i class="fa fa-edit fa-preicon"></i></a>
+                      {% endif %}
+                      Adres
+                    </strong>
+                    <br/>
+
+                    {% if f.address.wijk.id %}
+                      <span class="wijk">Wijk {{ f.address.wijk.id }} ({{ f.address.wijk.naam }})</span><br/>
+                    {% endif %}
+                    {{ f.address.street }}<br/>
+                    {{ f.address.zip }}, {{ f.address.city }} <br />
+                    {{ f.address.country }} <br />
+                    {{ f.address.phone }} <br />
+                    <a href="https://www.google.com/maps/place/{{ f.address }}"
+                       target="_blank"
+                       title="Bekijk op Google Maps" class="google-maps-link">
+                      <i class="fa fa-external-link fa-preicon"></i>Kaart
+                    </a>
+                  </p>
+
+                  <p>
+                    <strong>Leden</strong><br/>
+
+                    <ul class="list">
+                      {% for p in f.members_sorted %}
+                        <li>
+                          <a href="{% url 'profile-detail-page' p.pk %}" class="black-url" title="Bekijk profiel" target="_blank">
+                            {{ p.name }}
+                          </a>
+                        </li>
+                      {% empty %}
+                        <li>Geen</li>
+                      {% endfor %}
+                    </ul>
+                  </p>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            {% if created_profiles %}
+              {% if created_families %}
+                <hr/>
+                <br/>
+                <br/>
+              {% endif %}
+
+              <h3 id="new-profiles">
+                Leden
+                <span class="badge">{{ created_profiles|length }}</span>
+              </h3>
+
+              {% for p in created_profiles %}
+                <h4 title="Lidnummer: {{ p.lidnr }}">
+                  {% if perms.base.change_family  %}
+                    <a href="{% url 'admin:base_profile_change' p.pk %}" target="_blank">
+                      <i class="fa fa-edit fa-preicon"></i></a>
+                  {% endif %}
+                  <a href="{% url 'profile-detail-page' p.pk %}" class="black-url" target="_blank">
+                    {{ p.titel }}
+                    {{ p.namei }}
+                  </a>
+                </h4>
+
+
+                <div class="subdiv">
+                  <table class="table table-bordered">
+                    <tbody>
+                      <tr>
+                        <th>Roepnaam</th>
+                        <td>{{ p.first_name }}</td>
+                      </tr>
+                      <tr>
+                        <th>Voornamen</th>
+                        <td>{{ p.voornamen }}</td>
+                      </tr>
+                      <tr>
+                        <th>Familie</th>
+                        <td>
+                          <a href="{% url 'family-detail-page' p.family.pk %}" title="Bekijk de familie" target="_blank">
+                            {{ p.family.lastnamep }}
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Geboortedatum</th>
+                        <td>{{ p.birthday }}</td>
+                      </tr>
+                      <tr>
+                        <th>E-mail</th>
+                        <td>{{ p.email }}</td>
+                      </tr>
+                      <tr>
+                        <th>Telefoon</th>
+                        <td>{{ p.phone }}</td>
+                      </tr>
+                      <tr>
+                        <th>Gezinsrol</th>
+                        <td title="Gezinsvolgorde: {{ p.gvolgorde }}">
+                          {{ p.get_role_in_family_display }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Geslacht</th>
+                        <td>{{ p.geslacht }}</td>
+                      </tr>
+                      <tr>
+                        <th>Soort lid</th>
+                        <td>{{ p.soortlid }}</td>
+                      </tr>
+                      <tr>
+                        <th>Burgerstaat</th>
+                        <td>{{ p.burgerstaat }}</td>
+                      </tr>
+                      <tr>
+                        <th>Doopdatum</th>
+                        <td>
+                          {% if p.doopdatum %}
+                            {{ p.doopdatum }}
+                          {% endif %}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Belijdenisdatum</th>
+                        <td>
+                          {% if p.belijdenisdatum %}
+                            {{ p.belijdenisdatum }}
+                          {% endif %}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Huwelijksdatum</th>
+                        <td>
+                          {% if p.huwdatum %}
+                            {{ p.huwdatum }}
+                          {% endif %}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              {% endfor %}
+            {% endif %}
+          {% else %}
+            Niets nieuw toegevoegd.
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    //window.teamAddPage();
+  </script>
+{% endblock %}

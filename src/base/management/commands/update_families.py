@@ -78,8 +78,6 @@ class Command(BaseCommand):
         # parse integers
         m['GEZINSNR'] = int(m['GEZINSNR'])
 
-        famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else ("%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
-
         ##
         # Start the real work
         #
@@ -88,7 +86,8 @@ class Command(BaseCommand):
         p = Family.objects.filter(gezinsnr=m['GEZINSNR'])
 
         if len(p) == 0:
-            p = Family.objects.filter(lastname=famname)
+          famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else ("%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+            p = Family.objects.filter(lastname=famname, prefix='')
 
             if len(p) == 0:
               # Give up: Not found

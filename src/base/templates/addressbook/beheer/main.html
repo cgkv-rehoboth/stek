@@ -66,7 +66,7 @@
         </div>
 
         <div class="col-sm-12">
-          <form method="post" action="{% url 'addressbook-differences' %}" class="team-add-table form-horizontal" enctype="multipart/form-data">
+          <form method="post" action="{% url 'addressbook-differences' %}" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="col-sm-6">
@@ -100,7 +100,55 @@
             </div>
           </form>
         </div>
+      </div>
 
+      <hr/>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Leden toevoegen</h3>
+          Voor het toevoegen van nieuwe leden aan de online database, dient er hieronder een CSV-bestand geüpload te worden. Uit dit bestand (export van de leden) worden ook de families gegenereerd. Belangrijk is daarom om het adres van de familie te controleren.<br/>
+          Het bestand moet in ieder geval de volgende kolommen bevatten om het importeren te laten slagen (dit zijn dezelfde kolommen welke ook hierboven nodig zijn):
+          <br/>
+          <br/>
+          {% if headers %}
+            <div class="headers">
+              <code>
+                {% for header in headers %}
+                  {{ header }}<br/>
+                {% endfor %}
+              </code>
+            </div>
+          {% else %}
+            Geen kolommen gespecificeerd.
+          {% endif %}
+          <br/>
+        </div>
+
+        <div class="col-sm-12">
+          <form method="post" action="{% url 'addressbook-add' %}" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Ledenbestand</label>
+                <div class="col-sm-10">
+                  <input type="file" name="members_file" />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                  <button type="submit" class="btn btn-default cyan">
+                    Uploaden
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </section>

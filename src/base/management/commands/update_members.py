@@ -30,11 +30,11 @@ def update_profile(old, new, dryrun):
     new['HUWDATUM'] = None
 
   old.first_name  = new['ROEPNAAM'].strip()
-  old.initials    = new['VOORLETTER'].strip()
+  old.initials    = new['VOORLETTER'].strip().replace(" ", "").upper()
   old.last_name   = new['ACHTERNAAM'].strip()
   old.prefix      = new['VOORVGSELS'].strip()
   old.phone       = new['LTELEFOON'].strip()
-  old.email       = new['EMAIL'].strip()
+  old.email       = new['EMAIL'].strip().lower()
   old.birthday    = new['GEBDATUM']
 
   if new['GVOLGORDE'].strip() == "1":
