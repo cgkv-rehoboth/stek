@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
 from base.models import *
+from base.views import get_delimiter
 
 from collections import Counter
 
@@ -119,7 +120,7 @@ class Command(BaseCommand):
     ]
 
     with open(member_fp, 'r', newline='', encoding="ISO-8859-1") as fh:
-      members = csv.DictReader(fh, delimiter=',')
+      members = csv.DictReader(fh, delimiter=get_delimiter(fh))
 
       # Check for needed headers
       missingheaders = list(set(headers) - set(members.fieldnames))

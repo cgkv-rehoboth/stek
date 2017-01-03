@@ -44,13 +44,27 @@ def uniqify(seq, idfun=None):
        result.append(item)
    return result
 
+
+def get_delimiter(file):
+  firstline = file.readline()
+  file.seek(0)
+  if firstline.find(';') != -1:
+    return ';'
+  elif firstline.find('|') != -1:
+    return '|'
+  else:
+    return ','
+
+
 @login_required
 def profile_list(request):
   return render(request, 'addressbook/profiles.html')
 
+
 @login_required
 def favorite_list(request):
   return render(request, 'addressbook/favorites.html')
+
 
 @login_required
 def team_list(request, pk=None):
@@ -66,6 +80,7 @@ def team_list(request, pk=None):
     'teams': teams,
     'id': pk
   })
+
 
 @login_required
 def family_list(request, pk=None):
@@ -88,6 +103,7 @@ def family_list(request, pk=None):
     'favorites': favorites,
     'id': pk
   })
+
 
 @login_required
 def profile_detail(request, pk=None):
@@ -118,6 +134,7 @@ def profile_detail(request, pk=None):
     'memberships': memberships
   })
 
+
 @login_required
 def profile_detail_edit(request, pk):
   profile = Profile.objects.prefetch_related("address").get(pk=pk)
@@ -130,6 +147,7 @@ def profile_detail_edit(request, pk):
     'p': profile,
     'a': serializers.serialize('json', [ profile.best_address() ])
   })
+
 
 @login_required
 @require_POST
@@ -223,6 +241,7 @@ def profile_detail_edit_save(request, pk):
 
   return redirect('profile-detail-page', pk=pk)
 
+
 @login_required
 @require_POST
 def profile_pic_edit_save(request, pk):
@@ -251,6 +270,7 @@ def profile_pic_edit_save(request, pk):
 
   return redirect('profile-detail-page', pk=pk)
 
+
 @login_required
 def profile_pic_delete(request, pk):
   profile = Profile.objects.get(pk=pk)
@@ -274,21 +294,26 @@ def profile_pic_delete(request, pk):
 
   return redirect('profile-detail-page', pk=pk)
 
+
 def logout_view(request):
   logout(request)
   return redirect('login')
+
 
 def change_password_done(request):
   messages.success(request, "Wachtwoord is gewijzigd.")
   return redirect('profile-detail-page', pk=request.profile.pk)
 
+
 def email_reset_done(request):
 
   return render(request, 'registrations/password_reset_done.html')
 
+
 def reset_password_done(request):
   messages.success(request, "Het nieuwe wachtwoord is opgeslagen. U kunt nu hieronder inloggen.")
   return redirect('login')
+
 
 @login_required
 def dashboard(request):
@@ -431,8 +456,7 @@ def addressbook_differences(request):
   if not (members_file or families_file):
     messages.error(request, "Er dient tenminste één bestand geüpload te worden.")
     return redirect('addressbook-management')
-    
-  
+
   headers = [
     'GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR',
     'ACHTERNAAM', 'VOORVGSELS', 'VOORNAMEN', 'ROEPNAAM', 'VOORLETTER', 'GESLACHT', 'SOORTLID', 'BURGSTAAT',
@@ -578,7 +602,7 @@ def addressbook_differences(request):
   
       # Read file
       with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-        members = csv.DictReader(fh, delimiter=',')
+        members = csv.DictReader(fh, delimiter=get_delimiter(fh))
   
         # Check for needed headers
         missingheaders = list(set(headers) - set(members.fieldnames))
@@ -692,7 +716,7 @@ def addressbook_differences(request):
   
       # Read file
       with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-        families = csv.DictReader(fh, delimiter=',')
+        families = csv.DictReader(fh, delimiter=get_delimiter(fh))
   
         # Check for needed headers
         missingheaders = list(set(family_headers) - set(families.fieldnames))
@@ -945,7 +969,7 @@ def addressbook_add(request):
   
     # Read file
     with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-      members = csv.DictReader(fh, delimiter=',')
+      members = csv.DictReader(fh, delimiter=get_delimiter(fh))
     
       # Check for needed headers
       missingheaders = list(set(headers) - set(members.fieldnames))
