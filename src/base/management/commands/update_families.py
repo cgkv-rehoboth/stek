@@ -13,7 +13,7 @@ import re
 def update_family(old, new, dryrun):
   old.lastname     = new['GEZINSNAAM'].strip()
   old.prefix       = new['GEZVOORVGS'].strip()
-  old.gezinsaanhef = new['GEZAANHEF'].strip()
+  old.aanhef = new['GEZAANHEF'].strip()
   old.gezinsnr     = new['GEZINSNR']
 
   # parse zip

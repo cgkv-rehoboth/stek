@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='family',
-            name='gezinsaanhef',
+            name='aanhef',
             field=models.CharField(blank=True, default='', max_length=15, null=True),
         ),
         migrations.AddField(

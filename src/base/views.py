@@ -543,7 +543,7 @@ def addressbook_differences(request):
 
     newl = {
       'GEZINSNAAM': new.lastname,
-      'GEZAANHEF': new.gezinsaanhef,
+      'GEZAANHEF': new.aanhef,
       'GEZVOORVGS': new.prefix,
       'STRAAT': new.address.street,
       'POSTCODE': new.address.zip,
@@ -615,8 +615,6 @@ def addressbook_differences(request):
           l['WIJK'] = int(l['WIJK'])
           l['GEZINSNR'] = int(l['GEZINSNR'])
   
-          famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else ("%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
-  
           ##
           # Start the real work
           #
@@ -626,7 +624,7 @@ def addressbook_differences(request):
   
           if len(p) == 0:
             # Try another way to find the profile
-            p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=famname)
+            p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=l['GEZINSNAAM'], family__prefix=l['GEZVOORVGS'])
   
             if len(p) == 0:
               # Try again
@@ -716,9 +714,6 @@ def addressbook_differences(request):
           m['WIJK'] = int(m['WIJK'])
           m['GEZINSNR'] = int(m['GEZINSNR'])
   
-          famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else (
-          "%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
-  
           ##
           # Start the real work
           #
@@ -732,6 +727,9 @@ def addressbook_differences(request):
       
             if len(p) == 0:
               # Give up: Not found
+              famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else (
+              "%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+              
               errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
   
           if p:
@@ -763,11 +761,12 @@ def addressbook_differences(request):
   if members_file:
     # Get remaining profiles
     for p in Profile.objects.exclude(pk__in=checked_profiles).order_by('last_name', 'first_name'):
-      famname = p.family.lastname.split(', ')
       new = {
         'profile': p,
-        'GEZINSNAAM': famname[0],
-        'GEZVOORVGS': famname[1] if len(famname) > 1 else '',
+        'GEZINSNAAM': p.family.lastname,
+        'GEZVOORVGS': p.family.prefix,
+        'GEZAANHEF': p.family.aanhef,
+        'GEZINSNR': p.family.gezinsnr,
         'STRAAT': '',
         'POSTCODE': '',
         'WOONPLAATS': '',

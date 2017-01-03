@@ -263,7 +263,7 @@ class Family(TimestampedModel, models.Model):
 
   # Extra
   prefix      = models.CharField(max_length=64, blank=True, null=True, default="")
-  gezinsaanhef = models.CharField(max_length=15, null=True, blank=True, default="")
+  aanhef      = models.CharField(max_length=15, null=True, blank=True, default="")
   gezinsnr    = models.IntegerField(null=True, blank=True)
   is_active   = models.NullBooleanField(null=True, default=True)
 

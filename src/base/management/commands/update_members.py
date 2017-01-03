@@ -84,7 +84,7 @@ def update_profile(old, new, dryrun):
 def update_family(old, new, dryrun):
   old.lastname     = new['GEZINSNAAM'].strip()
   old.prefix       = new['GEZVOORVGS'].strip()
-  old.gezinsaanhef = new['GEZAANHEF'].strip()
+  old.aanhef = new['GEZAANHEF'].strip()
   old.gezinsnr     = new['GEZINSNR']
 
   # Don't update address, this may be a personal address
