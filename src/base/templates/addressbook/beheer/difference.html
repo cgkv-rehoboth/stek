@@ -92,10 +92,15 @@
                   {% endfor %}
                 </tr>
               </thead>
+
               <tbody>
                 {% for item in new_families %}
                   <tr>
-                    <td><a href="{% url 'family-detail-page' item.family.pk %}" title="Bekijk familie" target="_blank" class="black-url">{{ item.family.name_initials }}</a></td>
+                    <td title="Laatst bewerkt: {{ item.family.modified_date }}">
+                      <a href="{% url 'family-detail-page' item.family.pk %}" target="_blank" class="black-url">
+                        {{ item.family.name_initials }}
+                      </a>
+                    </td>
                     {% for header in family_headers %}
                       <td class="changed">
                         {% if header == "GEZINSNAAM" %}
@@ -134,8 +139,16 @@
               <tbody>
                 {% for item in new_profiles %}
                   <tr>
-                    <td><a href="{% url 'profile-detail-page' item.profile.pk %}" title="Bekijk profiel" target="_blank" class="black-url">{{ item.profile.name }}</a></td>
-                    <td><a href="{% url 'family-detail-page' item.profile.family.pk %}" title="Bekijk familie" target="_blank" class="black-url">{{ item.profile.family.name_initials }}</a></td>
+                    <td title="Laatst bewerkt: {{ item.profile.modified_date }}">
+                      <a href="{% url 'profile-detail-page' item.profile.pk %}" target="_blank" class="black-url">
+                        {{ item.profile.name }}
+                      </a>
+                    </td>
+                    <td title="Laatst bewerkt: {{ item.profile.family.modified_date }}">
+                      <a href="{% url 'family-detail-page' item.profile.family.pk %}" target="_blank" class="black-url">
+                        {{ item.profile.family.name_initials }}
+                      </a>
+                    </td>
                     {% for header in headers %}
                       <td class="changed">
                         {% if header == "GEZINSNAAM" or header == "ACHTERNAAM" %}
@@ -182,8 +195,14 @@
               <tbody>
                 {% for key, item in family_differences.items %}
                   <tr>
-                    <td>{{ key }}</td>
-                    <td><a href="{% url 'family-detail-page' item.family.pk %}" title="Bekijk familie" target="_blank" class="black-url">{{ item.family.name_initials }}</a></td>
+                    <td title="Laatst bewerkt: {{ item.family.modified_date }}">
+                      {{ key }}
+                    </td>
+                    <td title="Laatst bewerkt: {{ item.family.modified_date }}">
+                      <a href="{% url 'family-detail-page' item.family.pk %}" target="_blank" class="black-url">
+                        {{ item.family.name_initials }}
+                      </a>
+                    </td>
                     {% for header in family_headers %}
                       {% if header in item %}
                         {% with value=item|get:header %}
@@ -228,8 +247,14 @@
               <tbody>
                 {% for key, item in profile_differences.items %}
                   <tr>
-                    <td>{{ key }}</td>
-                    <td><a href="{% url 'profile-detail-page' item.profile.pk %}" title="Bekijk profiel" target="_blank" class="black-url">{{ item.profile.name }}</a></td>
+                    <td title="Laatst bewerkt: {{ item.profile.modified_date }}">
+                      {{ key }}
+                    </td>
+                    <td title="Laatst bewerkt: {{ item.profile.modified_date }}">
+                      <a href="{% url 'profile-detail-page' item.profile.pk %}" target="_blank" class="black-url">
+                        {{ item.profile.name }}
+                      </a>
+                    </td>
                     {% for header in headers %}
                       {% if header in item %}
                         {% with value=item|get:header %}

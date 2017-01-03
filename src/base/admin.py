@@ -6,14 +6,16 @@ from .models import *
 admin.site.register(Wijk)
 admin.site.register(Favorites)
 
+
 # Create custom display for Address
 class AddressAdmin(admin.ModelAdmin):
   list_display = ['street', 'zip', 'city', 'country', 'occupant']
 
 admin.site.register(Address, AddressAdmin)
 
+
 class FamilyAdmin(admin.ModelAdmin):
-  list_display = ['lastname', 'size']
+  list_display = ['name_initials', 'size', 'address', 'is_active']
 
   def save_model(self, request, obj, form, change):
     args = {}
@@ -30,11 +32,13 @@ class FamilyAdmin(admin.ModelAdmin):
 
 admin.site.register(Family, FamilyAdmin)
 
+
 # Create custom display for User
 class ProfileInline(admin.StackedInline):
   model = Profile
   extra = 0
   max_num = 1
+
 
 class UserAdmin(BaseUserAdmin):
   inlines = [ProfileInline]
@@ -47,9 +51,10 @@ class UserAdmin(BaseUserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
+
 # Create custom display for Profile
 class ProfileAdmin(admin.ModelAdmin):
-  list_display = ['name', 'address', 'phone', 'email', 'birthday', 'has_logged_in']
+  list_display = ['name', 'address', 'phone', 'email', 'birthday', 'has_logged_in', 'is_active']
   ordering = ['last_name', 'first_name']
   search_fields = ['first_name', 'last_name']
 

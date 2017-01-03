@@ -15,8 +15,21 @@
 
       <div class="row">
         <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
           <h3>Mutaties gemeente</h3>
-          Upload een .csv bestand om het verschil tussen de online database en het geüploade bestand te bekijken. Dit bestand moet in ieder geval de volgende kolommen bevatten:
+          Upload een .csv bestand om het verschil tussen de online database en het geüploade bestand te bekijken. Om de mutaties van zowel de leden als de families te bekijken, dienen beide bestanden geüpload te worden. Mits alleen het ledenbestand geüpload wordt, zal er toch een poging gedaan worden om aan de hand van dit bestand ook de families te controleren. Dit brengt echter met zich mee dat de adresgegevens van de families niet 100% betrouwbaar kunnen zijn.
+          <br/>
+          <br/>
+        </div>
+        <div class="col-sm-6" style="border-right: 1px solid #ccc;">
+          <strong>Leden</strong><br/>
+          Om de mutaties van de leden te bekijken, upload een ledenbestand. Dit bestand moet in ieder geval de volgende kolommen bevatten:
           <br/>
           <br/>
           {% if headers %}
@@ -33,33 +46,60 @@
           <br/>
         </div>
 
-        <div class="col-sm-12">
-          <!-- Error handling messages -->
-          {% include "./messages.html" %}
+        <div class="col-sm-6">
+          <strong>Families</strong><br/>
+          Om de mutaties van de families te bekijken, upload een gezinsbestand. Dit bestand moet in ieder geval de volgende kolommen bevatten:
+          <br/>
+          <br/>
+          {% if headers %}
+            <div class="headers">
+              <code>
+                {% for header in family_headers %}
+                  {{ header }}<br/>
+                {% endfor %}
+              </code>
+            </div>
+          {% else %}
+            Geen kolommen gespecificeerd.
+          {% endif %}
+          <br/>
         </div>
 
-        <form method="post" action="{% url 'addressbook-differences' %}" class="team-add-table form-horizontal" enctype="multipart/form-data">
-          {% csrf_token %}
+        <div class="col-sm-12">
+          <form method="post" action="{% url 'addressbook-differences' %}" class="team-add-table form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
 
-          <div class="col-sm-12">
-            <div class="form-group">
-              <label class="col-sm-2 control-label">CSV-bestand</label>
-              <div class="col-sm-10">
-                <input type="file" name="file" />
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Ledenbestand</label>
+                <div class="col-sm-8">
+                  <input type="file" name="members_file" />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="col-sm-12">
-            <div class="form-group">
-              <div class="col-sm-10 col-sm-offset-2">
-                <button type="submit" class="btn btn-default cyan">
-                  Uploaden
-                </button>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="col-sm-4 control-label">Gezinsbestand</label>
+                <div class="col-sm-8">
+                  <input type="file" name="families_file" />
+                </div>
               </div>
             </div>
-          </div>
-        </form>
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div>
+                  <center>
+                    <button type="submit" class="btn btn-default cyan">
+                      Uploaden
+                    </button>
+                  </center>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
 
       </div>
     </div>

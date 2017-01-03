@@ -203,7 +203,7 @@ def profile_detail_edit_save(request, pk):
       messages.success(request, "Adresgegevens opgeslagen.")
 
     # ... and something went wrong
-    messages.error(request, "De geboortedatum klopt niet volgens de syntax 'dd-mm-jjjj', zoals 31 december 1999 gescreven wordt als '31-12-1999'.")
+    messages.error(request, "De geboortedatum klopt niet volgens de syntax 'dd-mm-jjjj', zoals 31 december 1999 geschreven wordt als '31-12-1999'.")
     return redirect('profile-detail-page', pk=pk)
 
   # Save rest of the profile stuff
@@ -395,16 +395,23 @@ def dashboard(request):
     'duties': duties
   })
 
+
 @login_required
 @permission_required('base.add_profile', raise_exception=True)
 def addressbook_management(request):
-  headers = ['GEZINSNAAM', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR',
-             'ACHTERNAAM', 'VOORVGSELS', 'ROEPNAAM', 'VOORLETTER', 'GEBDATUM', 'LIDNR', 'GVOLGORDE', 'EMAIL',
-             'LTELEFOON']
-
+  headers = [
+    'GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR',
+    'ACHTERNAAM', 'VOORVGSELS', 'VOORNAMEN', 'ROEPNAAM', 'VOORLETTER', 'GESLACHT', 'SOORTLID', 'BURGSTAAT',
+    'GEBDATUM', 'DOOPDATUM', 'BELDATUM', 'HUWDATUM', 'LIDNR', 'GVOLGORDE', 'TITEL', 'EMAIL', 'LTELEFOON'
+  ]
+  address_headers = ['STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK']
+  family_headers = ['GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'GEZINSNR'] + address_headers
+  
   return render(request, 'addressbook/beheer/main.html', {
-    'headers': headers
+    'headers': headers,
+    'family_headers': family_headers
   })
+
 
 @login_required
 @permission_required('base.add_profile', raise_exception=True)
@@ -417,11 +424,22 @@ def addressbook_differences(request):
   checked_families = []
   new_profiles = []
   new_families = []
-  file = request.FILES.get('file')
-
-  headers = ['GEZINSNAAM', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR', 'ACHTERNAAM',
-             'VOORVGSELS', 'ROEPNAAM', 'VOORLETTER', 'GEBDATUM', 'LIDNR', 'GVOLGORDE', 'EMAIL', 'LTELEFOON']
-  family_headers = ['GEZINSNAAM', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR']
+  members_file = request.FILES.get('members_file')
+  families_file = request.FILES.get('families_file')
+  
+  # Check for file(s)
+  if not (members_file or families_file):
+    messages.error(request, "Er dient tenminste één bestand geüpload te worden.")
+    return redirect('addressbook-management')
+    
+  
+  headers = [
+    'GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR',
+    'ACHTERNAAM', 'VOORVGSELS', 'VOORNAMEN', 'ROEPNAAM', 'VOORLETTER', 'GESLACHT', 'SOORTLID', 'BURGSTAAT',
+    'GEBDATUM', 'DOOPDATUM', 'BELDATUM', 'HUWDATUM', 'LIDNR', 'GVOLGORDE', 'TITEL', 'EMAIL', 'LTELEFOON'
+  ]
+  address_headers = ['STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK']
+  family_headers = ['GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'GEZINSNR'] + address_headers
 
   ##
   # Declare some functions
@@ -430,8 +448,30 @@ def addressbook_differences(request):
   def get_profile_differences(old, new):
     # Difference, saved as [key => (old value, new value)]
     diff = {}
+      
+    # parse date
+    try:
+      old['DOOPDATUM'] = datetime.strptime(old['DOOPDATUM'].strip(), "%d-%m-%Y").date()
+    except ValueError as e:
+      old['DOOPDATUM'] = None
+  
+    # parse date
+    try:
+      old['BELDATUM'] = datetime.strptime(old['BELDATUM'].strip(), "%d-%m-%Y").date()
+    except ValueError as e:
+      old['BELDATUM'] = None
+  
+    # parse date
+    try:
+      old['HUWDATUM'] = datetime.strptime(old['HUWDATUM'].strip(), "%d-%m-%Y").date()
+    except ValueError as e:
+      old['HUWDATUM'] = None
+      
+    # parse GVOLGORDE
+    old['GVOLGORDE'] = int(old['GVOLGORDE'].strip())
 
     newl = {
+      'GEZINSNR': new.family.gezinsnr,
       'STRAAT': '',
       'POSTCODE': '',
       'WOONPLAATS': '',
@@ -439,11 +479,19 @@ def addressbook_differences(request):
       'WIJK': '',
       'ACHTERNAAM': new.last_name,
       'VOORVGSELS': new.prefix,
+      'VOORNAMEN': new.voornamen,
       'ROEPNAAM': new.first_name,
       'VOORLETTER': new.initials,
+      'GESLACHT': new.geslacht,
+      'SOORTLID': new.soortlid,
+      'BURGSTAAT': new.burgerstaat,
       'GEBDATUM': new.birthday,
-      'LIDNR': new.pk,
-      'GVOLGORDE': new.role_in_family,
+      'DOOPDATUM': new.doopdatum,
+      'BELDATUM': new.belijdenisdatum,
+      'HUWDATUM': new.huwdatum,
+      'LIDNR': new.lidnr,
+      'GVOLGORDE': new.gvolgorde,
+      'TITEL': new.titel,
       'EMAIL': new.email if new.email else '',
       'LTELEFOON': new.phone
     }
@@ -458,15 +506,31 @@ def addressbook_differences(request):
         'WIJK': new.address.wijk.id if new.address.wijk else '',
       })
 
-    for f in ['ACHTERNAAM', 'VOORVGSELS', 'ROEPNAAM', 'VOORLETTER', 'GEBDATUM', 'EMAIL', 'LTELEFOON']:
-      if not old[f] == newl[f]:
-        diff[f] = [old[f], newl[f]]
+    for h in list(set(headers) - set(family_headers)) + ['GEZINSNR']:
+      if not old[h] == newl[h]:
+        diff[h] = [old[h], newl[h]]
+        
+    # Familyrole
+    if not ((old['GVOLGORDE'] == 1 and new.role_in_family == 'DAD') or
+              (old['GVOLGORDE'] == 2 and new.role_in_family == 'MUM') or
+              (old['GVOLGORDE'] > 2 and new.role_in_family == 'KID')):
+      if old['GVOLGORDE'] == 1:
+        oldvolgorde = "%s (%s)" % (old['GVOLGORDE'], [y[1] for x, y in enumerate(Profile.ROLE_CHOICES) if y[0] == 'DAD'][0])
+      elif old['GVOLGORDE'] == 2:
+        oldvolgorde = "%s (%s)" % (old['GVOLGORDE'], [y[1] for x, y in enumerate(Profile.ROLE_CHOICES) if y[0] == 'MUM'][0])
+      else:
+        oldvolgorde = "%s (%s)" % (old['GVOLGORDE'], [y[1] for x, y in enumerate(Profile.ROLE_CHOICES) if y[0] == 'KID'][0])
+        
+      if 'GVOLGORDE' in diff:
+        diff['GVOLGORDE'] = [oldvolgorde, "%s / %s" % (diff['GVOLGORDE'], new.get_role_in_family_display())]
+      else:
+        diff['GVOLGORDE'] = [oldvolgorde, new.get_role_in_family_display()]
 
     # if personal adres, check it
     if new.address:
-      for f in ['STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK']:
-        if not old[f] == newl[f]:
-          diff[f] = [old[f], newl[f]]
+      for h in address_headers:
+        if not old[h] == newl[h]:
+          diff[h] = [old[h], newl[h]]
 
     if diff:
       diff['profile'] = new
@@ -477,181 +541,263 @@ def addressbook_differences(request):
     # Difference, saved as [key => (old value, new value)]
     diff = {}
 
-    # Split lastname in lastname and prefix
-    famname = new.lastname.split(', ')
     newl = {
-      'GEZINSNAAM': famname[0],
-      'GEZVOORVGS': famname[1] if len(famname) > 1 else '',
+      'GEZINSNAAM': new.lastname,
+      'GEZAANHEF': new.gezinsaanhef,
+      'GEZVOORVGS': new.prefix,
       'STRAAT': new.address.street,
       'POSTCODE': new.address.zip,
       'WOONPLAATS': new.address.city,
       'TELEFOON': new.address.phone,
       'WIJK': new.address.wijk.id,
-      'GEZINSNR': new.pk,
+      'GEZINSNR': new.gezinsnr,
     }
 
-    for f in ['GEZINSNAAM', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK']:
-      if not old[f] == newl[f]:
-        diff[f] = [old[f], newl[f]]
+    for h in family_headers:
+      if not old[h] == newl[h]:
+        diff[h] = [old[h], newl[h]]
 
     if diff:
       diff['family'] = new
 
     return diff
 
-
   ##
-  # Main function
+  # Main function for profiles
   #
 
-  # Create a temp file
-  with tempfile.NamedTemporaryFile() as tf:
-    # Copy the uploaded file to the temp file
-    for chunk in file.chunks():
-      tf.write(chunk)
+  if members_file:
+    # Create a temp file
+    with tempfile.NamedTemporaryFile() as tf:
+      # Copy the uploaded file to the temp file
+      for chunk in members_file.chunks():
+        tf.write(chunk)
+  
+      # Save contents to file on disk
+      tf.flush()
+  
+      # Read file
+      with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
+        members = csv.DictReader(fh, delimiter=',')
+  
+        # Check for needed headers
+        missingheaders = list(set(headers) - set(members.fieldnames))
+        if missingheaders:
+          if len(missingheaders) > 1:
+            messages.error(request, "De kolommen <strong>%s</strong> ontbreken in het ledenbestand." % ', '.join(missingheaders))
+          else:
+            messages.error(request, "De kolom <strong>%s</strong> ontbreekt in het ledenbestand." % missingheaders[0])
+          return redirect('addressbook-management')
+  
+        oldfamilies = []
+        for l in members:
+  
+          ##
+          # Parse some items first
+          #
+  
+          # parse gebdatum
+          try:
+            l['GEBDATUM'] = datetime.strptime(l['GEBDATUM'].strip(), "%d-%m-%Y").date()
+          except ValueError as e:
+            l['GEBDATUM'] = None
+  
+          #  parse phone
+          # if len(l['LTELEFOON'].strip()) == 0:
+          #   l['LTELEFOON'] = l['TELEFOON']
+  
+          # parse zip
+          # make sure it's only 6 chars long and uppercase
+          l['POSTCODE'] = re.sub(r" ", "", l['POSTCODE']).upper()
+  
+          # parse integers
+          l['LIDNR'] = int(l['LIDNR'])
+          l['WIJK'] = int(l['WIJK'])
+          l['GEZINSNR'] = int(l['GEZINSNR'])
+  
+          famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else ("%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
+  
+          ##
+          # Start the real work
+          #
+  
+          # Get profile
+          p = Profile.objects.filter(lidnr=l['LIDNR'])
+  
+          if len(p) == 0:
+            # Try another way to find the profile
+            p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=famname)
+  
+            if len(p) == 0:
+              # Try again
+              p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
+  
+              if len(p) == 0:
+                # And again
+                p = Profile.objects.filter(birthday=l['GEBDATUM'], first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
+  
+                if len(p) == 0:
+                  # Adn again...
+                  p = Profile.objects.filter(first_name=l['ROEPNAAM'], initials=l['VOORLETTER'],
+                                             last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
+  
+                  if len(p) == 0:
+                    # Give up: Not found
+                    errors.append('Geen online profiel gevonden voor lidnummer %d (%s %s %s).' % (
+                      l['LIDNR'], l['ROEPNAAM'], l['VOORVGSELS'], l['ACHTERNAAM']
+                    ))
+  
+          if p:
+            if len(p) > 1:
+              # Twin things: be more accurate
+              p = p.filter(first_name=l['ROEPNAAM'])
+              if len(p) > 1:
+                p = p.filter(initials=l['VOORLETTER'])
+  
+            p = p.first()
+  
+            # Get profile differences
+            difference = get_profile_differences(l, p)
+            if difference:
+              profile_differences[l['LIDNR']] = difference
+  
+            # Record this one as done
+            checked_profiles.append(p.pk)
+            
+            ## Family
+            # Check if family needs to be compared (due to missing file) and if family already has been compared
+            if not families_file and not l['GEZINSNR'] in oldfamilies and p.family:
+              # Get family differences
+              difference = get_family_differences(l, p.family)
+              if difference:
+                family_differences[l['GEZINSNR']] = difference
+  
+              # Record this one as done
+              checked_families.append(p.family.pk)
+              oldfamilies.append(l['GEZINSNR'])
+            
+  ##
+  # Main function for families
+  #
 
-    # Save contents to file on disk
-    tf.flush()
+  if families_file:
+    # Create a temp file
+    with tempfile.NamedTemporaryFile() as tf:
+      # Copy the uploaded file to the temp file
+      for chunk in families_file.chunks():
+        tf.write(chunk)
+  
+      # Save contents to file on disk
+      tf.flush()
+  
+      # Read file
+      with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
+        families = csv.DictReader(fh, delimiter=',')
+  
+        # Check for needed headers
+        missingheaders = list(set(family_headers) - set(families.fieldnames))
+        if missingheaders:
+          if len(missingheaders) > 1:
+            messages.error(request, "De kolommen <strong>%s</strong> ontbreken in het gezinsbestand." % ', '.join(missingheaders))
+          else:
+            messages.error(request, "De kolom <strong>%s</strong> ontbreekt in het gezinsbestand." % missingheaders[0])
+          return redirect('addressbook-management')
 
-    # Read file
-    with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-      lines = csv.DictReader(fh, delimiter=',')
-
-      # Check for needed headers
-      missingheaders = list(set(headers) - set(lines.fieldnames))
-      if missingheaders:
-        if len(missingheaders) > 1:
-          messages.error(request, "De kolommen <strong>%s</strong> ontbreken." % ', '.join(missingheaders))
-        else:
-          messages.error(request, "De kolom <strong>%s</strong> ontbreekt." % missingheaders[0])
-        return redirect('addressbook-management')
-
-      oldfamilies = []
-      for l in lines:
-
-        ##
-        # Parse some items first
-        #
-
-        # parse gebdatum
-        try:
-          l['GEBDATUM'] = datetime.strptime(l['GEBDATUM'].strip(), "%d-%m-%Y").date()
-        except ValueError as e:
-          l['GEBDATUM'] = None
-
-        # parse email
-        l['EMAIL'] = l['EMAIL'].strip()
-
-        # parse phone
-        l['LTELEFOON'] = l['TELEFOON']
-        if not len(l['LTELEFOON'].strip()) == 0:
-          l['LTELEFOON'] = l['LTELEFOON']
-
-        # parse zip
-        # make sure it's only 6 chars long and uppercase
-        l['POSTCODE'] = re.sub(r" ", "", l['POSTCODE']).upper()
-
-        # parse integers
-        l['LIDNR'] = int(l['LIDNR'])
-        l['WIJK'] = int(l['WIJK'])
-        l['GEZINSNR'] = int(l['GEZINSNR'])
-
-        famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else ("%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
-
-        ##
-        # Start the real work
-        #
-
-        # Get profile
-        p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=famname)
-
-        if len(p) == 0:
-          # Try another way to find the profile
-          p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
+        for m in families:
+          ##
+          # Parse some items first
+          #
+  
+          # parse zip
+          # make sure it's only 6 chars long and uppercase
+          m['POSTCODE'] = re.sub(r" ", "", m['POSTCODE']).upper()
+  
+          # parse integers
+          m['WIJK'] = int(m['WIJK'])
+          m['GEZINSNR'] = int(m['GEZINSNR'])
+  
+          famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else (
+          "%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+  
+          ##
+          # Start the real work
+          #
+  
+          # Get family
+          p = Family.objects.filter(gezinsnr=m['GEZINSNR'])
 
           if len(p) == 0:
             # Try again
-            p = Profile.objects.filter(birthday=l['GEBDATUM'], first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
-
+            p = Family.objects.filter(lastname=m['GEZINSNAAM'], prefix=m['GEZVOORVGS'])
+      
             if len(p) == 0:
-              # Final try
-              p = Profile.objects.filter(first_name=l['ROEPNAAM'], initials=l['VOORLETTER'], last_name=l['ACHTERNAAM'],
-                                         prefix=l['VOORVGSELS'])
-
-              if len(p) == 0:
-                # Give up: Not found
-                errors.append('Geen online profiel gevonden voor lidnummer %d (%s %s %s).' % (l['LIDNR'], l['ROEPNAAM'],
-                                                                                              l['VOORVGSELS'], l['ACHTERNAAM']))
-
-        if p:
-          if len(p) > 1:
-            # Twin things: be more accurate
-            p = p.filter(first_name=l['ROEPNAAM'])
+              # Give up: Not found
+              errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
+  
+          if p:
             if len(p) > 1:
-              p = p.filter(initials=l['VOORLETTER'])
-
-          p = p.first()
-
-          # Get profile differences
-          diff = get_profile_differences(l, p)
-          if diff:
-            profile_differences[l['LIDNR']] = diff
-
-          # Record this one as done
-          checked_profiles.append(p.pk)
-
-          ## Family
-          # Check if family already has been compared
-          if not l['GEZINSNR'] in oldfamilies and p.family:
+              # Twin things: be more accurate
+              p = p.filter(address__zip=m['POSTCODE'])
+      
+              if len(p) > 1:
+                # Get over it
+                p = p.filter(address__street=m['STRAAT'])
+        
+                if len(p) > 1:
+                  # PLEASE
+                  p = p.filter(address__phone=m['TELEFOON'])
+    
+            p = p.first()
+    
             # Get family differences
-            diff = get_family_differences(l, p.family)
-            if diff:
-              family_differences[l['GEZINSNR']] = diff
+            difference = get_family_differences(m, p)
+            if difference:
+              family_differences[m['GEZINSNR']] = difference
 
             # Record this one as done
-            checked_families.append(p.family.pk)
-            oldfamilies.append(l['GEZINSNR'])
+            checked_families.append(p.pk)
 
   ##
   # Get the newly added profiles/families
   #
+  if members_file:
+    # Get remaining profiles
+    for p in Profile.objects.exclude(pk__in=checked_profiles).order_by('last_name', 'first_name'):
+      famname = p.family.lastname.split(', ')
+      new = {
+        'profile': p,
+        'GEZINSNAAM': famname[0],
+        'GEZVOORVGS': famname[1] if len(famname) > 1 else '',
+        'STRAAT': '',
+        'POSTCODE': '',
+        'WOONPLAATS': '',
+        'TELEFOON': '',
+        'WIJK': '',
+        'ACHTERNAAM': p.last_name,
+        'VOORVGSELS': p.prefix,
+        'ROEPNAAM': p.first_name,
+        'VOORLETTER': p.initials,
+        'GEBDATUM': p.birthday,
+        'GVOLGORDE': p.get_role_in_family_display(),
+        'EMAIL': p.email if p.email else '',
+        'LTELEFOON': p.phone
+      }
+  
+      # If personal address is set
+      if p.address:
+        new.update({
+          'STRAAT': p.address.street,
+          'POSTCODE': p.address.zip,
+          'WOONPLAATS': p.address.city,
+          'TELEFOON': p.address.phone,
+          'WIJK': p.address.wijk.id,
+        })
+  
+      # Add profile to the list
+      new_profiles.append(new)
 
-  # Get remaining profiles
-  for p in Profile.objects.exclude(pk__in=checked_profiles).order_by('last_name', 'first_name'):
-    famname = p.family.lastname.split(', ')
-    new = {
-      'profile': p,
-      'GEZINSNAAM': famname[0],
-      'GEZVOORVGS': famname[1] if len(famname) > 1 else '',
-      'STRAAT': '',
-      'POSTCODE': '',
-      'WOONPLAATS': '',
-      'TELEFOON': '',
-      'WIJK': '',
-      'ACHTERNAAM': p.last_name,
-      'VOORVGSELS': p.prefix,
-      'ROEPNAAM': p.first_name,
-      'VOORLETTER': p.initials,
-      'GEBDATUM': p.birthday,
-      'GVOLGORDE': p.get_role_in_family_display(),
-      'EMAIL': p.email if p.email else '',
-      'LTELEFOON': p.phone
-    }
-
-    # If personal address is set
-    if p.address:
-      new.update({
-        'STRAAT': p.address.street,
-        'POSTCODE': p.address.zip,
-        'WOONPLAATS': p.address.city,
-        'TELEFOON': p.address.phone,
-        'WIJK': p.address.wijk.id,
-      })
-
-    # Add profile to the list
-    new_profiles.append(new)
-
-  # Get remaining families
+  # Get remaining families, always, even if families_file is not set,
+  # because families are also checked in the profilecheck
   for f in Family.objects.exclude(pk__in=checked_families).order_by('lastname'):
     famname = f.lastname.split(', ')
     new = {
