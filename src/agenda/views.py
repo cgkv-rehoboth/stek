@@ -1108,12 +1108,6 @@ def services_files_admin_add(request):
   if not request.POST.get('title', ''):
     request.POST['title'] = str(request.FILES.get('file'))
 
-  import sys
-  import locale
-  logger.info(sys.getfilesystemencoding())
-  logger.info(sys.getdefaultlocale())
-  logger.info(sys.getlocale())
-
   form = UploadEventFileForm(request.POST, request.FILES)
   
 

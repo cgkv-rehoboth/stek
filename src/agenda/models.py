@@ -6,6 +6,7 @@ from livefield.models import LiveModel
 from django.db.models import Count
 from django.core.urlresolvers import reverse
 import os
+from unidecode import unidecode
 
 # Import models of base app
 from base.models import Profile, Family
@@ -186,7 +187,8 @@ class RuilRequest(models.Model):
     ordering = ('timetableduty',)
 
 def eventfilepath(instance, filename):
-  return 'eventfiles/%s' % (filename)
+  # don't use the real filename, prevents weird encoding issues
+  return 'eventfiles/%s' % unidecode(filename)
 
 class EventFile(TimestampedModel, models.Model):
 
