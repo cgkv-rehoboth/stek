@@ -19,6 +19,7 @@ import csv
 import tempfile
 import json
 import re
+import logging
 
 from .forms import LoginForm, UploadImageForm
 
@@ -26,7 +27,6 @@ from agenda.models import *
 from base.models import *
 
 from machina.apps.forum_member.models import *
-
 
 def uniqify(seq, idfun=None):
    # order preserving

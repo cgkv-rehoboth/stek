@@ -16,10 +16,13 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 import random
+import logging
 
 from .models import *
 from base.models import Profile, Family
 from .forms import *
+
+logger = logging.getLogger(__module__)
 
 def uniqify(seq, idfun=None):
    # order preserving
@@ -1105,7 +1108,14 @@ def services_files_admin_add(request):
   if not request.POST.get('title', ''):
     request.POST['title'] = str(request.FILES.get('file'))
 
+  import sys
+  import locale
+  logger.info(sys.getfilesystemencoding())
+  logger.info(sys.getdefaultlocale())
+  logger.info(sys.getlocale())
+
   form = UploadEventFileForm(request.POST, request.FILES)
+  
 
   if form.is_valid():
     # Save object
