@@ -22,7 +22,7 @@ from .models import *
 from base.models import Profile, Family
 from .forms import *
 
-logger = logging.getLogger(__module__)
+logger = logging.getLogger(__name__)
 
 def uniqify(seq, idfun=None):
    # order preserving
