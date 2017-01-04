@@ -543,9 +543,8 @@ def addressbook_differences(request):
         l['EMAIL'] = l['EMAIL'].strip()
 
         # parse phone
-        l['LTELEFOON'] = l['TELEFOON']
-        if not len(l['LTELEFOON'].strip()) == 0:
-          l['LTELEFOON'] = l['LTELEFOON']
+        if len(l['LTELEFOON'].strip()) == 0:
+          l['LTELEFOON'] = l['TELEFOON']
 
         # parse zip
         # make sure it's only 6 chars long and uppercase
