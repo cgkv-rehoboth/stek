@@ -11,6 +11,9 @@
         <div class="col-sm-12">
           <h2>{{ team.name }} <small>Overzicht</small></h2>
         </div>
+        <div class="col-sm-12">
+          <a href="{% url 'team-list-page' %}" class="backlink">< Teamoverzicht</a>
+        </div>
       </div>
 
       {% if teammember or teammember_family %}
@@ -68,53 +71,67 @@
           <!-- Error handling messages -->
           {% include "./messages.html" %}
         </div>
+      </div>
 
-        <div class="col-sm-12">
-          <h3>Algemeen
-            {% if is_admin or perms.agenda.change_team %}
-              <small>
-                <a href="{% url 'teampage-control-edit' team.pk %}" title="Algemene informatie bewerken">Bewerken</a>
-              </small>
-            {% endif %}
-          </h3>
-          {% if team.email or is_admin %}
-            <p>
-              <i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i>
-              {% if not team.email %}
-                Voeg een algemeen e-mailadres toe
-              {% else %}
-                <a href="mailto:{{ team.email }}" id="team-form-address">{{ team.email }}</a>
+      <div class="row">
+        {% if team.email or team.description or is_admin or perms.agenda.change_team %}
+          <div class="col-sm-6">
+            <h3>Algemeen
+              {% if is_admin or perms.agenda.change_team %}
+                <small>
+                  <a href="{% url 'teampage-control-edit' team.pk %}" title="Algemene informatie bewerken">Bewerken</a>
+                </small>
               {% endif %}
-            </p>
-          {% endif %}
-          {% if team.description %}
-            <p class="team-description">{{ team.description }}</p>
-          {% endif %}
-        </div>
-
-        {% if tables.all or is_admin or perms.agenda.change_team %}
-            <div class="col-sm-12">
-              <h3>Roosters
-                {% if is_admin or perms.agenda.change_team %}
-                  <small>
-                    <a href="{% url 'teampage-control-timetables' team.pk %}" title="Roosters toevoegen/verwijderen">Beheren</a>
-                  </small>
+            </h3>
+            {% if team.email or is_admin %}
+              <p>
+                <i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i>
+                {% if not team.email %}
+                  <span class="missing-info">
+                    Voeg een algemeen e-mailadres toe
+                  </span>
+                {% else %}
+                  <a href="mailto:{{ team.email }}" id="team-form-address">{{ team.email }}</a>
                 {% endif %}
-              </h3>
-
-              <ul class="teampage-tables">
-                {% for t in tables.all %}
-                  <li>
-                    - <a href="{% url 'timetable-detail-page' t.pk %}" title="Bekijk rooster">{{ t.title }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
-              <br/>
-            </div>
+              </p>
+            {% endif %}
+            {% if team.description or is_admin %}
+              {# Keep text close to the tags, because <p> is pre-wrap #}
+              {% if not team.description %}
+                <p class="team-description missing-info">Voeg een beschrijving toe</p>
+              {% else %}
+                <p class="team-description">{{ team.description }}</p>
+              {% endif %}
+            {% endif %}
+          </div>
         {% endif %}
 
-        <div class="col-sm-12">
+        {% if tables.all or is_admin or perms.agenda.change_team %}
+          <div class="col-sm-6">
+            <h3>Roosters
+              {% if is_admin or perms.agenda.change_team %}
+                <small>
+                  <a href="{% url 'teampage-control-timetables' team.pk %}" title="Roosters toevoegen/verwijderen">Beheren</a>
+                </small>
+              {% endif %}
+            </h3>
+
+            <ul class="teampage-tables">
+              {% for t in tables.all %}
+                <li>
+                  - <a href="{% url 'timetable-detail-page' t.pk %}" title="Bekijk rooster">{{ t.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+            <br/>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 team-members">
           <h3>Teamleden
+            <span class="badge">{{ members|length }}</span>
             {% if is_admin or perms.agenda.change_team %}
               <small>
                 <a href="{% url 'teampage-control-members' team.pk %}" title="Leden toevoegen/verwijderen">Beheren</a>
