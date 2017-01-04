@@ -13,6 +13,55 @@
         </div>
       </div>
 
+      {% if teammember or teammember_family %}
+        <div class="row settings-container">
+          <div class="col-sm-12">
+            <a href="javascript:void(0)" id="settings-form-toggle">
+              <i class="fa fa-cog" aria-hidden="true"></i> Mijn instellingen
+            </a>
+
+            <div id="settings-form">
+              <form method="post" action="{% url 'teampage-settings-save' team.pk %}" class="form-horizontal">
+              {% csrf_token %}
+
+              {% if teammember %}
+                <div class="form-group">
+                  <div class="col-sm-12 checkbox">
+                    <label title="Dit gebeurt over het algemeen in de week voorafgaand op een vast tijdstip.">
+                      <input type="checkbox" name="reminder" class="service-second-trigger" {% if teammember.get_mail %}checked{% endif %}/>
+                      E-mailherinneringen ontvangen
+                      {% if teammember_family %}
+                        (persoonlijk)
+                      {% endif %}
+                    </label>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if teammember_family %}
+                <div class="form-group">
+                  <div class="col-sm-12 checkbox">
+                    <label title="Dit gebeurt over het algemeen in de week voorafgaand op een vast tijdstip.">
+                      <input type="checkbox" name="reminder-family" class="service-second-trigger" {% if teammember_family.get_mail %}checked{% endif %}/>
+                      E-mailherinneringen ontvangen (namens de familie)
+                    </label>
+                  </div>
+                </div>
+              {% endif %}
+
+              <div class="form-group">
+                <div class="col-sm-12 ">
+                  <button type="submit" class="btn btn-default cyan">
+                    Opslaan
+                  </button>
+                </div>
+              </div>
+            </form>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
       <div class="row">
 
         <div class="col-sm-12">

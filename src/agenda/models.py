@@ -162,6 +162,7 @@ class TeamMember(models.Model):
   family      = models.ForeignKey(Family, related_name="team_membership", blank=True, null=True)
   role        = models.ForeignKey(TeamMemberRole, related_name="teammembers", default=1)
   is_admin    = models.BooleanField(default=False)
+  get_mail    = models.BooleanField(default=True)
 
   class Meta:
     ordering = ('family__lastname', 'profile__last_name', 'team__name',)

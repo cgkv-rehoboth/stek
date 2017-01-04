@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from agenda.models import TimetableDuty
+from agenda.models import *
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
 from django.template.loader import get_template
@@ -58,22 +58,29 @@ class Command(BaseCommand):
     duties = TimetableDuty.objects.filter(event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)
 
     for d in duties:
-      if d.responsible_family:
-        resp = d.responsible_family.members_sorted()[0]
+      ## Check if member wants a reminder
+      # Get member
+      member = TeamMember.objects.filter(profile=d.responsible, family=d.responsible_family, team=d.timetable.team).first()
 
-        if not resp:
-          print("[FAILURE] Could not get a profile for family %s." % d.responsible_family.lastname)
+      # Members must very specific tell me to not sent them a mail
+      if not member or member.get_mail:
+
+        if d.responsible_family:
+          resp = d.responsible_family.members_sorted()[0]
+
+          if not resp:
+            print("[FAILURE] Could not get a profile for family %s." % d.responsible_family.lastname)
+            continue
+
+        else:
+          resp = d.responsible
+
+        # ensure email is present
+        if resp.email is None or len(resp.email) == 0:
+          print("[FAILURE] Profile '%s' has no emailaddress." % (resp.name()))
           continue
 
-      else:
-        resp = d.responsible
-
-      # ensure email is present
-      if resp.email is None or len(resp.email) == 0:
-        print("[FAILURE] Profile '%s' has no emailaddress." % (resp.name()))
-        continue
-
-      # Send mail
-      print("[SUCCESS] Sending reminder to %s for duty %s." % (resp.name(), d))
-      if not dryrun:
-        send_reminder_mail(d, resp)
+        # Send mail
+        print("[SUCCESS] Sending reminder to %s for duty %s." % (resp.name(), d))
+        if not dryrun:
+          send_reminder_mail(d, resp)

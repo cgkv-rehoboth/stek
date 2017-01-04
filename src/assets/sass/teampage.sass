@@ -1,5 +1,51 @@
+.settings-container
+  transition: background 0.3s
+
+  &.blue
+    background-color: #e0e8ec
+    background-color: #d1e0ec
+    background-color: #1A3242
+    color: #fff
+
+    a
+      color: #bdcdd8
+
+    #settings-form
+      border-left: 1px dotted #bdcdd8
+
+    button
+      border-color: #65a29e
+
+  #settings-form-toggle
+    font-size: 80%
+    display: inline-block
+    margin-top: 9px
+
+    &:focus:not(:hover)
+      text-decoration: none
+
+  #settings-form
+    display: none
+    border-left: 1px dotted #4a8cc5
+    padding: 1px 14px 18px 14px
+    margin-top: 0px
+    margin-left: 6px
+
+    form
+      .checkbox
+        padding-top: 0
+
+        label
+          font-weight: 100
+
+      .form-group
+        margin-bottom: 0
+
+        &:last-child
+          margin-top: 15px
+
 .team-description
-  white-space: pre
+  white-space: pre-wrap
   border-left: 3px solid #bbbbbb
   padding-left: 12px
 
