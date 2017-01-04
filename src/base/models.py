@@ -218,6 +218,12 @@ class Profile(TimestampedModel, models.Model):
     else:
       return "%s %s" % (self.prefix, self.last_name)
 
+  def last_namep(self):
+    if self.prefix == "":
+      return self.last_name
+    else:
+      return "%s, %s" % (self.last_name, self.prefix)
+
   def is_favorite_for(self, profile):
     return self.favorited_by.filter(owner=profile).exists()
 

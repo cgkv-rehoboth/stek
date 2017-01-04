@@ -1,0 +1,66 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section id="users-spawn">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Accounts aanmaken</h2>
+        </div>
+        <div class="col-sm-12">
+          <a href="{% url 'addressbook-management' %}">< Adresboek beheer</a>
+          <br/>
+          <br/>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+        Het script om accounts aan te maken is uitgevoerd. Hieronder is het resultaat weergegeven.
+        </div>
+
+        <div class="col-sm-12">
+          <h4>Info</h4>
+          <div class="code code-info">
+            <code>{% for l in info %}{{ l }}<br/>{% endfor %}</code>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <h4>Voltooiingen</h4>
+          <div class="code code-success">
+            <code>{% for l in success %}>> {{ l }}<br/>{% endfor %}</code>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <h4>Fouten</h4>
+          <div class="code code-error">
+            <code>{% for l in failure %}>> {{ l }}<br/>{% endfor %}</code>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    //window.teamAddPage();
+  </script>
+{% endblock %}

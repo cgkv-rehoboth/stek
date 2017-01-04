@@ -15,10 +15,13 @@ from django.contrib import messages
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.core import management
+from io import StringIO
 import csv
 import tempfile
 import json
 import re
+import sys
 
 from .forms import LoginForm, UploadImageForm
 
@@ -1062,6 +1065,55 @@ def addressbook_add(request):
   })
 
 
+@login_required
+@permission_required('auth.add_user', raise_exception=True)
+@require_POST
+def addressbook_users_spawn(request):
+  failure = []
+  info = []
+  success = []
+
+  # Create buffer to catch command output
+  buf = StringIO()
+
+  # Redirect stdout to buffer
+  # DO NOT PRINT TO STDOUT AFTER THIS (before stdout is restored again)
+  sysout = sys.stdout
+  sys.stdout = buf
+
+  # Execute command
+  if request.POST.get('dryrun', False):
+    management.call_command('spawn_accounts', '--dryrun', '123', '32', '23', '34', stdout=buf)
+  else:
+    management.call_command('spawn_accounts', '123', '32', '23', '34', stdout=buf)
+
+  # Restore stdout
+  sys.stdout = sysout
+
+  # Store buffer value
+  output = buf.getvalue()
+
+  # Close buffer and clear memory
+  buf.close()
+
+  # Process
+  for l in output.splitlines():
+    sub = l[:9]
+    # Select type
+    if sub.find('[FAILURE]') != -1:
+      failure.append(l[9:])
+    elif sub.find('[SUCCESS]') != -1:
+      success.append(l[9:])
+    else:
+      info.append(l)
+
+  return render(request, 'addressbook/beheer/users_spawn.html', {
+    'failure': failure,
+    'info': info,
+    'success': success,
+  })
+
+
 urls = [
   # auth
   url(r'^login$', RedirectView.as_view(url='login/', permanent=True)),
@@ -1112,6 +1164,7 @@ urls = [
   url(r'^dashboard/$', dashboard, name='dashboard'),
 
   # Add profiles/families
+  url(r'^adresboek/beheer/accounts/aanmaken/$', addressbook_users_spawn, name='addressbook-users-spawn'),
   url(r'^adresboek/beheer/mutaties/$', addressbook_differences, name='addressbook-differences'),
   url(r'^adresboek/beheer/toevoegen/$', addressbook_add, name='addressbook-add'),
   url(r'^adresboek/beheer/$', addressbook_management, name='addressbook-management'),

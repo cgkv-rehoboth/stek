@@ -30,7 +30,13 @@ def collect_accountless(profiles):
 
 def send_reset_email(profile, username):
     # create a new user and associate it with the profile, also add a random password, otherwhise the PasswordResetForm won't work
-    user = User.objects.create_user(username=username, email=profile.email, first_name=profile.first_name, last_name=profile.last_namef(), password=get_random_string(50))
+    user = User.objects.create_user(
+      username=username,
+      email=profile.email,
+      first_name=profile.first_name,
+      last_name=profile.last_namef(),
+      password=get_random_string(50)
+    )
     profile.user = user
     profile.save()
 
@@ -40,7 +46,7 @@ def send_reset_email(profile, username):
       reset_form.save()
       return True
     else:
-      print("[FAILURE]: Invalid password-reset-form for email '%s'" % profile.email)
+      print("[FAILURE]: Ongeldig password-reset-form voor e-mailadres '%s'" % profile.email)
       return False
 
 
@@ -55,26 +61,27 @@ class Command(BaseCommand):
     dryrun = options['dryrun']
     profiles = options['profiles']
     if dryrun:
-      print(">> Dry-run: only reporting")
+      print(">> Proefdraaien: alleen berichten, geen uitvoering")
       print()
       dryrun = True
 
     if len(profiles) > 0:
       profiles = Profile.objects.filter(pk__in=profiles)
-      print(">> Only spawning accounts for:")
+      print(">> Alleen accounts maken voor:")
       for p in profiles:
-        print(".. %s" % p.name())
+        print(">> .. %s (%s)" % (p.last_namep(), p.first_name))
       print()
     else:
       limitdate = date.today() - relativedelta(years=14)
-      print("Selecting profiles with an birthday date older than %s " % (limitdate))
-      profiles = Profile.objects.filter(birthday__lte=limitdate)
+      print(">> Profielen ophalen met een geboortedatum eerder dan %s " % limitdate)
+      profiles = Profile.objects.filter(birthday__lte=limitdate).order_by('last_name', 'first_name')
 
     for prof in collect_accountless(profiles):
+      profname = "%s (%s)" % (prof.last_namep(), prof.first_name)
+
       # ensure an email account is set
       if prof.email is None or len(prof.email) == 0:
-        print("[FAILURE] Profile '%s %s' has no account, but no email address is set!" % (prof.first_name, str(prof.last_namef())))
-        print(prof.last_namef())
+        print("[FAILURE] Profiel {0:32} heeft geen account, maar ook geen e-mailadres".format("'%s'" % profname))
         continue
 
       ## think of a clever username
@@ -88,17 +95,17 @@ class Command(BaseCommand):
 
       # ensure the username is not taken
       if User.objects.filter(username=username).exists():
-        print("[FAILURE] Profile '%s %s' has no account, but the username '%s' is taken." % (
-          prof.first_name,
-          prof.last_namef(),
+        print("[FAILURE] Profiel '%s' heeft geen account, maar de gebruikersnaam '%s' bestaat al" % (
+          profname,
           username
         ))
         continue
 
       if not dryrun:
         x = send_reset_email(prof, username)
-        if x:
-          print("[SUCCESS] Sending reset email to %s" % prof.email)
-        else:
-          print("[FAILURE] Sending reset email to %s failed" % prof.email)
         time.sleep(1)
+
+      if dryrun or x:
+        print("[SUCCESS] Mail verstuurd naar %s | %s" % (prof.email.rjust(32), profname))
+      else:
+        print("[FAILURE] Mislukt om een mail te versturen naar %s | %s" % (prof.email.rjust(32), profname))

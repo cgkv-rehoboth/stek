@@ -88,11 +88,11 @@ class Command(BaseCommand):
 
         if len(p) == 0:
           famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else ("%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
-            p = Family.objects.filter(lastname=famname, prefix='')
+          p = Family.objects.filter(lastname=famname, prefix='')
 
-            if len(p) == 0:
-              # Give up: Not found
-              errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
+          if len(p) == 0:
+            # Give up: Not found
+            errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
 
         if p:
           if len(p) > 1:
