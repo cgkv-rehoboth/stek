@@ -232,7 +232,7 @@ def profile_detail_edit_save(request, pk):
 
   # Save rest of the profile stuff
   profile.first_name = request.POST.get("first_name", "").replace('"', '').strip()
-  profile.initials = request.POST.get("initials", "").strip().replace(" ", "").upper()
+  profile.initials = request.POST.get("initials", "").strip().replace(" ", "")
   profile.prefix = request.POST.get("prefix", "").strip()
   profile.last_name = request.POST.get("last_name", "").replace('"', '').strip()
   profile.birthday = bday

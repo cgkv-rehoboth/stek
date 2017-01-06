@@ -502,14 +502,31 @@ window.profileEdit = (address) => {
 
   // Initials
   $("input[name='initials']").change(function(){
-    var i = $(this).val().toUpperCase();
+    var i = $(this).val();
 
     // Filter initals (remove whitespaces and add dots)
     i = i.replace(/([\.\s]+)+/gi, ".");
-    if(i.length > 0 && i.substr(-1) != ".")
-      i += '.';
-
-    $(this).val(i);
+    
+    // Check if it's necessary to do something
+    if (i.length > 0) {
+      i = i.split('.');
+      
+      // Capitalize each letter (but not the other ones, like in 'Th.')
+      for (var a = 0; a < i.length; a++) {
+        if (i[a].length > 0) {
+          i[a] = i[a][0].toUpperCase() + i[a].slice(1);
+        }else {
+          // Remove empty element
+          i.splice(a, 1);
+          a--;
+        }
+      }
+      
+      // Add empty on the end for the extra dot when calling join()
+      i.push('');
+    }
+    
+    $(this).val(i.join('.'));
   })
 };
 
