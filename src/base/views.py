@@ -17,6 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.core import management
 from io import StringIO
+from datetime import date
+from dateutil.relativedelta import relativedelta
 import csv
 import tempfile
 import json
@@ -434,10 +436,14 @@ def addressbook_management(request):
   ]
   address_headers = ['STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK']
   family_headers = ['GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'GEZINSNR'] + address_headers
+
+  limitdate = date.today() - relativedelta(years=14)
+  new_accounts = Profile.objects.filter(user=None, birthday__lte=limitdate).exclude(email='').exclude(email=None)
   
   return render(request, 'addressbook/beheer/main.html', {
     'headers': headers,
-    'family_headers': family_headers
+    'family_headers': family_headers,
+    'new_accounts': len(new_accounts),
   })
 
 
@@ -549,7 +555,7 @@ def addressbook_differences(request):
         oldvolgorde = "%s (%s)" % (old['GVOLGORDE'], [y[1] for x, y in enumerate(Profile.ROLE_CHOICES) if y[0] == 'KID'][0])
         
       if 'GVOLGORDE' in diff:
-        diff['GVOLGORDE'] = [oldvolgorde, "%s / %s" % (diff['GVOLGORDE'], new.get_role_in_family_display())]
+        diff['GVOLGORDE'] = [oldvolgorde, "%s / %s" % (newl['GVOLGORDE'], new.get_role_in_family_display())]
       else:
         diff['GVOLGORDE'] = [oldvolgorde, new.get_role_in_family_display()]
 
@@ -1083,9 +1089,9 @@ def addressbook_users_spawn(request):
 
   # Execute command
   if request.POST.get('dryrun', False):
-    management.call_command('spawn_accounts', '--dryrun', '123', '32', '23', '34', stdout=buf)
+    management.call_command('spawn_accounts', '--dryrun', stdout=buf)
   else:
-    management.call_command('spawn_accounts', '123', '32', '23', '34', stdout=buf)
+    management.call_command('spawn_accounts', stdout=buf)
 
   # Restore stdout
   sys.stdout = sysout
