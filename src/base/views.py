@@ -800,7 +800,7 @@ def addressbook_differences(request):
   #
   if members_file:
     # Get remaining profiles
-    for p in Profile.objects.exclude(pk__in=checked_profiles).order_by('last_name', 'first_name'):
+    for p in Profile.objects.exclude(pk__in=checked_profiles).exclude(is_active=False).order_by('last_name', 'first_name'):
       new = {
         'profile': p,
         'GEZINSNAAM': p.family.lastname,
@@ -837,7 +837,7 @@ def addressbook_differences(request):
 
   # Get remaining families, always, even if families_file is not set,
   # because families are also checked in the profilecheck
-  for f in Family.objects.exclude(pk__in=checked_families).order_by('lastname'):
+  for f in Family.objects.exclude(pk__in=checked_families).exclude(is_active=False).order_by('lastname'):
     famname = f.lastname.split(', ')
     new = {
       'family': f,
