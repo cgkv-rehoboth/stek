@@ -202,10 +202,16 @@ class EventFile(TimestampedModel, models.Model):
   class Meta:
     ordering = ('-event__startdatetime', '-event__enddatetime', 'title',)
 
+  def exists(self):
+    return os.path.isfile(self.file.path)
+
   def filename(self):
     return "%s" % os.path.basename(self.file.path)
 
   def filesize(self):
+    if not self.exists():
+      return "onbekend"
+
     size = self.file.size
 
     if size == 1:
@@ -222,6 +228,7 @@ class EventFile(TimestampedModel, models.Model):
     return "%.1f %s" % (size, 'YB')
 
   def type(self):
+
     ext = os.path.splitext(self.file.path)[1].replace('.', '')
     type = ''
     icons = [

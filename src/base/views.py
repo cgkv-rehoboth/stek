@@ -15,10 +15,13 @@ from django.contrib import messages
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.core import management
+from io import StringIO
 import csv
 import tempfile
 import json
 import re
+import sys
 
 from .forms import LoginForm, UploadImageForm
 
@@ -44,13 +47,27 @@ def uniqify(seq, idfun=None):
        result.append(item)
    return result
 
+
+def get_delimiter(file):
+  firstline = file.readline()
+  file.seek(0)
+  if firstline.find(';') != -1:
+    return ';'
+  elif firstline.find('|') != -1:
+    return '|'
+  else:
+    return ','
+
+
 @login_required
 def profile_list(request):
   return render(request, 'addressbook/profiles.html')
 
+
 @login_required
 def favorite_list(request):
   return render(request, 'addressbook/favorites.html')
+
 
 @login_required
 def team_list(request, pk=None):
@@ -66,6 +83,7 @@ def team_list(request, pk=None):
     'teams': teams,
     'id': pk
   })
+
 
 @login_required
 def family_list(request, pk=None):
@@ -88,6 +106,7 @@ def family_list(request, pk=None):
     'favorites': favorites,
     'id': pk
   })
+
 
 @login_required
 def profile_detail(request, pk=None):
@@ -118,6 +137,7 @@ def profile_detail(request, pk=None):
     'memberships': memberships
   })
 
+
 @login_required
 def profile_detail_edit(request, pk):
   profile = Profile.objects.prefetch_related("address").get(pk=pk)
@@ -130,6 +150,7 @@ def profile_detail_edit(request, pk):
     'p': profile,
     'a': serializers.serialize('json', [ profile.best_address() ])
   })
+
 
 @login_required
 @require_POST
@@ -208,7 +229,7 @@ def profile_detail_edit_save(request, pk):
 
   # Save rest of the profile stuff
   profile.first_name = request.POST.get("first_name", "").replace('"', '').strip()
-  profile.initials = request.POST.get("initials", "").strip()
+  profile.initials = request.POST.get("initials", "").strip().replace(" ", "").upper()
   profile.prefix = request.POST.get("prefix", "").strip()
   profile.last_name = request.POST.get("last_name", "").replace('"', '').strip()
   profile.birthday = bday
@@ -222,6 +243,7 @@ def profile_detail_edit_save(request, pk):
   messages.success(request, "Gegevens zijn opgeslagen.")
 
   return redirect('profile-detail-page', pk=pk)
+
 
 @login_required
 @require_POST
@@ -251,6 +273,7 @@ def profile_pic_edit_save(request, pk):
 
   return redirect('profile-detail-page', pk=pk)
 
+
 @login_required
 def profile_pic_delete(request, pk):
   profile = Profile.objects.get(pk=pk)
@@ -274,21 +297,26 @@ def profile_pic_delete(request, pk):
 
   return redirect('profile-detail-page', pk=pk)
 
+
 def logout_view(request):
   logout(request)
   return redirect('login')
+
 
 def change_password_done(request):
   messages.success(request, "Wachtwoord is gewijzigd.")
   return redirect('profile-detail-page', pk=request.profile.pk)
 
+
 def email_reset_done(request):
 
   return render(request, 'registrations/password_reset_done.html')
 
+
 def reset_password_done(request):
   messages.success(request, "Het nieuwe wachtwoord is opgeslagen. U kunt nu hieronder inloggen.")
   return redirect('login')
+
 
 @login_required
 def dashboard(request):
@@ -431,8 +459,7 @@ def addressbook_differences(request):
   if not (members_file or families_file):
     messages.error(request, "Er dient tenminste één bestand geüpload te worden.")
     return redirect('addressbook-management')
-    
-  
+
   headers = [
     'GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR',
     'ACHTERNAAM', 'VOORVGSELS', 'VOORNAMEN', 'ROEPNAAM', 'VOORLETTER', 'GESLACHT', 'SOORTLID', 'BURGSTAAT',
@@ -578,7 +605,7 @@ def addressbook_differences(request):
   
       # Read file
       with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-        members = csv.DictReader(fh, delimiter=',')
+        members = csv.DictReader(fh, delimiter=get_delimiter(fh))
   
         # Check for needed headers
         missingheaders = list(set(headers) - set(members.fieldnames))
@@ -623,19 +650,21 @@ def addressbook_differences(request):
           p = Profile.objects.filter(lidnr=l['LIDNR'])
   
           if len(p) == 0:
-            # Try another way to find the profile
-            p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=l['GEZINSNAAM'], family__prefix=l['GEZVOORVGS'])
+            # Try again
+            p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
   
             if len(p) == 0:
-              # Try again
-              p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
+              # Try another way to find the profile
+              famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else ("%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
+              
+              p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=famname)
   
               if len(p) == 0:
                 # And again
                 p = Profile.objects.filter(birthday=l['GEBDATUM'], first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
   
                 if len(p) == 0:
-                  # Adn again...
+                  # And again...
                   p = Profile.objects.filter(first_name=l['ROEPNAAM'], initials=l['VOORLETTER'],
                                              last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
   
@@ -690,7 +719,7 @@ def addressbook_differences(request):
   
       # Read file
       with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-        families = csv.DictReader(fh, delimiter=',')
+        families = csv.DictReader(fh, delimiter=get_delimiter(fh))
   
         # Check for needed headers
         missingheaders = list(set(family_headers) - set(families.fieldnames))
@@ -729,8 +758,12 @@ def addressbook_differences(request):
               # Give up: Not found
               famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else (
               "%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+
+              if len(p) == 0:
+                # Try again
+                p = Family.objects.filter(lastname=famname, prefix='')
               
-              errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
+                errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
   
           if p:
             if len(p) > 1:
@@ -824,6 +857,263 @@ def addressbook_differences(request):
   })
 
 
+@login_required
+@permission_required('base.add_profile', raise_exception=True)
+@require_POST
+def addressbook_add(request):
+  errors = []
+  created_profiles = []
+  created_families = []
+  members_file = request.FILES.get('members_file')
+  
+  # Check for file(s)
+  if not members_file:
+    messages.error(request, "Er dient een bestand geüpload te worden.")
+    return redirect('addressbook-management')
+    
+  headers = [
+    'GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'STRAAT', 'POSTCODE', 'WOONPLAATS', 'TELEFOON', 'WIJK', 'GEZINSNR',
+    'ACHTERNAAM', 'VOORVGSELS', 'VOORNAMEN', 'ROEPNAAM', 'VOORLETTER', 'GESLACHT', 'SOORTLID', 'BURGSTAAT',
+    'GEBDATUM', 'DOOPDATUM', 'BELDATUM', 'HUWDATUM', 'LIDNR', 'GVOLGORDE', 'TITEL', 'EMAIL', 'LTELEFOON'
+  ]
+
+  def create_family(new):
+    ## Create address
+    # parse zip
+    # make sure it's only 6 chars long and uppercase
+    new['POSTCODE'] = re.sub(r" ", "", new['POSTCODE']).upper()
+    
+    # Create address
+    address = Address(
+      street = new['STRAAT'].strip(),
+      zip = new['POSTCODE'],
+      city = new['WOONPLAATS'].strip(),
+      phone = new['TELEFOON'].strip(),
+      wijk = Wijk.objects.get(id=int(new['WIJK'].strip()))
+    )
+    address.save()
+    
+    ## Create family
+    family = Family(
+      lastname  = new['GEZINSNAAM'].strip(),
+      prefix    = new['GEZVOORVGS'].strip(),
+      aanhef    = new['GEZAANHEF'].strip(),
+      gezinsnr  = new['GEZINSNR'],
+      address   = address
+    )
+    family.save()
+  
+    return family
+  
+  def create_profile(new):
+    # Get family
+    family = Family.objects.get(gezinsnr=new['GEZINSNR'])
+
+    # parse date
+    try:
+      new['DOOPDATUM'] = datetime.strptime(new['DOOPDATUM'].strip(), "%d-%m-%Y").date()
+    except ValueError as e:
+      new['DOOPDATUM'] = None
+  
+    # parse date
+    try:
+      new['BELDATUM'] = datetime.strptime(new['BELDATUM'].strip(), "%d-%m-%Y").date()
+    except ValueError as e:
+      new['BELDATUM'] = None
+  
+    # parse date
+    try:
+      new['HUWDATUM'] = datetime.strptime(new['HUWDATUM'].strip(), "%d-%m-%Y").date()
+    except ValueError as e:
+      new['HUWDATUM'] = None
+
+    # Parse gvolgorde / family_role
+    new['GVOLGORDE'] = int(new['GVOLGORDE'].strip())
+    if new['GVOLGORDE'] == 1:
+      role_in_family = 'DAD'
+    elif new['GVOLGORDE'] == 2:
+      role_in_family = 'MUM'
+    else:
+      role_in_family = 'KID'
+      
+    profile = Profile(
+      phone       = new['LTELEFOON'].strip(),
+      first_name  = new['ROEPNAAM'].strip(),
+      initials    = new['VOORLETTER'].strip().replace(" ", "").upper(),
+      last_name   = new['ACHTERNAAM'].strip(),
+      prefix      = new['VOORVGSELS'].strip(),
+      email       = new['EMAIL'].strip().lower(),
+      birthday    = new['GEBDATUM'],
+      family      = family,
+      role_in_family = role_in_family,
+      voornamen   = new['VOORNAMEN'].strip(),
+      geslacht    = new['GESLACHT'].strip(),
+      soortlid    = new['SOORTLID'].strip(),
+      burgerstaat = new['BURGSTAAT'].strip(),
+      doopdatum   = new['DOOPDATUM'],
+      belijdenisdatum = new['BELDATUM'],
+      huwdatum    = new['HUWDATUM'],
+      lidnr       = new['LIDNR'],
+      gvolgorde   = new['GVOLGORDE'],
+      titel       = new['TITEL'].strip()
+    )
+    profile.save()
+    
+    return profile
+
+  # Create a temp file
+  with tempfile.NamedTemporaryFile() as tf:
+    # Copy the uploaded file to the temp file
+    for chunk in members_file.chunks():
+      tf.write(chunk)
+  
+    # Save contents to file on disk
+    tf.flush()
+  
+    # Read file
+    with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
+      members = csv.DictReader(fh, delimiter=get_delimiter(fh))
+    
+      # Check for needed headers
+      missingheaders = list(set(headers) - set(members.fieldnames))
+      if missingheaders:
+        if len(missingheaders) > 1:
+          messages.error(request,
+                         "De kolommen <strong>%s</strong> ontbreken in het ledenbestand." % ', '.join(missingheaders))
+        else:
+          messages.error(request, "De kolom <strong>%s</strong> ontbreekt in het ledenbestand." % missingheaders[0])
+        return redirect('addressbook-management')
+    
+      oldfamilies = []
+      for l in members:
+      
+        ##
+        # Parse some items first
+        #
+      
+        # parse gebdatum
+        try:
+          l['GEBDATUM'] = datetime.strptime(l['GEBDATUM'].strip(), "%d-%m-%Y").date()
+        except ValueError as e:
+          l['GEBDATUM'] = None
+      
+        # parse integers
+        l['LIDNR'] = int(l['LIDNR'])
+        l['GEZINSNR'] = int(l['GEZINSNR'])
+
+        ##
+        # Add family first
+        # Check if family already exists and if family already has been compared
+        if not l['GEZINSNR'] in oldfamilies:
+          oldfamilies.append(l['GEZINSNR'])
+          
+          ## Check if family doesn't already exists
+          # Get family
+          f = Family.objects.filter(gezinsnr=l['GEZINSNR'])
+          
+          if len(f) == 0:
+            # Try another search
+            famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else (
+              "%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
+            
+            f = Family.objects.filter(lastname=famname, prefix='')
+            
+          if len(f) > 0:
+            # Profile already exists
+            f = f.first()
+            errors.append(
+              'Online familie bestaat al voor familienummer %d (<a href="%s" title="Bekijk familie" target="_blank">%s</a>).' % (
+                l['GEZINSNR'], reverse('family-detail-page', kwargs={'pk': f.pk}), f.lastnamep()
+              ))
+          else:
+            # Create new family
+            family = create_family(l)
+    
+            # Record this one as done
+            created_families.append(family)
+      
+        ##
+        # Start the real work
+        #
+      
+        ## Make sure not to duplicate the profiles
+        # Get profile
+        p = Profile.objects.filter(lidnr=l['LIDNR'])
+
+        if len(p) == 0:
+          # Try again
+          p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'],
+                                     first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
+              
+        if len(p) > 0:
+          # Profile already exists
+          p = p.first()
+          errors.append('Online profiel bestaat al voor lidnummer %d (<a href="%s" title="Bekijk profiel" target="_blank">%s</a>).' % (
+            l['LIDNR'], reverse('profile-detail-page', kwargs={'pk': p.pk}), p.name()
+          ))
+        else:
+          # Create new profile
+          profile = create_profile(l)
+        
+          # Record this one as done
+          created_profiles.append(profile)
+
+  return render(request, 'addressbook/beheer/add.html', {
+    'errors': errors,
+    'created_families': created_families,
+    'created_profiles': created_profiles,
+  })
+
+
+@login_required
+@permission_required('auth.add_user', raise_exception=True)
+@require_POST
+def addressbook_users_spawn(request):
+  failure = []
+  info = []
+  success = []
+
+  # Create buffer to catch command output
+  buf = StringIO()
+
+  # Redirect stdout to buffer
+  # DO NOT PRINT TO STDOUT AFTER THIS (before stdout is restored again)
+  sysout = sys.stdout
+  sys.stdout = buf
+
+  # Execute command
+  if request.POST.get('dryrun', False):
+    management.call_command('spawn_accounts', '--dryrun', '123', '32', '23', '34', stdout=buf)
+  else:
+    management.call_command('spawn_accounts', '123', '32', '23', '34', stdout=buf)
+
+  # Restore stdout
+  sys.stdout = sysout
+
+  # Store buffer value
+  output = buf.getvalue()
+
+  # Close buffer and clear memory
+  buf.close()
+
+  # Process
+  for l in output.splitlines():
+    sub = l[:9]
+    # Select type
+    if sub.find('[FAILURE]') != -1:
+      failure.append(l[9:])
+    elif sub.find('[SUCCESS]') != -1:
+      success.append(l[9:])
+    else:
+      info.append(l)
+
+  return render(request, 'addressbook/beheer/users_spawn.html', {
+    'failure': failure,
+    'info': info,
+    'success': success,
+  })
+
+
 urls = [
   # auth
   url(r'^login$', RedirectView.as_view(url='login/', permanent=True)),
@@ -874,7 +1164,9 @@ urls = [
   url(r'^dashboard/$', dashboard, name='dashboard'),
 
   # Add profiles/families
+  url(r'^adresboek/beheer/accounts/aanmaken/$', addressbook_users_spawn, name='addressbook-users-spawn'),
   url(r'^adresboek/beheer/mutaties/$', addressbook_differences, name='addressbook-differences'),
+  url(r'^adresboek/beheer/toevoegen/$', addressbook_add, name='addressbook-add'),
   url(r'^adresboek/beheer/$', addressbook_management, name='addressbook-management'),
   #url(r'^adresboek/beheren/(?P<id>\d+)/edit/save/$', adresboek_admin_edit_save, name='adresboek-admin-edit-save'),
   #url(r'^adresboek/beheren/(?P<id>\d+)/edit/$', adresboek_admin_edit, name='adresboek-admin-edit'),

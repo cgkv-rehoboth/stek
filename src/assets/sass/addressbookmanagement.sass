@@ -7,6 +7,66 @@
     column-width: 150px
     line-height: 1
 
+  input[type='file']
+    padding-top: 5px
+
+#users-spawn
+  .code
+    padding: 10px
+    padding-bottom: 30px
+    border: 1px solid #a78c8c
+    background-color: #f9f2f4
+    max-height: 500px
+    overflow-y: auto
+
+    code
+      white-space: pre
+
+    &.code-info code
+        color: #4040c7
+
+    &.code-success code
+        color: #0b980c
+
+    &.code-error code
+        color: #c7254e
+
+#add-overview
+  $fontsize: 12pt
+
+  .overview
+    h3
+      .badge
+        font-size: 14pt
+        margin-bottom: 4px
+        background-color: #337ab7
+
+    h4
+      margin-top: 28px
+      margin-bottom: 21px
+      padding-top: 16px
+      border-top: 1px solid #ddd
+      box-shadow: 0px 26px 25px -25px #e4e4e4 inset
+
+    .subdiv
+      padding-left: 15px
+      font-size: $fontsize
+
+      p
+        font-size: $fontsize
+
+    table
+      width: auto
+
+      th
+        font-weight: 400
+        padding-right: 24px
+        font-size: $fontsize
+
+      td
+        padding-right: 24px
+        font-size: $fontsize
+
 #differences-overview
   div
     line-height: 1.3

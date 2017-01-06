@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
 from base.models import *
+from base.views import get_delimiter
 
 from collections import Counter
 
@@ -59,7 +60,7 @@ class Command(BaseCommand):
     ]
 
     with open(family_fp, 'r', newline='', encoding="ISO-8859-1") as fh:
-      families = csv.DictReader(fh, delimiter=',')
+      families = csv.DictReader(fh, delimiter=get_delimiter(fh))
 
       # Check for needed headers
       missingheaders = list(set(headers) - set(families.fieldnames))
@@ -78,8 +79,6 @@ class Command(BaseCommand):
         # parse integers
         m['GEZINSNR'] = int(m['GEZINSNR'])
 
-        famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else ("%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
-
         ##
         # Start the real work
         #
@@ -88,11 +87,12 @@ class Command(BaseCommand):
         p = Family.objects.filter(gezinsnr=m['GEZINSNR'])
 
         if len(p) == 0:
-            p = Family.objects.filter(lastname=famname)
+          famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else ("%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+          p = Family.objects.filter(lastname=famname, prefix='')
 
-            if len(p) == 0:
-              # Give up: Not found
-              errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
+          if len(p) == 0:
+            # Give up: Not found
+            errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
 
         if p:
           if len(p) > 1:

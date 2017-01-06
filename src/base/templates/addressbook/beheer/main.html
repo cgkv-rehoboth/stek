@@ -21,6 +21,26 @@
       </div>
 
       <div class="row">
+        <div class="col-sm-12 introduction">
+          <strong>Overzicht:</strong>
+          <ul class="list">
+            <li>
+              <a href="#mutaties-gemeente">Mutaties gemeente</a>
+            </li>
+            <li>
+              <a href="#leden-importeren">Leden importeren</a>
+            </li>
+            <li>
+              <a href="#accounts-versturen">Accounts versturen</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+
+        <hr id="mutaties-gemeente"/>
+
         <div class="col-sm-12">
           <h3>Mutaties gemeente</h3>
           Upload een .csv bestand om het verschil tussen de online database en het geüploade bestand te bekijken. Om de mutaties van zowel de leden als de families te bekijken, dienen beide bestanden geüpload te worden. Mits alleen het ledenbestand geüpload wordt, zal er toch een poging gedaan worden om aan de hand van dit bestand ook de families te controleren. Dit brengt echter met zich mee dat de adresgegevens van de families niet 100% betrouwbaar kunnen zijn.
@@ -66,7 +86,7 @@
         </div>
 
         <div class="col-sm-12">
-          <form method="post" action="{% url 'addressbook-differences' %}" class="team-add-table form-horizontal" enctype="multipart/form-data">
+          <form method="post" action="{% url 'addressbook-differences' %}" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="col-sm-6">
@@ -100,9 +120,102 @@
             </div>
           </form>
         </div>
+      </div>
 
+      <div class="row">
+
+        <hr id="leden-importeren"/>
+
+        <div class="col-sm-12">
+          <h3>Leden importeren</h3>
+          Voor het toevoegen van nieuwe leden aan de online database, dient er hieronder een CSV-bestand geüpload te worden. Uit dit bestand (export van de leden) worden ook de families gegenereerd. Belangrijk is daarom om het adres van de familie te controleren.<br/>
+          Het bestand moet in ieder geval de volgende kolommen bevatten om het importeren te laten slagen (dit zijn dezelfde kolommen welke ook hierboven nodig zijn):
+          <br/>
+          <br/>
+          {% if headers %}
+            <div class="headers">
+              <code>
+                {% for header in headers %}
+                  {{ header }}<br/>
+                {% endfor %}
+              </code>
+            </div>
+          {% else %}
+            Geen kolommen gespecificeerd.
+          {% endif %}
+          <br/>
+        </div>
+
+        <div class="col-sm-12">
+          <form method="post" action="{% url 'addressbook-add' %}" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Ledenbestand</label>
+                <div class="col-sm-10">
+                  <input type="file" name="members_file" />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                  <button type="submit" class="btn btn-default cyan">
+                    Uploaden
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="row">
+
+        <hr id="accounts-versturen"/>
+
+        <div class="col-sm-12">
+          <h3>Accounts versturen</h3>
+          Nieuw toegevoegde leden hebben natuurlijk een account nodig. Profielen worden namelijk aan accounts gekoppeld. De accounts zorgen ervoor dat inloggen mogelijk is, terwijl de profielen alle persoonsinformatie bevatten.
+          <br/>
+          Door hieronder op 'Aanmaken' te drukken, worden accounts aangemaakt voor de profielen welke nog geen account hebben. Profielen zonder e-mailadres kunnen geen account krijgen, hiervoor is namelijk een e-mailadres nodig. Deze leden krijgen namelijk een e-mailbericht met daarin de benodigde gegevens om in te kunnen loggen (namelijk de optie om een wachtwoord in te kunnen stellen).
+          <br/>
+          <br/>
+          <strong>Let op:</strong>
+          het uitvoeren van dit script kan enkele minuten duren. <u>Klik dus maar één keer</u> op de knop en <u>verlaat de pagina niet</u>!
+        </div>
+
+        <div class="col-sm-12">
+          <form method="post" action="{% url 'addressbook-users-spawn' %}" class="form-horizontal">
+            {% csrf_token %}
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10 checkbox">
+                  <label>
+                    <input type="checkbox" name="dryrun" class="service-second-trigger" checked/> Proefdraaien
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-12">
+              <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                  <button type="submit" class="btn btn-default cyan">
+                    Aanmaken
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
+    <br/>
+    <br/>
   </section>
 {% endblock %}
 
