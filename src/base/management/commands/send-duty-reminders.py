@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.template.loader import get_template
 from django.template import Context
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 
 
 def send_reminder_mail(duty, resp):
@@ -25,6 +26,9 @@ def send_reminder_mail(duty, resp):
     'timetable': duty.timetable,
     'event': event,
     'comments': comments,
+    'protocol': 'https',
+    'domain': get_current_site(None).domain,
+    'team_id': duty.timetable.team.pk,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
