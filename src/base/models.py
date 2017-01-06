@@ -20,6 +20,16 @@ import unidecode
 import os
 from agenda.models import *
 
+
+class TimestampedModel(models.Model):
+
+  class Meta:
+    abstract = True
+
+  created_date = models.DateTimeField(auto_now_add=True)
+  modified_date = models.DateTimeField(auto_now=True)
+  
+
 class Slide(LiveModel, models.Model):
 
   image       = models.CharField(max_length=255)
@@ -28,6 +38,7 @@ class Slide(LiveModel, models.Model):
   owner       = models.ForeignKey(User) # Todo: replace User with Profile
 
   def __str__(self): return self.title
+
 
 class Wijk(models.Model):
 
@@ -40,7 +51,8 @@ class Wijk(models.Model):
   def __str__(self):
     return "%s (%s)" % (self.naam, self.id)
 
-class Address(models.Model):
+
+class Address(TimestampedModel, models.Model):
 
   street      = models.CharField(max_length=255, blank=True)
   zip         = models.CharField(max_length=6, blank=True)
@@ -61,6 +73,7 @@ class Address(models.Model):
     else:
       return self.profile
 
+
 def user_profile_pic(profile, filename):
   _, ext = os.path.splitext(filename)
 
@@ -69,7 +82,8 @@ def user_profile_pic(profile, filename):
 
   return 'profiles/%s_%s%s' % (profile.pk, name, ext)
 
-class Profile(models.Model):
+
+class Profile(TimestampedModel, models.Model):
 
   DAD = 'DAD'
   MUM = 'MUM'
@@ -89,16 +103,30 @@ class Profile(models.Model):
   first_name  = models.CharField(max_length=255, blank=True)
   initials    = models.CharField(max_length=64, blank=True, null=True, default="")
   last_name   = models.CharField(max_length=255, blank=True)
-  prefix      = models.CharField(max_length=64, blank=True, null=True, default="") # todo: run migration
+  prefix      = models.CharField(max_length=64, blank=True, null=True, default="")
   email       = models.CharField(max_length=255, blank=True, null=True)
   birthday    = models.DateField(null=True)
   photo       = models.ImageField(upload_to=user_profile_pic, null=True, blank=True)
   family      = models.ForeignKey("Family", null=True, related_name='members')
   role_in_family = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID, null=True)
-  has_logged_in  = models.NullBooleanField(default=False, null=True)
+  has_logged_in  = models.NullBooleanField(null=True, default=False)
+
+  # Extra
+  voornamen   = models.CharField(max_length=255, null=True, blank=True, default="")
+  geslacht    = models.CharField(max_length=15, null=True, blank=True, default="")
+  soortlid    = models.CharField(max_length=15, null=True, blank=True, default="")
+  burgerstaat = models.CharField(max_length=15, null=True, blank=True, default="")
+  doopdatum   = models.DateField(null=True, blank=True)
+  belijdenisdatum  = models.DateField(null=True, blank=True)
+  huwdatum    = models.DateField(null=True, blank=True)
+  overlijdensdatum = models.DateField(null=True, blank=True)
+  lidnr       = models.IntegerField(null=True, blank=True)
+  gvolgorde   = models.IntegerField(null=True, blank=True)
+  titel       = models.CharField(max_length=15, null=True, blank=True, default="")
+  is_active   = models.NullBooleanField(null=True, default=True)
 
   class Meta:
-    unique_together = (('first_name', 'last_name', 'birthday'), )
+    unique_together = (('first_name', 'initials', 'last_name', 'prefix', 'birthday', 'lidnr'), )
 
   def delete(self, *args, **kwargs):
     # remove all ruilrequests
@@ -207,31 +235,41 @@ class Profile(models.Model):
     is_before_birthday = (today.month, today.day) < (self.birthday.month, self.birthday.day)
     return years - int(is_before_birthday)
 
+
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)
 
   # Remove all harmfull chars
-  name = ''.join(e for e in unidecode.unidecode(fam.lastname) if e.isalnum())
+  name = ''.join(e for e in unidecode.unidecode(fam.lastnamep()) if e.isalnum())
 
   return 'families/%s_%s%s' % (fam.pk, name, ext)
+
 
 def family_pic_thumb(fam, filename):
   _, ext = os.path.splitext(filename)
 
   # Remove all harmfull chars
-  name = ''.join(e for e in unidecode.unidecode(fam.lastname) if e.isalnum())
+  name = ''.join(e for e in unidecode.unidecode(fam.lastnamep()) if e.isalnum())
 
   return 'families/thumbnails/%s_%s%s' % (fam.pk, name, ext)
 
-class Family(models.Model):
+
+class Family(TimestampedModel, models.Model):
 
   lastname    = models.CharField(max_length=255)
   photo       = models.FileField(upload_to=family_pic, null=True, blank=True)
   thumbnail   = models.FileField(upload_to=family_pic_thumb, null=True, blank=True)
   address     = models.OneToOneField(Address, null=True, blank=True, related_name="family")
 
+  # Extra
+  prefix      = models.CharField(max_length=64, blank=True, null=True, default="")
+  aanhef      = models.CharField(max_length=15, null=True, blank=True, default="")
+  gezinsnr    = models.IntegerField(null=True, blank=True)
+  is_active   = models.NullBooleanField(null=True, default=True)
+
   class Meta:
-    ordering = ('lastname',)
+    unique_together = (('lastname', 'prefix', 'gezinsnr'), )
+    ordering = ('lastname', 'prefix')
 
   def __str__(self):
     return "Familie %s" % self.name_initials()
@@ -245,6 +283,18 @@ class Family(models.Model):
   def kids(self):
     return self.members.filter(role_in_family='KID').order_by('birthday')
 
+  def lastnamef(self):
+    if self.prefix == "":
+      return self.lastname
+    else:
+      return "%s %s" % (self.prefix, self.lastname)
+
+  def lastnamep(self):
+    if self.prefix == "":
+      return self.lastname
+    else:
+      return "%s, %s" % (self.lastname, self.prefix)
+
   def name_initials(self):
     initials = ""
 
@@ -256,7 +306,7 @@ class Family(models.Model):
     if len(initials) > 0:
       initials = " (%s)" % initials
 
-    return "%s%s" % (self.lastname, initials)
+    return "%s%s" % (self.lastnamep(), initials)
 
   def members_sorted(self):
     return list(chain(self.dads(), self.mums(), self.kids()))
@@ -324,6 +374,7 @@ class Family(models.Model):
       args = {}
 
     super().save(*args, **kwargs)
+
 
 class Favorites(models.Model):
 

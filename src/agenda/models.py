@@ -8,20 +8,14 @@ from django.core.urlresolvers import reverse
 import os
 
 # Import models of base app
-from base.models import Profile, Family
+from base.models import *
+
 
 class ActiveManager(models.Manager):
   # Get online the active ones when calling objects.active()
   def active(self):
     return super(ActiveManager, self).get_queryset().filter(is_active=True)
 
-class TimestampedModel(models.Model):
-
-  class Meta:
-    abstract = True
-
-  created_date = models.DateTimeField(auto_now_add=True)
-  modified_date = models.DateTimeField(auto_now=True)
 
 class Timetable(TimestampedModel, LiveModel, models.Model):
 
@@ -43,6 +37,7 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
     self.duties.all().delete()
 
     super().delete(*args, **kwargs)
+
 
 class Event(TimestampedModel, LiveModel, models.Model):
 
@@ -68,6 +63,7 @@ class Event(TimestampedModel, LiveModel, models.Model):
     #date = self.startdatetime.strftime("%d %B, %H:%M") # Wrong translation
     date = self.startdatetime.strftime("%d-%m-%Y, %H:%M")
     return "%s, op %su" % (self.title, date)
+
 
 class TimetableDuty(models.Model):
 
@@ -102,6 +98,7 @@ class TimetableDuty(models.Model):
     else:
       return "niemand"
 
+
 class Service(Event):
 
   minister    = models.CharField(max_length=255)
@@ -115,6 +112,7 @@ class Service(Event):
 
   def url(self, *args, **kwargs):
     return reverse('services-single', kwargs={'id': self.pk})
+
 
 class Team(models.Model):
 
@@ -134,6 +132,7 @@ class Team(models.Model):
 
   def leaders(self):
     return self.teammembers.filter(is_admin=True)
+
 
 class TeamMemberRole(models.Model):
 
@@ -176,6 +175,7 @@ class TeamMember(models.Model):
     else:
       return self.profile.name()
 
+
 class RuilRequest(models.Model):
 
   timetableduty   = models.ForeignKey(TimetableDuty, related_name="ruilen")
@@ -186,8 +186,10 @@ class RuilRequest(models.Model):
     unique_together = (("timetableduty", "profile"),)
     ordering = ('timetableduty',)
 
+
 def eventfilepath(instance, filename):
   return 'eventfiles/%s' % (filename)
+
 
 class EventFile(TimestampedModel, models.Model):
 
