@@ -995,10 +995,21 @@ def teampage(request, id):
 
   tables = team.timetables.order_by('title')
 
+  # Get teammembership of user
+  teammember = request.profile.team_membership.filter(team=team).first()
+
+  # Check if this person is the head of the family: getting the reminder-mails
+  if request.profile == request.profile.family.members_sorted()[0]:
+    teammember_family = request.profile.family.team_membership.filter(team=team).first()
+  else:
+    teammember_family = None
+
   # Render that stuff!
   return render(request, 'teampage/teampage.html', {
     'team': team,
     'is_admin': request.profile.teamleader_of(team),
+    'teammember': teammember,
+    'teammember_family': teammember_family,
     'members': members,
     'tables': tables,
   })
@@ -1188,6 +1199,41 @@ def services_single(request, id):
   })
 
 
+@login_required
+@require_POST
+def teampage_settings_save(request, id):
+  teammember = request.profile.team_membership.filter(team__pk=id).first()
+  teammember_family = request.profile.family.team_membership.filter(team__pk=id).first()
+
+  # Check some things first
+  if not teammember and not teammember_family:
+    messages.error(request, "Je instellingen kunnen niet opgeslagen worden, want je bent geen lid van dit team.")
+    return redirect('teampage', id=id)
+
+  # Change values
+  if teammember:
+    if request.POST.get('reminder'):
+      teammember.get_mail = True
+    else:
+      teammember.get_mail = False
+
+    # Save it
+    teammember.save()
+
+  if teammember_family:
+    if request.POST.get('reminder-family'):
+      teammember_family.get_mail = True
+    else:
+      teammember_family.get_mail = False
+
+    # Save it
+    teammember_family.save()
+
+  messages.success(request, "Je instellingen zijn opgeslagen.")
+
+  return redirect('teampage', id=id)
+
+
 urls = [
   url(r'^roosters/ruilverzoek/new/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
   url(r'^roosters/ruilverzoek/(?P<id>\d+)/intrekken/$', timetable_undo_ruilen, name='timetable-undo-ruilen'),
@@ -1221,6 +1267,8 @@ urls = [
   url(r'^team/roosters/(?P<id>\d+)/edit/save/$', teampage_control_timetables_edit_save, name='teampage-control-timetables-edit-save'),
   url(r'^team/roosters/(?P<id>\d+)/edit/$', teampage_control_timetables_edit, name='teampage-control-timetables-edit'),
   url(r'^team/(?P<id>\d+)/roosters/$', teampage_control_timetables, name='teampage-control-timetables'),
+
+  url(r'^team/(?P<id>\d+)/instellingen/save/$', teampage_settings_save, name='teampage-settings-save'),
 
   url(r'^team/(?P<id>\d+)/edit/save/$', teampage_control_edit_save, name='teampage-control-edit-save'),
   url(r'^team/(?P<id>\d+)/edit/$', teampage_control_edit, name='teampage-control-edit'),

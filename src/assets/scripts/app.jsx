@@ -316,6 +316,12 @@ window.servicePage = () => {
 };
 
 window.teamPage = () => {
+  // Show/hide settingsform
+  $("#settings-form-toggle").click(function(){
+    $(".settings-container").toggleClass("blue");
+    $("#settings-form").slideToggle(100);
+  });
+  
   // Zoom in/out profile pics
   $(".zoomin").click(function(){
     var width = parseInt($(".team-usersquare").css('width')) + 20;

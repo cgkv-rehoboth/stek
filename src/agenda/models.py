@@ -9,20 +9,14 @@ import os
 from unidecode import unidecode
 
 # Import models of base app
-from base.models import Profile, Family
+from base.models import *
+
 
 class ActiveManager(models.Manager):
   # Get online the active ones when calling objects.active()
   def active(self):
     return super(ActiveManager, self).get_queryset().filter(is_active=True)
 
-class TimestampedModel(models.Model):
-
-  class Meta:
-    abstract = True
-
-  created_date = models.DateTimeField(auto_now_add=True)
-  modified_date = models.DateTimeField(auto_now=True)
 
 class Timetable(TimestampedModel, LiveModel, models.Model):
 
@@ -44,6 +38,7 @@ class Timetable(TimestampedModel, LiveModel, models.Model):
     self.duties.all().delete()
 
     super().delete(*args, **kwargs)
+
 
 class Event(TimestampedModel, LiveModel, models.Model):
 
@@ -69,6 +64,7 @@ class Event(TimestampedModel, LiveModel, models.Model):
     #date = self.startdatetime.strftime("%d %B, %H:%M") # Wrong translation
     date = self.startdatetime.strftime("%d-%m-%Y, %H:%M")
     return "%s, op %su" % (self.title, date)
+
 
 class TimetableDuty(models.Model):
 
@@ -103,6 +99,7 @@ class TimetableDuty(models.Model):
     else:
       return "niemand"
 
+
 class Service(Event):
 
   minister    = models.CharField(max_length=255)
@@ -116,6 +113,7 @@ class Service(Event):
 
   def url(self, *args, **kwargs):
     return reverse('services-single', kwargs={'id': self.pk})
+
 
 class Team(models.Model):
 
@@ -135,6 +133,7 @@ class Team(models.Model):
 
   def leaders(self):
     return self.teammembers.filter(is_admin=True)
+
 
 class TeamMemberRole(models.Model):
 
@@ -163,6 +162,7 @@ class TeamMember(models.Model):
   family      = models.ForeignKey(Family, related_name="team_membership", blank=True, null=True)
   role        = models.ForeignKey(TeamMemberRole, related_name="teammembers", default=1)
   is_admin    = models.BooleanField(default=False)
+  get_mail    = models.BooleanField(default=True)
 
   class Meta:
     ordering = ('family__lastname', 'profile__last_name', 'team__name',)
@@ -176,6 +176,7 @@ class TeamMember(models.Model):
     else:
       return self.profile.name()
 
+
 class RuilRequest(models.Model):
 
   timetableduty   = models.ForeignKey(TimetableDuty, related_name="ruilen")
@@ -186,9 +187,11 @@ class RuilRequest(models.Model):
     unique_together = (("timetableduty", "profile"),)
     ordering = ('timetableduty',)
 
+
 def eventfilepath(instance, filename):
   # don't use the real filename, prevents weird encoding issues
   return 'eventfiles/%s' % unidecode(filename)
+
 
 class EventFile(TimestampedModel, models.Model):
 
@@ -201,10 +204,16 @@ class EventFile(TimestampedModel, models.Model):
   class Meta:
     ordering = ('-event__startdatetime', '-event__enddatetime', 'title',)
 
+  def exists(self):
+    return os.path.isfile(self.file.path)
+
   def filename(self):
     return "%s" % os.path.basename(self.file.path)
 
   def filesize(self):
+    if not self.exists():
+      return "onbekend"
+
     size = self.file.size
 
     if size == 1:
@@ -221,6 +230,7 @@ class EventFile(TimestampedModel, models.Model):
     return "%.1f %s" % (size, 'YB')
 
   def type(self):
+
     ext = os.path.splitext(self.file.path)[1].replace('.', '')
     type = ''
     icons = [

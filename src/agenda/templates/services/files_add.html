@@ -146,11 +146,15 @@
                       <td class="ef-title">{{ s.title }}</td>
 
                       <td class="ef-file">
-                        <i class="fa fa-file-{% if s.type %}{{ s.type }}-{% endif %}o fa-fw" aria-hidden="true"></i>
-                        <a href="{{ s.file.url }}" target="_blank" title="Klik hier om het bestand te openen">
-                          {{ s.filename }}
-                        </a>
-                        <small>({{ s.filesize }})</small>
+                        {% if s.exists %}
+                          <i class="fa fa-file-{% if s.type %}{{ s.type }}-{% endif %}o fa-fw" aria-hidden="true"></i>
+                          <a href="{{ s.file.url }}" target="_blank" title="Klik hier om het bestand te openen">
+                            {{ s.filename }}
+                          </a>
+                          <small>({{ s.filesize }})</small>
+                        {% else %}
+                          Geen bestand gevonden!
+                        {% endif %}
                       </td>
 
                       <td class="ef-modified_date" title="Toegevoegd door {{ s.owner.name }} op {{ s.created_date }}">{{ s.modified_date }}</td>

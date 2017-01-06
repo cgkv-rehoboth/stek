@@ -2,6 +2,10 @@ Beste {{ name }},
 
 Voor {{ date }} sta je ingedeeld in het rooster '{{ timetable }}' voor het volgende: {{ event }}.
 {{ comments }}
+
+
 ___________________
+Wil je hierover geen mails meer ontvangen? Afmelden kan via: 'Mijn instellingen' op {{ protocol}}://{{ domain }}{% url 'teampage' team_id %}
+
 Dit is een automatisch gegenereerd bericht waarop u niet kunt antwoorden.
 Verzonden op {{ sendtime }}.
