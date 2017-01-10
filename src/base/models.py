@@ -15,7 +15,7 @@ from django.template import Context
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from itertools import chain
-import unidecode
+from unidecode import unidecode
 
 import os
 from agenda.models import *
@@ -78,7 +78,7 @@ def user_profile_pic(profile, filename):
   _, ext = os.path.splitext(filename)
 
   # Remove all harmfull chars
-  name = ''.join(e for e in unidecode.unidecode(profile.name()) if e.isalnum())
+  name = ''.join(e for e in unidecode(profile.name()) if e.isalnum())
 
   return 'profiles/%s_%s%s' % (profile.pk, name, ext)
 
@@ -246,7 +246,7 @@ def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)
 
   # Remove all harmfull chars
-  name = ''.join(e for e in unidecode.unidecode(fam.lastnamep()) if e.isalnum())
+  name = ''.join(e for e in unidecode(fam.lastnamep()) if e.isalnum())
 
   return 'families/%s_%s%s' % (fam.pk, name, ext)
 
@@ -255,7 +255,7 @@ def family_pic_thumb(fam, filename):
   _, ext = os.path.splitext(filename)
 
   # Remove all harmfull chars
-  name = ''.join(e for e in unidecode.unidecode(fam.lastnamep()) if e.isalnum())
+  name = ''.join(e for e in unidecode(fam.lastnamep()) if e.isalnum())
 
   return 'families/thumbnails/%s_%s%s' % (fam.pk, name, ext)
 
