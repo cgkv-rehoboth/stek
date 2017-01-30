@@ -5,6 +5,15 @@
 
 {% block content %}
   <section class="container" id="profile">
+
+    {% if not p.is_active %}
+    <div class="top-announcement">
+      <div>
+        <center>Dit profiel is geen lid meer en mogelijk verouderd.</center>
+      </div>
+    </div>
+    {% endif %}
+
     <div class="row">
       <div class="col-md-4">
       </div>

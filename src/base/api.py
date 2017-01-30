@@ -74,7 +74,7 @@ class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewS
       else:
         return queryset
 
-  queryset = Profile.objects.all().order_by("last_name", "birthday")
+  queryset = Profile.objects.filter(is_active=True).order_by("last_name", "birthday")
   serializer_class = ProfileSerializer
 
   permission_classes = [IsAuthenticated]
@@ -154,7 +154,7 @@ class AddressViewSet(
 
 
 class FamilyViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, StekViewSet):
-  queryset = Family.objects.all().order_by("lastname")
+  queryset = Family.objects.filter(is_active=True).order_by("lastname")
   serializer_class = FamilySerializer
 
   permission_classes = [IsAuthenticated]

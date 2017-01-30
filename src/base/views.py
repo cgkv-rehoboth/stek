@@ -91,6 +91,7 @@ def team_list(request, pk=None):
 @login_required
 def family_list(request, pk=None):
   data = Family.objects\
+    .filter(is_active=True)\
     .prefetch_related(
       Prefetch('members', queryset=Profile.objects.order_by('birthday')),
       'address'
@@ -439,7 +440,7 @@ def addressbook_management(request):
   family_headers = ['GEZINSNAAM', 'GEZAANHEF', 'GEZVOORVGS', 'GEZINSNR'] + address_headers
 
   limitdate = date.today() - relativedelta(years=14)
-  new_accounts = Profile.objects.filter(user=None, birthday__lte=limitdate).exclude(email='').exclude(email=None)
+  new_accounts = Profile.objects.filter(user=None, is_active=True, birthday__lte=limitdate).exclude(email='').exclude(email=None)
 
   return render(request, 'addressbook/beheer/main.html', {
     'headers': headers,
@@ -682,33 +683,42 @@ def addressbook_differences(request):
                     ))
 
           if p:
-            if len(p) > 1:
-              # Twin things: be more accurate
-              p = p.filter(first_name=l['ROEPNAAM'])
+            # Filter out non-active profiles
+            if p.filter(is_active=True):
+              p = p.filter(is_active=True)
+
               if len(p) > 1:
-                p = p.filter(initials=l['VOORLETTER'])
+                # Twin things: be more accurate
+                p = p.filter(first_name=l['ROEPNAAM'])
+                if len(p) > 1:
+                  p = p.filter(initials=l['VOORLETTER'])
 
-            p = p.first()
+              p = p.first()
 
-            # Get profile differences
-            difference = get_profile_differences(l, p)
-            if difference:
-              profile_differences[l['LIDNR']] = difference
-
-            # Record this one as done
-            checked_profiles.append(p.pk)
-
-            ## Family
-            # Check if family needs to be compared (due to missing file) and if family already has been compared
-            if not families_file and not l['GEZINSNR'] in oldfamilies and p.family:
-              # Get family differences
-              difference = get_family_differences(l, p.family)
+              # Get profile differences
+              difference = get_profile_differences(l, p)
               if difference:
-                family_differences[l['GEZINSNR']] = difference
+                profile_differences[l['LIDNR']] = difference
 
               # Record this one as done
-              checked_families.append(p.family.pk)
-              oldfamilies.append(l['GEZINSNR'])
+              checked_profiles.append(p.pk)
+
+              ## Family
+              # Check if family needs to be compared (due to missing file) and if family already has been compared
+              if not families_file and not l['GEZINSNR'] in oldfamilies and p.family:
+                # Get family differences
+                difference = get_family_differences(l, p.family)
+                if difference:
+                  family_differences[l['GEZINSNR']] = difference
+
+                # Record this one as done
+                checked_families.append(p.family.pk)
+                oldfamilies.append(l['GEZINSNR'])
+            else:
+              # Profile has been soft-deleted
+              errors.append('Online profiel voor lidnummer %d (%s %s %s) is uitgeschakeld.' % (
+                l['LIDNR'], l['ROEPNAAM'], l['VOORVGSELS'], l['ACHTERNAAM']
+              ))
 
   ##
   # Main function for families
@@ -773,34 +783,41 @@ def addressbook_differences(request):
                 errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
 
           if p:
-            if len(p) > 1:
-              # Twin things: be more accurate
-              p = p.filter(address__zip=m['POSTCODE'])
+            # Filter out non-active families
+            if p.filter(is_active=True):
+              p = p.filter(is_active=True)
 
               if len(p) > 1:
-                # Get over it
-                p = p.filter(address__street=m['STRAAT'])
+                # Twin things: be more accurate
+                p = p.filter(address__zip=m['POSTCODE'])
 
                 if len(p) > 1:
-                  # PLEASE
-                  p = p.filter(address__phone=m['TELEFOON'])
+                  # Get over it
+                  p = p.filter(address__street=m['STRAAT'])
 
-            p = p.first()
+                  if len(p) > 1:
+                    # PLEASE
+                    p = p.filter(address__phone=m['TELEFOON'])
 
-            # Get family differences
-            difference = get_family_differences(m, p)
-            if difference:
-              family_differences[m['GEZINSNR']] = difference
+              p = p.first()
 
-            # Record this one as done
-            checked_families.append(p.pk)
+              # Get family differences
+              difference = get_family_differences(m, p)
+              if difference:
+                family_differences[m['GEZINSNR']] = difference
+
+              # Record this one as done
+              checked_families.append(p.pk)
+            else:
+              # Profile has been soft-deleted
+              errors.append('Online familie %d (%s) is uitgeschakeld.' % (m['GEZINSNR'], ("%s %s" % (m['GEZVOORVGS'], m['GEZINSNAAM']) if m['GEZVOORVGS'] else m['GEZINSNAAM'])))
 
   ##
   # Get the newly added profiles/families
   #
   if members_file:
     # Get remaining profiles
-    for p in Profile.objects.exclude(pk__in=checked_profiles).exclude(is_active=False).order_by('last_name', 'first_name'):
+    for p in Profile.objects.exclude(pk__in=checked_profiles).exclude(is_active=False).order_by('last_name'):
       new = {
         'profile': p,
         'GEZINSNAAM': p.family.lastname,

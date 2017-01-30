@@ -35,11 +35,11 @@
           {% if request.user.is_superuser or perms.base.change_family  %}
             <a href="{% url 'admin:base_family_change' v.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
           {% endif %}
-          {{ v.lastname }}
+          {{ v.lastnamep }}
           {% if v.members_sorted %}
-            (
+            <small>(
               {% for w in v.members_sorted %} {{ w.first_name }}{% if not forloop.last %},{% endif %} {% endfor %}
-            )
+              )</small>
           {% endif %}
         </p>
       </div>

@@ -74,7 +74,7 @@ class Command(BaseCommand):
     else:
       limitdate = date.today() - relativedelta(years=14)
       print(">> Profielen ophalen met een geboortedatum eerder dan %s " % limitdate)
-      profiles = Profile.objects.filter(birthday__lte=limitdate).order_by('last_name', 'first_name')
+      profiles = Profile.objects.filter(birthday__lte=limitdate, is_active=True).order_by('last_name', 'first_name')
 
     for prof in collect_accountless(profiles):
       profname = "%s (%s)" % (prof.last_namep(), prof.first_name)
