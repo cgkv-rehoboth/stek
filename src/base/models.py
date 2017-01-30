@@ -15,7 +15,7 @@ from django.template import Context
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from itertools import chain
-from unidecode import unidecode
+import unidecode
 
 import os
 from agenda.models import *

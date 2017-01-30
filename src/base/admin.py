@@ -15,7 +15,7 @@ admin.site.register(Address, AddressAdmin)
 
 
 class FamilyAdmin(admin.ModelAdmin):
-  list_display = ['name_initials', 'size', 'address', 'is_active']
+  list_display = ['name_initials', 'size', 'address', 'is_active', 'gezinsnr']
   ordering = ['-is_active', 'lastname', 'prefix']
   search_fields = ['lastname']
 
@@ -56,7 +56,7 @@ admin.site.register(User, UserAdmin)
 
 # Create custom display for Profile
 class ProfileAdmin(admin.ModelAdmin):
-  list_display = ['name', 'address', 'phone', 'email', 'birthday', 'has_logged_in', 'is_active']
+  list_display = ['name', 'address', 'phone', 'email', 'birthday', 'has_logged_in', 'is_active', 'lidnr']
   ordering = ['-is_active', 'last_name', 'first_name']
   search_fields = ['first_name', 'last_name']
 
