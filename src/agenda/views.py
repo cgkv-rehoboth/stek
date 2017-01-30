@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.contrib.sites.shortcuts import get_current_site
 import random
 import logging
 
@@ -128,22 +129,25 @@ def timetable_undo_ruilen_teamleader(request, id):
     return redirect('timetable-detail-page', id=req_id)
 
   # Send notification email to the user
-  template = get_template('email/ruilverzoek_status.txt')
+  templateTXT = get_template('email/ruilverzoek_status.txt')
+  templateHTML = get_template('email/ruilverzoek_status.html')
 
   data = Context({
-    'name': req.profile.name(),
+    'resp': req.profile,
     'status': 'afgewezen of geannuleerd',
-    'timetable': req.timetableduty.timetable.title,
     'duty': req.timetableduty,
+    'protocol': 'https',
+    'domain': get_current_site(None).domain,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
-  message = template.render(data)
+  messageTXT = templateTXT.render(data)
+  messageHTML = templateHTML.render(data)
 
   from_email = settings.DEFAULT_FROM_EMAIL
 
-  to_emails = [ req.profile.email ]
-  send_mail("Ruilverzoek afgewezen", message, from_email, to_emails)
+  to_emails = [req.profile.email, ]
+  send_mail("Ruilverzoek afgewezen", messageTXT, from_email, to_emails, html_message=messageHTML)
 
   # delete the request
   req.delete()
@@ -154,31 +158,30 @@ def timetable_undo_ruilen_teamleader(request, id):
 @require_POST
 def timetable_ruilen(request, id):
   duty = TimetableDuty.objects.get(pk=id)
+  comments = request.POST.get("comments", "").strip()
 
   # Create record
   record = RuilRequest.objects.create(
     timetableduty=duty,
     profile=request.profile,
-    comments=request.POST.get("comments", "").strip()
+    comments=comments
   )
 
   # inform team leader
-  template = get_template('email/ruilverzoek.txt')
-
-  if request.POST.get("comments", ""):
-    comments = "Met de volgende redenen: \n %s" % request.POST.get("comments", "").strip()
-  else:
-    comments = "Er is geen reden gegeven."
+  templateTXT = get_template('email/ruilverzoek.txt')
+  templateHTML = get_template('email/ruilverzoek.html')
 
   data = Context({
-    'name': request.profile.name(),
-    'timetable': duty.timetable.title,
-    'duty': str(duty),
+    'resp': request.profile,
+    'duty': duty,
     'comments': comments,
+    'protocol': 'https',
+    'domain': get_current_site(None).domain,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
-  message = template.render(data)
+  messageTXT = templateTXT.render(data)
+  messageHTML = templateHTML.render(data)
 
   #from_email = request.profile.email
   #if from_email is None or len(from_email) == 0:
@@ -189,7 +192,7 @@ def timetable_ruilen(request, id):
                                   .exclude(profile__email=None)
                                   .values_list('profile__email') ]
 
-  send_mail("Ruilverzoek", message, from_email, to_emails)
+  send_mail("Ruilverzoek", messageTXT, from_email, to_emails, html_message=messageHTML)
 
   # Redirect to timetable-detail page to prevent re-submitting and to show the changes
   return redirect('timetable-detail-page', id=duty.timetable.id)
@@ -368,22 +371,25 @@ def timetable_ruilverzoek_accept(request, id):
 
   # OK, user is teamleader, let's continue:
   # Sent notification email  to the user
-  template = get_template('email/ruilverzoek_status.txt')
+  templateTXT = get_template('email/ruilverzoek_status.txt')
+  templateHTML = get_template('email/ruilverzoek_status.html')
 
   data = Context({
-    'name': ruil.profile.name(),
+    'resp': ruil.profile,
     'status': 'geaccepteerd',
-    'timetable': ruil.timetableduty.timetable.title,
-    'duty': str(ruil.timetableduty),
+    'duty': ruil.timetableduty,
+    'protocol': 'https',
+    'domain': get_current_site(None).domain,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
-  message = template.render(data)
+  messageTXT = templateTXT.render(data)
+  messageHTML = templateHTML.render(data)
 
   from_email = settings.DEFAULT_FROM_EMAIL
 
-  to_emails = [ ruil.profile.email ]
-  send_mail("Ruilverzoek geaccepteerd", message, from_email, to_emails)
+  to_emails = [ruil.profile.email, ]
+  send_mail("Ruilverzoek geaccepteerd", messageTXT, from_email, to_emails, html_message=messageHTML)
 
   # Get selected user
   resp_id = request.POST.get("responsible")[1:]

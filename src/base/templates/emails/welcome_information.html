@@ -1,39 +1,43 @@
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  </head>
-  <body>
-    <p>
-      Hallo {{ name }},
-    </p>
+{% extends "./emails/template.html" %}
+{% load staticfiles %}
+{% load utils %}
 
-    <p>
-      Je bent succesvol ingelogd op de website! Hoe nu verder? Waar kan ik mijn gegevens wijzigen? Waar kan ik de ledenlijst vinden? Dit zijn allemaal vragen die wij alvast voor je beantwoord hebben.
-    </p>
+{% block content %}
+  <p>
+    Hallo {{ name }},
+  </p>
 
-    <p>
-      Via <a href="{{ protocol }}://{{ domain }}/forum/forum/website-4/onderwerp/de-eerste-stappen-11/">deze link</a> kan je een handleiding van de website bekijken. Deze handleiding kan je ook op het forum vinden.
-    </p>
+  <p>
+    Je bent succesvol ingelogd op de website! Hoe nu verder? Waar kan ik mijn gegevens wijzigen? Waar kan ik de ledenlijst vinden? Dit zijn allemaal vragen die wij alvast voor je beantwoord hebben.
+  </p>
 
-    <p>
-      Mochten er toch nog zaken onduidelijk zijn, dan kan je <a href="{{ protocol }}://{{ domain }}/forum/forum/website-4/">hier</a> je vraag achterlaten. Wij hopen dan zo snel mogelijk je vraag te beantwoorden.
-    </p>
+  <p>
+    Via <a href="{{ protocol }}://{{ domain }}/forum/forum/website-4/onderwerp/de-eerste-stappen-11/" target="_blank" style="color: #009acd;">deze link</a> kan je een handleiding van de website bekijken. Deze handleiding kan je ook op het forum vinden.
+  </p>
 
-    <p>
-      Hartelijke groet,
-      <br />
-      <br />
-      Het website-team
-      <br/>
-      <a href="{{ protocol }}://{{ domain }}">www.rehobothkerkwoerden.nl</a>
-    </p>
+  <p>
+    Mochten er toch nog zaken onduidelijk zijn, dan kan je <a href="{{ protocol }}://{{ domain }}/forum/forum/website-4/" target="_blank" style="color: #009acd;">hier</a> je vraag achterlaten. Wij hopen dan zo snel mogelijk je vraag te beantwoorden.
+  </p>
 
-    <p>
-      PS: Als de link niet werkt, kopieer dan deze link naar je browser
-      <a href="{{ protocol }}://{{ domain }}/forum/forum/website-4/onderwerp/de-eerste-stappen-11/">
-        {{ protocol }}://{{ domain }}/forum/forum/website-4/onderwerp/de-eerste-stappen-11/
-      </a>
-    </p>
-  </body>
-</html>
+  <br/>
+
+  <p>
+    Hartelijke groet,
+    <br />
+    <br />
+    Het website-team
+    <br/>
+    <a href="{{ protocol }}://{{ domain }}" style="color: #009acd;">www.rehobothkerkwoerden.nl</a>
+  </p>
+
+  <br/>
+
+  <p>
+    PS: Als de link niet werkt, dan kan je zelf op het forum kijken onder het kopje 'Website'.
+  </p>
+{% endblock %}
+
+
+{% block footer %}
+  Dit is een automatisch gegenereerd bericht waarop je niet kan antwoorden.<br/>
+{% endblock %}

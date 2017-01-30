@@ -1,0 +1,59 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="nl" style="
+    margin: 0;
+    padding: 0;
+    ">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body style="
+    font-family: RobotoDraft, Helvetica Neue, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    ">
+  <div style="
+      margin: 0;
+      padding: 0;
+      /*border-top: 7px solid #1A3242;*/
+      border-top: 7px solid #009acd;
+      ">
+
+    <!-- header -->
+    <div style="
+        text-align: center;
+        padding: 10px 20px;
+        border-bottom: 1px solid #ececec;
+        ">
+      <a href="{{ protocol}}://{{ domain }}" style="text-decoration: none;" target="_blank">
+        <img src="{{ protocol}}://{{ domain }}{% static 'resources/images/logo-blauw-131.jpg' %}" style="
+          height: 110px;
+          "/>
+      </a>
+    </div>
+
+    <!-- content -->
+    <div style="
+        padding: 50px 20px;
+        font-size: 12pt;
+        line-height: 1.4;
+        ">
+      {% block content %}
+      {% endblock %}
+    </div>
+
+    <!-- footer -->
+    <div style="
+        border-top: 1px solid #a7a7a7;
+        padding: 10px 20px;
+        background-color: #f1f7fb;
+        font-size: 11pt;
+        color: #6290af;
+        ">
+      {% block footer %}
+      {% endblock %}
+    </div>
+  </div>
+  </body>
+</html>

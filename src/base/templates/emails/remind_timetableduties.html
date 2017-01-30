@@ -1,0 +1,32 @@
+{% extends "./emails/template.html" %}
+{% load staticfiles %}
+{% load utils %}
+
+{% block content %}
+  Beste {{ resp.name }},<br/>
+  <br/>
+  Voor {{ duty.event.startdatetime|date:"j F Y" }} sta je ingedeeld in het rooster '<a href="{{ protocol}}://{{ domain }}{% url 'timetable-detail-page' duty.timetable.pk %}" style="color: #009acd;" target="_blank">{{ duty.timetable.title }}</a>'
+  voor het volgende: <a href="{{ protocol}}://{{ domain }}{% url 'services-single' duty.event.pk %}" style="color: #009acd;" target="_blank">{{ event }}</a>.
+
+  {% if duty.comments %}
+    <br/>
+    <br/>
+    Hierbij is ook het volgende commentaar gegeven:
+    <div style="
+        white-space: pre-line;
+        font-style: italic;
+        line-height: 1.2;
+        padding-left: 14px;
+        margin-top: 6px;
+        ">{{ duty.comments }}
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block footer %}
+  Wil je hierover geen mails meer ontvangen? Afmelden kan op <a href="{{ protocol}}://{{ domain }}{% url 'teampage' duty.timetable.team.pk %}" style="color: #009acd;" target="_blank">deze pagina</a> via: 'Mijn instellingen'.<br/>
+  <br/>
+  Dit is een automatisch gegenereerd bericht waarop je niet kan antwoorden.<br/>
+  <small>Verzonden op {{ sendtime }}.</small>
+{% endblock %}

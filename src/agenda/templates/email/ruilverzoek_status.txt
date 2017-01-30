@@ -1,7 +1,10 @@
-Beste {{ name }},
+{% load staticfiles %}
+{% load utils %}
+
+Beste {{ resp.name }},
 
 U heeft voor de volgende taak een ruilverzoek ingediend:
-{{ timetable }}: {{ duty }}
+{{ duty.timetable.title }}: {{ duty }}
 
 Dit verzoek is {{ status }} door de roosteraar.
 

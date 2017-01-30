@@ -9,38 +9,32 @@ from django.contrib.sites.shortcuts import get_current_site
 
 
 def send_reminder_mail(duty, resp):
-  template = get_template('emails/remind_timetableduties.txt')
-
-  if duty.comments:
-    comments = "Hierbij is ook het volgende commentaar gegeven:\n\n%s\n" % duty.comments
-  else:
-    comments = ""
+  templateTXT = get_template('emails/remind_timetableduties.txt')
+  templateHTML = get_template('emails/remind_timetableduties.html')
 
   event = str(duty.event)
   if duty.responsible_family:
     event += " door familie %s" % str(duty.responsible_family.lastname)
 
   data = Context({
-    'name': resp.name(),
-    'date': duty.event.startdatetime.strftime("%d-%m-%Y"),
-    'timetable': duty.timetable,
-    'event': event,
-    'comments': comments,
-    'protocol': 'https',
-    'domain': get_current_site(None).domain,
-    'team_id': duty.timetable.team.pk,
-    'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
+    'resp'     : resp,
+    'duty'     : duty,
+    'event'    : event,
+    'protocol' : 'https',
+    'domain'   : get_current_site(None).domain,
+    'sendtime' : datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
   subject = "Herinnering aan %s" % duty.event
 
-  message = template.render(data)
+  messageTXT = templateTXT.render(data)
+  messageHTML = templateHTML.render(data)
 
   from_email = settings.DEFAULT_FROM_EMAIL
 
   to_emails = [resp.email, ]
 
-  send_mail(subject, message, from_email, to_emails)
+  send_mail(subject, messageTXT, from_email, to_emails, html_message=messageHTML)
 
 
 class Command(BaseCommand):
