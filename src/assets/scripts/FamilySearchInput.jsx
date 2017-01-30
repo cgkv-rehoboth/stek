@@ -85,7 +85,7 @@ export default class FamilySearchInput extends React.Component {
 
     this.setState({
       query: text,
-      items: <span><i className="fa fa-refresh fa-spin"></i> Gegevens ophalen</span>,
+      items: <span className="loading-data"><i className="fa fa-refresh fa-spin"></i> Gegevens ophalen</span>,
       openlist: true
     });
 
