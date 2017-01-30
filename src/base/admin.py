@@ -4,18 +4,20 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import *
 
 admin.site.register(Wijk)
-admin.site.register(Favorites)
 
 
 # Create custom display for Address
 class AddressAdmin(admin.ModelAdmin):
   list_display = ['street', 'zip', 'city', 'country', 'occupant']
+  search_fields = ['street', 'zip', 'city', 'country']
 
 admin.site.register(Address, AddressAdmin)
 
 
 class FamilyAdmin(admin.ModelAdmin):
   list_display = ['name_initials', 'size', 'address', 'is_active']
+  ordering = ['-is_active', 'lastname', 'prefix']
+  search_fields = ['lastname']
 
   def save_model(self, request, obj, form, change):
     args = {}
@@ -55,7 +57,14 @@ admin.site.register(User, UserAdmin)
 # Create custom display for Profile
 class ProfileAdmin(admin.ModelAdmin):
   list_display = ['name', 'address', 'phone', 'email', 'birthday', 'has_logged_in', 'is_active']
-  ordering = ['last_name', 'first_name']
+  ordering = ['-is_active', 'last_name', 'first_name']
   search_fields = ['first_name', 'last_name']
 
 admin.site.register(Profile, ProfileAdmin)
+
+
+# Create custom display for Profile
+class FavoritesAdmin(admin.ModelAdmin):
+  search_fields = ['owner', 'favorite']
+
+admin.site.register(Favorites, FavoritesAdmin)

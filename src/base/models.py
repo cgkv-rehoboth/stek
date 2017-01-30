@@ -386,3 +386,6 @@ class Favorites(models.Model):
 
   owner       = models.ForeignKey(Profile, related_name="favorites")
   favorite    = models.ForeignKey(Profile, related_name="favorited_by")
+
+  def __str__(self):
+    return "%s += %s" % (self.owner.name(), self.favorite.name())
