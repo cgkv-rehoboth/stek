@@ -1,0 +1,105 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section id="events-admin">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Events <small>{{ event.title }}</small></h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Gebeurtenis bewerken</h3>
+
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+
+          <!-- Form -->
+          <form class="form-horizontal" id="event-form" method="post" action="{% url 'events-admin-edit-save' event.pk %}">
+            {% csrf_token %}
+
+            <div class="row">
+              <!-- First event -->
+              <div class="col-sm-11 col-md-9 col-lg-7 events-form-event">
+                <div class="form-group">
+                  <label class="col-sm-3 control-label">Titel</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="title" class="form-control" placeholder="Een duidelijke titel" value="{{ event.title }}" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-3 control-label">Extra informatie</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="description" class="form-control" placeholder="Extra informatie welke weergeven moet worden" value="{{ event.description }}" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-3 control-label">Begintijd</label>
+                  <div class="col-sm-9 datetime-group">
+                    <input type="time" name="starttime" class="form-control" placeholder="Begintijd: 23:59" value="{{ event.startdatetime|date:'H:i' }}" required />
+                    <input type="text" name="startdate" class="form-control event-datepicker" value="{{ event.startdatetime|date:'d-m-Y' }}" placeholder="Formaat: 31-12-{{ event.startdatetime|date:'Y' }}" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-3 control-label">Eindtijd</label>
+                  <div class="col-sm-9 datetime-group">
+                    <input type="time" name="endtime" class="form-control" placeholder="Eindtijd: 23:59" value="{{ event.enddatetime|date:'H:i' }}" required />
+                    <input type="text" name="enddate" class="form-control event-datepicker" value="{{ event.enddatetime|date:'d-m-Y' }}" placeholder="Formaat: 31-12-{{ event.enddatetime|date:'Y' }}" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-3 control-label">Rooster</label>
+                  <div class="col-sm-9">
+                    <select name="timetable" required>
+                      <option value="-1">--- Selecteer een rooster ---</option>
+                      {% for table in timetables %}
+                        <option value="{{ table.pk }}" {% if table == event.timetable %}selected{% endif %}>{{ table.title }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="col-sm-offset-3 col-sm-9 checkbox">
+                    <label title="Andere roosters kunnen ook gebruik maken van dit event.">
+                      <input type="checkbox" name="incalendar" {% if event.incalendar %}checked{% endif %} />
+                      Zichtbaar voor andere roosters
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="form-group events-form-footer">
+                  <div class="col-sm-offset-3 col-sm-9">
+                    <a href="{% url 'events-admin' %}" class="btn btn-default black">Annuleren</a>
+                    <button type="submit" class="btn btn-default cyan">Opslaan</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% include "./confirmationmodal.html" %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.eventPage();
+  </script>
+{% endblock %}

@@ -589,3 +589,19 @@ window.profileMain = (pk, favorite) => {
     $("#profile-favorite")[0]
   );
 };
+
+window.eventPage = () => {
+  // Set datepicker for service date
+  $(".event-datepicker").datepicker({
+    changeMonth: true,
+    changeYear: true,
+  });
+
+  // Prevent enter from submitting the form
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+};
