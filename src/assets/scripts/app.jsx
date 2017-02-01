@@ -116,6 +116,15 @@ function decodeMail(str){
   return str.replace(/A/g, '@').replace(/D/g, '.').replace(/[A-Z]/g,'').substr(10);
 }
 
+/*
+  Pad number with zeros in front
+ */
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
 //
 // main functions for different pages
 //
@@ -604,4 +613,71 @@ window.eventPage = () => {
       return false;
     }
   });
+  
+  // Help with defining the dates, like containing the difference when startdate has changed
+  let diffdatetime = 60*60*1000; // One hour
+  
+  $('#event-form input[name="startdate"]').change(startdatetimechange);
+  $('#event-form input[name="starttime"]').change(startdatetimechange);
+  
+  $('#event-form input[name="enddate"]').change(enddatetimechange);
+  $('#event-form input[name="endtime"]').blur(enddatetimechange);
+  
+  // Help with defining the datetimes, like containing the difference when starttime has changed
+  function startdatetimechange(){
+    let starttime = $('#event-form input[name="starttime"]').val();
+    let startdate = $('#event-form input[name="startdate"]').val();
+    
+    // Convert to date object
+    starttime = starttime.split(':');
+    startdate = startdate.split('-');
+    let startdatetime = new Date(startdate[2], startdate[1]-1, startdate[0], starttime[0], starttime[1], 0, 0);
+    
+    // Get difference
+    let enddatetime = new Date(startdatetime.valueOf() + diffdatetime);
+    
+    // Show it
+    let enddate = pad(enddatetime.getDate(), 2) + "-" + pad(enddatetime.getMonth()+1, 2) + "-" + enddatetime.getFullYear();
+    let endtime = pad(enddatetime.getHours(), 2) + ":" + pad(enddatetime.getMinutes(), 2);
+    
+    $('#event-form input[name="enddate"]').val(enddate);
+    $('#event-form input[name="endtime"]').val(endtime);
+  }
+  
+  // Save new difference
+  function enddatetimechange(){
+    let starttime = $('#event-form input[name="starttime"]').val();
+    let endtime = $('#event-form input[name="endtime"]').val();
+    let startdate = $('#event-form input[name="startdate"]').val();
+    let enddate = $('#event-form input[name="enddate"]').val();
+    
+    // Convert to date object
+    starttime = starttime.split(':');
+    startdate = startdate.split('-');
+    let startdatetime = new Date(startdate[2], startdate[1]-1, startdate[0], starttime[0], starttime[1], 0, 0);
+    
+    endtime = endtime.split(':');
+    enddate = enddate.split('-');
+    let enddatetime = new Date(enddate[2], enddate[1]-1, enddate[0], endtime[0], endtime[1], 0, 0);
+    
+    // Get difference
+    diffdatetime = enddatetime.valueOf() - startdatetime.valueOf();
+    
+    // Check for valid difference
+    if (diffdatetime < 0) {
+      // Change the date
+      $('#event-form input[name="enddate"]').val(startdate.join('-'));
+  
+      // Check if we need to hange the time
+      if ((endtime[0]*60 + endtime[1]) < (starttime[0] * 60 + starttime[1])){
+        $('#event-form input[name="endtime"]').val(starttime.join(':'));
+        
+        // Set new difference to zero
+        diffdatetime = 0;
+      }else{
+        // Calculate new difference
+        enddatetimechange();
+      }
+    }
+  }
 };
