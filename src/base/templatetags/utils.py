@@ -42,3 +42,7 @@ def encodemailPlain(str):
     # Returns a plain string
     # Add key for identifing type in JS
     return 'zs39qpz9ti' + encodemail(str)
+
+@register.filter('isobject')
+def isobject(ob, str):
+    return hasattr(ob, str.lower())

@@ -88,7 +88,11 @@
                   <tr class="table-{{ rowday }} {% if duty.responsible == request.profile or duty.responsible_family == request.profile.family  %}current-user{% endif %}">
                     <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                     <td class="duty-title">
-                      <a href="{% url 'services-single' duty.event.id %}">{{ duty.event.title }}</a>
+                      {% if duty.event|isobject:"service" %}
+                        <a href="{% url 'services-single' duty.event.id %}">{{ duty.event.title }}</a>
+                      {% else %}
+                        <a href="{% url 'events-single' duty.event.id %}">{{ duty.event.title }}</a>
+                      {% endif %}
                     </td>
                     <td class="duty-responsible">
                       {% with duty.ruilrequest as ruilen %}

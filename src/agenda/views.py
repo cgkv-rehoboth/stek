@@ -228,6 +228,7 @@ def timetable_teamleader(request, id):
 
   # Get all future events
   events = Event.objects.filter(startdatetime__gte=datetime.today().date()) \
+    .filter(Q(incalendar=True) | Q(incalendar=False, timetable=table)) \
     .order_by("startdatetime", "enddatetime", "title")
 
   # set default selection to event without duty (belonging to this timetable)
@@ -535,6 +536,7 @@ def timetable_teamleader_duty_edit(request, id):
 
   # Get all future events
   events = Event.objects.filter(startdatetime__gte=datetime.today().date()) \
+    .filter(Q(incalendar=True) | Q(incalendar=False, timetable=duty.timetable)) \
     .order_by("startdatetime", "enddatetime", "title")
 
   # Get all teammembers
@@ -674,6 +676,7 @@ def services_admin_add(request):
     theme=request.POST.get("theme1", "").strip(),
     comments=request.POST.get("comments1", "").strip(),
     description=request.POST.get("description1", "").strip(),
+    incalendar=True,
   )
 
   if request.POST.get("secondservice", ""):
@@ -769,7 +772,7 @@ def services_admin_delete(request, id):
     return redirect('services-admin')
 
   # Delete all duties of this service
-  TimetableDuty.objects.filter(event=id).delete()
+  TimetableDuty.objects.filter(event__pk=id).delete()
 
   messages.success(request, "Dienst is verwijderd.")
 
@@ -1292,7 +1295,7 @@ def teampage_settings_save(request, id):
 
 
 @login_required
-@permission_required('agenda.add_service', raise_exception=True)
+@permission_required('agenda.add_event', raise_exception=True)
 def events_admin(request):
   # Get today
   startdatetime = datetime.today()
@@ -1302,19 +1305,22 @@ def events_admin(request):
   enddatetime = startdatetime + timedelta(hours=1)
 
   # Get teams the profile belongs to
-  memberships = TeamMember.objects \
-    .prefetch_related("team") \
-    .filter(Q(profile=request.profile) | Q(family=request.profile.family)) \
-    .filter(is_admin=True) \
-    .order_by('team__name')
+  if request.user.has_perm('agenda.add_timetable'):
+    timetables = Timetable.objects.all()
+  else:
+    memberships = TeamMember.objects \
+      .prefetch_related("team") \
+      .filter(Q(profile=request.profile) | Q(family=request.profile.family)) \
+      .filter(is_admin=True) \
+      .order_by('team__name')
 
-  teams = memberships.values_list('team', flat=True)
+    teams = memberships.values_list('team', flat=True)
 
-  # Remove double memberships (like profile AND family), filter on (i.)team
-  teams = uniqify(teams)
+    # Remove double memberships (like profile AND family), filter on (i.)team
+    teams = uniqify(teams)
 
-  # Get timetables
-  timetables = Timetable.objects.filter(team__in=teams)
+    # Get timetables
+    timetables = Timetable.objects.filter(team__in=teams)
 
   return render(request, 'events/admin.html', {
     'startdatetime': startdatetime,
@@ -1325,7 +1331,7 @@ def events_admin(request):
 
 @login_required
 @require_POST
-@permission_required('agenda.add_events', raise_exception=True)
+@permission_required('agenda.add_event', raise_exception=True)
 def events_admin_add(request):
   # Get datetimes
   startdatetime = "%s %s:00" % (str(request.POST.get("startdate")), str(request.POST.get("starttime")))
@@ -1360,7 +1366,7 @@ def events_admin_add(request):
 
 @login_required
 @require_POST
-@permission_required('agenda.change_events', raise_exception=True)
+@permission_required('agenda.change_event', raise_exception=True)
 def events_admin_edit_save(request, id):
   try:
     event = Event.objects.get(pk=id)
@@ -1399,7 +1405,7 @@ def events_admin_edit_save(request, id):
 
 
 @login_required
-@permission_required('agenda.change_events', raise_exception=True)
+@permission_required('agenda.change_event', raise_exception=True)
 def events_admin_edit(request, id):
   try:
     event = Event.objects.get(pk=id)
@@ -1429,8 +1435,8 @@ def events_admin_edit(request, id):
 
 
 @login_required
-@require_POST
-@permission_required('agenda.delete_events', raise_exception=True)
+#@require_POST
+@permission_required('agenda.delete_event', raise_exception=True)
 def events_admin_delete(request, id):
   try:
     Event.objects.get(pk=id).delete()
@@ -1439,11 +1445,24 @@ def events_admin_delete(request, id):
     return redirect('events-admin')
 
   # Delete all duties of this service
-  TimetableDuty.objects.filter(event=id).delete()
+  TimetableDuty.objects.filter(event__pk=id).delete()
 
   messages.success(request, "Event is verwijderd.")
 
   return redirect('events-admin')
+
+
+@login_required
+def events_single(request, id):
+  try:
+    event = Event.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Event bestaat niet.')
+    return redirect('dashboard')
+
+  return render(request, 'events/single.html', {
+    'event': event,
+  })
 
 
 urls = [
@@ -1511,6 +1530,7 @@ urls = [
 
   url(r'^roosters/diensten/$', services_page, name='services-page'),
   url(r'^roosters/diensten/(?P<id>\d+)/$', services_single, name='services-single'),
+  url(r'^roosters/events/(?P<id>\d+)/$', events_single, name='events-single'),
 
   url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/delete/$', services_files_admin_delete,
       name='services-files-admin-delete'),

@@ -72,7 +72,11 @@
                   <a href="{% url 'timetable-detail-page' ruil.timetableduty.timetable.id %}" class="black-url">{{ ruil.timetableduty.timetable.title }}</a>
                 </td>
                 <td class="duty-date">
-                  (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
+                  {% if ruil.timetableduty.event|isobject:"service" %}
+                    (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
+                  {% else %}
+                    (<a href="{% url 'events-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
+                  {% endif %}
                   {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
                 </td>
                 <td class="duty-title">
@@ -123,7 +127,11 @@
                   <a href="{% url 'timetable-detail-page' duty.timetable.id %}" class="black-url">{{ duty.timetable.title }}</a>
                 </td>
                 <td class="duty-title">
-                  <a href="{% url 'services-single' duty.event.id %}">{{ duty.event.title }}</a>
+                  {% if duty.event|isobject:"service" %}
+                    <a href="{% url 'services-single' duty.event.id %}">{{ duty.event.title }}</a>
+                  {% else %}
+                    <a href="{% url 'events-single' duty.event.id %}">{{ duty.event.title }}</a>
+                  {% endif %}
                 </td>
                 <td class="duty-date">{{ duty.event.startdatetime|date:"j F Y, G:i" }}u</td>
                 <td>
