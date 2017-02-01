@@ -121,20 +121,3 @@ export default function frontpageMain() {
   });
 
 };
-
-window.frontpageDiensten = () => {
-  // Service table
-  let searchServices = (query, page, reverseTime) => {
-    return api.services.list(query, page, reverseTime);
-  };
-
-  ReactDom.render(
-    <ServiceTable listFunc={searchServices} />,
-    $("#service-table")[0]
-  );
-
-  ReactDom.render(
-    <ServiceTable listFunc={searchServices} reverseTime={true} />,
-    $("#service-table-old")[0]
-  );
-}

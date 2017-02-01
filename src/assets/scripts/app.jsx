@@ -214,6 +214,23 @@ window.calendarMain = calendarMain;
 import frontpageMain from 'mains/frontpage';
 window.frontpageMain = frontpageMain;
 
+window.frontpageDiensten = () => {
+  // Service table
+  let searchServices = (query, page, reverseTime) => {
+    return api.services.list(query, page, reverseTime);
+  };
+
+  ReactDom.render(
+    <ServiceTable listFunc={searchServices} />,
+    $("#service-table")[0]
+  );
+
+  ReactDom.render(
+    <ServiceTable listFunc={searchServices} reverseTime={true} />,
+    $("#service-table-old")[0]
+  );
+};
+
 window.timetableTeamleader = () => {
   // Make responsible input form multiple/single input
   $("#switch-multi-user-select input").change(function(){
