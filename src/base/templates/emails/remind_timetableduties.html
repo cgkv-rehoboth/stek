@@ -6,7 +6,12 @@
   Beste {{ resp.name }},<br/>
   <br/>
   Voor {{ duty.event.startdatetime|date:"j F Y" }} sta je ingedeeld in het rooster '<a href="{{ protocol}}://{{ domain }}{% url 'timetable-detail-page' duty.timetable.pk %}" style="color: #009acd;" target="_blank">{{ duty.timetable.title }}</a>'
-  voor het volgende: <a href="{{ protocol}}://{{ domain }}{% url 'services-single' duty.event.pk %}" style="color: #009acd;" target="_blank">{{ event }}</a>.
+  voor het volgende:
+  {% if duty.event|isobject:"service" %}
+    <a href="{{ protocol}}://{{ domain }}{% url 'services-single' duty.event.pk %}" style="color: #009acd;" target="_blank">{{ event }}</a>.
+  {% else %}
+    <a href="{{ protocol}}://{{ domain }}{% url 'events-single' duty.event.pk %}" style="color: #009acd;" target="_blank">{{ event }}</a>.
+  {% endif %}
 
   {% if duty.comments %}
     <br/>
