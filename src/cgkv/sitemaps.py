@@ -13,6 +13,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
     def itemnames(self):
         return OrderedDict([
           ('index', 'Homepagina'),
+          ('diensten', 'Overzicht diensten'),
           ('kerktijden', 'Kerktijden'),
           ('kindercreche', 'Kindercrèche'),
           ('orgel', 'Orgel'),
