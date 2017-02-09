@@ -977,15 +977,15 @@ def teampage_control_edit_save(request, id):
   # Remove empty lines at the beginning/end
   remindermail = request.POST.get("remindermail", "")
   # Remove end
-  remindermail = re.sub('(<p>&nbsp;</p>[\n\r]*)*$', '', remindermail)
+  remindermail = re.sub('(<p>&nbsp;</p>[\n\r]*)*$', '', remindermail, flags=re.IGNORECASE)
   # Remove begin
-  remindermail = re.sub('^(<p>&nbsp;</p>[\n\r]*)*', '', remindermail)
+  remindermail = re.sub('^(<p>&nbsp;</p>[\n\r]*)*', '', remindermail, flags=re.IGNORECASE)
 
   description = request.POST.get("description", "").strip()
   # Remove end
-  description = re.sub('(<p>&nbsp;</p>[\n\r]*)*$', '', description)
+  description = re.sub('(<p>&nbsp;</p>[\n\r]*)*$', '', description, flags=re.IGNORECASE)
   # Remove begin
-  description = re.sub('^(<p>&nbsp;</p>[\n\r]*)*', '', description)
+  description = re.sub('^(<p>&nbsp;</p>[\n\r]*)*', '', description, flags=re.IGNORECASE)
 
   team.name = request.POST.get("name", "").strip()
   team.email = email

@@ -62,9 +62,16 @@
 
           <h3>Persoonlijk</h3>
           <div class="form-group">
-            <label class="col-sm-3">Voornaam</label>
+            <label class="col-sm-3">Roepnaam</label>
             <div class="col-sm-9">
               <input type="text" name="first_name" value="{{ p.first_name }}" required class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3">Voornamen<br/>
+              <small>(niet zichtbaar voor anderen)</small></label>
+            <div class="col-sm-9">
+              <input type="text" name="voornamen" value="{{ p.voornamen }}" required class="form-control" />
             </div>
           </div>
           <div class="form-group">
@@ -101,6 +108,17 @@
               <input type="email" name="email" value="{{ p.email }}" class="form-control" />
             </div>
           </div>
+          <div class="form-group">
+            <label class="col-sm-3">Huwelijksdatum<br/>
+              <small>(niet zichtbaar voor anderen)</small></label>
+            <div class="col-sm-9">
+              {% comment %}
+                <input type="date" name="huwdatum" value="{{ p.huwdatum|date:"Y-m-d" }}" placeholder="bijv. 23-03-1983" class="form-control" />
+              {% endcomment %}
+
+              <input type="text" name="huwdatum" value="{{ p.huwdatum|date:"d-m-Y" }}" placeholder="bijv. 23-03-1983" class="form-control" id="huwdatum-datepicker"/>
+            </div>
+          </div>
 
           <br/>
 
@@ -111,6 +129,7 @@
             <label class="col-sm-3">Telefoon</label>
             <div class="col-sm-9">
               <input type="phone" name="phone-privat" value="{{ p.phone }}" placeholder="bijv. 0348-411830" class="form-control" />
+              <div class="error"></div>
             </div>
           </div>
 

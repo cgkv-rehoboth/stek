@@ -116,6 +116,31 @@ function decodeMail(str){
   return str.replace(/A/g, '@').replace(/D/g, '.').replace(/[A-Z]/g,'').substr(10);
 }
 
+function validatePhone(val, errorelement) {
+  val = val.trim();
+  // Replace +31 with 0
+  val = val.replace(/^(00|\+)31/, '0');
+  // Remove non digit chars
+  val = val.replace(/[^\+0-9]/g, '');
+  
+  // Add dash
+  if (val.substring(0, 2) == '06') {
+    val = val.replace(/^(.{2})/, '$1-');
+  }else{
+    val = val.replace(/^(.{4})/, '$1-');
+  }
+  
+  if (errorelement){
+    if (val.length != 11) {
+      errorelement.text('Het telefoonnummer moet uit 10 cijfers bestaan.');
+    }else {
+      errorelement.text('');
+    }
+  }
+  
+  return val;
+}
+
 //
 // main functions for different pages
 //
@@ -392,7 +417,23 @@ window.profileEdit = (address) => {
     maxDate: 0,
     defaultDate: "-31y",
   });
-
+  
+  // Set datepicker for huwdatum
+  $("#huwdatum-datepicker").datepicker({
+    changeMonth: true,
+    changeYear: true,
+    minDate: "-90Y",
+    maxDate: 0,
+    defaultDate: "-10y",
+  });
+  
+  // Format phonenumbers
+  $("input[type='phone']").on('change', function(){
+    let val = $(this).val();
+    val = validatePhone(val, $(this).closest('div').find('.error'));
+    
+    $(this).val(val);
+  });
 
   /*
     Profile picture

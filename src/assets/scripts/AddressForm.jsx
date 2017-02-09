@@ -81,6 +81,7 @@ export default class AddressForm extends React.Component {
       address: address,
       verhuizing: false,
       newzip: (address.zip == ''),  // Check if zip already is filled in
+      phoneerror: '',
     };
   }
 
@@ -163,7 +164,33 @@ export default class AddressForm extends React.Component {
 
   onPhoneBlur(e){
     // Remove all whitespaces (because they're unnecessary)
-    e.target.value = e.target.value.replace(/\s/g, "");
+    //e.target.value = e.target.value.replace(/\s/g, "");
+    let val = e.target.value.trim();
+    
+    // Replace +31 with 0
+    val = val.replace(/^(00|\+)31/, '0');
+    // Remove non digit chars
+    val = val.replace(/[^\+0-9]/g, '');
+    
+    // Add dash
+    if (val.substring(0, 2) == '06') {
+      val = val.replace(/^(.{2})/, '$1-');
+    }else{
+      val = val.replace(/^(.{4})/, '$1-');
+    }
+  
+    if (val.length != 11) {
+      this.setState({
+        phoneerror: 'Het telefoonnummer moet uit 10 cijfers bestaan.',
+      });
+    }else {
+      this.setState({
+        phoneerror: '',
+      });
+    }
+  
+    e.target.value = val;
+    
     this.handleChange(e);
   }
 
@@ -301,6 +328,7 @@ export default class AddressForm extends React.Component {
             name="phone"
             type="phone"
             className="form-control" />
+          <div className="error">{this.state.phoneerror}</div>
         </div>
       </div>
 

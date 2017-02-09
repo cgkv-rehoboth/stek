@@ -25,6 +25,7 @@ import json
 import re
 import sys
 import logging
+from django.core.validators import *
 
 from .forms import LoginForm, UploadImageForm
 
@@ -61,6 +62,20 @@ def get_delimiter(file):
   else:
     return ','
 
+
+def validate_phone(phone):
+  # Replace +31 with 0
+  phone = re.sub('^(00\+)31', '0', phone.strip())
+  # Remove non digit chars
+  phone = re.sub('[^\+0-9]', '', phone)
+
+  # Add dash
+  if phone[:2] == '06':
+    phone = re.sub('^(.{2})', '\\1-', phone)
+  else:
+    phone = re.sub('^(.{4})', '\\1-', phone)
+
+  return phone
 
 @login_required
 def profile_list(request):
@@ -228,19 +243,59 @@ def profile_detail_edit_save(request, pk):
       messages.success(request, "Adresgegevens opgeslagen.")
 
     # ... and something went wrong
-    messages.error(request, "De geboortedatum klopt niet volgens de syntax 'dd-mm-jjjj', zoals 31 december 1999 geschreven wordt als '31-12-1999'.")
+    messages.error(request,
+                   "De geboortedatum klopt niet volgens de syntax 'dd-mm-jjjj', zoals 31 december 1999 geschreven wordt als '31-12-1999'.")
     return redirect('profile-detail-page', pk=pk)
 
-  # Save rest of the profile stuff
-  profile.first_name = request.POST.get("first_name", "").replace('"', '').strip()
-  profile.initials = request.POST.get("initials", "").strip().replace(" ", "")
-  profile.prefix = request.POST.get("prefix", "").strip()
-  profile.last_name = request.POST.get("last_name", "").replace('"', '').strip()
-  profile.birthday = bday
-  profile.email = request.POST.get("email", "").lower().strip()
-  profile.phone = request.POST.get("phone-privat", "").strip()
+  # parse huwdatum
+  huwdatum = request.POST.get("huwdatum", "").strip()
+  print(huwdatum)
+  if huwdatum:
+    try:
+      huwdatum = datetime.strptime(huwdatum, "%d-%m-%Y")
+    except ValueError as e:
+      # Wrong validation
 
-  # todo: add profile validation
+      # Tell them something went good ...
+      if request.POST.get("form-loaded", False):
+        messages.success(request, "Adresgegevens opgeslagen.")
+
+      # ... and something went wrong
+      messages.error(request,
+                     "De huwelijksdatum klopt niet volgens de syntax 'dd-mm-jjjj', zoals 31 december 1999 geschreven wordt als '31-12-1999'.")
+      return redirect('profile-detail-page', pk=pk)
+  else:
+    huwdatum = None
+
+  first_name = request.POST.get("first_name", "").replace('"', '').strip()
+  voornamen = request.POST.get("voornamen", "").replace('"', '').strip()
+  last_name = request.POST.get("last_name", "").replace('"', '').strip()
+  initials = request.POST.get("initials", "").strip().replace(" ", "")
+  prefix = request.POST.get("prefix", "").strip()
+
+  # Validate email
+  email = request.POST.get("email", "").lower().strip()
+  try:
+    validate_email(email)
+  except ValidationError as e:
+    messages.error(request, e.message)
+    return redirect('profile-detail-page', pk=pk)
+
+  # Validate phone
+  phone = validate_phone(request.POST.get("phone-privat", ""))
+  if len(phone) != 11:
+    messages.warning(request, "Het telefoonnummer moet uit 10 cijfers bestaan. Herstel deze fout aub.")
+
+  # Save rest of the profile stuff
+  profile.first_name = first_name
+  profile.voornamen = voornamen
+  profile.initials = initials
+  profile.prefix = prefix
+  profile.last_name = last_name
+  profile.birthday = bday
+  profile.huwdatum = huwdatum
+  profile.email = email
+  profile.phone = phone
 
   profile.save()
 
