@@ -97,3 +97,38 @@
   .profile-age
     margin-left: 8px
     font-size: 75%
+
+  .inactive-profile
+    margin-top: 90px
+
+.delete-profile
+  text-align: center
+  position: absolute
+  bottom: 0
+  width: 100%
+  padding: 8px
+
+  span
+    cursor: pointer
+    font-size: 70%
+
+    &.delete-profile-options
+      color: #9c9c9c
+      transition: 0.3s all
+
+      & .delete-profile-shadow
+        position: absolute
+        width: 70px
+        transition: 0.4s all
+
+      &:hover
+        color: #656565
+
+        .delete-profile-shadow
+          box-shadow: 0 66px 90px 18px #7d7d7d
+
+    &.delete-profile-delete
+      display: none
+
+      a
+        color: #d70000

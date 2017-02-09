@@ -185,37 +185,55 @@ class Profile(TimestampedModel, models.Model):
     super().save(*args, **kwargs)
 
   def best_address(self):
-    if self.address:
+    if self.address or not self.is_active:
       return self.address
     else:
       return self.family.address
 
   def name(self):
-    return "%s %s" % (self.first_name, self.last_namef())
+    if self.is_active:
+      return "%s %s" % (self.first_name, self.last_namef())
+    else:
+      return "Verwijderd profiel"
 
   def namei(self):
-    return "%s %s" % (self.initials, self.last_namef())
+    if self.is_active:
+      return "%s %s" % (self.initials, self.last_namef())
+    else:
+      return "Verwijderd profiel"
 
   def first_namei(self):
-    return "%s, %s" % (self.first_name, self.initials)
+    if self.is_active:
+      return "%s, %s" % (self.first_name, self.initials)
+    else:
+      return "Verwijderd profiel"
 
   def last_namef(self):
-    if self.prefix == "":
-      return self.last_name
+    if self.is_active:
+      if self.prefix == "":
+        return self.last_name
+      else:
+        return "%s %s" % (self.prefix, self.last_name)
     else:
-      return "%s %s" % (self.prefix, self.last_name)
+      return "Verwijderd profiel"
 
   def last_namep(self):
-    if self.prefix == "":
-      return self.last_name
+    if self.is_active:
+      if self.prefix == "":
+        return self.last_name
+      else:
+        return "%s, %s" % (self.last_name, self.prefix)
     else:
-      return "%s, %s" % (self.last_name, self.prefix)
+      return "Verwijderd profiel"
 
   def is_favorite_for(self, profile):
     return self.favorited_by.filter(owner=profile).exists()
 
   def __str__(self):
-    return "Profiel van %s" % self.name()
+    if self.is_active:
+      return "Profiel van %s" % self.name()
+    else:
+      return "Verwijderd profiel"
 
   def teamleader_of(self, team):
     # Check if user of users family is teamleader of this timetable's team

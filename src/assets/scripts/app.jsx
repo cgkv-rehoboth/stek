@@ -646,4 +646,9 @@ window.profileMain = (pk, favorite) => {
     <FavStar pk={pk} favorite={favorite}/>,
     $("#profile-favorite")[0]
   );
+  
+  $(".delete-profile-options").click(function(){
+    $(this).hide();
+    $(".delete-profile-delete").show();
+  });
 };

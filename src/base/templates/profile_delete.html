@@ -1,0 +1,51 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+
+{% block content %}
+
+  <section class="container" id="profile">
+    <div class="row">
+      <div class="col-sm-12">
+        <h2>Leden <small>Verwijderen</small></h2>
+      </div>
+      <div class="col-sm-12">
+        <a href="{% url 'profile-detail-page' p.pk %}" class="backlink">< Terug naar de profielpagina</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+
+        {% include './messages.html' %}
+
+        <h1>
+          Weet je zeker dat je het profiel van <strong>{{ p.name }}</strong> wilt verwijderen?
+        </h1>
+        <p>
+          Dit houdt in dat alle profielgegevens, taken, teamlidmaatschappen, etc. verwijderd zullen worden.
+        </p>
+
+        <br/>
+        <br/>
+
+        <form method="post" action="{% url 'profile-detail-delete-confirm' p.pk %}">
+          {% csrf_token %}
+
+          <center>
+            <a href="{% url 'profile-detail-page' p.pk %}" class="btn btn-default black">Annuleren</a>
+            <button type="submit" class="btn btn-default cyan">
+              Verwijderen
+            </button>
+          </center>
+        </form>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block scripts %}
+  <script>window.profileMain({{ p.pk }}, {{ is_my_favorite|lower }});</script>
+{% endblock %}

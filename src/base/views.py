@@ -26,13 +26,15 @@ import re
 import sys
 import logging
 from django.core.validators import *
+from django.db import IntegrityError
+from django.db.utils import OperationalError
 
 from .forms import LoginForm, UploadImageForm
 
+# Import models
 from agenda.models import *
 from base.models import *
-
-from machina.apps.forum_member.models import *
+from machina.apps.forum_conversation.models import *
 
 
 def uniqify(seq, idfun=None):
@@ -133,7 +135,11 @@ def profile_detail(request, pk=None):
   if (pk==None):
     pk = request.profile.pk
 
-  profiel = Profile.objects.get(pk=pk)
+  try:
+    profiel = Profile.objects.get(pk=pk)
+  except ObjectDoesNotExist:
+    return render(request, 'profile.html')
+
   memberships = TeamMember.objects\
                           .prefetch_related("team")\
                           .filter(Q(profile=profiel)|Q(family=profiel.family))\
@@ -155,6 +161,122 @@ def profile_detail(request, pk=None):
     'googlemaps': googlemaps,
     'memberships': memberships
   })
+
+
+@login_required
+@permission_required('base.delete_profile', raise_exception=True)
+@permission_required('auth.delete_user', raise_exception=True)
+def profile_detail_delete(request, pk=None):
+  try:
+    profile = Profile.objects.get(pk=pk)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Profiel bestaat niet.')
+    return redirect('profile_list')
+
+  return render(request, 'profile_delete.html', {
+    'p': profile,
+  })
+
+
+@login_required
+@require_POST
+@permission_required('base.delete_profile', raise_exception=True)
+@permission_required('auth.delete_user', raise_exception=True)
+def profile_detail_delete_confirm(request, pk):
+  try:
+    profile = Profile.objects.get(pk=pk)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Profiel bestaat niet.')
+    return redirect('profile_list')
+
+  user = profile.user
+  verwijderd_user = User.objects.get(username='verwijderd_profiel')
+
+  ## Remove profile info or replace it
+  # FORUM
+  # Replace forum stuff owner
+  for v in Post.objects.filter(poster=user):
+    v.poster = verwijderd_user
+    v.save()
+
+  for v in Post.objects.filter(updated_by=user):
+    v.updated_by = verwijderd_user
+    v.save()
+
+  for v in Topic.objects.filter(poster=user):
+    v.poster = verwijderd_user
+    v.save()
+
+  if user:
+    for v in user.poll_votes.all():
+      v.voter = verwijderd_user
+      v.save()
+
+  # PROFILE
+  profile.user = None
+
+  profile.address = None
+  profile.phone = ""
+  #profile.first_name = ""
+  #profile.initials = None
+  #profile.last_name = ""
+  #profile.prefix = None
+  profile.email = None
+  profile.birthday = None
+  profile.family = None
+  profile.has_logged_in = None
+
+  profile.voornamen = None
+  profile.geslacht = None
+  profile.soortlid = None
+  profile.burgerstaat = None
+  profile.doopdatum = None
+  profile.belijdenisdatum = None
+  profile.huwdatum = None
+  profile.overlijdensdatum = None
+  profile.gvolgorde = None
+  profile.titel = None
+  profile.is_active = False
+
+  ## Save it
+  #profile.save()
+
+  ## Remove everything
+  # FORUM
+  try:
+    if (user and user.forum_profile):
+      user.forum_profile.delete()
+      #user.forum_profile.posts_count = 0
+      #user.forum_profile.avatar = None
+      #user.forum_profile.save()
+
+      try:
+        user.topic_subscriptions.all().delete()
+      except OperationalError as e:
+        print(e)
+
+      user.topic_tracks.all().delete()
+      user.forum_tracks.all().delete()
+  except ObjectDoesNotExist:
+    pass
+
+  # MAIN
+  profile.photo.delete()
+  profile.save()
+
+  if user:
+    user.delete()
+
+  # AGENDA
+  profile.duties.all().delete()
+  profile.team_membership.all().delete()
+  profile.ruilen.all().delete()
+  profile.favorites.all().delete()
+  profile.favorited_by.all().delete()
+
+  messages.success(request, 'Profiel verwijderd.')
+
+  return redirect('profile-detail-page', pk=pk)
 
 
 @login_required
@@ -322,10 +444,9 @@ def profile_pic_edit_save(request, pk):
     # Save profile pic (avatar) for the forum profile
     if profile.user:
       try:
-        fp = ForumProfile.objects.get(user_id=profile.user.pk)
-        if(fp):
-          fp.avatar = profile.photo
-          fp.save()
+        if (profile.user.forum_profile):
+          profile.user.forum_profile.avatar = profile.photo
+          profile.user.forum_profile.save()
       except ObjectDoesNotExist:
         pass
 
@@ -1213,6 +1334,8 @@ urls = [
   url(r'^profiel/(?P<pk>\d+)/foto/delete/$', profile_pic_delete, name='profile-pic-delete'),
   url(r'^profiel/(?P<pk>\d+)/edit/save/$', profile_detail_edit_save, name='profile-detail-page-edit-save'),
   url(r'^profiel/(?P<pk>\d+)/edit/$', profile_detail_edit, name='profile-detail-page-edit'),
+  url(r'^profiel/(?P<pk>\d+)/delete/confirm/$', profile_detail_delete_confirm, name='profile-detail-delete-confirm'),
+  url(r'^profiel/(?P<pk>\d+)/delete/$', profile_detail_delete, name='profile-detail-delete'),
   url(r'^profiel/(?P<pk>\d+)/$', profile_detail, name='profile-detail-page'),
 
   # dashboard

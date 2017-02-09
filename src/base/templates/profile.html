@@ -4,142 +4,164 @@
 {% load utils %}
 
 {% block content %}
-  <section class="container" id="profile">
+  {% if not p.is_active or not p %}
 
-    {% if not p.is_active %}
-    <div class="top-announcement">
-      <div>
-        <center>Dit profiel is geen lid meer en mogelijk verouderd.</center>
-      </div>
-    </div>
-    {% endif %}
+    <section class="container" id="profile">
+      <div class="inactive-profile">
+        <center><h1>Dit profiel bestaat niet (meer).</h1></center>
 
-    <div class="row">
-      <div class="col-md-4">
-      </div>
-      <div class="col-md-8 ">
-        <h1>
-          {% if p == request.profile or p.family == request.profile.family %}
-            <a href="{% url 'profile-detail-page-edit' p.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
-          {% elif request.user.is_superuser or perms.base.change_profile %}
-            <a href="{% url 'admin:base_profile_change' p.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
-          {% endif %}
-          {{ p.name }}
-
-          <div id="profile-favorite"></div>
-        </h1>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4">
-        {% if p.photo %}
-          <div class="profile-pic-container">
-            <img class="profile-pic" src="{{ p.photo.url }}" />
-          </div>
-        {% endif %}
-      </div>
-      <div class="col-md-8">
 
         {% include './messages.html' %}
+      </div>
+    </section>
 
-        <h3>Persoonlijk</h3>
-        <table class="table table-bordered">
-          <tbody>
-            <tr>
-              <th>Naam</th>
-              <td>
-                {{ p.namei }}
-                ({{ p.first_name }})
-                <a href="{% url 'family-detail-page' p.family.pk %}" class="make-contact-icon" title="Bekijk de familie"><i class="fa fa-users"></i></a>
-              </td>
-            </tr>
-            <tr>
-              <th>Geboortedatum</th>
-              <td>{{ p.birthday }} <span class="profile-age">({{ p.age }} jaar)</span></td>
-            </tr>
-            {% if p.email %}
-              <tr>
-                <th>E-mail</th>
-                <td>
-                  {{ p.email }}
-                  <a href="mailto:{{ p.email }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
-                </td>
-              </tr>
+  {% else %}
+
+    <section class="container" id="profile">
+      <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-8 ">
+          <h1>
+            {% if p == request.profile or p.family == request.profile.family %}
+              <a href="{% url 'profile-detail-page-edit' p.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
+            {% elif request.user.is_superuser or perms.base.change_profile %}
+              <a href="{% url 'admin:base_profile_change' p.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
             {% endif %}
-          </tbody>
-        </table>
+            {{ p.name }}
 
-        <br/>
+            <div id="profile-favorite"></div>
+          </h1>
+        </div>
+      </div>
 
-        <h3>Contact</h3>
-        <table class="table table-bordered">
-          <tbody>
-            {% if p.best_address %}
-              <tr>
-                <th>Adres</th>
-                <td>
-                  {{ p.best_address }}
-                  <a href="{{ googlemaps }}" target="_blank" class="make-contact-icon" title="Routebeschrijving"><i class="fa fa-map-marker" aria-hidden="true"></i></a><br/>
-                  {% if p.best_address.wijk.id %}
-                    <span class="wijk">Wijk {{ p.best_address.wijk.id }} ({{ p.best_address.wijk.naam }})</span>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endif %}
-            {% if p.best_address.phone %}
-              <tr>
-                <th>Huistelefoon</th>
-                <td>
-                  {{ p.best_address.phone}}
-                  <a href="tel:{{ p.best_address.phone }}" class="make-contact-icon" title="Bel {{ p.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
-                </td>
-              </tr>
-            {% endif %}
-            {% if p.phone %}
-              <tr>
-                <th>Telefoon</th>
-                <td>
-                  {{ p.phone}}
-                  <a href="tel:{{ p.phone }}" class="make-contact-icon" title="Bel {{ p.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
-                </td>
-              </tr>
-            {% endif %}
-          </tbody>
-        </table>
+      <div class="row">
+        <div class="col-md-4">
+          {% if p.photo %}
+            <div class="profile-pic-container">
+              <img class="profile-pic" src="{{ p.photo.url }}" />
+            </div>
+          {% endif %}
+        </div>
 
-        <br/>
+        <div class="col-md-8">
 
-        {% if memberships|length != 0 %}
-          <h3>Teams</h3>
-          <ul>
-            {% for m in memberships %}
-              <li><a href="{% url 'teampage' m.team.pk %}">{{ m.team.name }}</a></li>
-            {% endfor %}
-          </ul>
-          {% comment %}
+          {% include './messages.html' %}
+
+          <h3>Persoonlijk</h3>
           <table class="table table-bordered">
-            <thead>
-              <th>Team</th>
-              <th>Rol</th>
-            </thead>
             <tbody>
-              {% for m in memberships %}
+              <tr>
+                <th>Naam</th>
+                <td>
+                  {{ p.namei }}
+                  ({{ p.first_name }})
+                  <a href="{% url 'family-detail-page' p.family.pk %}" class="make-contact-icon" title="Bekijk de familie"><i class="fa fa-users"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <th>Geboortedatum</th>
+                <td>{{ p.birthday }} <span class="profile-age">({{ p.age }} jaar)</span></td>
+              </tr>
+              {% if p.email %}
                 <tr>
+                  <th>E-mail</th>
                   <td>
-                    <a href="{% url 'teampage' m.team.pk %}">{{ m.team.name }}</td>
-                  <td>{{ m.get_role_display }}</td>
+                    {{ p.email }}
+                    <a href="mailto:{{ p.email }}" class="make-contact-icon" title="Verstuur een e-mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+                  </td>
                 </tr>
-              {% endfor %}
+              {% endif %}
             </tbody>
           </table>
-          {% endcomment  %}
-        {% endif %}
-        <br/>
-        <br/>
+
+          <br/>
+
+          <h3>Contact</h3>
+          <table class="table table-bordered">
+            <tbody>
+              {% if p.best_address %}
+                <tr>
+                  <th>Adres</th>
+                  <td>
+                    {{ p.best_address }}
+                    <a href="{{ googlemaps }}" target="_blank" class="make-contact-icon" title="Routebeschrijving"><i class="fa fa-map-marker" aria-hidden="true"></i></a><br/>
+                    {% if p.best_address.wijk.id %}
+                      <span class="wijk">Wijk {{ p.best_address.wijk.id }} ({{ p.best_address.wijk.naam }})</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endif %}
+              {% if p.best_address.phone %}
+                <tr>
+                  <th>Huistelefoon</th>
+                  <td>
+                    {{ p.best_address.phone}}
+                    <a href="tel:{{ p.best_address.phone }}" class="make-contact-icon" title="Bel {{ p.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
+                  </td>
+                </tr>
+              {% endif %}
+              {% if p.phone %}
+                <tr>
+                  <th>Telefoon</th>
+                  <td>
+                    {{ p.phone}}
+                    <a href="tel:{{ p.phone }}" class="make-contact-icon" title="Bel {{ p.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+
+          <br/>
+
+          {% if memberships|length != 0 %}
+            <h3>Teams</h3>
+            <ul>
+              {% for m in memberships %}
+                <li><a href="{% url 'teampage' m.team.pk %}">{{ m.team.name }}</a></li>
+              {% endfor %}
+            </ul>
+            {% comment %}
+            <table class="table table-bordered">
+              <thead>
+                <th>Team</th>
+                <th>Rol</th>
+              </thead>
+              <tbody>
+                {% for m in memberships %}
+                  <tr>
+                    <td>
+                      <a href="{% url 'teampage' m.team.pk %}">{{ m.team.name }}</td>
+                    <td>{{ m.get_role_display }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endcomment  %}
+          {% endif %}
+          <br/>
+          <br/>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    {% if request.user.is_superuser or perms.base.delete_profile and perms.auth.delete_user %}
+      <br/>
+      <div class="delete-profile">
+        <span class="delete-profile-options">
+          <span class="delete-profile-shadow"></span>
+          beheeropties
+        </span>
+        <span class="delete-profile-delete">
+          <a href="{% url 'profile-detail-delete' p.pk %}" class="delete-profile-delete" title="Profiel verwijderen">Verwijder profiel</a>
+        </span>
+
+      </div>
+    {% endif %}
+
+  {% endif %}
+
 {% endblock %}
 
 {% block scripts %}

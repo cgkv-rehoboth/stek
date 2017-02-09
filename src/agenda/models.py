@@ -22,7 +22,7 @@ class ActiveManager(models.Manager):
 class Timetable(TimestampedModel, LiveModel, models.Model):
 
   title       = models.CharField(max_length=255)
-  owner       = models.ForeignKey(Profile)
+  owner       = models.ForeignKey(Profile, related_name="timetables")
   description = models.TextField(blank=True, null=True)
   team        = models.ForeignKey("Team", related_name="timetables", blank=True, null=True)
   incalendar  = models.BooleanField(default=True)
