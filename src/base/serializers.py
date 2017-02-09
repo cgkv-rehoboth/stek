@@ -57,7 +57,7 @@ class FamilyProfileSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Profile
-    fields = ('id', 'first_name', 'initials', 'role_in_family')
+    fields = ('id', 'first_name', 'initials', 'last_name', 'prefix', 'gvolgorde')
 
 class FamilySerializer(serializers.ModelSerializer):
   address = AddressSerializer()
@@ -65,7 +65,7 @@ class FamilySerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Family
-    fields = ('id', 'lastname', 'photo', 'address', 'members', 'name_initials')
+    fields = ('id', 'lastname', 'prefix', 'photo', 'address', 'members', 'name_initials')
 
 class UserSerializer(serializers.ModelSerializer):
 

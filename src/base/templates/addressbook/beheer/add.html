@@ -159,9 +159,16 @@
                         <td>{{ p.phone }}</td>
                       </tr>
                       <tr>
-                        <th>Gezinsrol</th>
-                        <td title="Gezinsvolgorde: {{ p.gvolgorde }}">
-                          {{ p.get_role_in_family_display }}
+                        <th>Gezinsvolgorde</th>
+                        <td>
+                          {{ p.gvolgorde }}
+                          {% if gvolgorde == 1 %}
+                            (gezinshoofd)
+                          {% elif gvolgorde == 2 %}
+                            (partner gezinshoofd)
+                          {% else %}
+                           (kind)
+                          {% endif %}
                         </td>
                       </tr>
                       <tr>

@@ -85,18 +85,6 @@ def user_profile_pic(profile, filename):
 
 class Profile(TimestampedModel, models.Model):
 
-  DAD = 'DAD'
-  MUM = 'MUM'
-  KID = 'KID'
-  INDEPENDENT_KID = 'IKI'
-
-  ROLE_CHOICES = (
-    (DAD, 'Vader'),
-    (MUM, 'Moeder'),
-    (KID, 'Kind'),
-    (INDEPENDENT_KID, 'Onafhankelijk kind'),
-  )
-
   user        = models.OneToOneField(User, null=True, blank=True, related_name="profile")
   address     = models.ForeignKey(Address, null=True, blank=True, related_name="profile")
   phone       = models.CharField(max_length=15, blank=True)
@@ -108,7 +96,6 @@ class Profile(TimestampedModel, models.Model):
   birthday    = models.DateField(null=True)
   photo       = models.ImageField(upload_to=user_profile_pic, null=True, blank=True)
   family      = models.ForeignKey("Family", null=True, related_name='members')
-  role_in_family = models.CharField(max_length=3, choices=ROLE_CHOICES, default=KID, null=True)
   has_logged_in  = models.NullBooleanField(null=True, default=False)
 
   # Extra
@@ -280,14 +267,17 @@ class Family(TimestampedModel, models.Model):
   def __str__(self):
     return "Familie %s" % self.name_initials()
 
-  def dads(self):
-    return self.members.filter(role_in_family='DAD').order_by('birthday')
+  def householder(self):
+    # Gezinshoofd
+    return self.members.filter(gvolgorde=1).order_by('birthday')
 
-  def mums(self):
-    return self.members.filter(role_in_family='MUM').order_by('birthday')
+  def partner(self):
+    # Partner van gezinshoofd
+    return self.members.filter(gvolgorde=2).order_by('birthday')
 
   def kids(self):
-    return self.members.filter(role_in_family='KID').order_by('birthday')
+    # Kinderen
+    return self.members.exclude(gvolgorde__in=[1, 2]).order_by('birthday')
 
   def lastnamef(self):
     if self.prefix == "":
@@ -304,7 +294,7 @@ class Family(TimestampedModel, models.Model):
   def name_initials(self):
     initials = ""
 
-    for d in list(chain(self.dads(), self.mums())):
+    for d in self.members.filter(gvolgorde__in=[1, 2]):
       if len(initials):
         initials += ", "
       initials += d.initials
@@ -315,7 +305,7 @@ class Family(TimestampedModel, models.Model):
     return "%s%s" % (self.lastnamep(), initials)
 
   def members_sorted(self):
-    return list(chain(self.dads(), self.mums(), self.kids()))
+    return self.members.order_by('gvolgorde', 'birthday')
 
   def size(self):
     return self.members.all().count()

@@ -9,6 +9,8 @@ import argparse
 import csv
 import re
 
+## OUTDATED SCRIPT
+
 def parse_families(members):
   families = {}
 
@@ -115,11 +117,10 @@ def insert_families(families):
         phone=m['phone'],
         birthday=m['birthday'],
         family=family,
-        role_in_family=None
       )
 
 class Command(BaseCommand):
-  help = 'Import a .csv members file'
+  help = 'Import a .csv members file. Outdated script!'
 
   def add_arguments(self, parser):
     parser.add_argument('member-file', nargs=1, type=str)

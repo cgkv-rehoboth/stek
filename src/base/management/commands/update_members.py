@@ -38,13 +38,6 @@ def update_profile(old, new, dryrun):
   old.email       = new['EMAIL'].strip().lower()
   old.birthday    = new['GEBDATUM']
 
-  if new['GVOLGORDE'].strip() == "1":
-    old.role_in_family = 'DAD'
-  elif new['GVOLGORDE'].strip() == "2":
-    old.role_in_family = 'MUM'
-  else:
-    old.role_in_family = 'KID'
-
   old.voornamen   = new['VOORNAMEN'].strip()
   old.geslacht    = new['GESLACHT'].strip()
   old.soortlid    = new['SOORTLID'].strip()

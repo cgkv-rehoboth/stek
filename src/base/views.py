@@ -108,7 +108,7 @@ def family_list(request, pk=None):
   data = Family.objects\
     .filter(is_active=True)\
     .prefetch_related(
-      Prefetch('members', queryset=Profile.objects.order_by('birthday')),
+      Prefetch('members', queryset=Profile.objects.order_by('gvolgorde', 'birthday')),
       'address'
     )\
     .order_by('lastname')
@@ -600,22 +600,6 @@ def addressbook_differences(request):
       if not old[h] == newl[h]:
         diff[h] = [old[h], newl[h]]
 
-    # Familyrole
-    if not ((old['GVOLGORDE'] == 1 and new.role_in_family == 'DAD') or
-              (old['GVOLGORDE'] == 2 and new.role_in_family == 'MUM') or
-              (old['GVOLGORDE'] > 2 and new.role_in_family == 'KID')):
-      if old['GVOLGORDE'] == 1:
-        oldvolgorde = "%s (%s)" % (old['GVOLGORDE'], [y[1] for x, y in enumerate(Profile.ROLE_CHOICES) if y[0] == 'DAD'][0])
-      elif old['GVOLGORDE'] == 2:
-        oldvolgorde = "%s (%s)" % (old['GVOLGORDE'], [y[1] for x, y in enumerate(Profile.ROLE_CHOICES) if y[0] == 'MUM'][0])
-      else:
-        oldvolgorde = "%s (%s)" % (old['GVOLGORDE'], [y[1] for x, y in enumerate(Profile.ROLE_CHOICES) if y[0] == 'KID'][0])
-
-      if 'GVOLGORDE' in diff:
-        diff['GVOLGORDE'] = [oldvolgorde, "%s / %s" % (newl['GVOLGORDE'], new.get_role_in_family_display())]
-      else:
-        diff['GVOLGORDE'] = [oldvolgorde, new.get_role_in_family_display()]
-
     # if personal adres, check it
     if new.address:
       for h in address_headers:
@@ -889,7 +873,7 @@ def addressbook_differences(request):
         'ROEPNAAM': p.first_name,
         'VOORLETTER': p.initials,
         'GEBDATUM': p.birthday,
-        'GVOLGORDE': p.get_role_in_family_display(),
+        'GVOLGORDE': p.gvolgorde,
         'EMAIL': p.email if p.email else '',
         'LTELEFOON': p.phone
       }
@@ -1006,14 +990,8 @@ def addressbook_add(request):
     except ValueError as e:
       new['HUWDATUM'] = None
 
-    # Parse gvolgorde / family_role
+    # parse gvolgorde
     new['GVOLGORDE'] = int(new['GVOLGORDE'].strip())
-    if new['GVOLGORDE'] == 1:
-      role_in_family = 'DAD'
-    elif new['GVOLGORDE'] == 2:
-      role_in_family = 'MUM'
-    else:
-      role_in_family = 'KID'
 
     profile = Profile(
       phone       = new['LTELEFOON'].strip(),
@@ -1024,7 +1002,6 @@ def addressbook_add(request):
       email       = new['EMAIL'].strip().lower(),
       birthday    = new['GEBDATUM'],
       family      = family,
-      role_in_family = role_in_family,
       voornamen   = new['VOORNAMEN'].strip(),
       geslacht    = new['GESLACHT'].strip(),
       soortlid    = new['SOORTLID'].strip(),
