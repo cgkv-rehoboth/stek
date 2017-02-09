@@ -7,6 +7,7 @@ from django.db.models import Count
 from django.core.urlresolvers import reverse
 import os
 from unidecode import unidecode
+from ckeditor.fields import RichTextField
 
 # Import models of base app
 from base.models import *
@@ -117,10 +118,11 @@ class Service(Event):
 
 class Team(models.Model):
 
-  name = models.CharField(max_length=255)
-  members = models.ManyToManyField(Profile, through="TeamMember", related_name="members")
-  email = models.EmailField(max_length=255, blank=True)
-  description = models.TextField(blank=True)
+  name          = models.CharField(max_length=255)
+  members       = models.ManyToManyField(Profile, through="TeamMember", related_name="members")
+  email         = models.EmailField(max_length=255, blank=True)
+  description   = models.TextField(blank=True)
+  remindermail  = models.TextField(blank=True)
 
   class Meta:
     ordering = ('name',)

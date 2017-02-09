@@ -57,7 +57,7 @@ admin.site.register(TeamMemberRole, TeamMemberRoleAdmin)
 
 # Team stuff
 class TeamMemberAdmin(admin.ModelAdmin):
-  list_display = ['name', 'team', 'role', 'is_admin']
+  list_display = ['name', 'team', 'role', 'is_admin', 'get_mail']
 
 admin.site.register(TeamMember, TeamMemberAdmin)
 
@@ -71,8 +71,9 @@ class TeamAdmin(admin.ModelAdmin):
   list_display = ['name', 'get_leader_names', 'email', 'size']
 
   def get_leader_names(self, obj):
+    # Return a string with all the names of the leaders (profile and families)
     return ", ".join(
-      [ p.profile.name() for p in obj.leaders() ]
+      [ (m.profile.namei() if m.profile else str(m.family)) for m in obj.leaders() ]
     )
 
 admin.site.register(Team, TeamAdmin)

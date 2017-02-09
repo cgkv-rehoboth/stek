@@ -6,6 +6,8 @@ from django.template.loader import get_template
 from django.template import Context
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from html.parser import HTMLParser
+from django.utils.html import strip_tags
 
 
 def send_reminder_mail(duty, resp):
@@ -29,6 +31,12 @@ def send_reminder_mail(duty, resp):
 
   messageTXT = templateTXT.render(data)
   messageHTML = templateHTML.render(data)
+
+  if duty.timetable.team.remindermail:
+    # Decode possible special chars and remove HTML tags
+    h = HTMLParser()
+
+    messageTXT = h.unescape(strip_tags(messageTXT))
 
   from_email = settings.DEFAULT_FROM_EMAIL
 

@@ -18,6 +18,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.sites.shortcuts import get_current_site
 import random
 import logging
+import re
 
 from .models import *
 from base.models import Profile, Family
@@ -973,9 +974,23 @@ def teampage_control_edit_save(request, id):
       messages.error(request, "Het opgegeven e-mailadres is niet geldig.")
       return redirect('teampage-control-edit', id=team.pk)
 
+  # Remove empty lines at the beginning/end
+  remindermail = request.POST.get("remindermail", "")
+  # Remove end
+  remindermail = re.sub('(<p>&nbsp;</p>[\n\r]*)*$', '', remindermail)
+  # Remove begin
+  remindermail = re.sub('^(<p>&nbsp;</p>[\n\r]*)*', '', remindermail)
+
+  description = request.POST.get("description", "").strip()
+  # Remove end
+  description = re.sub('(<p>&nbsp;</p>[\n\r]*)*$', '', description)
+  # Remove begin
+  description = re.sub('^(<p>&nbsp;</p>[\n\r]*)*', '', description)
+
   team.name = request.POST.get("name", "").strip()
-  team.description = request.POST.get("description", "").strip()
   team.email = email
+  team.description = description.strip()
+  team.remindermail = remindermail.strip()
   team.save()
 
   messages.success(request, "De instellingen zijn opgeslagen.")
@@ -993,6 +1008,7 @@ def teampage_control_edit(request, id):
 
   return render(request, 'teampage/edit.html', {
     'team': team,
+    'form': TeamForm(instance=team),
   })
 
 @login_required

@@ -47,7 +47,9 @@
               <p class="nowrap"><i class="fa fa-envelope-o" aria-hidden="true" style="font-size: 12pt; margin-right: 5px;"></i> <a href="mailto:{{ team.email }}">{{ team.email }}</a></p>
             {% endif %}
             {% if team.description %}
-              <p class="team-description">{{ team.description }}</p>
+              <div class="team-description">
+                {{ team.description|safe }}
+              </div>
             {% endif %}
           </div>
         </div>

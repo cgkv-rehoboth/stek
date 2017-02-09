@@ -48,11 +48,43 @@
   color: #585858
 
 .team-description
-  white-space: pre-wrap
   border-left: 3px solid #bbbbbb
   padding-left: 12px
-  line-height: 1.7
   margin-bottom: 25px
+
+  *
+    line-height: 130%
+    margin-bottom: 8px
+
+  ul
+    list-style-type: disc
+
+  ol
+    list-style-type: decimal
+
+  ul, ol
+    padding-left: 30px
+
+  table
+    &, td
+      border: 1px solid black
+
+    caption
+      font-weight: bold
+      color: inherit
+      text-align: center
+      padding-bottom: 2px
+
+    td
+      padding: 0 5px
+
+  h2
+    font-family: sans-serif, Arial, Verdana, "Trebuchet MS"
+    font-weight: normal
+    font-size: 1.5em
+
+  h3
+    font-size: 1.17em
 
 .team-members .badge
   font-size: 17px

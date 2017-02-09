@@ -10,7 +10,8 @@ Hierbij is ook het volgende commentaar gegeven:
 
 {{ duty.comments }}
 {% endif %}
-
+{% if duty.timetable.team.remindermail %}{{ duty.timetable.team.remindermail|safe }}
+{% endif %}
 
 ___________________
 Wil je hierover geen mails meer ontvangen? Afmelden kan via: 'Mijn instellingen' op {{ protocol}}://{{ domain }}{% url 'teampage' duty.timetable.team.pk %}

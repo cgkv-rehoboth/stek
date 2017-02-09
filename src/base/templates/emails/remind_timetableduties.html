@@ -22,6 +22,12 @@
     </div>
   {% endif %}
 
+
+  {% if duty.timetable.team.remindermail %}
+    <br/>
+    <br/>
+    {{ duty.timetable.team.remindermail|safe }}
+  {% endif %}
 {% endblock %}
 
 {% block footer %}

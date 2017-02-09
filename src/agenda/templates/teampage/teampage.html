@@ -100,7 +100,9 @@
               {% if not team.description %}
                 <p class="team-description missing-info">Voeg een beschrijving toe</p>
               {% else %}
-                <p class="team-description">{{ team.description }}</p>
+                <div class="team-description">
+                  {{ team.description|safe }}
+                </div>
               {% endif %}
             {% endif %}
           </div>
