@@ -38,7 +38,7 @@ class ContactForm extends Component {
 
         <div className="col-sm-7 col-md-10">
           <forms.RadioField name="recipient">
-            <forms.RadioButton name="recipient[]" value="scriba" label="Scriba" checked="checked"/>
+            <forms.RadioButton name="recipient[]" value="scriba" label="Scriba / Overig" checked="checked"/>
             <br/>
             <forms.RadioButton name="recipient[]" value="predikant" label="Predikant (dr. A. Jansen)" />
           </forms.RadioField>
