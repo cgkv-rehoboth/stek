@@ -128,26 +128,28 @@ def timetable_undo_ruilen_teamleader(request, id):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=req_id)
 
-  # Send notification email to the user
-  templateTXT = get_template('email/ruilverzoek_status.txt')
-  templateHTML = get_template('email/ruilverzoek_status.html')
+  # Only send email if eventdate > currentdate
+  if req.timetableduty.event.startdatetime > datetime.now():
+    # Send notification email to the user
+    templateTXT = get_template('email/ruilverzoek_status.txt')
+    templateHTML = get_template('email/ruilverzoek_status.html')
 
-  data = Context({
-    'resp': req.profile,
-    'status': 'afgewezen of geannuleerd',
-    'duty': req.timetableduty,
-    'protocol': 'https',
-    'domain': get_current_site(None).domain,
-    'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
-  })
+    data = Context({
+      'resp': req.profile,
+      'status': 'afgewezen of geannuleerd',
+      'duty': req.timetableduty,
+      'protocol': 'https',
+      'domain': get_current_site(None).domain,
+      'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
+    })
 
-  messageTXT = templateTXT.render(data)
-  messageHTML = templateHTML.render(data)
+    messageTXT = templateTXT.render(data)
+    messageHTML = templateHTML.render(data)
 
-  from_email = settings.DEFAULT_FROM_EMAIL
+    from_email = settings.DEFAULT_FROM_EMAIL
 
-  to_emails = [req.profile.email, ]
-  send_mail("Ruilverzoek afgewezen", messageTXT, from_email, to_emails, html_message=messageHTML)
+    to_emails = [req.profile.email, ]
+    send_mail("Ruilverzoek afgewezen", messageTXT, from_email, to_emails, html_message=messageHTML)
 
   # delete the request
   req.delete()

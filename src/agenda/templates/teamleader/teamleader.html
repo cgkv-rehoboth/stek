@@ -23,50 +23,54 @@
           {% include "./messages.html" %}
         </div>
 
-        <!-- Ruilrequests -->
-        <div class="col-sm-12">
-          <h3>Ruilverzoeken</h3>
-          {% if ruils %}
-          <table id="timetable"  class="table table-hover">
-            <thead>
-              <tr>
-                <th>Datum</th>
-                <th>Persoon</th>
-                <th>Opmerkingen</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ruil in ruils %}
-              <tr>
-                <td class="duty-date">
-                  (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
-                  {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
-                </td>
-                <td class="duty-title">
-                  {% if ruil.timetableduty.responsible_family %}
-                    <a href="{% url 'family-detail-page' ruil.profile.family.id %}" class="black-url">{{ ruil.timetableduty.resp_name }}</a>
-                  {% elif ruil.profile %}
-                    <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>
-                  {% else %}
-                    Onbekend persoon
-                  {% endif %}
-                </td>
-                <td>{{ ruil.comments }}</td>
-                <td>
-                  <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>
-                  <a href="{% url 'timetable-ruilverzoek' ruil.id %}" class="btn btn-default cyan modal-submit-button">Voldoen</a>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          {% else %}
-          <p>
-            Er zijn geen ruilverzoeken ingediend!
-          </p>
-          {% endif %}
-        </div>
+        {% if ruils %}
+          <!-- Disable ruilrequests -->
+
+          <!-- Ruilrequests -->
+          <div class="col-sm-12">
+            <h3>Ruilverzoeken</h3>
+            {% if ruils %}
+            <table id="timetable"  class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Datum</th>
+                  <th>Persoon</th>
+                  <th>Opmerkingen</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ruil in ruils %}
+                <tr>
+                  <td class="duty-date">
+                    (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
+                    {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
+                  </td>
+                  <td class="duty-title">
+                    {% if ruil.timetableduty.responsible_family %}
+                      <a href="{% url 'family-detail-page' ruil.profile.family.id %}" class="black-url">{{ ruil.timetableduty.resp_name }}</a>
+                    {% elif ruil.profile %}
+                      <a href="{% url 'profile-detail-page' ruil.profile.id %}" class="black-url">{{ ruil.profile.name }}</a>
+                    {% else %}
+                      Onbekend persoon
+                    {% endif %}
+                  </td>
+                  <td>{{ ruil.comments }}</td>
+                  <td>
+                    <a href="{% url 'timetable-undo-ruilen-teamleader' ruil.id %}" class="btn btn-default black">Afwijzen</a>
+                    <a href="{% url 'timetable-ruilverzoek' ruil.id %}" class="btn btn-default cyan modal-submit-button">Voldoen</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <p>
+              Er zijn geen ruilverzoeken ingediend!
+            </p>
+            {% endif %}
+          </div>
+        {% endif %}
 
         <div class="col-sm-12">
           <h3 id="inplannen">Inplannen</h3>

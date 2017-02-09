@@ -112,7 +112,10 @@
                 <th>Naam</th>
                 <th>Datum</th>
                 <th>Opmerkingen</th>
-                <th>Ruilen</th>
+                {% comment %}
+                  <!-- Disable ruilrequest -->
+                  <th>Ruilen</th>
+                {% endcomment %}
               </tr>
             </thead>
             <tbody>
@@ -131,26 +134,29 @@
                     {{ duty.comments }}
                   </div>
                 </td>
-                <td class="duty-responsible">
-                  {% with duty.ruilrequest as ruilen %}
-                    {% if ruilen.profile == request.profile %}
-                      <a href="javascript:void(0)" class="timetable-undo-ruilen"
-                        title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
-                        data-request-pk="{{ruilen.pk}}"
-                      >
-                       <i class="fa fa-check fa-fw"></i> Ongedaan maken
-                      </a>
-                    {% else %}
-                      <a href="javascript:void(0)"
-                        class="timetable-ruilen"
-                        title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
-                        data-duty-pk="{{ duty.pk }}"
-                      >
-                        <i class="fa fa-random fa-fw"></i> Aanvragen
-                      </a>
-                    {% endif %}
-                  {% endwith %}
-                </td>
+                {% comment %}
+                  <!-- Disable ruilrequest -->
+                  <td class="duty-responsible">
+                    {% with duty.ruilrequest as ruilen %}
+                      {% if ruilen.profile == request.profile %}
+                        <a href="javascript:void(0)" class="timetable-undo-ruilen"
+                          title='Ruilverzoek ongedaan maken voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}"?'
+                          data-request-pk="{{ruilen.pk}}"
+                        >
+                         <i class="fa fa-check fa-fw"></i> Ongedaan maken
+                        </a>
+                      {% else %}
+                        <a href="javascript:void(0)"
+                          class="timetable-ruilen"
+                          title='Ruilen aanvragen voor "{{ duty.event.title }}, {{ duty.event.startdatetime }}".'
+                          data-duty-pk="{{ duty.pk }}"
+                        >
+                          <i class="fa fa-random fa-fw"></i> Aanvragen
+                        </a>
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                {% endcomment %}
               </tr>
             {% endfor %}
             </tbody>
