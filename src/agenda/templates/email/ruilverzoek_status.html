@@ -6,7 +6,7 @@
   Beste {{ resp.name }},
   <br/><br/>
 
-  U heeft voor de volgende taak een ruilverzoek ingediend:<br/>
+  Je hebt voor de volgende taak een ruilverzoek ingediend:<br/>
   <a href="{{ protocol}}://{{ domain }}{% url 'timetable-detail-page' duty.timetable.pk %}" style="color: #009acd;" target="_blank">{{ duty.timetable.title }}</a>: {{ duty }}<br/>
   <br/>
   Dit verzoek is {{ status }} door de roosteraar.
@@ -14,6 +14,6 @@
 {% endblock %}
 
 {% block footer %}
-  Dit is een automatisch gegenereerd bericht waarop je niet kan antwoorden. Voor vragen over het rooster, graag contact opnemen met desbetreffende roosteraar. <br/>
+  Dit is een automatisch gegenereerd bericht waarop niet geantwoord kan worden. Voor vragen over het rooster kan je contact opnemen met de desbetreffende roosteraar. <br/>
   <small>Verzonden op {{ sendtime }}.</small>
 {% endblock %}

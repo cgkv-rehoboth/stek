@@ -15,5 +15,5 @@ Er is geen reden gegeven.
 {% endif %}
 
 ___________________
-Dit is een automatisch gegenereerd bericht waarop u niet kunt antwoorden.
+Dit is een automatisch gegenereerd bericht waarop niet geantwoord kan worden.
 Verzonden op {{ sendtime }}.

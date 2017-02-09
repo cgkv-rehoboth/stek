@@ -9,5 +9,5 @@ U heeft voor de volgende taak een ruilverzoek ingediend:
 Dit verzoek is {{ status }} door de roosteraar.
 
 ___________________
-Dit is een automatisch gegenereerd bericht waarop u niet kunt antwoorden. Voor vragen over het rooster, graag contact opnemen met desbetreffende roosteraar.
+Dit is een automatisch gegenereerd bericht waarop niet geantwoord kan worden. Voor vragen over het rooster kan je contact opnemen met de desbetreffende roosteraar.
 Verzonden op {{ sendtime }}.
