@@ -16,14 +16,16 @@
           <a href="{% url 'services-files-admin' %}" class="backlink"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Bestanden beheren</a>
         </div>
         {% endif %}
+
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
       </div>
 
       <div class="row">
         <div class="col-sm-12">
           <h3>Nieuwe dienst(en) toevoegen</h3>
-
-          <!-- Error handling messages -->
-          {% include "./messages.html" %}
 
           <!-- Form -->
           <form class="form-horizontal" id="services-form" method="post" action="{% url 'services-admin-add' %}">
@@ -33,7 +35,7 @@
               <div class="col-sm-6 form-group">
                 <label class="col-sm-2 control-label">Datum</label>
                 <div class="col-sm-7 col-md-6 col-lg-5">
-                  <input type="text" name="date" class="form-control" value="{{ startdatetime|date:'d-m-Y' }}" placeholder="Formaat: 31-12-2016" id="service-datepicker" />
+                  <input type="text" name="date" class="form-control" value="{{ startdatetime|date:'d-m-Y' }}" placeholder="Formaat: 31-12-{{ startdatetime|date:'Y' }}" id="service-datepicker" />
                 </div>
               </div>
               <div class="col-sm-6 form-group">

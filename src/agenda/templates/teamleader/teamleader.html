@@ -43,9 +43,13 @@
                 {% for ruil in ruils %}
                 <tr>
                   <td class="duty-date">
+                  {% if ruil.timetableduty.event|isobject:"service" %}
                     (<a href="{% url 'services-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
-                    {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
-                  </td>
+                  {% else %}
+                    (<a href="{% url 'events-single' ruil.timetableduty.event.id %}">{{ ruil.timetableduty.event.title }}</a>)
+                  {% endif %}
+                  {{ ruil.timetableduty.event.startdatetime|date:"j F Y, G:i" }}u
+                </td>
                   <td class="duty-title">
                     {% if ruil.timetableduty.responsible_family %}
                       <a href="{% url 'family-detail-page' ruil.profile.family.id %}" class="black-url">{{ ruil.timetableduty.resp_name }}</a>

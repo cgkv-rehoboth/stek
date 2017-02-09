@@ -1,0 +1,114 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <section id="services-single">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Events <small>{{ event.title }}</small></h2>
+        </div>
+
+        {% if perms.agenda.add_event or perms.agenda.add_eventfile%}
+        <div class="col-sm-12">
+          {% if perms.agenda.add_event %}
+            <a href="{% url 'events-admin-edit' event.id %}" class="backlink"><i class="fa fa-calendar-plus-o fa-fw" aria-hidden="true"></i> Event bewerken</a>
+          {% endif %}
+          {% comment %}
+            {% if perms.agenda.add_event and perms.agenda.add_eventfile%}
+              /
+            {% endif %}
+            {% if perms.agenda.add_eventfile %}
+              <a href="{% url 'services-files-admin' %}" class="backlink"><i class="fa fa-cloud-upload fa-fw" aria-hidden="true"></i> Bestanden beheren</a>
+            {% endif %}
+          {% endcomment %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Algemeen</h3>
+
+          <table id="info" >
+            <tr>
+              <td>Aanvangstijd</td>
+              <td>{{ event.startdatetime }}</td>
+            </tr>
+            {% if event.description %}
+              <tr>
+                <td>Beschrijving</td>
+                <td>{{ event.description }}</td>
+              </tr>
+            {% endif %}
+          </table>
+          <br/>
+        </div>
+
+        {% if event.files.all %}
+          <div class="col-sm-12">
+            <h3>Bestanden</h3>
+
+            <table id="files" class="table table-hover">
+              {% for file in event.files.all %}
+                <tr>
+                  <td>
+                    <span class="icon">
+                      {{ file.iconHTML|safe }}
+                    </span>
+                    <a href="{{ file.file.url }}" target="_blank" title="Klik hier om het bestand te openen">
+                      {{ file.title }}
+                    </a>
+                    <span class="file">({{ file.filesize }})</span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
+
+        {% if event.duties.all %}
+          <div class="col-sm-12">
+            <h3>Taken</h3>
+
+            <table id="duties" class="table table-hover">
+              {% for duty in event.duties.all|dictsort:"timetable.title" %}
+                <tr>
+                  <td>
+                    {% ifchanged duty.timetable %}
+                      <a href="{% url 'timetable-detail-page' duty.timetable.id %}" title="Bekijk het rooster" class="black-url">
+                        {{ duty.timetable.title }}
+                      </a>
+                    {% endifchanged %}
+                  </td>
+                  <td class="{% if duty.responsible == request.profile or duty.responsible_family == request.profile.family  %}current-user{% endif %}">
+                    {% if duty.responsible_family %}
+                      <a href="{% url 'family-detail-page' duty.responsible_family.id %}" title="Bekijk de familie">
+                        {{ duty.resp_name }}
+                      </a>
+                    {% else %}
+                      <a href="{% url 'profile-detail-page' duty.responsible.id %}" title="Bekijk het profiel">
+                        {{ duty.resp_name }}
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% include "./confirmationmodal.html" %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.eventsPage();
+  </script>
+{% endblock %}

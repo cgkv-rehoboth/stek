@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
 import random
 import logging
 import re
@@ -26,30 +27,32 @@ from .forms import *
 
 logger = logging.getLogger(__name__)
 
+
 def uniqify(seq, idfun=None):
-   # order preserving
-   if idfun is None:
-     def idfun(x): return x
-   seen = {}
-   result = []
-   for item in seq:
-     marker = idfun(item)
-     # in old Python versions:
-     # if seen.has_key(marker)
-     # but in new ones:
-     if marker in seen: continue
-     seen[marker] = 1
-     result.append(item)
-   return result
+  # order preserving
+  if idfun is None:
+    def idfun(x): return x
+  seen = {}
+  result = []
+  for item in seq:
+    marker = idfun(item)
+    # in old Python versions:
+    # if seen.has_key(marker)
+    # but in new ones:
+    if marker in seen: continue
+    seen[marker] = 1
+    result.append(item)
+  return result
+
 
 @login_required
 def timetables(request, id=None):
-
   # Get all the tables linked to the team(s) the user is in
-  mytables = list(Timetable\
-    .objects\
-    .filter(Q(team__teammembers__profile__pk=request.profile.pk) | Q(team__teammembers__family__pk=request.profile.family.pk))\
-    .exclude(team__isnull=True))
+  mytables = list(Timetable \
+                  .objects \
+                  .filter(
+    Q(team__teammembers__profile__pk=request.profile.pk) | Q(team__teammembers__family__pk=request.profile.family.pk)) \
+                  .exclude(team__isnull=True))
 
   mytables = uniqify(mytables)
 
@@ -63,14 +66,14 @@ def timetables(request, id=None):
     id = mytables[0].pk
 
   # Get current table
-  #table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
+  # table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
   table = Timetable.objects.filter(pk=id).first()
 
   # Get duties
   if table is not None:
-    duties = table.duties\
-      .prefetch_related('ruilen')\
-      .filter(event__enddatetime__gte=datetime.today().date())\
+    duties = table.duties \
+      .prefetch_related('ruilen') \
+      .filter(event__enddatetime__gte=datetime.today().date()) \
       .order_by("event__startdatetime", "event__enddatetime")
 
     if request.profile.teamleader_of(table.team):
@@ -91,20 +94,21 @@ def timetables(request, id=None):
   # Get all the other tables
   # that are not really relevant to the user
   # also filter out special tables, like Diensten
-  notmytables = list(Timetable\
-    .objects\
-    .exclude(team__members__pk=request.profile.pk)\
-    .exclude(team__teammembers__family__pk=request.profile.family.pk)\
-    .exclude(team__isnull=True)\
-    .exclude(pk=id))
+  notmytables = list(Timetable \
+                     .objects \
+                     .exclude(team__members__pk=request.profile.pk) \
+                     .exclude(team__teammembers__family__pk=request.profile.family.pk) \
+                     .exclude(team__isnull=True) \
+                     .exclude(pk=id))
 
   # Render that stuff!
   return render(request, 'timetables.html', {
     'current_table': table,
-    'duties': duties,
-    'mytables': mytables,
-    'notmytables': notmytables,
+    'duties'       : duties,
+    'mytables'     : mytables,
+    'notmytables'  : notmytables,
   })
+
 
 @login_required
 @require_POST
@@ -118,6 +122,7 @@ def timetable_undo_ruilen(request, id):
 
   return redirect('timetable-detail-page', id=req_id)
 
+
 @login_required
 def timetable_undo_ruilen_teamleader(request, id):
   # Delete by teamleader
@@ -125,7 +130,8 @@ def timetable_undo_ruilen_teamleader(request, id):
   req_id = req.timetableduty.timetable.pk
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(req.timetableduty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
+  if not request.profile.teamleader_of(req.timetableduty.timetable.team) and not request.user.has_perm(
+      'agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=req_id)
 
@@ -136,11 +142,11 @@ def timetable_undo_ruilen_teamleader(request, id):
     templateHTML = get_template('email/ruilverzoek_status.html')
 
     data = Context({
-      'resp': req.profile,
-      'status': 'afgewezen of geannuleerd',
-      'duty': req.timetableduty,
+      'resp'    : req.profile,
+      'status'  : 'afgewezen of geannuleerd',
+      'duty'    : req.timetableduty,
       'protocol': 'https',
-      'domain': get_current_site(None).domain,
+      'domain'  : get_current_site(None).domain,
       'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
     })
 
@@ -156,6 +162,7 @@ def timetable_undo_ruilen_teamleader(request, id):
   req.delete()
 
   return redirect('timetable-teamleader-page', id=req_id)
+
 
 @login_required
 @require_POST
@@ -175,25 +182,25 @@ def timetable_ruilen(request, id):
   templateHTML = get_template('email/ruilverzoek.html')
 
   data = Context({
-    'resp': request.profile,
-    'duty': duty,
+    'resp'    : request.profile,
+    'duty'    : duty,
     'comments': comments,
     'protocol': 'https',
-    'domain': get_current_site(None).domain,
+    'domain'  : get_current_site(None).domain,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
   messageTXT = templateTXT.render(data)
   messageHTML = templateHTML.render(data)
 
-  #from_email = request.profile.email
-  #if from_email is None or len(from_email) == 0:
+  # from_email = request.profile.email
+  # if from_email is None or len(from_email) == 0:
   from_email = settings.DEFAULT_FROM_EMAIL
 
-  to_emails = [ t[0] for t in duty.timetable\
-                                  .team.leaders()\
-                                  .exclude(profile__email=None)
-                                  .values_list('profile__email') ]
+  to_emails = [t[0] for t in duty.timetable \
+    .team.leaders() \
+    .exclude(profile__email=None)
+    .values_list('profile__email')]
 
   send_mail("Ruilverzoek", messageTXT, from_email, to_emails, html_message=messageHTML)
 
@@ -223,7 +230,8 @@ def timetable_teamleader(request, id):
   #
 
   # Get all future events
-  events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
+  events = Event.objects.filter(startdatetime__gte=datetime.today().date()) \
+    .filter(Q(incalendar=True) | Q(incalendar=False, timetable=table)) \
     .order_by("startdatetime", "enddatetime", "title")
 
   # set default selection to event without duty (belonging to this timetable)
@@ -233,7 +241,8 @@ def timetable_teamleader(request, id):
     selected_event = 0
 
   # Get all teammembers
-  profiles = table.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name', 'profile__birthday')
+  profiles = table.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name',
+                                                                 'profile__birthday')
   # Get all teamfamilies
   families = table.team.teammembers.filter(profile=None)
 
@@ -274,16 +283,17 @@ def timetable_teamleader(request, id):
 
   # Render that stuff!
   return render(request, 'teamleader/teamleader.html', {
-    'table': table,
-    'ruils': ruils,
-    'team': table.team,
-    'events': events,
-    'members': profiles,
-    'families': families,
-    'selected_event': selected_event,
+    'table'          : table,
+    'ruils'          : ruils,
+    'team'           : table.team,
+    'events'         : events,
+    'members'        : profiles,
+    'families'       : families,
+    'selected_event' : selected_event,
     'selected_member': selected_member,
     'selected_family': selected_family,
   })
+
 
 @login_required
 def timetable_ruilverzoek(request, id):
@@ -291,14 +301,17 @@ def timetable_ruilverzoek(request, id):
   ruil = RuilRequest.objects.get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
+  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm(
+      'agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=ruil.timetableduty.timetable.team.pk)
 
   # OK, user is teamleader, let's continue:
 
   # Get all teammembers
-  profiles = ruil.timetableduty.timetable.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name', 'profile__birthday')
+  profiles = ruil.timetableduty.timetable.team.teammembers.filter(family=None).order_by('profile__first_name',
+                                                                                        'profile__last_name',
+                                                                                        'profile__birthday')
   # Get all teamfamilies
   families = ruil.timetableduty.timetable.team.teammembers.filter(profile=None)
 
@@ -308,7 +321,8 @@ def timetable_ruilverzoek(request, id):
   limit = 2 * len(members)
   # And also include next week
   maxweeks = ruil.timetableduty.event.startdatetime + timedelta(weeks=1)
-  duties = ruil.timetableduty.timetable.duties.filter(event__startdatetime__lte=maxweeks).order_by("-event__enddatetime", "-event__startdatetime")[:limit]
+  duties = ruil.timetableduty.timetable.duties.filter(event__startdatetime__lte=maxweeks).order_by(
+    "-event__enddatetime", "-event__startdatetime")[:limit]
 
   # set default selection to member which is last scheduled
   if len(duties):
@@ -336,8 +350,8 @@ def timetable_ruilverzoek(request, id):
       selected_family = 0
 
     # Filter out current user
-    if ((ruil.timetableduty.responsible and ruil.timetableduty.responsible.pk is selected_member)\
-        or (ruil.timetableduty.responsible_family and ruil.timetableduty.responsible_family.pk is selected_family))\
+    if ((ruil.timetableduty.responsible and ruil.timetableduty.responsible.pk is selected_member) \
+            or (ruil.timetableduty.responsible_family and ruil.timetableduty.responsible_family.pk is selected_family)) \
         and len(resps) > 1:
       lastone = resps[-2]
 
@@ -354,12 +368,13 @@ def timetable_ruilverzoek(request, id):
 
   # Render that stuff!
   return render(request, 'teamleader/ruilverzoek.html', {
-    'ruil': ruil,
-    'members': profiles,
-    'families': families,
+    'ruil'           : ruil,
+    'members'        : profiles,
+    'families'       : families,
     'selected_member': selected_member,
     'selected_family': selected_family,
   })
+
 
 @login_required
 @require_POST
@@ -368,7 +383,8 @@ def timetable_ruilverzoek_accept(request, id):
   ruil = RuilRequest.objects.get(pk=id)
 
   # Check if user is teamleader of this timetable's team
-  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
+  if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm(
+      'agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=ruil.timetableduty.timetable.team.pk)
 
@@ -378,11 +394,11 @@ def timetable_ruilverzoek_accept(request, id):
   templateHTML = get_template('email/ruilverzoek_status.html')
 
   data = Context({
-    'resp': ruil.profile,
-    'status': 'geaccepteerd',
-    'duty': ruil.timetableduty,
+    'resp'    : ruil.profile,
+    'status'  : 'geaccepteerd',
+    'duty'    : ruil.timetableduty,
     'protocol': 'https',
-    'domain': get_current_site(None).domain,
+    'domain'  : get_current_site(None).domain,
     'sendtime': datetime.now().strftime("%d-%m-%Y, %H:%M:%S"),
   })
 
@@ -460,6 +476,7 @@ def timetable_teamleader_duty_add(request):
 
   return redirect(reverse('timetable-teamleader-page', kwargs={'id': table.id}) + "#inplannen")
 
+
 @login_required
 def timetable_teamleader_duty_edit_save(request, id):
   duty = TimetableDuty.objects.get(pk=id)
@@ -470,7 +487,8 @@ def timetable_teamleader_duty_edit_save(request, id):
     table = Timetable.objects.get(pk=request.POST.get("timetable", ""))
 
   # Check if user is teamleader of the new/old timetable's team
-  if (not request.profile.teamleader_of(table.team) or not request.profile.teamleader_of(duty.timetable.team)) and not request.user.has_perm('agenda.change_timetable'):
+  if (not request.profile.teamleader_of(table.team) or not request.profile.teamleader_of(
+      duty.timetable.team)) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=table.team.pk)
 
@@ -499,6 +517,7 @@ def timetable_teamleader_duty_edit_save(request, id):
 
   return redirect('timetable-detail-page', id=table.id)
 
+
 @login_required
 def timetable_teamleader_duty_edit(request, id):
   duty = TimetableDuty.objects.get(pk=id)
@@ -519,23 +538,26 @@ def timetable_teamleader_duty_edit(request, id):
     tables = Timetable.objects.filter(team__in=leading_teams.values('team'))
 
   # Get all future events
-  events = Event.objects.filter(startdatetime__gte=datetime.today().date())\
-      .order_by("startdatetime", "enddatetime", "title")
+  events = Event.objects.filter(startdatetime__gte=datetime.today().date()) \
+    .filter(Q(incalendar=True) | Q(incalendar=False, timetable=duty.timetable)) \
+    .order_by("startdatetime", "enddatetime", "title")
 
   # Get all teammembers
-  members = duty.timetable.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name', 'profile__birthday')
+  members = duty.timetable.team.teammembers.filter(family=None).order_by('profile__first_name', 'profile__last_name',
+                                                                         'profile__birthday')
   # Get all teamfamilies
   families = duty.timetable.team.teammembers.filter(profile=None)
 
   return render(request, 'teamleader/teamleader_duty_edit.html', {
-    'duty': duty,
-    'table': duty.timetable,
-    'tables': tables,
-    'events': events,
-    'members': members,
-    'families': families,
+    'duty'          : duty,
+    'table'         : duty.timetable,
+    'tables'        : tables,
+    'events'        : events,
+    'members'       : members,
+    'families'      : families,
     'selected_event': duty.event.pk,
   })
+
 
 @login_required
 def timetable_teamleader_duty_delete(request, id):
@@ -550,6 +572,7 @@ def timetable_teamleader_duty_delete(request, id):
   duty.delete()
 
   return redirect('timetable-detail-page', id=table.pk)
+
 
 #  Not being used anymore, because it's integrated in the main teamleader page
 #
@@ -606,6 +629,7 @@ def timetable_teamleader_duty_delete(request, id):
 def calendar(request):
   return render(request, 'calendar.html')
 
+
 # When editting URLs, pay attention for the Ajax call in app.jsx -> window.timetableMain()
 
 @login_required
@@ -621,11 +645,12 @@ def services_admin(request):
   else:
     # Get next upcoming sunday
     today = datetime.today().date()
-    startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
+    startdatetime = today + timedelta(days=-today.weekday() - 1, weeks=1)
 
   return render(request, 'services/admin.html', {
     'startdatetime': startdatetime,
   })
+
 
 @login_required
 @require_POST
@@ -654,6 +679,7 @@ def services_admin_add(request):
     theme=request.POST.get("theme1", "").strip(),
     comments=request.POST.get("comments1", "").strip(),
     description=request.POST.get("description1", "").strip(),
+    incalendar=True,
   )
 
   if request.POST.get("secondservice", ""):
@@ -686,11 +712,16 @@ def services_admin_add(request):
 
   return redirect('services-admin')
 
+
 @login_required
 @require_POST
 @permission_required('agenda.change_service', raise_exception=True)
 def services_admin_edit_save(request, id):
-  service = Service.objects.get(pk=id)
+  try:
+    service = Service.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Dienst bestaat niet.')
+    return redirect('services-admin')
 
   date = str(request.POST.get("date", service.startdatetime.date()))
 
@@ -719,26 +750,36 @@ def services_admin_edit_save(request, id):
 
   return redirect('services-admin')
 
+
 @login_required
 @permission_required('agenda.change_service', raise_exception=True)
 def services_admin_edit(request, id):
+  try:
+    service = Service.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Dienst bestaat niet.')
+    return redirect('services-admin')
 
   return render(request, 'services/edit.html', {
-    'service': Service.objects.get(pk=id),
+    'service': service,
   })
+
 
 @login_required
 @permission_required('agenda.delete_service', raise_exception=True)
 def services_admin_delete(request, id):
-  Service.objects.get(pk=id).delete()
+  try:
+    Service.objects.get(pk=id).delete()
+  except ObjectDoesNotExist:
+    messages.error(request, 'Dienst bestaat niet.')
+    return redirect('services-admin')
 
   # Delete all duties of this service
-  TimetableDuty.objects.filter(event=id).delete()
+  TimetableDuty.objects.filter(event__pk=id).delete()
 
   messages.success(request, "Dienst is verwijderd.")
 
   return redirect('services-admin')
-
 
 
 # Team pages
@@ -758,11 +799,12 @@ def teampage_control_members(request, id):
 
   # Render that stuff!
   return render(request, 'teampage/teampage_control_members.html', {
-    'team': team,
-    'members': members,
-    'roles': roles,
+    'team'         : team,
+    'members'      : members,
+    'roles'        : roles,
     'selected_role': 'LID',
   })
+
 
 @login_required
 @require_POST
@@ -808,6 +850,7 @@ def teampage_control_members_add(request):
 
   return redirect('teampage-control-members', id=team)
 
+
 @login_required
 @require_POST
 def teampage_control_members_edit_save(request, id):
@@ -826,6 +869,7 @@ def teampage_control_members_edit_save(request, id):
 
   return redirect('teampage-control-members', id=member.team.pk)
 
+
 @login_required
 def teampage_control_members_edit(request, id):
   member = TeamMember.objects.get(pk=id)
@@ -834,10 +878,11 @@ def teampage_control_members_edit(request, id):
 
   # Render that stuff!
   return render(request, 'teampage/teampage_control_members_edit.html', {
-    'team': member.team,
+    'team'  : member.team,
     'member': member,
-    'roles': roles,
+    'roles' : roles,
   })
+
 
 @login_required
 def teampage_control_members_delete(request, id):
@@ -868,10 +913,11 @@ def teampage_control_timetables(request, id):
   tables = team.timetables
 
   return render(request, 'teampage/control_timetables.html', {
-    'team': team,
-    'tables': tables,
+    'team'        : team,
+    'tables'      : tables,
     'random_color': '{:06x}'.format(random.randint(0, 0xffffff)),
   })
+
 
 @login_required
 @require_POST
@@ -889,7 +935,8 @@ def teampage_control_timetables_add(request):
     color = request.POST.get("color", "")
 
   if len(team.timetables.all()) and not request.user.has_perm('agenda.change_team'):
-    messages.error(request, "Je hebt al een rooster voor dit team toegevoegd. Het limiet staat op één rooster per team.")
+    messages.error(request,
+                   "Je hebt al een rooster voor dit team toegevoegd. Het limiet staat op één rooster per team.")
     return redirect('teampage-control-timetables', id=team.pk)
 
   Timetable.objects.create(
@@ -904,6 +951,7 @@ def teampage_control_timetables_add(request):
   messages.success(request, "Het rooster is toegevoegd.")
 
   return redirect('teampage-control-timetables', id=team.pk)
+
 
 @login_required
 def teampage_control_timetables_delete(request, id):
@@ -921,6 +969,7 @@ def teampage_control_timetables_delete(request, id):
 
   return redirect('teampage-control-timetables', id=team)
 
+
 @login_required
 def teampage_control_timetables_edit(request, id):
   table = Timetable.objects.get(pk=id)
@@ -928,6 +977,7 @@ def teampage_control_timetables_edit(request, id):
   return render(request, 'teampage/control_timetables_edit.html', {
     'table': table,
   })
+
 
 @login_required
 @require_POST
@@ -997,6 +1047,7 @@ def teampage_control_edit_save(request, id):
 
   return redirect('teampage', id=team.pk)
 
+
 @login_required
 def teampage_control_edit(request, id):
   team = Team.objects.get(pk=id)
@@ -1010,6 +1061,7 @@ def teampage_control_edit(request, id):
     'team': team,
     'form': TeamForm(instance=team),
   })
+
 
 @login_required
 def teampage(request, id):
@@ -1030,19 +1082,20 @@ def teampage(request, id):
 
   # Render that stuff!
   return render(request, 'teampage/teampage.html', {
-    'team': team,
-    'is_admin': request.profile.teamleader_of(team),
-    'teammember': teammember,
+    'team'             : team,
+    'is_admin'         : request.profile.teamleader_of(team),
+    'teammember'       : teammember,
     'teammember_family': teammember_family,
-    'members': members,
-    'tables': tables,
+    'members'          : members,
+    'tables'           : tables,
   })
+
 
 @login_required
 @permission_required('agenda.add_team', raise_exception=True)
 def globalteampage(request):
-
   return render(request, 'globalteamadmin.html')
+
 
 @login_required
 @permission_required('agenda.add_team', raise_exception=True)
@@ -1073,6 +1126,7 @@ def globalteampage_add(request):
 
   return redirect('team-list-page')
 
+
 @login_required
 @permission_required('agenda.delete_team', raise_exception=True)
 def globalteampage_delete(request, id):
@@ -1093,10 +1147,10 @@ def globalteampage_delete(request, id):
 
   return redirect('team-list-page')
 
+
 @login_required
 @permission_required('agenda.add_eventfile', raise_exception=True)
 def services_files_admin(request, id=None):
-
   ef = None
 
   # Get some recent services
@@ -1126,25 +1180,24 @@ def services_files_admin(request, id=None):
     .order_by("-event__startdatetime", "-event__enddatetime", "event__title", "event__pk", "title")
 
   return render(request, 'services/files_add.html', {
-    'recent_services': recent_services,
-    'services': services,
+    'recent_services' : recent_services,
+    'services'        : services,
     'selected_service': selected_service,
-    'ef': ef,
-    'efs': efs,
-    'maxweeks': maxweeks
+    'ef'              : ef,
+    'efs'             : efs,
+    'maxweeks'        : maxweeks
   })
+
 
 @login_required
 @permission_required('agenda.add_eventfile', raise_exception=True)
 @require_POST
 def services_files_admin_add(request):
-
   # Set default title
   if not request.POST.get('title', ''):
     request.POST['title'] = str(request.FILES.get('file'))
 
   form = UploadEventFileForm(request.POST, request.FILES)
-  
 
   if form.is_valid():
     # Save object
@@ -1160,11 +1213,11 @@ def services_files_admin_add(request):
 
   return redirect('services-files-admin')
 
+
 @login_required
 @permission_required('agenda.change_eventfile', raise_exception=True)
 @require_POST
 def services_files_admin_edit_save(request, id):
-
   ef = EventFile.objects.get(pk=id)
 
   if request.FILES.get('file'):
@@ -1185,10 +1238,10 @@ def services_files_admin_edit_save(request, id):
 
   return redirect('services-files-admin')
 
+
 @login_required
 @permission_required('agenda.delete_eventfile', raise_exception=True)
 def services_files_admin_delete(request, id):
-
   ef = EventFile.objects.get(pk=id).delete()
 
   messages.success(request, 'Bestand is verwijderd.')
@@ -1208,11 +1261,12 @@ def services_page(request):
   else:
     # Get next upcoming sunday
     today = datetime.today().date()
-    startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
+    startdatetime = today + timedelta(days=-today.weekday() - 1, weeks=1)
 
   return render(request, 'services/list.html', {
     'startdatetime': startdatetime,
   })
+
 
 @login_required
 def services_single(request, id):
@@ -1258,17 +1312,192 @@ def teampage_settings_save(request, id):
   return redirect('teampage', id=id)
 
 
+@login_required
+@permission_required('agenda.add_event', raise_exception=True)
+def events_admin(request):
+  # Get today
+  startdatetime = datetime.today()
+
+  # Round to nearest (half) hour
+  startdatetime = startdatetime + timedelta(minutes=(30 - startdatetime.minute % 30))
+  enddatetime = startdatetime + timedelta(hours=1)
+
+  # Get teams the profile belongs to
+  if request.user.has_perm('agenda.add_timetable'):
+    timetables = Timetable.objects.all()
+  else:
+    memberships = TeamMember.objects \
+      .prefetch_related("team") \
+      .filter(Q(profile=request.profile) | Q(family=request.profile.family)) \
+      .filter(is_admin=True) \
+      .order_by('team__name')
+
+    teams = memberships.values_list('team', flat=True)
+
+    # Remove double memberships (like profile AND family), filter on (i.)team
+    teams = uniqify(teams)
+
+    # Get timetables
+    timetables = Timetable.objects.filter(team__in=teams)
+
+  return render(request, 'events/admin.html', {
+    'startdatetime': startdatetime,
+    'enddatetime': enddatetime,
+    'timetables': timetables,
+  })
+
+
+@login_required
+@require_POST
+@permission_required('agenda.add_event', raise_exception=True)
+def events_admin_add(request):
+  # Get datetimes
+  startdatetime = "%s %s:00" % (str(request.POST.get("startdate")), str(request.POST.get("starttime")))
+  enddatetime = "%s %s:00" % (str(request.POST.get("enddate")), str(request.POST.get("endtime")))
+
+  try:
+    startdatetime = datetime.strptime(startdatetime, '%d-%m-%Y %H:%M:%S')
+    enddatetime = datetime.strptime(enddatetime, '%d-%m-%Y %H:%M:%S')
+  except ValueError:
+    messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
+    return redirect('events-admin')
+
+  timetable = int(request.POST.get("timetable"))
+  if timetable < 1:
+    messages.error(request, 'Selecteer een rooster.')
+    return redirect('events-admin')
+
+  Event.objects.create(
+    startdatetime=startdatetime,
+    enddatetime=enddatetime,
+    owner=request.profile,
+    title=request.POST.get("title", "").strip(),
+    description=request.POST.get("description", "").strip(),
+    timetable=Timetable.objects.get(pk=timetable),
+    incalendar=True if request.POST.get("incalendar") else False,
+  )
+
+  messages.success(request, "Gebeurtenis is toegevoegd.")
+
+  return redirect('events-admin')
+
+
+@login_required
+@require_POST
+@permission_required('agenda.change_event', raise_exception=True)
+def events_admin_edit_save(request, id):
+  try:
+    event = Event.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Event bestaat niet.')
+    return redirect('events-admin')
+
+  # Get datetimes
+  startdatetime = "%s %s:00" % (str(request.POST.get("startdate", event.startdatetime.date())), str(request.POST.get("starttime", event.startdatetime.time())))
+  enddatetime = "%s %s:00" % (str(request.POST.get("enddate", event.enddatetime.date())), str(request.POST.get("endtime", event.enddatetime.time())))
+
+  try:
+    startdatetime = datetime.strptime(startdatetime, '%d-%m-%Y %H:%M:%S')
+    enddatetime = datetime.strptime(enddatetime, '%d-%m-%Y %H:%M:%S')
+  except ValueError:
+    messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
+    return redirect('events-admin')
+
+  timetable = int(request.POST.get("timetable", event.timetable.pk))
+  if timetable < 1:
+    messages.error(request, 'Selecteer een rooster.')
+    return redirect('events-admin')
+
+  event.startdatetime = startdatetime
+  event.enddatetime = enddatetime
+  event.title = request.POST.get("title", "").strip()
+  event.description = request.POST.get("description", "").strip()
+  event.timetable = Timetable.objects.get(pk=timetable)
+  event.incalendar = True if request.POST.get("incalendar") else False
+
+  event.save()
+
+  messages.success(request, "Gebeurtenis is opgeslagen.")
+
+  return redirect('events-admin')
+
+
+@login_required
+@permission_required('agenda.change_event', raise_exception=True)
+def events_admin_edit(request, id):
+  try:
+    event = Event.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Event bestaat niet.')
+    return redirect('events-admin')
+
+  # Get teams the profile belongs to
+  memberships = TeamMember.objects \
+    .prefetch_related("team") \
+    .filter(Q(profile=request.profile) | Q(family=request.profile.family)) \
+    .filter(is_admin=True) \
+    .order_by('team__name')
+
+  teams = memberships.values_list('team', flat=True)
+
+  # Remove double memberships (like profile AND family), filter on (i.)team
+  teams = uniqify(teams)
+
+  # Get timetables
+  timetables = Timetable.objects.filter(team__in=teams)
+
+  return render(request, 'events/edit.html', {
+    'event': event,
+    'timetables': timetables,
+  })
+
+
+@login_required
+#@require_POST
+@permission_required('agenda.delete_event', raise_exception=True)
+def events_admin_delete(request, id):
+  try:
+    Event.objects.get(pk=id).delete()
+  except ObjectDoesNotExist:
+    messages.error(request, 'Event bestaat niet.')
+    return redirect('events-admin')
+
+  # Delete all duties of this service
+  TimetableDuty.objects.filter(event__pk=id).delete()
+
+  messages.success(request, "Event is verwijderd.")
+
+  return redirect('events-admin')
+
+
+@login_required
+def events_single(request, id):
+  try:
+    event = Event.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Event bestaat niet.')
+    return redirect('dashboard')
+
+  return render(request, 'events/single.html', {
+    'event': event,
+  })
+
+
 urls = [
   url(r'^roosters/ruilverzoek/new/(?P<id>\d+)/$', timetable_ruilen, name='timetable-ruilen'),
   url(r'^roosters/ruilverzoek/(?P<id>\d+)/intrekken/$', timetable_undo_ruilen, name='timetable-undo-ruilen'),
-  url(r'^roosters/ruilverzoek/(?P<id>\d+)/afwijzen/$', timetable_undo_ruilen_teamleader, name='timetable-undo-ruilen-teamleader'),
+  url(r'^roosters/ruilverzoek/(?P<id>\d+)/afwijzen/$', timetable_undo_ruilen_teamleader,
+      name='timetable-undo-ruilen-teamleader'),
   url(r'^roosters/ruilverzoek/(?P<id>\d+)/accept/$', timetable_ruilverzoek_accept, name='timetable-ruilverzoek-accept'),
   url(r'^roosters/ruilverzoek/(?P<id>\d+)/$', timetable_ruilverzoek, name='timetable-ruilverzoek'),
 
   url(r'^roosters/teamleider/duty/add/$', timetable_teamleader_duty_add, name='timetable-teamleader-duty-add'),
-  url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/save/$', timetable_teamleader_duty_edit_save, name='timetable-teamleader-duty-edit-save'),
-  url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/$', timetable_teamleader_duty_edit, name='timetable-teamleader-duty-edit'),
-  url(r'^roosters/teamleider/duty/(?P<id>\d+)/delete/$', timetable_teamleader_duty_delete, name='timetable-teamleader-duty-delete'),
+  url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/save/$', timetable_teamleader_duty_edit_save,
+      name='timetable-teamleader-duty-edit-save'),
+  url(r'^roosters/teamleider/duty/(?P<id>\d+)/edit/$', timetable_teamleader_duty_edit,
+      name='timetable-teamleader-duty-edit'),
+  url(r'^roosters/teamleider/duty/(?P<id>\d+)/delete/$', timetable_teamleader_duty_delete,
+      name='timetable-teamleader-duty-delete'),
 
   url(r'^roosters/(?P<id>\d+)/teamleider/$', timetable_teamleader, name='timetable-teamleader-page'),
 
@@ -1281,14 +1510,17 @@ urls = [
   url(r'^kalender/$', calendar, name='calendar-page'),
 
   url(r'^team/leden/add/$', teampage_control_members_add, name='teampage-control-members-add'),
-  url(r'^team/leden/(?P<id>\d+)/edit/save/$', teampage_control_members_edit_save, name='teampage-control-members-edit-save'),
+  url(r'^team/leden/(?P<id>\d+)/edit/save/$', teampage_control_members_edit_save,
+      name='teampage-control-members-edit-save'),
   url(r'^team/leden/(?P<id>\d+)/edit/$', teampage_control_members_edit, name='teampage-control-members-edit'),
   url(r'^team/leden/(?P<id>\d+)/delete/$', teampage_control_members_delete, name='teampage-control-members-delete'),
   url(r'^team/(?P<id>\d+)/leden/$', teampage_control_members, name='teampage-control-members'),
 
   url(r'^team/roosters/add/$', teampage_control_timetables_add, name='teampage-control-timetables-add'),
-  url(r'^team/roosters/(?P<id>\d+)/delete/$', teampage_control_timetables_delete, name='teampage-control-timetables-delete'),
-  url(r'^team/roosters/(?P<id>\d+)/edit/save/$', teampage_control_timetables_edit_save, name='teampage-control-timetables-edit-save'),
+  url(r'^team/roosters/(?P<id>\d+)/delete/$', teampage_control_timetables_delete,
+      name='teampage-control-timetables-delete'),
+  url(r'^team/roosters/(?P<id>\d+)/edit/save/$', teampage_control_timetables_edit_save,
+      name='teampage-control-timetables-edit-save'),
   url(r'^team/roosters/(?P<id>\d+)/edit/$', teampage_control_timetables_edit, name='teampage-control-timetables-edit'),
   url(r'^team/(?P<id>\d+)/roosters/$', teampage_control_timetables, name='teampage-control-timetables'),
 
@@ -1308,12 +1540,22 @@ urls = [
   url(r'^roosters/diensten/beheren/(?P<id>\d+)/delete/$', services_admin_delete, name='services-admin-delete'),
   url(r'^roosters/diensten/beheren/$', services_admin, name='services-admin'),
 
+  url(r'^roosters/events/beheren/toevoegen/$', events_admin_add, name='events-admin-add'),
+  url(r'^roosters/events/beheren/(?P<id>\d+)/edit/save/$', events_admin_edit_save, name='events-admin-edit-save'),
+  url(r'^roosters/events/beheren/(?P<id>\d+)/edit/$', events_admin_edit, name='events-admin-edit'),
+  url(r'^roosters/events/beheren/(?P<id>\d+)/delete/$', events_admin_delete, name='events-admin-delete'),
+  url(r'^roosters/events/beheren/$', events_admin, name='events-admin'),
+
   url(r'^roosters/diensten/$', services_page, name='services-page'),
   url(r'^roosters/diensten/(?P<id>\d+)/$', services_single, name='services-single'),
+  url(r'^roosters/events/(?P<id>\d+)/$', events_single, name='events-single'),
 
-  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/delete/$', services_files_admin_delete, name='services-files-admin-delete'),
-  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/edit/save/$', services_files_admin_edit_save, name='services-files-admin-edit-save'),
-  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/edit/$', services_files_admin, name='services-files-admin-edit'),
+  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/delete/$', services_files_admin_delete,
+      name='services-files-admin-delete'),
+  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/edit/save/$', services_files_admin_edit_save,
+      name='services-files-admin-edit-save'),
+  url(r'^roosters/diensten/bestanden/beheren/(?P<id>\d+)/edit/$', services_files_admin,
+      name='services-files-admin-edit'),
   url(r'^roosters/diensten/bestanden/beheren/toevoegen/$', services_files_admin_add, name='services-files-admin-add'),
   url(r'^roosters/diensten/bestanden/beheren/$', services_files_admin, name='services-files-admin'),
 ]
