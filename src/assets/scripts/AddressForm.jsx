@@ -179,7 +179,7 @@ export default class AddressForm extends React.Component {
       val = val.replace(/^(.{4})/, '$1-');
     }
   
-    if (val.length != 11) {
+    if (val.length != 11 && val.length > 0) {
       this.setState({
         phoneerror: 'Het telefoonnummer moet uit 10 cijfers bestaan.',
       });

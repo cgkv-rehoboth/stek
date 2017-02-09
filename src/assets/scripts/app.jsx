@@ -131,7 +131,7 @@ function validatePhone(val, errorelement) {
   }
   
   if (errorelement){
-    if (val.length != 11) {
+    if (val.length != 11 && val.length > 0) {
       errorelement.text('Het telefoonnummer moet uit 10 cijfers bestaan.');
     }else {
       errorelement.text('');

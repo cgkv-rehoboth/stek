@@ -283,7 +283,7 @@ def profile_detail_edit_save(request, pk):
 
   # Validate phone
   phone = validate_phone(request.POST.get("phone-privat", ""))
-  if len(phone) != 11:
+  if len(phone) != 11 and len(phone) > 0:
     messages.warning(request, "Het telefoonnummer moet uit 10 cijfers bestaan. Herstel deze fout aub.")
 
   # Save rest of the profile stuff
