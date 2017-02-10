@@ -3,7 +3,7 @@
 
 Beste {{ resp.name }},
 
-Voor {{ duty.event.startdatetime|date:"j F Y" }} sta je ingedeeld in het rooster '{{ duty.timetable.title }}' voor het volgende: {{ event }}.
+Voor {{ duty.event.startdatetime|date:"j-n-Y" }} sta je ingedeeld in het rooster '{{ duty.timetable.title }}' voor het volgende: {{ event }}.
 
 {% if duty.comments %}
 Hierbij is ook het volgende commentaar gegeven:

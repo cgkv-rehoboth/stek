@@ -5,7 +5,7 @@
 {% block content %}
   Beste {{ resp.name }},<br/>
   <br/>
-  Voor {{ duty.event.startdatetime|date:"j F Y" }} sta je ingedeeld in het rooster '<a href="{{ protocol}}://{{ domain }}{% url 'timetable-detail-page' duty.timetable.pk %}" style="color: #009acd;" target="_blank">{{ duty.timetable.title }}</a>'
+  Voor {{ duty.event.startdatetime|date:"j-n-Y" }} sta je ingedeeld in het rooster '<a href="{{ protocol}}://{{ domain }}{% url 'timetable-detail-page' duty.timetable.pk %}" style="color: #009acd;" target="_blank">{{ duty.timetable.title }}</a>'
   voor het volgende:
   {% if duty.event|isobject:"service" %}
     <a href="{{ protocol}}://{{ domain }}{% url 'services-single' duty.event.pk %}" style="color: #009acd;" target="_blank">{{ event }}</a>.
