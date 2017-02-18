@@ -237,6 +237,19 @@ CKEDITOR_CONFIGS = {
     'width': '100%',
     #'allowedContent': ['p', 'strong', 'i', 's', 'u', 'span', 'div', 'ul', 'li', 'ol', 'em', 'a', 'table', 'thead', 'tbody', 'caption', 'tr', 'td', 'th', 'img', 'br', 'hr', 'pr', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
   },
+  'email': {
+    'toolbar'       : 'Custom_email',
+    'toolbar_Custom_email': [
+      ['Format'],
+      ['TextColor', '-', 'Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat'],
+      ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+      ['Link', 'Unlink', 'Image', '-', 'Table', 'HorizontalRule'],
+      ['SpecialChar'],
+      ['Undo', 'Redo'],
+    ],
+    'width'         : '100%',
+    # 'allowedContent': ['p', 'strong', 'i', 's', 'u', 'span', 'div', 'ul', 'li', 'ol', 'em', 'a', 'table', 'thead', 'tbody', 'caption', 'tr', 'td', 'th', 'img', 'br', 'hr', 'pr', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+  }
   'no_files': {
     'toolbar'       : 'Customno_files',
     'toolbar_Customno_files': [

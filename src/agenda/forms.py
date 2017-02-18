@@ -11,8 +11,8 @@ class UploadEventFileForm(ModelForm):
 
 
 class TeamForm(ModelForm):
-  description = forms.CharField(widget=CKEditorWidget('no_files'))
-  remindermail = forms.CharField(widget=CKEditorWidget('no_files'))
+  description = forms.CharField(widget=CKEditorWidget('email'))
+  remindermail = forms.CharField(widget=CKEditorWidget('email'))
 
   class Meta:
     model = Team
