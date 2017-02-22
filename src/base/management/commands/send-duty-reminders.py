@@ -72,10 +72,11 @@ class Command(BaseCommand):
       if not member or member.get_mail:
 
         if d.responsible_family:
-          resp = d.responsible_family.members_sorted()[0]
+          # Get the person of the family with an email
+          resp = d.responsible_family.members_sorted().exclude(email=None).exclude(email='').first()
 
           if not resp:
-            print("[FAILURE] Could not get a profile for family %s." % d.responsible_family.lastname)
+            print("[FAILURE] Could not get a profile or email for family %s." % d.responsible_family.lastname)
             continue
 
         else:

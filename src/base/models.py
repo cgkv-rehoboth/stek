@@ -285,6 +285,13 @@ class Family(TimestampedModel, models.Model):
   def __str__(self):
     return "Familie %s" % self.name_initials()
 
+  def email(self):
+    mem = self.members_sorted().exclude(email=None).exclude(email='').first()
+    if mem:
+      return mem.email
+    else:
+      return ''
+
   def householder(self):
     # Gezinshoofd
     return self.members.filter(gvolgorde=1).order_by('birthday')

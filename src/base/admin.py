@@ -15,7 +15,7 @@ admin.site.register(Address, AddressAdmin)
 
 
 class FamilyAdmin(admin.ModelAdmin):
-  list_display = ['name_initials', 'size', 'address', 'is_active', 'gezinsnr']
+  list_display = ['name_initials', 'size', 'address', 'is_active', 'gezinsnr', 'email']
   ordering = ['-is_active', 'lastname', 'prefix']
   search_fields = ['lastname']
 
@@ -48,7 +48,7 @@ class UserAdmin(BaseUserAdmin):
   list_display_links = ['username']
   list_filter = ['is_active']
   ordering = ['last_name', 'first_name', 'username']
-  search_fields = ['first_name', 'last_name']
+  search_fields = ['first_name', 'last_name', 'email']
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
@@ -58,7 +58,7 @@ admin.site.register(User, UserAdmin)
 class ProfileAdmin(admin.ModelAdmin):
   list_display = ['name', 'address', 'phone', 'email', 'birthday', 'has_logged_in', 'is_active', 'lidnr']
   ordering = ['-is_active', 'last_name', 'first_name']
-  search_fields = ['first_name', 'last_name']
+  search_fields = ['first_name', 'last_name', 'email']
 
 admin.site.register(Profile, ProfileAdmin)
 
