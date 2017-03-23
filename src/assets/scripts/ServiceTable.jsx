@@ -22,8 +22,12 @@ export default class ServiceTable extends React.Component {
     let renderServiceRow = (serv) => {
       let starttime = moment(serv.startdatetime).format('H:mm');
       let startdate = moment(serv.startdatetime).format('dddd D MMMM');
-      let hiddeninfo = serv.minister + (serv.comments && serv.comments.length > 0 ? " - " +serv.comments : "");
-      let html = serv.comments && serv.comments.length > 0 ? <i className="fa fa-info-circle" ariaHidden="true"></i> : "";
+
+      let theme_check = serv.theme && serv.theme.length > 0;
+      let comments_check = serv.comments && serv.comments.length > 0;
+      let comments = <span><i>{ serv.theme }</i>{ (theme_check && comments_check ? " - " : "") }{ serv.comments }</span>;
+      let html = ( theme_check || comments_check ) ? <i className="fa fa-info-circle" ariaHidden="true"></i> : "";
+      let hiddeninfo = <span>{ serv.minister }{ (( theme_check || comments_check ) ? ' - ' : '') }{ comments }</span>;
 
       function onClick(e){
         // Get serviceHiddenItems row
@@ -90,7 +94,7 @@ export default class ServiceTable extends React.Component {
           <td><span className="service-starttime">{starttime}</span> - {startdate}</td>
           <td className="serviceHideOnSmallScreen">{serv.minister}</td>
           <td className="serviceInfoIcon">{html}</td>
-          <td className="serviceHideOnSmallScreen">{serv.comments}</td>
+          <td className="serviceHideOnSmallScreen">{comments}</td>
           <td className="serviceHideOnSmallScreen">{files}</td>
         </tr>,
         <tr className="serviceHiddenItems">

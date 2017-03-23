@@ -20,8 +20,12 @@ export default class ServiceTableManagable extends React.Component {
     let renderServiceRow = (serv) => {
       let starttime = moment(serv.startdatetime).format('H:mm');
       let startdate = moment(serv.startdatetime).format('dddd D MMMM');
-      let hiddeninfo = serv.minister + (serv.theme && serv.theme.length > 0 ? " - " +serv.theme : "") + (serv.comments && serv.comments.length > 0 ? " - " +serv.comments : "");
-      let html = serv.comments && serv.comments.length > 0 ? <i className="fa fa-info-circle" ariaHidden="true"></i> : "";
+
+      let theme_check = serv.theme && serv.theme.length > 0;
+      let comments_check = serv.comments && serv.comments.length > 0;
+      let comments = <span><i>{ serv.theme }</i>{ (theme_check && comments_check ? " - " : "") }{ serv.comments }</span>;
+      let html = ( comments_check ) ? <i className="fa fa-info-circle" ariaHidden="true"></i> : "";
+      let hiddeninfo = <span>{ serv.minister }{ (( theme_check || comments_check ) ? ' - ' : '') }{ comments }</span>;
 
       function onClick(e){
         // Get serviceHiddenItems row
