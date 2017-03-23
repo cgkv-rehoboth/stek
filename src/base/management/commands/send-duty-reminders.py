@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
     maxweeks = datetime.today().date() + timedelta(weeks=1)
     # Select only profiles and not families
-    duties = TimetableDuty.objects.filter(event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks)
+    duties = TimetableDuty.objects.filter(event__enddatetime__gte=datetime.today().date(), event__startdatetime__lte=maxweeks).order_by("event__startdatetime")
 
     for d in duties:
       ## Check if member wants a reminder
