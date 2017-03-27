@@ -8,8 +8,11 @@ admin.site.register(Wijk)
 
 # Create custom display for Address
 class AddressAdmin(admin.ModelAdmin):
-  list_display = ['street', 'zip', 'city', 'country', 'occupant']
+  list_display = ['street', 'zip', 'city', 'country', 'occupant', 'wijk_id']
   search_fields = ['street', 'zip', 'city', 'country']
+
+  def wijk_id(self, obj):
+    return obj.wijk.id
 
 admin.site.register(Address, AddressAdmin)
 
