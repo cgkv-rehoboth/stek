@@ -305,7 +305,6 @@ def profile_detail_edit_save(request, pk):
 
   # Address, only save when react form was loaded
   if request.POST.get("form-loaded", False):
-    print('Form loaded.')
     zip = request.POST.get("zip", "").replace(" ", "").upper()
     number = request.POST.get("number", "").replace(" ", "").upper()
     street = request.POST.get("street", "").strip()
@@ -318,13 +317,11 @@ def profile_detail_edit_save(request, pk):
       # Wrong validation
       messages.error(request, "Er is geen juist adres ingevuld. Een juist adres bestaat uit een postcode, straatnaam, woonplaats en landnaam.")
       return redirect('profile-detail-page', pk=pk)
-    print('Form is valid.')
 
     street = "%s %s" % (street, number)
 
     # Check for 'verhuizing'
     if request.POST.get("verhuizing", False) == "true":  # check with current address (profile OR family)
-      print('Verhuizing is true.')
       if request.POST.get("verhuizing-options", "") is "0":
         # Wrong option choosen
         messages.error(request, "Adreswijziging mislukt. Kies een geldige verhuisoptie.")
@@ -360,10 +357,7 @@ def profile_detail_edit_save(request, pk):
         # Address is already coupled to a other family
         # todo: mulptiple families may live at the same address (like grandparents, parents and their kids)
     else: # Check if address exists
-      print('Verhuizing is false.')
       if profile.best_address():
-        print('Adress exists.')
-        print(profile.best_address())
         # Save phone to address, even if it is empty
         profile.best_address().phone = phone
         profile.best_address().save()
@@ -385,7 +379,6 @@ def profile_detail_edit_save(request, pk):
 
   # parse huwdatum
   huwdatum = request.POST.get("huwdatum", "").strip()
-  print(huwdatum)
   if huwdatum:
     try:
       huwdatum = datetime.strptime(huwdatum, "%d-%m-%Y")
@@ -434,6 +427,13 @@ def profile_detail_edit_save(request, pk):
   profile.phone = phone
 
   profile.save()
+
+  # Also edit data for user (if it exists)
+  if profile.user:
+    profile.user.email = email
+    profile.user.first_name = profile.first_name
+    profile.user.last_name = profile.last_namef()
+    profile.user.save()
 
   messages.success(request, "Gegevens zijn opgeslagen.")
 
