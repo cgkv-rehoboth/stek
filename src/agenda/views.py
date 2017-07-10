@@ -69,6 +69,10 @@ def timetables(request, id=None):
   # table = Timetable.objects.prefetch_related('team__members').filter(pk=id).first()
   table = Timetable.objects.filter(pk=id).first()
 
+  # Block the Diensten table from showing
+  if table.title == "Diensten":
+    table = None
+
   # Get duties
   if table is not None:
     duties = table.duties \
@@ -1528,10 +1532,20 @@ def events_admin(request):
     # Get timetables
     timetables = Timetable.objects.filter(team__in=teams)
 
+  # Get all custom events
+  maxweeks = datetime.today().date() - timedelta(weeks=4)
+  services = Service.objects.filter(startdatetime__gte=maxweeks).values_list('pk', flat=True)
+  events = Event.objects.filter(startdatetime__gte=maxweeks) \
+    .exclude(pk__in=services) \
+    .order_by("startdatetime", "enddatetime", "title")
+
+  print(events)
+
   return render(request, 'events/admin.html', {
     'startdatetime': startdatetime,
     'enddatetime': enddatetime,
     'timetables': timetables,
+    'events': events
   })
 
 

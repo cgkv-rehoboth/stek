@@ -96,7 +96,62 @@
 
         <div class="col-sm-12">
           <h3>Overzicht</h3>
-          Hieronder een overzicht van alle gebeurtenissen.
+          Hieronder een overzicht van alle gebeurtenissen, naast de kerkdiensten zelf.
+          {% if events %}
+            <div class="scroll-div">
+              <table id="eventfiles-table" class="table table-hover scroll-table">
+                <thead>
+                  <tr>
+                    <th>Datum</th>
+                    <th>Titel</th>
+                    <th>Rooster</th>
+                    <th>Extra info</th>
+                    {% if perms.agenda.change_eventfile %}
+                      <th></th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                {% now "c" as nowdatetime %}
+                {% for e in events %}
+                  {% ifchanged e.timetable %}{% cycle 'odd' 'even' as rowday silent %}{% endifchanged %}
+                  <tr class="table-{{ rowday }} {% if e.startdatetime|date:"c" < nowdatetime %}service-old{% endif %}">
+
+                    <td class="ef-date">
+                      {{ e.startdatetime|date:"j F Y, G:i" }}u -
+                      <small>{{ e.enddatetime|date:"j F Y, G:i" }}u</small>
+                    </td>
+
+                    <td class="ef-title">{{ e.title }}</td>
+
+                    <td class="ef-timetable">
+                      {% if e.incalendar %}
+                        <i class="fa fa-eye" aria-hidden="true" title="Zichtbaar voor andere roosters"></i>
+                      {% else %}
+                        <i class="fa fa-eye-slash" aria-hidden="true" title="Niet zichtbaar voor andere roosters"></i>
+                      {% endif %}
+
+                      <a href="{% url 'timetable-detail-page' e.timetable.pk %}" title="Dit rooster bekijken" class="black-url">{{ e.timetable }}</a>
+                    </td>
+
+                    <td class="ef-description">{{ e.description }}</td>
+
+                    {% if perms.agenda.change_eventfile %}
+                      <td class="duty-tools">
+                        <a href="{% url 'events-admin-edit' e.pk %}" title="Bewerken"><i class="fa fa-pencil-square-o fa-fw"></i></a>
+                        <a href="{% url 'events-admin-delete' e.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je dit item wilt verwijderen?" title="Verwijderen">
+                          <i class="fa fa-times fa-fw"></i>
+                        </a>
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p>Geen bestanden aanwezig.</p>
+          {% endif %}
         </div>
       </div>
     </div>
