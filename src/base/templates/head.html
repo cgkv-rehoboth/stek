@@ -11,3 +11,12 @@
 <title>Rehobothkerk Woerden</title>
 
 <link href="{% static 'css/lib/bootstrap.min.css' %}" rel="stylesheet">
+
+<script>
+  // Set private stream URL when user is logged in
+  {% if not user.is_authenticated %}
+    var private_stream_url = false;
+  {% else %}
+    var private_stream_url = "http://kerkdienstgemist.nl/streams/267.mp3?access_key=14wx2BLFPx7k0Q";
+  {% endif %}
+</script>

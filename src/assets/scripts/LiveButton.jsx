@@ -232,9 +232,12 @@ export class LivePlayer extends React.Component {
   }
 
   render() {
+    // Select the right stream URL (private or else public)
+    let stream_URL = (private_stream_url) ? private_stream_url : "https://kerkdienstgemist.nl/streams/267.mp3";
+    
     return (
       <audio id="luisteren-audio" ref="luisterenObject" loop preload="metadata">
-        <source src="https://kerkdienstgemist.nl/streams/267.mp3" type="audio/mpeg" />
+        <source src={stream_URL} type="audio/mpeg" />
       </audio>
     );
   }
