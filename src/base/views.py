@@ -108,7 +108,7 @@ def team_list(request, pk=None):
 
 @login_required
 def family_list(request, pk=None):
-  data = Family.objects\
+  families = Family.objects\
     .filter(is_active=True)\
     .prefetch_related(
       Prefetch('members', queryset=Profile.objects.order_by('gvolgorde', 'birthday')),
@@ -117,16 +117,61 @@ def family_list(request, pk=None):
     .order_by('lastname')
 
   # get dictionary of favorites
-  favorites = dict(
-    [ (v.favorite.pk, True) for v in Favorites.objects.filter(owner=request.profile) ])
+  #favorites = dict(
+  #  [ (v.favorite.pk, True) for v in Favorites.objects.filter(owner=request.profile) ])
 
   if pk is not None:
     pk = int(pk)
 
   return render(request, 'addressbook/families.html', {
-    'data': data,
-    'favorites': favorites,
+    'families': families,
+  #  'favorites': favorites,
     'id': pk
+  })
+
+
+@login_required
+def wijk_list(request, id=None):
+  # Set default pk (when redirected from e.g. Machina)
+  if (id==None):
+    id = request.profile.best_address().wijk.id
+
+  # Get wijken
+  wijken = Wijk.objects\
+    .all()\
+    .order_by('id')
+
+  # Get current wijk
+  try:
+    wijk = Wijk.objects.get(id=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Wijk bestaat niet.')
+
+    return render(request, 'addressbook/wijken.html', {
+      'wijken': wijken,
+    })
+
+  # Get families
+  families = Family.objects \
+    .filter(is_active=True, address__wijk=wijk) \
+    .prefetch_related(
+    Prefetch('members', queryset=Profile.objects.order_by('gvolgorde', 'birthday')),
+    'address'
+  ) \
+    .order_by('lastname')
+
+  # get dictionary of favorites
+  #favorites = dict(
+  #  [(v.favorite.pk, True) for v in Favorites.objects.filter(owner=request.profile)])
+
+  # todo: Get profiles who are not part of a family but are part of the wijk
+
+
+  return render(request, 'addressbook/wijken.html', {
+    'wijken': wijken,
+    'wijk': wijk,
+    'families': families,
+  #  'favorites': favorites
   })
 
 
@@ -768,6 +813,8 @@ def addressbook_differences(request):
     # Difference, saved as [key => (old value, new value)]
     diff = {}
 
+    wijk_id = new.address.wijk.id if new.address.wijk else ''
+
     newl = {
       'GEZINSNAAM': new.lastname,
       'GEZAANHEF': new.aanhef,
@@ -776,7 +823,7 @@ def addressbook_differences(request):
       'POSTCODE': new.address.zip,
       'WOONPLAATS': new.address.city,
       'TELEFOON': new.address.phone,
-      'WIJK': new.address.wijk.id,
+      'WIJK': wijk_id,
       'GEZINSNR': new.gezinsnr,
     }
 
@@ -1398,6 +1445,8 @@ urls = [
   url(r'^adresboek/favorieten/$', favorite_list, name='favorite-list-page'),
   url(r'^adresboek/families/$', family_list, name='family-list-page'),
   url(r'^adresboek/families/(?P<pk>\d+)/$', family_list, name='family-detail-page'),
+  url(r'^adresboek/wijken/$', wijk_list, name='wijk-list-page'),
+  url(r'^adresboek/wijken/(?P<id>\d+)/$', wijk_list, name='wijk-list-page'),
 
   # teams
   url(r'^teams$', RedirectView.as_view(url='teams/', permanent=True)),

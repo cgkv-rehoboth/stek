@@ -8,9 +8,15 @@
 
 {% block innerContent %}
   <!-- Family page -->
+  <div class="row">
+    <div class="col-sm-12">
+      <a href="{% url 'wijk-list-page' %}" class="backlink">Bekijken op basis van wijk</a>
+    </div>
+  </div>
+
   <!-- Alphabetic list -->
   <div class="family-menu">
-  {% for v in data %}
+  {% for v in families %}
     {% with v.lastname.0.upper as firstletter %}
       {% ifchanged firstletter %}
         <a href="#{{ firstletter }}">{{ firstletter }}</a>
@@ -21,7 +27,7 @@
 
   <!-- Family list -->
   <div class="list-group list-group-hide-detail family-list" data-focus="{{ id }}">
-  {% for v in data %}
+  {% for v in families %}
     {# Set header with first letter of the last name #}
     {% with v.lastname.0.upper as firstletter %}
       {% ifchanged firstletter %}
@@ -45,11 +51,11 @@
       </div>
       <div class="row list-group-detail" data-family-pk="{{ v.pk }}"
            {% if id == v.pk %}style="display: block;"{% endif %}>
-        <div class="col-md-8">
+        <div class="col-md-8 scroll-div">
           <!-- Familymembers + details -->
           <h3>Gezinsleden</h3>
           {% if v.members_sorted %}
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover scroll-table">
               <thead>
                 <tr>
                   <th>Voornaam</th>
@@ -83,7 +89,11 @@
             </h3>
             <p>
               {% if v.address.wijk.id %}
-                <span class="wijk">Wijk {{ v.address.wijk.id }} ({{ v.address.wijk.naam }})</span><br/>
+                <span class="wijk">
+                  <a href="{% url 'wijk-list-page' v.address.wijk.id %}" class="black-url">
+                    Wijk {{ v.address.wijk.id }} ({{ v.address.wijk.naam }})
+                  </a>
+                </span><br/>
               {% endif %}
               {{ v.address.street }}<br/>
               {{ v.address.zip }}, {{ v.address.city }} <br />

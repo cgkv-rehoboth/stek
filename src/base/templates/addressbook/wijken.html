@@ -1,0 +1,159 @@
+{% extends "./addressbook/layout.html" %}
+
+{% load static %}
+
+{% block subtitle %}
+  {% if wijk %}
+    Wijk {{ wijk.id }}: {{ wijk.naam }}
+  {% else %}
+    Wijken
+  {% endif %}
+{% endblock %}
+
+{% block innerContent %}
+  <!-- Wijk page -->
+  <div class="row">
+
+    <div class="col-sm-12">
+      <!-- Error handling messages -->
+      {% include "./messages.html" %}
+    </div>
+
+    <div class="col-sm-12">
+      <center>Selecteer een wijk om de bijhorende leden te bekijken: </center>
+      <div class="wijken-menu">
+        {% for w in wijken %}
+          <a href="{% url 'wijk-list-page' w.id %}" title="{{ w.naam }}">
+            {% if w.id == wijk.id %}
+            <strong>
+              {{ w.id }}</strong>{% else %}
+              {{ w.id }}{% endif %}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+  {% if families %}
+    <!-- Alphabetic list -->
+    <div class="family-menu">
+    {% for v in families %}
+      {% with v.lastname.0.upper as firstletter %}
+        {% ifchanged firstletter %}
+          <a href="#{{ firstletter }}">{{ firstletter }}</a>
+        {% endifchanged %}
+      {% endwith %}
+    {% endfor %}
+    </div>
+
+    <!-- Family list -->
+    <div class="list-group list-group-hide-detail family-list" data-focus="{{ id }}">
+    {% for v in families %}
+      {# Set header with first letter of the last name #}
+      {% with v.lastname.0.upper as firstletter %}
+        {% ifchanged firstletter %}
+          <div class="family-list-header" id="{{ firstletter }}">{{ firstletter }}</div>
+        {% endifchanged %}
+      {% endwith %}
+
+      <div class="container-fluid list-group-item family-list-item">
+        <div class="row">
+          <p class="col-md-12 list-group-head" id="{{ v.pk }}">
+            {% if request.user.is_superuser or perms.base.change_family  %}
+              <a href="{% url 'admin:base_family_change' v.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
+            {% endif %}
+            {{ v.lastnamep }}
+            {% if v.members_sorted %}
+              <small>(
+                {% for w in v.members_sorted %} {{ w.first_name }}{% if not forloop.last %},{% endif %} {% endfor %}
+                )</small>
+            {% endif %}
+          </p>
+        </div>
+        <div class="row list-group-detail" data-family-pk="{{ v.pk }}"
+             {% if id == v.pk %}style="display: block;"{% endif %}>
+          <div class="col-md-8 scroll-div">
+            <!-- Familymembers + details -->
+            <h3>Gezinsleden</h3>
+            {% if v.members_sorted %}
+              <table class="table table-bordered table-hover scroll-table">
+                <thead>
+                  <tr>
+                    <th>Voornaam</th>
+                    <th>Geboortedatum</th>
+                    <th>Telefoon</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for w in v.members_sorted %}
+                    <tr>
+                      <td><a href="{% url 'profile-detail-page' w.pk %}">
+                        {{ w.first_name }}
+                      </a></td>
+                      <td>{{ w.birthday }}</td>
+                      <td>{{ w.phone }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              Geen leden gevonden.
+            {% endif %}
+
+              <!-- Contact info -->
+            {% if v.address %}
+              <h3>
+                {% if request.user.is_superuser or perms.base.change_address %}
+                  <a href="{% url 'admin:base_address_change' v.address.pk %}"><i class="fa fa-edit fa-preicon"></i></a>
+                {% endif %}
+                Adres
+              </h3>
+              <p>
+                {% if v.address.wijk.id %}
+                  <span class="wijk">
+                    <a href="{% url 'wijk-list-page' v.address.wijk.id %}" class="black-url">
+                      Wijk {{ v.address.wijk.id }} ({{ v.address.wijk.naam }})
+                    </a>
+                  </span><br/>
+                {% endif %}
+                {{ v.address.street }}<br/>
+                {{ v.address.zip }}, {{ v.address.city }} <br />
+                {{ v.address.phone }} <br />
+                <a href="https://www.google.com/maps/place/{{ v.address }}"
+                   target="_blank"
+                   title="Bekijk op Google Maps" class="google-maps-link">
+                  <i class="fa fa-external-link fa-preicon"></i>Kaart
+                </a>
+              </p>
+            {% endif %}
+
+          </div>
+
+          <div class="col-md-4 text-center">
+            <!-- Family photo -->
+            {% if v.thumbnail or v.photo %}
+              <a href="{{ v.photo.url }}" title="Klik hier om de foto te vergroten" target="_blank">
+                <img src="{% if v.thumbnail %}{{ v.thumbnail.url }}{% else %}{{ v.photo.url }}{% endif %}" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  {% else %}
+    <div>
+      <br/>
+      <br/>
+      <center>
+        <small>
+          Geen gegevens gevonden om weer te geven.
+        </small>
+      </center>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script>window.familiesMain();</script>
+{% endblock %}

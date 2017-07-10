@@ -105,6 +105,8 @@
                       <td class="changed">
                         {% if header == "GEZINSNAAM" %}
                           <a href="{% url 'family-detail-page' item.family.pk %}" target="_blank" class="black-url">{{ item|get:header }}</a>
+                        {% elif header == "WIJK" and item.family.address.wijk %}
+                          <a href="{% url 'wijk-list-page' item.family.address.wijk.id %}" target="_blank" class="black-url">{{ item|get:header }}</a>
                         {% else %}
                           {{ item|get:header }}
                         {% endif %}
@@ -155,6 +157,8 @@
                           <a href="{% url 'family-detail-page' item.profile.family.pk %}" target="_blank" class="black-url">{{ item|get:header }}</a>
                         {% elif header == "ROEPNAAM" %}
                           <a href="{% url 'profile-detail-page' item.profile.pk %}" target="_blank" class="black-url">{{ item|get:header }}</a>
+                        {% elif header == "WIJK" and item.profile.best_address.wijk %}
+                          <a href="{% url 'wijk-list-page' item.profile.best_address.wijk.id %}" target="_blank" class="black-url">{{ item|get:header }}</a>
                         {% else %}
                           {{ item|get:header }}
                         {% endif %}
@@ -209,6 +213,8 @@
                           <td title="CSV waarde: {{ value.0 }}" class="changed">
                             {% if header == "GEZINSNAAM" %}
                               <a href="{% url 'family-detail-page' item.family.pk %}" target="_blank" class="black-url">{{ value.1 }}</a>
+                            {% elif header == "WIJK" and item.family.address.wijk %}
+                              <a href="{% url 'wijk-list-page' item.family.address.wijk.id %}" target="_blank" class="black-url">{{ value.1 }}</a>
                             {% else %}
                               {{ value.1 }}
                             {% endif %}
@@ -263,6 +269,8 @@
                               <a href="{% url 'family-detail-page' item.profile.family.pk %}" target="_blank" class="black-url">{{ value.1 }}</a>
                             {% elif header == "ROEPNAAM" %}
                               <a href="{% url 'profile-detail-page' item.profile.pk %}" target="_blank" class="black-url">{{ value.1 }}</a>
+                            {% elif header == "WIJK" and item.profile.best_address.wijk %}
+                              <a href="{% url 'wijk-list-page' item.profile.best_address.wijk.id %}" target="_blank" class="black-url">{{ value.1 }}</a>
                             {% else %}
                               {{ value.1 }}
                             {% endif %}
