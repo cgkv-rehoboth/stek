@@ -8,7 +8,7 @@ class StaticViewSitemap(sitemaps.Sitemap):
     changefreq = 'monthly'
 
     def items(self):
-      return list(self.itemnames(self).keys())
+      return list(self.itemnames().keys())
 
     def itemnames(self):
         return OrderedDict([
