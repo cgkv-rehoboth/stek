@@ -90,31 +90,50 @@ $.datepicker.setDefaults({
 });
 
 
-/* E mail visualizer
+/** E mail visualizer
 
 Intern in an <a> tag:
   <a href="yxxoxuxr@xemxaxixlx.cxomx" onmouseover="this.href=this.href.replace(/x/g,'');this.text=this.href.replace(/mailto:/g,'');">link</a>
 
-Global:
+When using the following global functions:
+  <a href="5e2nabe5s4youremailAgmailDcom">this will translate into youremail@gmail.com</a>
+ 
+The emailaddress must be preceeded by one of the codes used in the following three functions:
  */
 // Output to href and text
 $('a[href^="5e2nabe5s4"]').on('mouseover mouseup', function(){
-    $(this).attr('href', 'mailto:' + decodeMail($(this).attr('href')));
-    $(this).text(decodeMail($(this).attr('href')));
+  var href = decodeMail($(this).attr('href').replace("5e2nabe5s4", ''));
+  $(this).text(href);
+  $(this).attr('href', 'mailto:' + href);
+  
+  // Unbind this action
+  $(this).unbind('mouseover mouseup');
 });
 // Output only to href
 $('a[href^="p1ec2fx1uz"]').on('mouseover mouseup', function(){
-    $(this).attr('href', 'mailto:' + decodeMail($(this).attr('href')));
+  var href = decodeMail($(this).attr('href').replace("5e2nabe5s4", ''));
+  $(this).attr('href', 'mailto:' + href);
+  
+  // Unbind this action
+  $(this).unbind('mouseover mouseup');
 });
 // Output only to text
-$('a[href*="zs39qpz9ti"]').on('mouseover mouseup', function(){
-    $(this).text(decodeMail($(this).text()));
+$('a[href^="zs39qpz9ti"]').on('mouseover mouseup', function(){
+  var href = decodeMail($(this).attr('href').replace("5e2nabe5s4", ''));
+  $(this).text(href);
+  
+  // Unbind this action
+  $(this).unbind('mouseover mouseup');
 });
 
 function decodeMail(str){
-  // Todo: Firefox makes it case insensitive
-  return str.replace(/A/g, '@').replace(/D/g, '.').replace(/[A-Z]/g,'').substr(10);
+  // Todo: Firefox makes it case insensitive. 2017-07-10: fixed?
+  var regA = new RegExp('A', 'g');
+  var regD = new RegExp('D', 'g');
+  var regRest = new RegExp('[A-Z]', 'g');
+  return str.replace(regA, '@').replace(regD, '.').replace(regRest,'');
 }
+
 
 function validatePhone(val, errorelement) {
   val = val.trim();
