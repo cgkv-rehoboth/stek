@@ -167,7 +167,12 @@ def timetable_undo_ruilen_teamleader(request, id):
 @login_required
 @require_POST
 def timetable_ruilen(request, id):
-  duty = TimetableDuty.objects.get(pk=id)
+  try:
+    duty = TimetableDuty.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Taak bestaat niet.')
+    return redirect('timetable-list-page')
+
   comments = request.POST.get("comments", "").strip()
 
   # Create record
@@ -298,7 +303,11 @@ def timetable_teamleader(request, id):
 @login_required
 def timetable_ruilverzoek(request, id):
   # Get current ruilrequeset
-  ruil = RuilRequest.objects.get(pk=id)
+  try:
+    ruil = RuilRequest.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Ruilverzoek bestaat niet.')
+    return redirect('timetable-list-page')
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm(
@@ -380,7 +389,11 @@ def timetable_ruilverzoek(request, id):
 @require_POST
 def timetable_ruilverzoek_accept(request, id):
   # Get current ruilrequeset
-  ruil = RuilRequest.objects.get(pk=id)
+  try:
+    ruil = RuilRequest.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Ruilverzoek bestaat niet.')
+    return redirect('timetable-list-page')
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(ruil.timetableduty.timetable.team) and not request.user.has_perm(
@@ -415,9 +428,20 @@ def timetable_ruilverzoek_accept(request, id):
 
   if request.POST.get("responsible")[0] is "f":
     prof = None
-    fam = Family.objects.get(pk=resp_id)
+
+    try:
+      fam = Family.objects.get(pk=resp_id)
+    except ObjectDoesNotExist:
+      messages.error(request, 'Familie bestaat niet.')
+      return redirect('timetable-teamleader-page', id=ruil.timetableduty.timetable.id)
+
   else:
-    prof = Profile.objects.get(pk=resp_id)
+    try:
+      prof = Profile.objects.get(pk=resp_id)
+    except ObjectDoesNotExist:
+      messages.error(request, 'Profiel bestaat niet.')
+      return redirect('timetable-teamleader-page', id=ruil.timetableduty.timetable.id)
+
     fam = None
 
   ruil.timetableduty.responsible = prof
@@ -434,14 +458,22 @@ def timetable_ruilverzoek_accept(request, id):
 
 @login_required
 def timetable_teamleader_duty_add(request):
-  table = Timetable.objects.get(pk=request.POST.get("timetable", ""))
+  try:
+    table = Timetable.objects.get(pk=request.POST.get("timetable", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('timetable-list-page')
 
   # Check if user is teamleader of this timetable's team
   if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_timetable'):
     # Redirect to first public page
     return redirect('timetable-detail-page', id=table.pk)
 
-  event = Event.objects.get(pk=request.POST.get("event", ""))
+  try:
+    event = Event.objects.get(pk=request.POST.get("event", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Dienst bestaat niet.')
+    return redirect('timetable-list-page')
 
   # Get all responsibles
   resps = request.POST.getlist("responsible[]")
@@ -455,12 +487,23 @@ def timetable_teamleader_duty_add(request):
     # Strip ID
     resp_id = r[1:]
 
-    # Strip type
+    # Stript type
     if r[0] is "f":
       prof = None
-      fam = Family.objects.get(pk=resp_id)
+
+      try:
+        fam = Family.objects.get(pk=resp_id)
+      except ObjectDoesNotExist:
+        messages.error(request, 'Familie bestaat niet.')
+        return redirect(reverse('timetable-teamleader-page', kwargs={'id': table.id}) + "#inplannen")
+
     else:
-      prof = Profile.objects.get(pk=resp_id)
+      try:
+        prof = Profile.objects.get(pk=resp_id)
+      except ObjectDoesNotExist:
+        messages.error(request, 'Profiel bestaat niet.')
+        return redirect(reverse('timetable-teamleader-page', kwargs={'id': table.id}) + "#inplannen")
+
       fam = None
 
     # Create new duty
@@ -479,12 +522,20 @@ def timetable_teamleader_duty_add(request):
 
 @login_required
 def timetable_teamleader_duty_edit_save(request, id):
-  duty = TimetableDuty.objects.get(pk=id)
+  try:
+    duty = TimetableDuty.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Taak bestaat niet.')
+    return redirect('timetable-list-page')
 
   if not request.POST.get("timetable", "") or isinstance(request.POST.get("timetable", ""), int):
     table = duty.timetable
   else:
-    table = Timetable.objects.get(pk=request.POST.get("timetable", ""))
+    try:
+      table = Timetable.objects.get(pk=request.POST.get("timetable", ""))
+    except ObjectDoesNotExist:
+      messages.error(request, 'Rooster bestaat niet.')
+      return redirect('timetable-list-page')
 
   # Check if user is teamleader of the new/old timetable's team
   if (not request.profile.teamleader_of(table.team) or not request.profile.teamleader_of(
@@ -497,12 +548,27 @@ def timetable_teamleader_duty_edit_save(request, id):
 
   if request.POST.get("responsible")[0] is "f":
     prof = None
-    fam = Family.objects.get(pk=resp_id)
+
+    try:
+      fam = Family.objects.get(pk=resp_id)
+    except ObjectDoesNotExist:
+      messages.error(request, 'Familie bestaat niet.')
+      return redirect('timetable-detail-page', id=table.id)
+
   else:
-    prof = Profile.objects.get(pk=resp_id)
+    try:
+      prof = Profile.objects.get(pk=resp_id)
+    except ObjectDoesNotExist:
+      messages.error(request, 'Profiel bestaat niet.')
+      return redirect('timetable-detail-page', id=table.id)
+
     fam = None
 
-  event = Event.objects.get(pk=request.POST.get("event", ""))
+  try:
+    event = Event.objects.get(pk=request.POST.get("event", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Dienst bestaat niet.')
+    return redirect('timetable-list-page')
 
   # Edit duty
   duty.timetable = table
@@ -520,7 +586,11 @@ def timetable_teamleader_duty_edit_save(request, id):
 
 @login_required
 def timetable_teamleader_duty_edit(request, id):
-  duty = TimetableDuty.objects.get(pk=id)
+  try:
+    duty = TimetableDuty.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Taak bestaat niet.')
+    return redirect('timetable-list-page')
 
   # Check if user is teamleader of the new/old timetable's team
   if not request.profile.teamleader_of(duty.timetable.team) and not request.user.has_perm('agenda.change_timetable'):
@@ -561,7 +631,12 @@ def timetable_teamleader_duty_edit(request, id):
 
 @login_required
 def timetable_teamleader_duty_delete(request, id):
-  duty = TimetableDuty.objects.get(pk=id)
+  try:
+    duty = TimetableDuty.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Taak bestaat niet.')
+    return redirect('timetable-list-page')
+
   table = duty.timetable
 
   # Check if user is teamleader of the new/old timetable's team
@@ -669,12 +744,18 @@ def services_admin_add(request):
     messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
     return redirect('services-admin')
 
+  try:
+    timetable = Timetable.objects.get(title="Diensten")
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster \'Diensten\' bestaat niet.')
+    return redirect('services-admin')
+
   Service.objects.create(
     startdatetime=startdate,
     enddatetime=enddate,
     owner=request.profile,
     title=request.POST.get("title1", "").strip(),
-    timetable=Timetable.objects.get(title="Diensten"),
+    timetable=timetable,
     minister=request.POST.get("minister1", "").strip(),
     theme=request.POST.get("theme1", "").strip(),
     comments=request.POST.get("comments1", "").strip(),
@@ -694,12 +775,18 @@ def services_admin_add(request):
       messages.error(request, 'Het formaat van de ingevulde datum en/of tijdstip klopt niet.')
       return redirect('services-admin')
 
+    try:
+      timetable = Timetable.objects.get(title="Diensten")
+    except ObjectDoesNotExist:
+      messages.error(request, 'Rooster \'Diensten\' bestaat niet.')
+      return redirect('services-admin')
+
     Service.objects.create(
       startdatetime=startdate,
       enddatetime=enddate,
       owner=request.profile,
       title=request.POST.get("title2", "").strip(),
-      timetable=Timetable.objects.get(title="Diensten"),
+      timetable=timetable,
       minister=request.POST.get("minister2", "").strip(),
       theme=request.POST.get("theme2", "").strip(),
       comments=request.POST.get("comments2", "").strip(),
@@ -786,7 +873,11 @@ def services_admin_delete(request, id):
 
 @login_required
 def teampage_control_members(request, id):
-  team = Team.objects.get(pk=id)
+  try:
+    team = Team.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
@@ -809,59 +900,94 @@ def teampage_control_members(request, id):
 @login_required
 @require_POST
 def teampage_control_members_add(request):
-  team = request.POST.get("team", "")
+  team_id = request.POST.get("team", "")
   profile = request.POST.get("profile", "0")
   family = request.POST.get("family", "0")
 
+
+  try:
+    team = Team.objects.get(pk=team_id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
+
   # Check if user is teamleader of this team
-  if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
+  if not request.profile.teamleader_of(team.pk) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=team.pk)
 
   # Check if profile is valid
-  if family is "0" and TeamMember.objects.filter(team_id=team, profile_id=profile).exists():
+  if family is "0" and TeamMember.objects.filter(team_id=team.pk, profile_id=profile).exists():
     messages.error(request, "Het gekozen lid maakt al deel uit van dit team.")
-    return redirect('teampage-control-members', id=team)
+    return redirect('teampage-control-members', id=team.pk)
 
   # Check if profile is valid
-  if profile is "0" and TeamMember.objects.filter(team_id=team, family_id=family).exists():
+  if profile is "0" and TeamMember.objects.filter(team_id=team.pk, family_id=family).exists():
     messages.error(request, "De gekozen familie maakt al deel uit van dit team.")
-    return redirect('teampage-control-members', id=team)
+    return redirect('teampage-control-members', id=team.pk)
 
   if Profile.objects.filter(pk=profile).exists():
-    prof = Profile.objects.get(pk=profile)
+    try:
+      prof = Profile.objects.get(pk=profile)
+    except ObjectDoesNotExist:
+      messages.error(request, 'Profiel bestaat niet.')
+      return redirect('teampage-control-members', id=team.pk)
+
     fam = None
+
   elif Family.objects.filter(pk=family).exists():
     prof = None
-    fam = Family.objects.get(pk=family)
+
+    try:
+      fam = Family.objects.get(pk=family)
+    except ObjectDoesNotExist:
+      messages.error(request, 'Familie bestaat niet.')
+      return redirect('teampage-control-members', id=team.pk)
+
   else:
     messages.error(request, "Er is geen (geldig) lid/familie gekozen om toe te voegen.")
-    return redirect('teampage-control-members', id=team)
+    return redirect('teampage-control-members', id=team.pk)
+
+  try:
+    role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Teamrol bestaat niet.')
+    return redirect('teampage-control-members', id=team.pk)
 
   TeamMember.objects.create(
-    team=Team.objects.get(pk=team),
+    team=team,
     profile=prof,
     family=fam,
-    role=TeamMemberRole.objects.get(pk=request.POST.get("role", "")),
+    role=role,
     is_admin=True if request.POST.get("is_admin", False) else False
   )
 
   messages.success(request, "Het nieuwe teamlid is toegevoegd.")
 
-  return redirect('teampage-control-members', id=team)
+  return redirect('teampage-control-members', id=team.pk)
 
 
 @login_required
 @require_POST
 def teampage_control_members_edit_save(request, id):
-  member = TeamMember.objects.get(pk=id)
+  try:
+    member = TeamMember.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Teamlid bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(member.team) and not request.user.has_perm('agenda.change_team'):
     # Redirect to first public page
     return redirect('teampage', id=member.team.pk)
 
-  member.role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
+  try:
+    role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Teamrol bestaat niet.')
+    return redirect('teampage-control-members', id=team.pk)
+
+  member.role = role
   member.is_admin = True if request.POST.get("is_admin", False) else False
   member.save()
 
@@ -872,7 +998,11 @@ def teampage_control_members_edit_save(request, id):
 
 @login_required
 def teampage_control_members_edit(request, id):
-  member = TeamMember.objects.get(pk=id)
+  try:
+    member = TeamMember.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Teamlid bestaat niet.')
+    return redirect('team-list-page')
 
   roles = TeamMemberRole.objects.active().order_by('name')
 
@@ -886,7 +1016,11 @@ def teampage_control_members_edit(request, id):
 
 @login_required
 def teampage_control_members_delete(request, id):
-  member = TeamMember.objects.get(pk=id)
+  try:
+    member = TeamMember.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Teamlid bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(member.team) and not request.user.has_perm('agenda.change_team'):
@@ -903,7 +1037,11 @@ def teampage_control_members_delete(request, id):
 
 @login_required
 def teampage_control_timetables(request, id):
-  team = Team.objects.get(pk=id)
+  try:
+    team = Team.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
@@ -922,7 +1060,11 @@ def teampage_control_timetables(request, id):
 @login_required
 @require_POST
 def teampage_control_timetables_add(request):
-  team = Team.objects.get(pk=request.POST.get("team", ""))
+  try:
+    team = Team.objects.get(pk=request.POST.get("team", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
@@ -955,7 +1097,12 @@ def teampage_control_timetables_add(request):
 
 @login_required
 def teampage_control_timetables_delete(request, id):
-  table = Timetable.objects.get(pk=id)
+  try:
+    table = Timetable.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('team-list-page')
+
   team = table.team.pk
 
   # Check if user is teamleader of this team
@@ -972,7 +1119,11 @@ def teampage_control_timetables_delete(request, id):
 
 @login_required
 def teampage_control_timetables_edit(request, id):
-  table = Timetable.objects.get(pk=id)
+  try:
+    table = Timetable.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('team-list-page')
 
   return render(request, 'teampage/control_timetables_edit.html', {
     'table': table,
@@ -982,7 +1133,11 @@ def teampage_control_timetables_edit(request, id):
 @login_required
 @require_POST
 def teampage_control_timetables_edit_save(request, id):
-  table = Timetable.objects.get(pk=id)
+  try:
+    table = Timetable.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(table.team) and not request.user.has_perm('agenda.change_team'):
@@ -1008,7 +1163,11 @@ def teampage_control_timetables_edit_save(request, id):
 @login_required
 @require_POST
 def teampage_control_edit_save(request, id):
-  team = Team.objects.get(pk=id)
+  try:
+    team = Team.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
@@ -1050,7 +1209,11 @@ def teampage_control_edit_save(request, id):
 
 @login_required
 def teampage_control_edit(request, id):
-  team = Team.objects.get(pk=id)
+  try:
+    team = Team.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
 
   # Check if user is teamleader of this team
   if not request.profile.teamleader_of(team) and not request.user.has_perm('agenda.change_team'):
@@ -1065,7 +1228,11 @@ def teampage_control_edit(request, id):
 
 @login_required
 def teampage(request, id):
-  team = Team.objects.get(pk=id)
+  try:
+    team = Team.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
 
   members = team.teammembers.order_by('role__name', 'family__lastname', 'profile__first_name')
 
@@ -1130,7 +1297,11 @@ def globalteampage_add(request):
 @login_required
 @permission_required('agenda.delete_team', raise_exception=True)
 def globalteampage_delete(request, id):
-  team = Team.objects.get(pk=id)
+  try:
+    team = Team.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Team bestaat niet.')
+    return redirect('team-list-page')
 
   # Delete timetable
   for table in team.timetables.all():
@@ -1165,7 +1336,10 @@ def services_files_admin(request, id=None):
   # set default selection to event without duty (belonging to this timetable)
   if id:
     # Load EventFile
-    ef = EventFile.objects.get(pk=int(id))
+    try:
+      ef = EventFile.objects.get(pk=int(id))
+    except ObjectDoesNotExist:
+      messages.error(request, 'Bestand bestaat niet.')
 
     selected_service = ef.event.pk
 
@@ -1218,7 +1392,11 @@ def services_files_admin_add(request):
 @permission_required('agenda.change_eventfile', raise_exception=True)
 @require_POST
 def services_files_admin_edit_save(request, id):
-  ef = EventFile.objects.get(pk=id)
+  try:
+    ef = EventFile.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Bestand bestaat niet.')
+    return redirect('services-files-admin')
 
   if request.FILES.get('file'):
     # New file, so delete old one
@@ -1242,7 +1420,13 @@ def services_files_admin_edit_save(request, id):
 @login_required
 @permission_required('agenda.delete_eventfile', raise_exception=True)
 def services_files_admin_delete(request, id):
-  ef = EventFile.objects.get(pk=id).delete()
+  try:
+    ef = EventFile.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Bestand bestaat niet.')
+    return redirect('services-files-admin')
+
+  ef.delete()
 
   messages.success(request, 'Bestand is verwijderd.')
 
@@ -1270,7 +1454,11 @@ def services_page(request):
 
 @login_required
 def services_single(request, id):
-  service = Service.objects.get(pk=id)
+  try:
+    service = Service.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Dienst bestaat niet.')
+    return redirect('services-page')
 
   return render(request, 'services/single.html', {
     'service': service,
@@ -1367,13 +1555,20 @@ def events_admin_add(request):
     messages.error(request, 'Selecteer een rooster.')
     return redirect('events-admin')
 
+
+  try:
+    timetable = Timetable.objects.get(pk=timetable)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('events-admin')
+
   Event.objects.create(
     startdatetime=startdatetime,
     enddatetime=enddatetime,
     owner=request.profile,
     title=request.POST.get("title", "").strip(),
     description=request.POST.get("description", "").strip(),
-    timetable=Timetable.objects.get(pk=timetable),
+    timetable=timetable,
     incalendar=True if request.POST.get("incalendar") else False,
   )
 
@@ -1408,11 +1603,17 @@ def events_admin_edit_save(request, id):
     messages.error(request, 'Selecteer een rooster.')
     return redirect('events-admin')
 
+  try:
+    timetable = Timetable.objects.get(pk=timetable)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('events-admin')
+
   event.startdatetime = startdatetime
   event.enddatetime = enddatetime
   event.title = request.POST.get("title", "").strip()
   event.description = request.POST.get("description", "").strip()
-  event.timetable = Timetable.objects.get(pk=timetable)
+  event.timetable = timetable
   event.incalendar = True if request.POST.get("incalendar") else False
 
   event.save()
@@ -1459,7 +1660,7 @@ def events_admin_delete(request, id):
   try:
     Event.objects.get(pk=id).delete()
   except ObjectDoesNotExist:
-    messages.error(request, 'Event bestaat niet.')
+    messages.error(request, 'Event bestaat niet of kon niet verwijderd worden.')
     return redirect('events-admin')
 
   # Delete all duties of this service

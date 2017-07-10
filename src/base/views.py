@@ -191,7 +191,11 @@ def profile_detail_delete_confirm(request, pk):
     return redirect('profile_list')
 
   user = profile.user
-  verwijderd_user = User.objects.get(username='verwijderd_profiel')
+  try:
+    verwijderd_user = User.objects.get(username='verwijderd_profiel')
+  except ObjectDoesNotExist:
+    messages.error(request, 'Kan het profiel niet verwijderen, omdat \'verwijderd_profiel\' niet bestaat.')
+    return redirect('profile_list')
 
   ## Remove profile info or replace it
   # FORUM
@@ -297,7 +301,11 @@ def profile_detail_edit(request, pk):
 @login_required
 @require_POST
 def profile_detail_edit_save(request, pk):
-  profile = Profile.objects.get(pk=pk)
+  try:
+    profile = Profile.objects.get(pk=pk)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Kan het profiel niet vinden.')
+    return redirect('profile-list-page')
 
   if not request.profile.pk == profile.pk and not request.profile.family == profile.family:
     messages.error(request, "Je hebt geen rechten om dit profiel te wijzigen.")
@@ -444,7 +452,11 @@ def profile_detail_edit_save(request, pk):
 @require_POST
 @never_cache
 def profile_pic_edit_save(request, pk):
-  profile = Profile.objects.get(pk=pk)
+  try:
+    profile = Profile.objects.get(pk=pk)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Kan het profiel niet vinden.')
+    return redirect('profile-list-page')
 
   if not request.profile.pk == int(pk) and not request.profile.family == profile.family:
     messages.error(request, "Je hebt geen rechten om deze profielfoto te wijzigen.")
@@ -472,7 +484,11 @@ def profile_pic_edit_save(request, pk):
 @login_required
 @never_cache
 def profile_pic_delete(request, pk):
-  profile = Profile.objects.get(pk=pk)
+  try:
+    profile = Profile.objects.get(pk=pk)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Kan het profiel niet vinden.')
+    return redirect('profile-list-page')
 
   if not request.profile.pk == int(pk) and not request.profile.family == profile.family:
     messages.error(request, "Je hebt geen rechten om deze profielfoto te verwijderen.")
@@ -1083,13 +1099,19 @@ def addressbook_add(request):
     # make sure it's only 6 chars long and uppercase
     new['POSTCODE'] = re.sub(r" ", "", new['POSTCODE']).upper()
 
+    try:
+      wijk = Wijk.objects.get(id=int(new['WIJK'].strip()))
+    except ObjectDoesNotExist:
+      errors.append('Kan de wijk horende bij gezinsnr. %d niet vinden. Deze is nu als leeg ingevuld.', new['GEZINSNR'])
+      wijk = None
+
     # Create address
     address = Address(
       street = new['STRAAT'].strip(),
       zip = new['POSTCODE'],
       city = new['WOONPLAATS'].strip(),
       phone = new['TELEFOON'].strip(),
-      wijk = Wijk.objects.get(id=int(new['WIJK'].strip()))
+      wijk = wijk
     )
     address.save()
 
@@ -1107,7 +1129,11 @@ def addressbook_add(request):
 
   def create_profile(new):
     # Get family
-    family = Family.objects.get(gezinsnr=new['GEZINSNR'])
+    try:
+      family = Family.objects.get(gezinsnr=new['GEZINSNR'])
+    except ObjectDoesNotExist:
+      errors.append("Profiel met lidnr. %d kan niet worden aangemaakt: kan familie met gezinsnr. %d niet vinden." % (new['LIDNR'], new['GEZINSNR']))
+      return
 
     # parse date
     try:
@@ -1212,7 +1238,7 @@ def addressbook_add(request):
             f = Family.objects.filter(lastname=famname, prefix='')
 
           if len(f) > 0:
-            # Profile already exists
+            # Family already exists
             f = f.first()
             errors.append(
               'Online familie bestaat al voor familienummer %d (<a href="%s" title="Bekijk familie" target="_blank">%s</a>).' % (
@@ -1222,8 +1248,11 @@ def addressbook_add(request):
             # Create new family
             family = create_family(l)
 
-            # Record this one as done
-            created_families.append(family)
+            # Mark this one as done
+            if family:
+              created_families.append(family)
+            else:
+              errors.append("Iets is fout gegaan bij het aanmaken van de familie met gezinsnr. %d. " % l['GEZINSNR'])
 
         ##
         # Start the real work
@@ -1249,7 +1278,10 @@ def addressbook_add(request):
           profile = create_profile(l)
 
           # Record this one as done
-          created_profiles.append(profile)
+          if profile:
+            created_profiles.append(profile)
+          else:
+            errors.append("Iets is fout gegaan bij het aanmaken van het profiel met lidnr. %d. " % l['LIDNR'])
 
   return render(request, 'addressbook/beheer/add.html', {
     'errors': errors,
