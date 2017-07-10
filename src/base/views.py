@@ -849,32 +849,33 @@ def addressbook_differences(request):
           # Get profile
           p = Profile.objects.filter(lidnr=l['LIDNR'])
 
-          if len(p) == 0:
-            # Try again
-            p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
+          # Commented, because this flexible search is no longer needed
+          #if len(p) == 0:
+          #  # Try again
+          #  p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
+          #
+          #  if len(p) == 0:
+          #    # Try another way to find the profile
+          #    famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else ("%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
+          #
+          #    p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=famname)
+          #
+          #    if len(p) == 0:
+          #      # And again
+          #      p = Profile.objects.filter(birthday=l['GEBDATUM'], first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
+          #
+          #      if len(p) == 0:
+          #        # And again...
+          #        p = Profile.objects.filter(first_name=l['ROEPNAAM'], initials=l['VOORLETTER'],
+          #                                   last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
+          #
+          #        if len(p) == 0:
+          #          # Give up: Not found
+          #          errors.append('Geen online profiel gevonden voor lidnummer %d (%s %s %s).' % (
+          #            l['LIDNR'], l['ROEPNAAM'], l['VOORVGSELS'], l['ACHTERNAAM']
+          #          ))
 
-            if len(p) == 0:
-              # Try another way to find the profile
-              famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else ("%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
-
-              p = Profile.objects.filter(birthday=l['GEBDATUM'], family__lastname=famname)
-
-              if len(p) == 0:
-                # And again
-                p = Profile.objects.filter(birthday=l['GEBDATUM'], first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
-
-                if len(p) == 0:
-                  # And again...
-                  p = Profile.objects.filter(first_name=l['ROEPNAAM'], initials=l['VOORLETTER'],
-                                             last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'])
-
-                  if len(p) == 0:
-                    # Give up: Not found
-                    errors.append('Geen online profiel gevonden voor lidnummer %d (%s %s %s).' % (
-                      l['LIDNR'], l['ROEPNAAM'], l['VOORVGSELS'], l['ACHTERNAAM']
-                    ))
-
-          if p:
+          if len(p) > 0 and p:
             # Filter out non-active profiles
             if p.filter(is_active=True):
               p = p.filter(is_active=True)
@@ -911,6 +912,11 @@ def addressbook_differences(request):
               errors.append('Online profiel voor lidnummer %d (%s %s %s) is uitgeschakeld.' % (
                 l['LIDNR'], l['ROEPNAAM'], l['VOORVGSELS'], l['ACHTERNAAM']
               ))
+          else:
+            # Give up: Not found
+            errors.append('Geen online profiel gevonden voor lidnummer %d (%s %s %s).' % (
+              l['LIDNR'], l['ROEPNAAM'], l['VOORVGSELS'], l['ACHTERNAAM']
+            ))
 
   ##
   # Main function for families
@@ -959,22 +965,23 @@ def addressbook_differences(request):
           # Get family
           p = Family.objects.filter(gezinsnr=m['GEZINSNR'])
 
-          if len(p) == 0:
-            # Try again
-            p = Family.objects.filter(lastname=m['GEZINSNAAM'], prefix=m['GEZVOORVGS'])
+          # Commented, because this flexible search is no longer needed
+          #if len(p) == 0:
+          #  # Try again
+          #  p = Family.objects.filter(lastname=m['GEZINSNAAM'], prefix=m['GEZVOORVGS'])
+          #
+          #  if len(p) == 0:
+          #    # Give up: Not found
+          #    famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else (
+          #    "%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+          #
+          #    if len(p) == 0:
+          #      # Try again
+          #      p = Family.objects.filter(lastname=famname, prefix='')
+          #
+          #      errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
 
-            if len(p) == 0:
-              # Give up: Not found
-              famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else (
-              "%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
-
-              if len(p) == 0:
-                # Try again
-                p = Family.objects.filter(lastname=famname, prefix='')
-
-                errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
-
-          if p:
+          if len(p) > 0 and p:
             # Filter out non-active families
             if p.filter(is_active=True):
               p = p.filter(is_active=True)
@@ -1003,6 +1010,10 @@ def addressbook_differences(request):
             else:
               # Profile has been soft-deleted
               errors.append('Online familie %d (%s) is uitgeschakeld.' % (m['GEZINSNR'], ("%s %s" % (m['GEZVOORVGS'], m['GEZINSNAAM']) if m['GEZVOORVGS'] else m['GEZINSNAAM'])))
+          else:
+            # Give up: Not found
+            famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else ("%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+            errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
 
   ##
   # Get the newly added profiles/families
@@ -1230,12 +1241,13 @@ def addressbook_add(request):
           # Get family
           f = Family.objects.filter(gezinsnr=l['GEZINSNR'])
 
-          if len(f) == 0:
-            # Try another search
-            famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else (
-              "%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
-
-            f = Family.objects.filter(lastname=famname, prefix='')
+          # Commented, because this flexible search is no longer needed
+          #if len(f) == 0:
+          #  # Try another search
+          #  famname = l['GEZINSNAAM'] if len(l['GEZVOORVGS']) == 0 else (
+          #    "%s, %s" % (l['GEZINSNAAM'], l['GEZVOORVGS'])).strip()
+          #
+          #  f = Family.objects.filter(lastname=famname, prefix='')
 
           if len(f) > 0:
             # Family already exists
@@ -1262,10 +1274,11 @@ def addressbook_add(request):
         # Get profile
         p = Profile.objects.filter(lidnr=l['LIDNR'])
 
-        if len(p) == 0:
-          # Try again
-          p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'],
-                                     first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
+        # Commented, because this flexible search is no longer needed
+        #if len(p) == 0:
+        #  # Try again
+        #  p = Profile.objects.filter(birthday=l['GEBDATUM'], last_name=l['ACHTERNAAM'], prefix=l['VOORVGSELS'],
+        #                             first_name=l['ROEPNAAM'], initials=l['VOORLETTER'])
 
         if len(p) > 0:
           # Profile already exists

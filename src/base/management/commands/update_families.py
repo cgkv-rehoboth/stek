@@ -10,6 +10,12 @@ import argparse
 import csv
 import re
 
+########################
+##                    ##
+##  OUTDATED SCRIPT!  ##
+##                    ##
+########################
+
 
 def update_family(old, new, dryrun):
   old.lastname     = new['GEZINSNAAM'].strip()
@@ -42,7 +48,7 @@ def update_family(old, new, dryrun):
 
 
 class Command(BaseCommand):
-  help = 'Import a .csv families file'
+  help = 'Import a .csv families file. WARNING: Outdated script!'
 
   def add_arguments(self, parser):
     parser.add_argument('family-file', nargs=1, type=str)
