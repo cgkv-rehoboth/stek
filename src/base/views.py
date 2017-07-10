@@ -981,38 +981,52 @@ def addressbook_differences(request):
           #
           #      errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
 
+          famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else (
+          "%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
+
           if len(p) > 0 and p:
             # Filter out non-active families
             if p.filter(is_active=True):
               p = p.filter(is_active=True)
+              print(p)
+
+              # Commented, because this flexible search is no longer needed
+              #if len(p) > 1:
+              #  # Twin things: be more accurate
+              #  p = p.filter(address__zip=m['POSTCODE'])
+              #  print('double')
+              #
+              #  if len(p) > 1:
+              #    # Get over it
+              #    p = p.filter(address__street=m['STRAAT'])
+              #
+              #    if len(p) > 1:
+              #      # PLEASE
+              #      p = p.filter(address__phone=m['TELEFOON'])
 
               if len(p) > 1:
-                # Twin things: be more accurate
-                p = p.filter(address__zip=m['POSTCODE'])
+                # Multiple families are fount, let this be manually fixed
+                errors.append('Meerdere online families gevonden met gezinsnr. %d. Offline familie \'%s\' kan dus niet vergelijken worden.' % (m['GEZINSNR'], famname))
 
-                if len(p) > 1:
-                  # Get over it
-                  p = p.filter(address__street=m['STRAAT'])
+                # Record these one as done
+                for ps in p:
+                  checked_families.append(ps.pk)
 
-                  if len(p) > 1:
-                    # PLEASE
-                    p = p.filter(address__phone=m['TELEFOON'])
+              else:
+                p = p.first()
 
-              p = p.first()
+                # Get family differences
+                difference = get_family_differences(m, p)
+                if difference:
+                  family_differences[m['GEZINSNR']] = difference
 
-              # Get family differences
-              difference = get_family_differences(m, p)
-              if difference:
-                family_differences[m['GEZINSNR']] = difference
-
-              # Record this one as done
-              checked_families.append(p.pk)
+                # Record this one as done
+                checked_families.append(p.pk)
             else:
               # Profile has been soft-deleted
               errors.append('Online familie %d (%s) is uitgeschakeld.' % (m['GEZINSNR'], ("%s %s" % (m['GEZVOORVGS'], m['GEZINSNAAM']) if m['GEZVOORVGS'] else m['GEZINSNAAM'])))
           else:
             # Give up: Not found
-            famname = m['GEZINSNAAM'] if len(m['GEZVOORVGS']) == 0 else ("%s, %s" % (m['GEZINSNAAM'], m['GEZVOORVGS'])).strip()
             errors.append('Geen online familie gevonden voor familienummer %d (%s).' % (m['GEZINSNR'], famname))
 
   ##
