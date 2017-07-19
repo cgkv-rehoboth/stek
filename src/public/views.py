@@ -68,6 +68,7 @@ def diensten(request):
   return render(request, 'list.html', {
     'startdatetime': startdatetime,
     'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
+    'slides': Slide.objects.filter(live=True).order_by('order'),
   })
 
 urls = [
