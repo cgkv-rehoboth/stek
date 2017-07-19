@@ -28,16 +28,6 @@ class TimestampedModel(models.Model):
 
   created_date = models.DateTimeField(auto_now_add=True)
   modified_date = models.DateTimeField(auto_now=True)
-  
-
-class Slide(LiveModel, models.Model):
-
-  image       = models.CharField(max_length=255)
-  title       = models.CharField(max_length=255)
-  description = models.TextField(blank=True, null=True)
-  owner       = models.ForeignKey(User) # Todo: replace User with Profile
-
-  def __str__(self): return self.title
 
 
 class Wijk(models.Model):

@@ -25,20 +25,22 @@ apipatterns = patterns('',
   url(r'^agenda/', include(agenda.api.urls)),
 )
 
-@login_required
+#@login_required
 def media(request, path):
-  if settings.DEBUG:
-    dire = os.path.join(settings.MEDIA_ROOT, os.path.dirname(path))
-    return serve(request, os.path.basename(path), dire)
-  else:
-    # use nginx x-accel-redirect
-    # this allows us to serve the file directly using nginx,
-    # but authenticate the user here
-    url = os.path.join("/media-protected", path)
-    response = HttpResponse()
-    response['X-Accel-Redirect'] = url.encode('utf-8')
+  # Check if the user is logged in OR if the user just wants to see the slide show
+  if request.user.is_authenticated() or path[0:7] == "slides/":
+    if settings.DEBUG:
+      dire = os.path.join(settings.MEDIA_ROOT, os.path.dirname(path))
+      return serve(request, os.path.basename(path), dire)
+    else:
+      # use nginx x-accel-redirect
+      # this allows us to serve the file directly using nginx,
+      # but authenticate the user here
+      url = os.path.join("/media-protected", path)
+      response = HttpResponse()
+      response['X-Accel-Redirect'] = url.encode('utf-8')
 
-    return response
+      return response
 
 sitemaps = {
     'static': StaticViewSitemap,

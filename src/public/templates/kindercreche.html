@@ -2,39 +2,6 @@
 
 {% load staticfiles %}
 
-{% block intro %}
-  <!-- Intro Header -->
-  <header class="intro">
-    <div class="intro-body">
-      <div class="intro-gradient" ></div>
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8 col-md-offset-2">
-            <img src="{% static 'resources/images/logo-wit.png' %}">
-          </div>
-
-          <!-- Hidden button -->
-          <div id="listen-in" class="col-md-4">
-              <a class="cyan btn-rounded btn luisteren-button"
-                 data-toggle="tooltip" data-placement="bottom"
-                 href="https://kerkdienstgemist.nl/assets/267"
-                 title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
-          </div>
-        </div>
-
-        <!-- intro footer -->
-        <div class="row">
-          <div class="col-sm-12">
-            <a id="go-down" href="#content" class="btn btn-circle page-scroll cyan">
-              <i class="fa fa-angle-double-down animated"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-{% endblock %}
-
 {% block content %}
   <section class="content-section">
     <div class="container">

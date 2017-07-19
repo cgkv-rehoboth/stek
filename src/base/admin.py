@@ -70,4 +70,14 @@ admin.site.register(Profile, ProfileAdmin)
 class FavoritesAdmin(admin.ModelAdmin):
   search_fields = ['owner', 'favorite']
 
+  # Custom default values for the form fields
+  def formfield_for_dbfield(self, db_field, **kwargs):
+    field = super(FavoritesAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+    if db_field.name == 'owner':
+      # Set default owner
+      field.initial = kwargs.get('request', None).user.profile.pk
+
+    return field
+
 admin.site.register(Favorites, FavoritesAdmin)

@@ -31,16 +31,46 @@ a
       &:hover
         color: #afd9f5
 
-.navbar ul.nav
-  .short-text
-    display: none
+#wrapper .navbar:not(.top-nav-collapse)
+    a
+      color: #fff
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.31), 1px 1px 0px rgba(0, 0, 0, 0.3)
 
-  .long-text
-    display: inline-block
+    .navbar-nav a:hover
+        color: #47b1fc
+        //text-shadow: 1px 1px 2px rgba(0,0,0,0.15)
 
-  @media (max-width: 992px) and (min-width: 768px)
+.navbar
+  ul.nav
     .short-text
-      display: inline-block
+      display: none
 
     .long-text
-      display: none
+      display: inline-block
+
+    @media (max-width: 992px) and (min-width: 768px)
+      .short-text
+        display: inline-block
+
+      .long-text
+        display: none
+
+#intro-carousel
+  .carousel-control
+    z-index: 1
+
+    &.right
+      background-image: linear-gradient(to right,rgba(0,0,0,0) 0,rgba(0, 0, 0, 0.3) 100%)
+
+    &.left
+      background-image: linear-gradient(to right,rgba(0,0,0,.3) 0,rgba(0,0,0,0) 100%)
+
+  .carousel-inner
+    position: absolute
+    top: 0
+    height: 100%
+
+    .item
+      height: 100%
+      background-size: cover
+      background-position: center

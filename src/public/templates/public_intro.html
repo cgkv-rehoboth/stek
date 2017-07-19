@@ -1,0 +1,70 @@
+{% load staticfiles %}
+
+<!-- Intro Header -->
+<div id="intro-carousel" class="carousel slide intro"
+     data-ride="carousel"
+     data-interval="5000"
+     > <!-- disable pause on hover -->
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    {% for slide in slides %}
+      <li data-target="#intro-carousel" data-slide-to="{{ forloop.counter|add:"-1" }}" {% if forloop.counter == 1 %}class="active"{% endif %}></li>
+    {% endfor %}
+  </ol>
+
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner">
+    {% for slide in slides %}
+      <div class="item {% if forloop.counter == 1 %}active{% endif %}" style="background-image: url('{{ slide.image.url }}')">
+        <!--<img src="{{ slide.image.url }}" alt="{{ slide.title }}">-->
+
+        {% if slide.showtext %} <!-- Show title and description -->
+          <div class="carousel-caption">
+            <h3>{{ slide.title }}</h3>
+            <p>{{ slide.description }}</p>
+          </div>
+        {% endif %}
+
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Left and right controls -->
+  <a class="left carousel-control" href="#intro-carousel" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#intro-carousel" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+
+  <!-- Remaining content to show -->
+  <div class="intro-body">
+    <div class="intro-gradient" ></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+          <img src="{% static 'resources/images/logo-wit.png' %}">
+        </div>
+
+        <!-- Hidden button for the live broadcast -->
+        <div id="listen-in" class="col-md-4">
+            <a class="cyan btn-rounded btn luisteren-button"
+               data-toggle="tooltip" data-placement="bottom"
+               href="https://kerkdienstgemist.nl/assets/267"
+               title="U kunt nu luisteren naar de live stream!" >Luister nu mee!</a>
+        </div>
+      </div>
+
+      <!-- intro footer -->
+      <div class="row">
+        <div class="col-sm-12">
+          <a id="go-down" href="#about" class="btn btn-circle page-scroll cyan">
+            <i class="fa fa-angle-double-down animated"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

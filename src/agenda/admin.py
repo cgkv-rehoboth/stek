@@ -15,6 +15,16 @@ class TimetableAdmin(admin.ModelAdmin):
   inlines = [TimetableDutyInline]
   list_display = ['title', 'team', 'description']
 
+  # Custom default values for the form fields
+  def formfield_for_dbfield(self, db_field, **kwargs):
+    field = super(TimetableAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+    if db_field.name == 'owner':
+      # Set default owner
+      field.initial = kwargs.get('request', None).user.profile.pk
+
+    return field
+
 admin.site.register(Timetable, TimetableAdmin)
 
 # Create custom display for TimetableDuty
@@ -33,6 +43,16 @@ admin.site.register(RuilRequest, RuilRequestAdmin)
 class EventAdmin(admin.ModelAdmin):
   list_display = ['title', 'startdatetime', 'enddatetime', 'timetable', 'description']
 
+  # Custom default values for the form fields
+  def formfield_for_dbfield(self, db_field, **kwargs):
+    field = super(EventAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+    if db_field.name == 'owner':
+      # Set default owner
+      field.initial = kwargs.get('request', None).user.profile.pk
+
+    return field
+
 admin.site.register(Event, EventAdmin)
 
 # Create custom display for Service
@@ -45,6 +65,16 @@ class EventFileAdmin(admin.ModelAdmin):
   list_display = ['title', 'event', 'file', 'filesize', 'is_public', 'modified_date']
 
   ordering = ('-modified_date', '-event', 'title')
+
+  # Custom default values for the form fields
+  def formfield_for_dbfield(self, db_field, **kwargs):
+    field = super(EventFileAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+    if db_field.name == 'owner':
+      # Set default owner
+      field.initial = kwargs.get('request', None).user.profile.pk
+
+    return field
 
 admin.site.register(EventFile, EventFileAdmin)
 

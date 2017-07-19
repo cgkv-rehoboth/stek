@@ -81,12 +81,6 @@ class ProfileSerializer(serializers.ModelSerializer):
   class Meta:
     model = Profile
 
-class SlideSerializer(serializers.ModelSerializer):
-  owner = UserSerializer()
-
-  class Meta:
-    model = Slide
-
 class FavoriteSerializer(serializers.ModelSerializer):
   owner = ProfileSerializer()
   favorite = ProfileSerializer()
