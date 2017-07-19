@@ -66,6 +66,9 @@ class ContactForm extends Component {
 }
 
 export default function frontpageMain() {
+  /**
+   * Popup
+   */
   /*
   ReactDom.render(
     <Popup>
@@ -74,20 +77,35 @@ export default function frontpageMain() {
     $('#popup')[0]
   );
   */
+  
+  
+  /**
+   * Contact form
+   */
+  // Render the contact form
   ReactDom.render(<ContactForm />, $('#contact-form')[0]);
-
-  // Service table
+  
+  
+  /**
+   * Service table
+   */
+  // Create function for retrieving data
   let searchServices = (query, page) => {
     return api.services.list(query, page);
   };
 
+  // Render the service table
   ReactDom.render(
     <ServiceTable listFunc={searchServices} />,
     $("#service-table")[0]
   );
-
-  // Only do this once.
-  var loaded = false;
+  
+  
+  /**
+   * Broadcast / Meeluisteren
+   */
+  // Check if the broadcast is live
+  var loaded = false; // Only check this once
   let onDataLoaded = () => {
     if(!loaded) {
       // Loading
@@ -109,7 +127,10 @@ export default function frontpageMain() {
     }
   };
 
+  // Add only one player to the page
   $("#content").append('<div id="luisteren-player"></div>');
+  
+  // Render the buttons to control this player
   let player = ReactDom.render(
     <LivePlayer onDataLoaded={onDataLoaded}></LivePlayer>,
     $("#luisteren-player")[0]
@@ -119,5 +140,34 @@ export default function frontpageMain() {
   $(".luisteren-button").map((value, i) => {
     ReactDom.render(<LiveButton text={$(i).text()} player={player}></LiveButton>, i);
   });
-
+  
+  
+  /**
+   * Jaarthema: show the info of the selected year
+   */
+  $("#jaarthema-menu a").click(function(){
+    let newcontainer = "#jaarthema-" + $(this).data('jaar');
+    
+    // Check if current jaarthema is already visible
+    if ($(newcontainer).css('display') == 'none') {
+      // Stop all events on these divs
+      $(".jaarthema-archive").stop();
+      
+      // Hide all jaarthema divs
+      $(".jaarthema-archive").slideUp();
+      
+      // Show new jaarthema div
+      $(newcontainer).slideDown();
+      
+      // Change background, only when a new image is available
+      if ($(newcontainer).data('background-img')) {
+        $("#jaarthema").css('background-image', 'url(' + $(newcontainer).data('background-img') + ')');
+      }
+      
+      // Select the right menu item
+      $("#jaarthema-menu a").removeClass('current');
+      $(this).addClass('current')
+    }
+  })
+  
 };

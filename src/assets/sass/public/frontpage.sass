@@ -119,13 +119,24 @@ $activiteiten-h: 250px
 #jaarthema
   position: relative
   margin-bottom: 90px
-  background-image: url('/static/resources/images/jaarthema-bg.jpg')
+  background-image: url('/static/resources/images/jaarthema-bg.jpg')  // Default background, needs to be changed to the current jaarthema background
   background-position-x: right
   background-position-y: bottom
   background-size: cover
+  transition: all 1s
 
   a
     color: #1ea473
+
+  #jaarthema-menu
+    position: relative
+    top: -36px
+
+    a.current
+      text-decoration: underline
+
+  .jaarthema-archive:not(.jaarthema-current)
+    display: none   // Hide all jaarthema divs, but not the default one
 
 #contact-form
   label
