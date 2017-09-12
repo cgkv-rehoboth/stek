@@ -16,6 +16,7 @@ import ServiceTableDashboard from "ServiceTableDashboard";
 import ServiceTable from "ServiceTable";
 import {SearchTable} from "bootstrap/tables";
 import AddressForm from "AddressForm";
+import ReactImage from "ReactImage";
 
 // bind global jquery instance
 window.jQuery = $;
@@ -52,10 +53,14 @@ function initListGroupDetail() {
 
   let focus_id = $('.list-group-hide-detail').data('focus');
   if(focus_id) {
-    let y = $(`#${focus_id}`).offset().top - $('.navbar').height() - 20;
-    $('html, body').animate({
-      scrollTop: y
-    }, 1000);
+    let offset = $(`#${focus_id}`).offset();
+    // Check if the element + offset exists (otherwise you get an 'undefined' error)
+    if (offset) {
+      let y = offset.top - $('.navbar').height() - 20;
+      $('html, body').animate({
+        scrollTop: y
+      }, 1000);
+    }
   }
 }
 
@@ -207,6 +212,19 @@ window.familiesMain = () => {
     let fav = $(this).data('favorite') !== undefined;
     ReactDom.render(<FavStar pk={$(this).data('pk')} favorite={fav} />, $(this)[0]);
   });
+
+  
+  // Perform when document is loaded
+  $('.family-picture-render').each(function() {
+    // Get data from the element
+    let src = $(this).data('src');
+    let alt = $(this).data('alt');
+    let className = $(this).data('class');
+    
+    // Render React element
+    ReactDom.render(<ReactImage src={src} alt={alt} className={className} />, $(this)[0]);
+  });
+  
 };
 
 window.teamListMain = () => {
@@ -350,29 +368,30 @@ window.servicePage = () => {
     }
   });
 
-  // Switch between summer and wintertime
-  checkSummertime();
-  $("#services-form input[name='date']").change(function () {
+  /* Not necessary anymore, since december 2016
+   *
+    // Switch between summer and wintertime
     checkSummertime();
-  });
-
-  function checkSummertime(){
-    // Not necessary anymore, since december 2016
-    return;
-
-    var month = $("#services-form input[name='date']").val().substring(3,5);
-
-    // If month is in the summer months:
-    if(month > 6 && month < 9) {
-      $('#services-form input[name="title2"]').attr('value', 'Avonddienst');
-      $('#services-form input[name="starttime2"]').attr('value', '18:30');
-      $('#services-form input[name="endtime2"]').attr('value', '19:45');
-    }else{
-      $('#services-form input[name="title2"]').attr('value', 'Middagdienst');
-      $('#services-form input[name="starttime2"]').attr('value', '16:30');
-      $('#services-form input[name="endtime2"]').attr('value', '17:45');
+    $("#services-form input[name='date']").change(function () {
+      checkSummertime();
+    });
+  
+    function checkSummertime(){
+  
+      var month = $("#services-form input[name='date']").val().substring(3,5);
+  
+      // If month is in the summer months:
+      if(month > 6 && month < 9) {
+        $('#services-form input[name="title2"]').attr('value', 'Avonddienst');
+        $('#services-form input[name="starttime2"]').attr('value', '18:30');
+        $('#services-form input[name="endtime2"]').attr('value', '19:45');
+      }else{
+        $('#services-form input[name="title2"]').attr('value', 'Middagdienst');
+        $('#services-form input[name="starttime2"]').attr('value', '16:30');
+        $('#services-form input[name="endtime2"]').attr('value', '17:45');
+      }
     }
-  }
+  */
 
   // Service table
   let searchServices = (query, page) => {

@@ -112,7 +112,21 @@
           <!-- Family photo -->
           {% if v.thumbnail or v.photo %}
             <a href="{{ v.photo.url }}" title="Klik hier om de foto te vergroten" target="_blank">
-              <img src="{% if v.thumbnail %}{{ v.thumbnail.url }}{% else %}{{ v.photo.url }}{% endif %}" atr="Foto van de familie {{ v.lastname }}" class="family-picture"/>
+              <!-- Photo for no script -->
+              <noscript>
+                <!-- Try to get the thumbnail, if that fails, load the full picture -->
+                <img src="{% if v.thumbnail %}{{ v.thumbnail.url }}{% else %}{{ v.photo.url }}{% endif %}"
+                     alt="Foto van de familie {{ v.lastname }}"
+                     class="family-picture" />
+              </noscript>
+
+              <!-- JS rendered photo -->
+              <!-- Try to get the thumbnail, if that fails, load the full picture -->
+              <span
+                  class="family-picture-render"
+                  data-src="{% if v.thumbnail %}{{ v.thumbnail.url }}{% else %}{{ v.photo.url }}{% endif %}"
+                  data-alt="Foto van de familie {{ v.lastname }}"
+                  data-class="family-picture"></span>
             </a>
           {% endif %}
         </div>
