@@ -96,7 +96,7 @@ class TimetableDuty(models.Model):
     if self.responsible:
       return self.responsible.name()
     elif self.responsible_family:
-      return "Familie " + self.responsible_family.lastname
+      return "Familie " + self.responsible_family.lastnamef()
     else:
       return "niemand"
 

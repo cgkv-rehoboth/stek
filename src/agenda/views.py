@@ -70,7 +70,7 @@ def timetables(request, id=None):
   table = Timetable.objects.filter(pk=id).first()
 
   # Block the Diensten table from showing
-  if table.title == "Diensten":
+  if table is not None and table.title == "Diensten":
     table = None
 
   # Get duties
