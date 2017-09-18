@@ -174,7 +174,7 @@ class TeamMember(models.Model):
 
   def name(self):
     if self.family:
-      return "Famlie %s" % self.family.lastname
+      return self.family
     else:
       return self.profile.name()
 
