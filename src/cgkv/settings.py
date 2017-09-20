@@ -36,6 +36,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "machina.core.context_processors.metadata",
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -87,6 +88,10 @@ INSTALLED_APPS = [
   'widget_tweaks',
   'django_markdown',
   'ckeditor',
+   'mptt',
+   'compressor',
+   'easy_thumbnails',
+   'fiber',
 ] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
@@ -94,13 +99,15 @@ MIDDLEWARE_CLASSES = (
   'corsheaders.middleware.CorsMiddleware',
   'django.middleware.common.CommonMiddleware',
   'django.middleware.csrf.CsrfViewMiddleware',
-  #'django.middleware.clickjacking.XFrameOptionsMiddleware',
+  # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.contrib.messages.middleware.MessageMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'base.middleware.ProfileMiddleware',
   'whitenoise.middleware.WhiteNoiseMiddleware',
   'machina.apps.forum_permission.middleware.ForumPermissionMiddleware',
+  'fiber.middleware.ObfuscateEmailAddressMiddleware',
+  'fiber.middleware.AdminPageMiddleware',
 
 )
 
@@ -278,6 +285,16 @@ MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
     'can_attach_file',
     'can_download_file',
 ]
+
+#
+# Fiber settings
+#
+
+# Configure compressor
+STATICFILES_FINDERS = DEFAULT_SETTINGS.STATICFILES_FINDERS + [
+    'compressor.finders.CompressorFinder',
+]
+
 
 #
 # localsettings loading

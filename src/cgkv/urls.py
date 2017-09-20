@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.sitemaps.views import sitemap
+from fiber.views import page
 
 import base.views
 import base.api
@@ -47,6 +48,7 @@ sitemaps = {
 }
 
 urlpatterns = patterns('',
+  # App patterns
   url(r'^', include(base.views.urls)),
   url(r'^', include(agenda.views.urls)),
   url(r'^', include(public.views.urls)),
@@ -64,6 +66,12 @@ urlpatterns = patterns('',
 
   url(r'^markdown/', include('django_markdown.urls')),
 
+  # Machina patterns
   url(r'^forum$', RedirectView.as_view(url='forum/', permanent=True), name='forum'),
   url(r'^forum/', include('custommachina.urls')),
+
+  # Fiber patterns
+  url(r'^api/v2/', include('fiber.rest_api.urls')),
+  url(r'^admin/fiber/', include('fiber.admin_urls')),
+  url(r'', page),
 )
