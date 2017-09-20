@@ -18,6 +18,8 @@ import {SearchTable} from "bootstrap/tables";
 import AddressForm from "AddressForm";
 import ReactImage from "ReactImage";
 
+import "fiber/admin-extra"
+
 // bind global jquery instance
 window.jQuery = $;
 window.$ = $;

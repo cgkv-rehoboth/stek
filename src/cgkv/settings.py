@@ -88,10 +88,9 @@ INSTALLED_APPS = [
   'widget_tweaks',
   'django_markdown',
   'ckeditor',
-   'mptt',
-   'compressor',
-   'easy_thumbnails',
-   'fiber',
+  'compressor',
+  'easy_thumbnails',
+  'fiber',
 ] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
@@ -290,8 +289,12 @@ MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
 # Fiber settings
 #
 
+FIBER_DEFAULT_TEMPLATE = 'public_layout.html'
+
 # Configure compressor
-STATICFILES_FINDERS = DEFAULT_SETTINGS.STATICFILES_FINDERS + [
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
 ]
 

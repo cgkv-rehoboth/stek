@@ -1,3 +1,4 @@
+{% load fiber_tags %}
 {% load staticfiles %}
 
 <meta charset="utf-8">
@@ -8,7 +9,13 @@
 
 <link rel="icon" href="{% static 'resources/images/rehoboth_blauwfc_16_32_48.ico' %}">
 
-<title>Rehobothkerk Woerden</title>
+<title>
+  {% if fiber_page.title %}
+    {{ fiber_page.title }} - Rehobothkerk Woerden
+  {% else %}
+    Rehobothkerk Woerden
+  {% endif %}
+</title>
 
 <link href="{% static 'css/lib/bootstrap.min.css' %}" rel="stylesheet">
 
