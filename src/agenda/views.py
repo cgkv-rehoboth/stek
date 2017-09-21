@@ -245,7 +245,13 @@ def timetable_teamleader(request, id):
 
   # set default selection to event without duty (belonging to this timetable)
   if events.exclude(duties__timetable=table.pk).exists():
-    selected_event = events.exclude(duties__timetable=table.pk).first().pk
+    selected_event = events.exclude(duties__timetable=table.pk).first()
+
+    # Check if object exists
+    if selected_event:
+      selected_event = selected_event.pk
+    else:
+      selected_event = 0
   else:
     selected_event = 0
 
@@ -670,7 +676,13 @@ def timetable_teamleader_duty_delete(request, id):
 #
 #   # set default selection to event without duty (belonging to this timetable)
 #   if events.exclude(duties__timetable=table.pk).exists():
-#     selected_event = events.exclude(duties__timetable=table.pk).first().pk
+#     selected_event = events.exclude(duties__timetable=table.pk).first()
+#
+#     # Check if object exitsts
+#     if selected_event:
+#       selected_event = selected_event.pk
+#     else:
+#       selected_event = 0
 #   else:
 #     selected_event = 0
 #
@@ -1349,9 +1361,15 @@ def services_files_admin(request, id=None):
 
   else:
     if services.filter(files=None).exists():
-      selected_service = services.filter(files=None).first().pk
+      selected_service = services.filter(files=None).first()
     else:
-      selected_service = services.first().pk
+      selected_service = services.first()
+
+    # Check if object exists
+    if selected_service:
+      selected_service = selected_service.pk
+    else:
+      selected_service = 0
 
   maxweeks = datetime.today().date() - timedelta(weeks=2)
   efs = EventFile.objects.filter(event__startdatetime__gte=maxweeks) \
