@@ -47,7 +47,7 @@ def index(request):
     template = fiber_page.template_name
   else:
     # Get custom hardcoded template
-    template = "public_index.html"
+    template = "fiber_index.html"
 
   # check if sunday
   now = datetime.now()
@@ -81,6 +81,19 @@ def robots(request):
 
 
 def diensten(request):
+  # Get CMS page from Fiber
+  fiber_page = get_object_or_404(Page, url__exact='"diensten"')
+
+  # Get custom template, otherwise fall back to default (as provided in cgkv/settings.py)
+  if fiber_page.metadata.get('static_fallback_page'):
+    # Create custom fallback page
+    template = fiber_page.metadata.get('static_fallback_page')
+  elif fiber_page.template_name:
+    template = fiber_page.template_name
+  else:
+    # Get custom hardcoded template
+    template = "fiber_list.html"
+
   # set default date to next sunday without a service
   # Get last sunday service
   last = Service.objects.filter(startdatetime__week_day=1).order_by('-startdatetime').first()
@@ -93,7 +106,8 @@ def diensten(request):
     today = datetime.today().date()
     startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
 
-  return render(request, 'list.html', {
+  return render(request, template, {
+    'fiber_page': fiber_page,
     'startdatetime': startdatetime,
   })
 

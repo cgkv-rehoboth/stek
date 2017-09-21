@@ -1,5 +1,6 @@
 {% extends "public_layout.html" %}
 
+{% load fiber_tags %}
 {% load staticfiles %}
 
 {% block content %}
@@ -7,7 +8,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <h1>Diensten <small>Overzicht</small></h1>
+          {% show_page_content "title" %}
         </div>
 
         {% if perms.agenda.add_service or perms.agenda.add_eventfile%}

@@ -299,6 +299,7 @@ FIBER_FILES_DIR = 'fiber/uploads/files'
 FIBER_TEMPLATE_CHOICES = (
     ('', 'Standaard sjabloom'),
     ('anbi.html', 'Vaste ANBI'),
+    ('list.html', 'Vaste diensten overzicht'),
     ('kerktijden.html', 'Vaste kerktijden'),
     ('kindercreche.html', 'Vaste kindercreche'),
     ('orgel.html', 'Vaste orgel'),

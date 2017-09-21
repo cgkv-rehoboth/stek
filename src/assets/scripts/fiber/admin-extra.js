@@ -9,7 +9,7 @@
 window.CKEDITOR_CONFIG_FORMAT_TAGS = 'p;h1;h2;h3;h4';
 
 // Allow also <div> with [attributes], {styles} and (classes)
-window.CKEDITOR_CONFIG_EXTRA_ALLOWED_CONTENT = 'a[*]{*}(*);img[*]{*}(*);iframe[*];object[*];param[*];embed[*];div[*]{*}(*);small';
+window.CKEDITOR_CONFIG_EXTRA_ALLOWED_CONTENT = 'a[*]{*}(*);img[*]{*}(*);iframe[*];object[*];param[*];embed[*];div[*]{*}(*);small;i[*]{*}(*);p[*]{*}(*);td[*]{*}(*);u';
 
 // Add some bootstrap grid styles
 window.CKEDITOR_CONFIG_STYLES_SET = [
