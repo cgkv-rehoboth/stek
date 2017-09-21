@@ -35,7 +35,8 @@
             <div class="col-md-12">
               <h2>Sitemap</h2>
               <div class="sitemap">
-                {% show_menu "Hoofd menu" 1 999 "all" %}
+                {# Show sitemap, but not the subitems of each item #}
+                {% show_menu "Hoofd menu" 1 1 "all" %}
               </div>
             </div>
           </div>

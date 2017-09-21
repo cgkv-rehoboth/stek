@@ -33,7 +33,6 @@ def renderFiberPage(request, url):
   # Return the rendered template
   return render(request, template, {
     'fiber_page': fiber_page,
-    'slides': Slide.objects.filter(live=True).order_by('order'),
   })
 
 def index(request):
@@ -59,7 +58,6 @@ def index(request):
     'jaarthemas': fiber_page.page_content_items.filter(block_name='jaarthema_content').order_by('-sort'),
     'listen_live': listen_live,
     'recaptcha_publickey': settings.RECAPTCHA_PUBLIC_KEY,
-    'slides': Slide.objects.filter(live=True).order_by('order'),
   })
 
 def kerktijden(request):
@@ -97,7 +95,6 @@ def diensten(request):
 
   return render(request, 'list.html', {
     'startdatetime': startdatetime,
-    'slides': Slide.objects.filter(live=True).order_by('order'),
   })
 
 urls = [
