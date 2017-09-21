@@ -1,106 +1,64 @@
 {% extends "public_layout.html" %}
 
+{% load fiber_tags %}
 {% load staticfiles %}
 
 {% block content %}
   <!-- About Section -->
   <section id="about" class="content-section">
     <div class="container">
-      <h1>Over de Rehoboth&shy;kerk</h1>
       <div class="row">
-        <div class="col-md-12">
-          <h3>Onze naam</h3>
+        <div class="col-lg-12">
+
+          {% show_page_content "intro_title" %}
+
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12">
-          <p>
-            We zijn een samenwerkingsgemeente van de Christelijke Gereformeerde Kerk
-            en de Gereformeerde Kerk vrijgemaakt. De samenwerking bestaat
-            sinds 2008 en wordt ook wel CGKV Woerden genoemd. De naam
-            Rehoboth betekent: God geeft ruimte (zie het Bijbelboek Genesis
-            26:22).
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <h3>Ons karakter</h3>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <p>
-            Een gastvrije en warme gemeente geleid en gedreven door het evangelie,
-            waarbinnen alle mensen zich met hun mogelijkheden voor elkaar inzetten.
-            De gemeente staat bekend om de sterke onderlinge band en om de zorg naar
-            binnen en naar buiten. De kinderen en jongeren maken deel
-            uit van de gemeente van Christus en krijgen de aandacht en
-            ruimte die nodig is tot opbouw van hun geloof.
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <h3>Onze predikant</h3>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-8">
-            <p>
-            Dr. André Jansen is sinds 2010 predikant van onze gemeente. Hij is geboren
-            in Pretoria, Zuid-Afrika. Sinds 2000 verkondigt hij Gods Woord in Nederland.
-            Zijn visie: “God verweeft Zijn liefde en plan met onze harten, monden en
-            handen.” Meer informatie over zijn proefschrift en publicaties is te lezen op zijn website <a href="http://hartmondenhanden.nl/">www.hartmondenhanden.nl</a>.
-            </p>
-        </div>
-        <div class="col-md-4 text-center">
-            <img style="max-height: 250px; max-width: 180px;" src="{% static 'resources/images/andre_jansen.jpg' %}" />
-            <p>Dr. André Jansen</p>
-        </div>
-      </div>
+
+      {% show_page_content "intro_content" %}
     </div>
   </section>
 
-  <section id="jaarthema" class="content-section" style="display: none">
+  <section id="jaarthema" class="content-section" {% if jaarthemas.0.content_item.metadata.hide_jaarthema == "ja"%}style="display: none"{% endif %}>
     <div class="container">
-      <h2>Jaarthema</h2>
+
+      {% show_page_content "jaarthema_title" %}
+
+      {# todo: verder jaarhtema afmaken #}
+      {% now "Y" as current_year %}
+      {# Convert .sort to a string with |slugify to compare it with the current year #}
 
       <!-- Menu for the different jaarthema's to show (these divs can be found next) -->
       <div id="jaarthema-menu">
-          <a href="javascript:void(0)" data-jaar="2018" class="current">2018</a> -
-          <a href="javascript:void(0)" data-jaar="2017">2017</a>
+          {% for jaarthema in jaarthemas %}
+            {# Only display a dash between the jaarthemas, and not before the first jaarthema #}
+            {% if forloop.counter0 %} - {% endif %}
+            <a
+                href="javascript:void(0)"
+                data-jaar="{{ jaarthema.sort }}"
+                {% if jaarthema.sort|slugify == current_year %}class="current"{% endif %}
+            >{{ jaarthema.sort }}</a>
+          {% endfor %}
       </div>
 
-      <!-- One div for each jaarthema. Div contains an ID with the year number and a background-img (if not provided, the previous image will be used) -->
-      <!-- Set the default with the class .jaarthema-current -->
-      <div id="jaarthema-2018" class="jaarthema-archive jaarthema-current" data-background-img="{% static 'resources/images/jaarthema-bg.jpg' %}"><!-- also change this background in frontpage.sass -->
-        <div class="row">
-          <div class="col-sm-12">
-            <p>
-              Het jaarthema voor 2018 is <i>Umbodja</i>. Meer info hierover komt nog.
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <div id="jaarthema-2017" class="jaarthema-archive" data-background-img="{% static 'resources/images/jaarthema-bg.jpg' %}">
-        <div class="row">
-          <div class="col-sm-7">
-            <p>
-              Het komend seizoen is het jaarthema weer Jezus volgen. Dit keer specifiek: <em>Leven als discipel... leren van Jezus</em>. Met twaalf onderwerpen willen wij dit thema dit jaar praktisch neerzetten. Iedere maand wordt één thema behandeld: in de erediensten, kringen, ... <br/>
-              Meer informatie leest u in het boekje dat hiernaast te downloaden is.
-            </p>
-          </div>
-          <div class="col-sm-5">
-            <p style="margin:0;">
-              Downloadlink jaarthemaboekje:<br/>
-              <a href="{{ MEDIA_URL }}files/Jaarthema_boekje_dicipelschap_Rehobothkerk_Woerden.pdf" target="_blank" title="Klik hier om het jaarthemaboekje te downloaden">Leven als discipel... leren van Jezus (PDF)</a>
-            </p>
-            <small>Voor gebruik in de CGKV Woerden, anders graag contact opnemen met dr. André Jansen.</small>
+      {# {% show_page_content "jaarthema_content" %} #}
+
+      <!--  One div for each jaarthema. Div contains an ID with the year number
+            and a background-img (if not provided, the previous image will be used) -->
+      {% for jaarthema in jaarthemas %}
+        <div
+            id="jaarthema-{{ jaarthema.sort }}"
+            class="jaarthema-archive
+              {# Set the default with the class .jaarthema-current #}
+              {% if jaarthema.sort|slugify == current_year %}jaarthema-current{% endif %}"
+            data-background-img="{{ jaarthema.content_item.metadata.jaarthema_background_url }}"
+        ><!-- also change this background in frontpage.sass -->
+          <div class="row">
+            {{ jaarthema.content_item.content_html|safe }}
           </div>
         </div>
-      </div>
+      {% endfor %}
 
     </div>
   </section>
@@ -111,10 +69,13 @@
     <div id="activity-content" class="container">
       <div class="row">
         <div class="col-lg-12">
-          <h2>Activi&shy;teiten</h2>
+
+          {% show_page_content "activiteiten_title" %}
+
         </div>
       </div>
     </div>
+    {# todo: activiteiten invullen #}
     <div id="activity-blocks" class="container">
       <div class="row">
         <div class="col-md-4">
@@ -153,46 +114,51 @@
   </section>
 
   <section id="diensten">
-  <div class="container">
-    <h2>
-      Diensten
-    </h2>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
 
-    <p>
-      Elke zondag ochtend (9.30) en middag (16.30) is er een dienst in de
-        Rehobothkerk, waar iedereen welkom is. Na de ochtenddienst kunt u
-        meegenieten van de koffie, thee en fris.
-    </p>
+          {% show_page_content "diensten_title" %}
 
-    <div id="luisteren" class="row">
-      <div class="col-sm-6">
-        <p>
-          <a class="btn btn-rounded blue luisteren-button" href="https://kerkdienstgemist.nl/assets/267">
-            Live meeluisteren
-          </a>
-        </p>
+        </div>
       </div>
-      <div class="col-sm-6">
-        <p>
-          <a class="btn btn-rounded blue" href="https://kerkdienstgemist.nl/assets/267" target="_blank">
-            Opname archief
-          </a>
-        </p>
+      <div class="row" >
+        <div class="col-md-12" >
+
+          {% show_page_content "diensten_content" %}
+
+        </div>
+      </div>
+
+      <div id="luisteren" class="row">
+        <div class="col-sm-6">
+          <p>
+            <a class="btn btn-rounded blue luisteren-button" href="https://kerkdienstgemist.nl/assets/267">
+              Live meeluisteren
+            </a>
+          </p>
+        </div>
+        <div class="col-sm-6">
+          <p>
+            <a class="btn btn-rounded blue" href="https://kerkdienstgemist.nl/assets/267" target="_blank">
+              Opname archief
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <br/>
+
+      <div id="service-table" class="service-table">
+        <span class="loading-data"><i class="fa fa-refresh fa-spin"></i> Gegevens ophalen...</span>
+      </div>
+
+      <div style="margin-top: 9px;">
+        <small>
+          <a href="{% url 'diensten' %}">Bekijk hier een overzicht van alle diensten</a>
+        </small>
       </div>
     </div>
-
-    <br/>
-
-    <div id="service-table" class="service-table">
-      <span class="loading-data"><i class="fa fa-refresh fa-spin"></i> Gegevens ophalen...</span>
-    </div>
-
-    <div style="margin-top: 9px;">
-      <small>
-        <a href="{% url 'diensten' %}">Bekijk hier een overzicht van alle diensten</a>
-      </small>
-    </div>
-  </div>
   </section>
 
   <!-- Contact Section -->
@@ -200,17 +166,12 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h2>Contact</h2>
+          {% show_page_content "contact_title" %}
         </div>
       </div>
       <div class="row" >
         <div class="col-md-12" >
-          <p>
-            Heeft u een vraag of overweegt u om lid te worden?
-            U kunt contact opnemen met het volgende formulier.
-            Als u graag wordt teruggebeld, laat dan, naast uw e-mailadres, ook uw telefoonnummer achter.
-
-          </p>
+          {% show_page_content "contact_content" %}
         </div>
       </div>
     </div>
@@ -222,31 +183,18 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h2>Adressen</h2>
+
+          {% show_page_content "adressen_title" %}
+
         </div>
       </div>
     </div>
     <div class="container text-center">
+
       <div class="row">
-        <div class="col-sm-6">
-          <h3><i class="fa fa-home fa-preicon"></i>Kerkgebouw</h3>
-          <p id="adres">
-            Leidsestraatweg 130<br />
-            3443 BZ Woerden<br />
-          </p>
-          <p id="telno">
-            <i class="fa fa-phone fa-preicon"></i>0348-411830
-          </p>
-          <a  href="https://www.google.com/maps/place/Rehobothkerk+Woerden/@52.0863863,4.8631967,17z/data=!3m1!4b1!4m2!3m1!1s0x47c6782be4ac2517:0x6c583f89b11390b1"
-              class="btn btn-rounded cyan">Op de kaart</a>
-        </div>
-        <div class="col-sm-6">
-          <h3><i class="fa fa-envelope fa-preicon" ></i>Postadres</h3>
-          <p id="adres">
-            Postbus 277<br />
-            3440 AG Woerden<br />
-          </p>
-        </div>
+
+        {% show_page_content "adressen_content" %}
+
       </div>
     </div>
   </section>

@@ -10,9 +10,12 @@
 <link rel="icon" href="{% static 'resources/images/rehoboth_blauwfc_16_32_48.ico' %}">
 
 <title>
-  {% if fiber_page.title %}
+  {# Check if a CMS page titel is set AND if the metadata option 'hide_title' is not set to 'ja' #}
+  {% if fiber_page.title and fiber_page.metadata.hide_title != "ja" %}
+    {# Display page title together with the default title #}
     {{ fiber_page.title }} - Rehobothkerk Woerden
   {% else %}
+    {# If no title is set, display the default title #}
     Rehobothkerk Woerden
   {% endif %}
 </title>
@@ -20,7 +23,7 @@
 <link href="{% static 'css/lib/bootstrap.min.css' %}" rel="stylesheet">
 
 <script>
-  // Set private stream URL when user is logged in
+  {# Set private stream URL when user is logged in #}
   {% if not user.is_authenticated %}
     var private_stream_url = false;
   {% else %}

@@ -67,7 +67,6 @@ CORS_ORIGIN_WHITELIST = (
 
 INSTALLED_APPS = [
   'flat',
-  'django.contrib.admin',
   'django.contrib.sites',
   'django.contrib.auth',
   'django.contrib.contenttypes',
@@ -91,6 +90,7 @@ INSTALLED_APPS = [
   'compressor',
   'easy_thumbnails',
   'fiber',
+  'django.contrib.admin',
 ] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
@@ -289,13 +289,47 @@ MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
 # Fiber settings
 #
 
+# Set default template to render
 FIBER_DEFAULT_TEMPLATE = 'public_layout.html'
+
+# Set default upload location
+FIBER_IMAGES_DIR = 'fiber/uploads/images'
+FIBER_FILES_DIR = 'fiber/uploads/files'
+
+FIBER_METADATA_PAGE_SCHEMA = {
+  'hide_title': {
+    'widget': 'select',
+    'values': ['nee (standaard)', 'ja'],
+  },
+  'static_fallback_page': {
+    'widget': 'textfield',
+  },
+}
+
+FIBER_METADATA_CONTENT_SCHEMA = {
+  'hide_jaarthema': {
+    'widget': 'select',
+    'values': ['nee (standaard)', 'ja'],
+  },
+  'jaarthema_background_url': {
+    'widget': 'textfield',
+  }
+}
+
+# Disable Fiber on most backend pages
+FIBER_EXCLUDE_URLS = [
+  '^rooster*',
+  '^adresboek*',
+  '^forum*',
+  '^profiel*',
+  '^team*',
+]
 
 # Configure compressor
 STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
+  'django.contrib.staticfiles.finders.FileSystemFinder',
+  'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+  'compressor.finders.CompressorFinder',
 ]
 
 

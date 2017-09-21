@@ -21,11 +21,9 @@
         {% block content %}
         <section class="content-section">
           <div class="container">
-
-            <h1>{% show_page_content "title" %}</h1>
+            {% show_page_content "title" %}
 
             {% show_page_content "content" %}
-
           </div>
         </section>
         {% endblock %}
@@ -36,13 +34,9 @@
           <div class="row">
             <div class="col-md-12">
               <h2>Sitemap</h2>
-              <ul class="sitemap">
-                {% for site, title in sitemaps.items %}
-                  <li>
-                    <a href="{% url site %}">{{ title }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
+              <div class="sitemap">
+                {% show_menu "Hoofd menu" 1 999 "all" %}
+              </div>
             </div>
           </div>
         </div>
