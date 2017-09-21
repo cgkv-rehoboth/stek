@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf.urls import patterns, include, url
 from django.template import RequestContext, loader
 from django.views.generic import RedirectView
@@ -19,7 +19,7 @@ from fiber.models import Page, ContentItem
 # Returns the rendered page
 def renderFiberPage(request, url):
   # Get CMS page from Fiber
-  fiber_page = Page.objects.get(url__exact=('"%s"' % (url)))
+  fiber_page = get_object_or_404(Page, url__exact=('"%s"' % (url)))
 
   # Get custom template, otherwise fall back to default (as provided in cgkv/settings.py)
   if fiber_page.metadata.get('static_fallback_page'):
@@ -38,7 +38,7 @@ def renderFiberPage(request, url):
 
 def index(request):
   # Get CMS page from Fiber
-  fiber_page = Page.objects.get(url__exact='"index"')
+  fiber_page = get_object_or_404(Page, url__exact='"index"')
 
   # Get custom template, otherwise fall back to default (as provided in cgkv/settings.py)
   if fiber_page.metadata.get('static_fallback_page'):
@@ -97,7 +97,6 @@ def diensten(request):
 
   return render(request, 'list.html', {
     'startdatetime': startdatetime,
-    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
     'slides': Slide.objects.filter(live=True).order_by('order'),
   })
 

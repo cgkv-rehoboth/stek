@@ -26,10 +26,6 @@
 
       {% show_page_content "jaarthema_title" %}
 
-      {# todo: verder jaarhtema afmaken #}
-      {% now "Y" as current_year %}
-      {# Convert .sort to a string with |slugify to compare it with the current year #}
-
       <!-- Menu for the different jaarthema's to show (these divs can be found next) -->
       <div id="jaarthema-menu">
           {% for jaarthema in jaarthemas %}
@@ -38,13 +34,10 @@
             <a
                 href="javascript:void(0)"
                 data-jaar="{{ jaarthema.sort }}"
-                {% if jaarthema.sort|slugify == current_year %}class="current"{% endif %}
+                {% if forloop.counter0 == 0 %}class="current"{% endif %}
             >{{ jaarthema.sort }}</a>
           {% endfor %}
       </div>
-
-
-      {# {% show_page_content "jaarthema_content" %} #}
 
       <!--  One div for each jaarthema. Div contains an ID with the year number
             and a background-img (if not provided, the previous image will be used) -->
@@ -53,7 +46,7 @@
             id="jaarthema-{{ jaarthema.sort }}"
             class="jaarthema-archive
               {# Set the default with the class .jaarthema-current #}
-              {% if jaarthema.sort|slugify == current_year %}jaarthema-current{% endif %}"
+              {% if forloop.counter0 == 0 %}jaarthema-current{% endif %}"
             data-background-img="{% get_media_prefix %}{{ jaarthema.content_item.metadata.jaarthema_background_url }}"
         ><!-- also change this background in frontpage.sass -->
           <div class="row">
