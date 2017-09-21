@@ -296,16 +296,24 @@ FIBER_DEFAULT_TEMPLATE = 'public_layout.html'
 FIBER_IMAGES_DIR = 'fiber/uploads/images'
 FIBER_FILES_DIR = 'fiber/uploads/files'
 
+FIBER_TEMPLATE_CHOICES = (
+    ('', 'Standaard sjabloom'),
+    ('anbi.html', 'Vaste ANBI'),
+    ('kerktijden.html', 'Vaste kerktijden'),
+    ('kindercreche.html', 'Vaste kindercreche'),
+    ('orgel.html', 'Vaste orgel'),
+    ('index.html', 'Vaste voorpagina'),
+)
+
+# Set some extra options for pages
 FIBER_METADATA_PAGE_SCHEMA = {
   'hide_title': {
     'widget': 'select',
     'values': ['nee (standaard)', 'ja'],
   },
-  'static_fallback_page': {
-    'widget': 'textfield',
-  },
 }
 
+# Set some extra options for contentitems (especially for jaarthema items)
 FIBER_METADATA_CONTENT_SCHEMA = {
   'hide_jaarthema': {
     'widget': 'select',

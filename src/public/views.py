@@ -48,7 +48,7 @@ def index(request):
     template = fiber_page.template_name
   else:
     # Get custom hardcoded template
-    template = "index.html"
+    template = "public_index.html"
 
   # check if sunday
   now = datetime.now()

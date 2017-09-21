@@ -1,6 +1,7 @@
 {% extends "admin/change_form.html" %}
 
 {% block extrahead %}
+    {{ block.super }}
     <script>
     /*
       Override default CKEditor settings of Fiber
@@ -25,6 +26,13 @@
         { name: 'Grid - col-md-10', element: 'div', attributes: { 'class': 'col-md-10' } },
         { name: 'Grid - col-md-12', element: 'div', attributes: { 'class': 'col-md-12' } }
     ];
+
+    (function($) {
+      $(document).ready(function(){
+        $(".field-metadata").parent('.collapse').removeClass('collapsed');
+      });
+
+    })(django.jQuery);
 
     </script>
 {% endblock %}
