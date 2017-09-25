@@ -31,7 +31,7 @@
 11. Configure pycharm. When you open the project it should pick up the virtual python env that we
    created. You should verify this at `Run > Edit Configurations > Python Interpreter`.
    In `Settings > Language and Frameworks > Django` you should set the django root to `src`
-   and the settings file to `src/csrdelft/settings.py`.
+   and the settings file to `src/cgkv/settings.py`.
 
 12. You can now run django tasks `Tools > Run manage.py Task`. Execute the following in the prompt
     that opens:

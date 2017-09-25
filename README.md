@@ -11,6 +11,8 @@ Just follow the [GitHub Flow](https://guides.github.com/introduction/flow/index.
 
 See `docs/getting-started/` for a concise guide on development.
 
+Add a timetable called 'Diensten'
+
 ### Production
 
 Make sure...
