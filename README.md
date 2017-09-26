@@ -29,7 +29,8 @@ Everytime the staticfiles change, you have to run `collectstatic` and restart th
 [Documentation](https://django-fiber.readthedocs.io/en/master/index.html) - [GitHub](https://github.com/django-fiber/django-fiber)
 
 ##### Setup
-Use Fiber to generate pages with custom content, which can be editted inline or in the admin. All public pages use Fiber, so when installing Django, make sure you create these pages inside Fiber:
+Use Fiber to generate pages with custom content, which can be editted inline or in the admin. All public pages use Fiber, so when installing Django, make sure you create the following pages inside Fiber OR you just apply the fixture from `src/base/fixtures/fiber_001.json` with the command:
+`python src/manage.py loaddata fiber_001.json`. When loaded, you are done setting up and you can skip these next steps:
 1. Create the pages in Fiber directing to the following URLs (actually the named route is used). These are hardcoded in the public views.py. 
   - `"index"`
   - `"kerktijden"`
