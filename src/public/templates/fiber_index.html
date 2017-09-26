@@ -1,0 +1,217 @@
+{% extends "public_layout.html" %}
+
+{% load fiber_tags %}
+{% load static %}
+{% load staticfiles %}
+
+{% block content %}
+  <!-- About Section -->
+  <section id="about" class="content-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+
+          {% show_page_content "intro_title" %}
+
+        </div>
+      </div>
+
+      {% show_page_content "intro_content" %}
+    </div>
+  </section>
+
+  <section id="jaarthema" class="content-section"
+           style="background-image: url('{% get_media_prefix %}{{ jaarthemas.0.content_item.metadata.jaarthema_background_url }}'); {% if jaarthemas.0.content_item.metadata.hide_jaarthema == "ja"%}display: none{% endif %}">
+    <div class="container">
+
+      {% show_page_content "jaarthema_title" %}
+
+      <!-- Menu for the different jaarthema's to show (these divs can be found next) -->
+      <div id="jaarthema-menu">
+          {% for jaarthema in jaarthemas %}
+            {# Only display a dash between the jaarthemas, and not before the first jaarthema #}
+            {% if forloop.counter0 %} - {% endif %}
+            <a
+                href="javascript:void(0)"
+                data-jaar="{{ jaarthema.sort }}"
+                {% if forloop.counter0 == 0 %}class="current"{% endif %}
+            >{{ jaarthema.sort }}</a>
+          {% endfor %}
+      </div>
+
+      <!--  One div for each jaarthema. Div contains an ID with the year number
+            and a background-img (if not provided, the previous image will be used) -->
+      {% for jaarthema in jaarthemas %}
+        <div
+            id="jaarthema-{{ jaarthema.sort }}"
+            class="jaarthema-archive
+              {# Set the default with the class .jaarthema-current #}
+              {% if forloop.counter0 == 0 %}jaarthema-current{% endif %}"
+            data-background-img="{% get_media_prefix %}{{ jaarthema.content_item.metadata.jaarthema_background_url }}"
+        ><!-- also change this background in frontpage.sass -->
+          <div class="row">
+            {{ jaarthema.content_item.content_html|safe }}
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+  </section>
+
+  <section id="activiteiten" class="content-section dark">
+    <div class="to-dark-gradient"></div>
+
+    <div id="activity-content" class="container">
+      <div class="row">
+        <div class="col-lg-12">
+
+          {% show_page_content "activiteiten_title" %}
+
+        </div>
+      </div>
+    </div>
+    {# todo: activiteiten invullen #}
+    <div id="activity-blocks" class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fa fa-users fa-round fa-preicon"></i>Kinderkring
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-users fa-round fa-preicon"></i>Kringen
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-users fa-round fa-preicon"></i>Jeugdvereniging
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fa fa-play fa-round fa-preicon"></i>Startzondag
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-coffee fa-round fa-preicon"></i>Koffiedrinken na de ochtenddienst
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-soccer-ball-o fa-round fa-preicon"></i>Jeugdkamp!
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fa fa-graduation-cap fa-round fa-preicon"></i>Catechisatie
+        </div>
+        <div class="col-md-4">
+          <i class="fa fa-globe fa-round fa-preicon"></i>Evangelisatie
+        </div>
+        <div class="col-md-4">
+          <a href="http://handsofhopeproject.nl/"><i class="fa fa-handshake-o fa-round fa-preicon"></i>Hands of Hope</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="diensten">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+
+          {% show_page_content "diensten_title" %}
+
+        </div>
+      </div>
+      <div class="row" >
+        <div class="col-md-12" >
+
+          {% show_page_content "diensten_content" %}
+
+        </div>
+      </div>
+
+      <div id="luisteren" class="row">
+        <div class="col-sm-6">
+          <p>
+            <a class="btn btn-rounded blue luisteren-button" href="https://kerkdienstgemist.nl/assets/267">
+              Live meeluisteren
+            </a>
+          </p>
+        </div>
+        <div class="col-sm-6">
+          <p>
+            <a class="btn btn-rounded blue" href="https://kerkdienstgemist.nl/assets/267" target="_blank">
+              Opname archief
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <br/>
+
+      <div id="service-table" class="service-table">
+        <span class="loading-data"><i class="fa fa-refresh fa-spin"></i> Gegevens ophalen...</span>
+      </div>
+
+      <div style="margin-top: 9px;">
+        <small>
+          <a href="{% url 'diensten' %}">Bekijk hier een overzicht van alle diensten</a>
+        </small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="darker content-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          {% show_page_content "contact_title" %}
+        </div>
+      </div>
+      <div class="row" >
+        <div class="col-md-12" >
+          {% show_page_content "contact_content" %}
+        </div>
+      </div>
+    </div>
+    <div class="container" id="contact-form">
+    </div>
+  </section>
+
+  <section id="contact-adres" class="dark">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+
+          {% show_page_content "adressen_title" %}
+
+        </div>
+      </div>
+    </div>
+    <div class="container text-center">
+      <div class="row">
+        <div class="col-sm-6">
+          <h3><i class="fa fa-home fa-preicon"></i>Kerkgebouw</h3>
+          <p id="adres">
+            Leidsestraatweg 130<br />
+            3443 BZ Woerden<br />
+          </p>
+          <p id="telno">
+            <i class="fa fa-phone fa-preicon"></i>0348-411830
+          </p>
+          <a  href="https://www.google.com/maps/place/Rehobothkerk+Woerden/@52.0863863,4.8631967,17z/data=!3m1!4b1!4m2!3m1!1s0x47c6782be4ac2517:0x6c583f89b11390b1"
+              class="btn btn-rounded cyan">Op de kaart</a>
+        </div>
+        <div class="col-sm-6">
+          <h3><i class="fa fa-envelope fa-preicon" ></i>Postadres</h3>
+          <p id="adres">
+            Postbus 277<br />
+            3440 AG Woerden<br />
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="popup"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script>window.frontpageMain();</script>
+{% endblock %}

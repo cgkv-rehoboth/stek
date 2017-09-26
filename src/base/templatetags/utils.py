@@ -1,5 +1,6 @@
 from django import template
 import random
+from public.models import Slide
 register = template.Library()
 
 @register.filter('klass')
@@ -46,3 +47,8 @@ def encodemailPlain(str):
 @register.filter('isobject')
 def isobject(ob, str):
     return hasattr(ob, str.lower())
+
+@register.assignment_tag()
+def slides():
+  """ Returns al visible slides for the header carousel """
+  return Slide.objects.filter(live=True).order_by('order')

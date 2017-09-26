@@ -782,3 +782,6 @@ window.eventPage = () => {
     }
   }
 };
+
+// Add Fibers CKEditor styling sheet
+import "fiber/admin-extra"

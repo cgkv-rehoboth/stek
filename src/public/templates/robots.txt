@@ -1,4 +1,10 @@
 User-agent: *
-Disallow: /wachtwoord/vergeten/
-Disallow: /forum/
-Disallow: /login/
+Disallow: /wachtwoord/*
+Disallow: /forum/*
+Disallow: /login/*
+Disallow: /admin/*
+Disallow: /media/eventfiles/*
+Disallow: /media/families/*
+Disallow: /media/machina/*
+Disallow: /media/profiles/*
+Disallow: /media/uploads/*

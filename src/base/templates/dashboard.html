@@ -1,5 +1,6 @@
 {% extends "./layout.html" %}
 
+{% load fiber_tags %}
 {% load staticfiles %}
 {% load utils %}
 
@@ -34,6 +35,13 @@
         {% endif %}
       </div>
     </div>
+
+<!-- todo: style newsfeed
+    <div class="row newsfeed">
+      <h3>Mededelingen</h3>
+      {% show_content "nieuwsberichten" %}
+    </div>
+    -->
 
     <div class="row">
       <h3>Diensten van de aankomende week</h3>

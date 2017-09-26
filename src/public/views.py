@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 from django.conf.urls import patterns, include, url
+from django.template import RequestContext, loader
 from django.views.generic import RedirectView
 from django import forms
 from django.core.mail import send_mail
@@ -10,49 +12,88 @@ from agenda.models import *
 from public.models import *
 from datetime import datetime
 from cgkv.sitemaps import StaticViewSitemap
+from fiber.models import Page, ContentItem
+
+
+# Default function to render a specific Fiber page for a named route 'url'
+# Returns the rendered page
+def renderFiberPage(request, url):
+  # Get CMS page from Fiber
+  fiber_page = get_object_or_404(Page, url__exact=('"%s"' % (url)))
+
+  # Get custom template, otherwise fall back to default (as provided in cgkv/settings.py)
+  if fiber_page.metadata.get('static_fallback_page'):
+    # Create custom fallback page
+    template = fiber_page.metadata.get('static_fallback_page')
+  elif fiber_page.template_name:
+    template = fiber_page.template_name
+  else:
+    template = settings.FIBER_DEFAULT_TEMPLATE
+
+  # Return the rendered template
+  return render(request, template, {
+    'fiber_page': fiber_page,
+  })
 
 def index(request):
+  # Get CMS page from Fiber
+  fiber_page = get_object_or_404(Page, url__exact='"index"')
+
+  # Get custom template, otherwise fall back to default (as provided in cgkv/settings.py)
+  if fiber_page.metadata.get('static_fallback_page'):
+    # Create custom fallback page
+    template = fiber_page.metadata.get('static_fallback_page')
+  elif fiber_page.template_name:
+    template = fiber_page.template_name
+  else:
+    # Get custom hardcoded template
+    template = "fiber_index.html"
+
   # check if sunday
   now = datetime.now()
   listen_live = now.strftime('%w') == 0
 
-  return render(request, 'index.html', {
+  return render(request, template, {
+    'fiber_page': fiber_page,
+    'jaarthemas': fiber_page.page_content_items.filter(block_name='jaarthema_content').order_by('-sort'),
     'listen_live': listen_live,
     'recaptcha_publickey': settings.RECAPTCHA_PUBLIC_KEY,
-    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
-    'slides': Slide.objects.filter(live=True).order_by('order'),
-    #'jaarthema_publish_date': (datetime.now() > datetime.strptime('22-08-2016 00:00', '%d-%m-%Y %H:%M'))
   })
 
 def kerktijden(request):
-  return render(request, 'kerktijden.html', {
-    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
-    'slides': Slide.objects.filter(live=True).order_by('order'),
-  })
+  # Render CMS page from Fiber
+  return renderFiberPage(request, 'kerktijden')
 
 def kindercreche(request):
-  return render(request, 'kindercreche.html', {
-    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
-    'slides': Slide.objects.filter(live=True).order_by('order'),
-  })
+  # Render CMS page from Fiber
+  return renderFiberPage(request, 'kindercreche')
 
 def orgel(request):
-  return render(request, 'orgel.html', {
-    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
-    'slides': Slide.objects.filter(live=True).order_by('order'),
-  })
+  # Render CMS page from Fiber
+  return renderFiberPage(request, 'orgel')
 
 def anbi(request):
-  return render(request, 'anbi.html', {
-    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
-    'slides': Slide.objects.filter(live=True).order_by('order'),
-  })
+  # Render CMS page from Fiber
+  return renderFiberPage(request, 'anbi')
 
 def robots(request):
   return render(request, 'robots.txt', {})
 
 
 def diensten(request):
+  # Get CMS page from Fiber
+  fiber_page = get_object_or_404(Page, url__exact='"diensten"')
+
+  # Get custom template, otherwise fall back to default (as provided in cgkv/settings.py)
+  if fiber_page.metadata.get('static_fallback_page'):
+    # Create custom fallback page
+    template = fiber_page.metadata.get('static_fallback_page')
+  elif fiber_page.template_name:
+    template = fiber_page.template_name
+  else:
+    # Get custom hardcoded template
+    template = "fiber_list.html"
+
   # set default date to next sunday without a service
   # Get last sunday service
   last = Service.objects.filter(startdatetime__week_day=1).order_by('-startdatetime').first()
@@ -65,10 +106,9 @@ def diensten(request):
     today = datetime.today().date()
     startdatetime = today + timedelta(days=-today.weekday()-1, weeks=1)
 
-  return render(request, 'list.html', {
+  return render(request, template, {
+    'fiber_page': fiber_page,
     'startdatetime': startdatetime,
-    'sitemaps': StaticViewSitemap.itemnames(StaticViewSitemap),
-    'slides': Slide.objects.filter(live=True).order_by('order'),
   })
 
 urls = [
@@ -88,5 +128,6 @@ urls = [
 
   url(r'^robots\.txt$', robots, name='robots'),
 
+  # Everything else, look if Fiber can catch those (it's for custom pages from Fiber)
   url(r'^$', index, name='index')
 ]

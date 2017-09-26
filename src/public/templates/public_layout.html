@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load fiber_tags %}
 {% load staticfiles %}
 <html>
   <head>
@@ -18,6 +19,13 @@
 
       <div id="content" >
         {% block content %}
+        <section class="content-section">
+          <div class="container">
+            {% show_page_content "title" %}
+
+            {% show_page_content "content" %}
+          </div>
+        </section>
         {% endblock %}
       </div>
 
@@ -26,13 +34,10 @@
           <div class="row">
             <div class="col-md-12">
               <h2>Sitemap</h2>
-              <ul class="sitemap">
-                {% for site, title in sitemaps.items %}
-                  <li>
-                    <a href="{% url site %}">{{ title }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
+              <div class="sitemap">
+                {# Show sitemap, but not the subitems of each item #}
+                {% show_menu "Hoofd menu" 1 1 "all" %}
+              </div>
             </div>
           </div>
         </div>

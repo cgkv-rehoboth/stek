@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.sitemaps.views import sitemap
+from fiber.views import page
 
 import base.views
 import base.api
@@ -28,7 +29,7 @@ apipatterns = patterns('',
 #@login_required
 def media(request, path):
   # Check if the user is logged in OR if the user just wants to see the slide show
-  if request.user.is_authenticated() or path[0:7] == "slides/":
+  if request.user.is_authenticated() or (path[0:7] == "slides/" or path[0:6] == "fiber/"):
     if settings.DEBUG:
       dire = os.path.join(settings.MEDIA_ROOT, os.path.dirname(path))
       return serve(request, os.path.basename(path), dire)
@@ -47,6 +48,7 @@ sitemaps = {
 }
 
 urlpatterns = patterns('',
+  # App patterns
   url(r'^', include(base.views.urls)),
   url(r'^', include(agenda.views.urls)),
   url(r'^', include(public.views.urls)),
@@ -56,6 +58,12 @@ urlpatterns = patterns('',
   url(r'^api/v1/', include(apipatterns)),
   url(r'^media/(?P<path>.*)$', media),
 
+  # Fiber patterns
+  url(r'^api/v2/', include('fiber.rest_api.urls')),
+  url(r'^admin/fiber/', include('fiber.admin_urls')),
+  # Fix the error that Fiber needs a trailing slash, by putting a trailing slash on everything that hasn't a trailing slash
+  url(r'^admin/fiber/page/(?P<path>.+[^/])$', RedirectView.as_view(url='/admin/fiber/page/%(path)s/', permanent=False)),
+
   url(r'^admin$', RedirectView.as_view(url='admin/', permanent=True)),
   url(r'^admin/', include(admin.site.urls)),
   # url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
@@ -64,6 +72,10 @@ urlpatterns = patterns('',
 
   url(r'^markdown/', include('django_markdown.urls')),
 
+  # Machina patterns
   url(r'^forum$', RedirectView.as_view(url='forum/', permanent=True), name='forum'),
   url(r'^forum/', include('custommachina.urls')),
+
+  # Fiber patterns
+  url(r'', page),
 )

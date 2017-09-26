@@ -36,6 +36,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "machina.core.context_processors.metadata",
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -66,7 +67,6 @@ CORS_ORIGIN_WHITELIST = (
 
 INSTALLED_APPS = [
   'flat',
-  'django.contrib.admin',
   'django.contrib.sites',
   'django.contrib.auth',
   'django.contrib.contenttypes',
@@ -87,6 +87,10 @@ INSTALLED_APPS = [
   'widget_tweaks',
   'django_markdown',
   'ckeditor',
+  'compressor',
+  'easy_thumbnails',
+  'fiber',
+  'django.contrib.admin',
 ] + get_machina_apps()
 
 MIDDLEWARE_CLASSES = (
@@ -94,13 +98,15 @@ MIDDLEWARE_CLASSES = (
   'corsheaders.middleware.CorsMiddleware',
   'django.middleware.common.CommonMiddleware',
   'django.middleware.csrf.CsrfViewMiddleware',
-  #'django.middleware.clickjacking.XFrameOptionsMiddleware',
+  # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.contrib.messages.middleware.MessageMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'base.middleware.ProfileMiddleware',
   'whitenoise.middleware.WhiteNoiseMiddleware',
   'machina.apps.forum_permission.middleware.ForumPermissionMiddleware',
+  'fiber.middleware.ObfuscateEmailAddressMiddleware',
+  'fiber.middleware.AdminPageMiddleware',
 
 )
 
@@ -278,6 +284,63 @@ MACHINA_DEFAULT_AUTHENTICATED_USER_FORUM_PERMISSIONS = [
     'can_attach_file',
     'can_download_file',
 ]
+
+#
+# Fiber settings
+#
+
+# Set default template to render
+FIBER_DEFAULT_TEMPLATE = 'public_layout.html'
+
+# Set default upload location
+FIBER_IMAGES_DIR = 'fiber/uploads/images'
+FIBER_FILES_DIR = 'fiber/uploads/files'
+
+FIBER_TEMPLATE_CHOICES = (
+    ('', 'Standaard sjabloom'),
+    ('anbi.html', 'Vaste ANBI'),
+    ('list.html', 'Vaste diensten overzicht'),
+    ('kerktijden.html', 'Vaste kerktijden'),
+    ('kindercreche.html', 'Vaste kindercreche'),
+    ('orgel.html', 'Vaste orgel'),
+    ('index.html', 'Vaste voorpagina'),
+)
+
+# Set some extra options for pages
+FIBER_METADATA_PAGE_SCHEMA = {
+  'hide_title': {
+    'widget': 'select',
+    'values': ['nee (standaard)', 'ja'],
+  },
+}
+
+# Set some extra options for contentitems (especially for jaarthema items)
+FIBER_METADATA_CONTENT_SCHEMA = {
+  'hide_jaarthema': {
+    'widget': 'select',
+    'values': ['nee (standaard)', 'ja'],
+  },
+  'jaarthema_background_url': {
+    'widget': 'textfield',
+  }
+}
+
+# Disable Fiber on most backend pages
+FIBER_EXCLUDE_URLS = [
+  '^rooster*',
+  '^adresboek*',
+  '^forum*',
+  '^profiel*',
+  '^team*',
+]
+
+# Configure compressor
+STATICFILES_FINDERS = [
+  'django.contrib.staticfiles.finders.FileSystemFinder',
+  'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+  'compressor.finders.CompressorFinder',
+]
+
 
 #
 # localsettings loading
