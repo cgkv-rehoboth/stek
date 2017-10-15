@@ -303,6 +303,33 @@ quote
 
 #wpr-body
   height: 100%
+  margin-left: 0 !important // Remove white bar on the left, which was for the original sidebar
 
 .df-sidebar #df-wpr-sidebar
   z-index: 1030
+
+#df-wpr-sidebar
+  &.df-hidden
+    left: -240px !important // Move the sidebar out of window
+
+  #df-sidebar
+    position: relative  // To prevent elements falling out (overflow-x)
+
+  // Create a small button, instead of a whole bar button
+  #df-btn-toggle-sidebar
+    top: 50% !important // Align button in the center of the page
+    left: 230px
+    width: 13px !important
+    height: 24px !important
+    border-radius: 0 13px 13px 0
+    opacity: 0.4
+
+    &:hover
+      opacity: 1
+
+    &.df-hidden
+      left: 240px // Let sidebar just be inside the window
+      opacity: 0.2
+
+      &:hover
+        opacity: 1
