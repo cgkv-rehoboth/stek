@@ -726,17 +726,19 @@ def calendar(request):
 @login_required
 @permission_required('agenda.add_service', raise_exception=True)
 def services_admin(request):
-  # set default date to next sunday without a service
-  # Get last sunday service
-  last = Service.objects.filter(startdatetime__week_day=1).order_by('-startdatetime').first()
+  ## set default date to next sunday without a service
+  # Get today's date
+  today_date = datetime.today().date()
+
+  # Get last sunday service, from today and on
+  last = Service.objects.filter(startdatetime__week_day=1, startdatetime__gte=today_date).order_by('-startdatetime').first()
 
   # Add one week
   if last:
     startdatetime = last.startdatetime + timedelta(weeks=1)
   else:
     # Get next upcoming sunday
-    today = datetime.today().date()
-    startdatetime = today + timedelta(days=-today.weekday() - 1, weeks=1)
+    startdatetime = today_date + timedelta(days=-today_date.weekday() - 1, weeks=1)
 
   return render(request, 'services/admin.html', {
     'startdatetime': startdatetime,
