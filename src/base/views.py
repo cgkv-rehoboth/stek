@@ -5,7 +5,7 @@ from django.contrib.auth import logout
 from django.db.models import Prefetch, Q
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.http import *
 from django.conf.urls import patterns, include, url
 from django.views.generic import RedirectView
@@ -36,6 +36,7 @@ from .forms import LoginForm, UploadImageForm
 from agenda.models import *
 from base.models import *
 from machina.apps.forum_conversation.models import *
+from fiber.models import Page, ContentItem
 
 
 def uniqify(seq, idfun=None):
@@ -673,11 +674,16 @@ def dashboard(request):
 
   is_birthday = request.profile.birthday.strftime('%d-%m') == datetime.today().date().strftime('%d-%m')
 
+  ## Fibar action
+  # Get CMS page from Fiber
+  fiber_page = get_object_or_404(Page, url__exact=('"dashboard"'))
+
   return render(request, 'dashboard.html', {
     'is_birthday': is_birthday,
     'services': servicesJSON,
     'ruilrequests': ruilrequests,
-    'duties': duties
+    'duties': duties,
+    'fiber_page': fiber_page
   })
 
 

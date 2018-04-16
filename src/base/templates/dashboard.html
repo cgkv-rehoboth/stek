@@ -36,12 +36,14 @@
       </div>
     </div>
 
-<!-- todo: style newsfeed
     <div class="row newsfeed">
       <h3>Mededelingen</h3>
-      {% show_content "nieuwsberichten" %}
+      <div class="newsfeed-list col-md-offset-2 col-md-8">
+        <!-- One can choose from these three layout options: newsfeed-simple, newsfeed-cubes, and newsfeed-list -->
+        {% show_page_content "nieuwsberichten" %}
+      </div>
     </div>
-    -->
+
 
     <div class="row">
       <h3>Diensten van de aankomende week</h3>
