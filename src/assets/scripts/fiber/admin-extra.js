@@ -71,6 +71,13 @@ if (document.getElementById('wpr-body')) {
         });
         
       }
+
+
+      // Hide the sidebar on page load, because the cookie setting won't work on mobile devices
+      if ($('body').hasClass('df-sidebar')){
+        // Hide it by firing the click event on the hide button
+        $("#df-btn-toggle-sidebar").click();
+      }
     });
   })(window.jQuery);
 }
