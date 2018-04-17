@@ -38,9 +38,76 @@
 
     <div class="row newsfeed">
       <h3>Mededelingen</h3>
-      <div class="newsfeed-list col-md-offset-2 col-md-8">
+      <div class="newsfeed-list col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8">
         <!-- One can choose from these three layout options: newsfeed-simple, newsfeed-cubes, and newsfeed-list -->
         {% show_page_content "nieuwsberichten" %}
+
+        <div class="birthday-list">
+          <div class="birthday-list-header">
+            <i class="fa fa-birthday-cake"></i>
+            {% if birthday_profiles_today %}
+              {% if birthday_profiles_today|length == 1 %}
+                Vandaag is er 1 jarige.
+              {% else %}
+                Vandaag zijn er {{ birthday_profiles_today|length }} jarigen.
+              {% endif %}
+            {% elif birthday_profiles_coming %}
+              {% if birthday_profiles_coming|length == 1 %}
+                Morgen is er 1 jarige.
+              {% else %}
+                Morgen zijn er {{ birthday_profiles_coming|length }} jarigen.
+              {% endif %}
+            {% else %}
+              Verlopig zijn er geen jarigen.
+            {% endif %}
+
+            {% if birthday_profiles_today or birthday_profiles_coming %}
+              <a href="javascript:void(0)">Bekijk deze</a>.
+            {% endif %}
+          </div>
+
+          <div class="birthday-list-content">
+            {% if birthday_profiles_today %}
+            <i>Vandaag jarig:</i>
+            <ul>
+              {% for birthday_profile in birthday_profiles_today %}
+                {% cycle '#ee7bb4' '#eec17b' '#d37bee' '#ee7b7b' as color_women silent %}
+                {% cycle '#7b88ee' '#6fee73' '#987bee' '#7bb3ee' as color_men silent %}
+
+                <li>
+                  <i class="fa fa-birthday-cake"
+                     style="color: {% if birthday_profile.sex == "V" %}{{ color_women }}{% else %}{{ color_men }}{% endif %}"></i>
+                  <a href="{% url 'profile-detail-page' birthday_profile.pk %}"
+                     title="Klik hier om het profiel te bekijken">
+                    {{ birthday_profile.name }}
+                  </a>
+                  <small>({{ birthday_profile.age }} jaar)</small>
+                </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if birthday_profiles_coming %}
+            <i>Morgen jarig:</i>
+            <ul>
+              {% for birthday_profile in birthday_profiles_coming %}
+                {% cycle '#d37bee' '#eec17b' '#ee7b7b' '#ee7bb4' as color_women silent %}
+                {% cycle '#7bb3ee' '#987bee' '#6fee73' '#7b88ee' as color_men silent %}
+
+                <li>
+                  <i class="fa fa-birthday-cake"
+                     style="color: {% if birthday_profile.sex == "V" %}{{ color_women }}{% else %}{{ color_men }}{% endif %}"></i>
+                  <a href="{% url 'profile-detail-page' birthday_profile.pk %}"
+                     title="Klik hier om het profiel te bekijken">
+                    {{ birthday_profile.name }}
+                  </a>
+                  <small>({{ birthday_profile.age|add:1 }} jaar)</small>
+                </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
 

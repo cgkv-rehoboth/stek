@@ -48,7 +48,7 @@
             box-shadow: 1px 1px 2px #cac9c9
 
     .newsfeed-list
-      div > ul
+      div.content > ul
 
         & > li
           display: block
@@ -62,11 +62,47 @@
             border-top-width: 1px
             border-radius: 2px 2px 0 0
 
-          &:last-of-type
+          //&:last-of-type
             border-radius: 0 0 2px 2px
 
-          &:only-of-type
+          //&:only-of-type
             border-radius: 2px
 
           &:hover
             background-color: #faf9f9
+
+    .birthday-list
+      padding: 11px 17px
+      border: 1px solid #aeb1b3
+      border-top-width: 0
+      border-radius: 0 0 2px 2px
+
+      .birthday-list-header
+        font-size: 78%
+        .fa
+          font-size: 80%
+          color: #4b4b4b
+          margin-right: 3px
+
+
+      .birthday-list-content
+        padding-left: 39px
+        display: none
+
+        ul
+          padding-top: 5px
+          padding-bottom: 8px
+
+          &:last-of-type
+            padding-bottom: 0
+
+          li
+            position: relative
+            margin-bottom: 5px
+
+            .fa
+              position: absolute
+              left: -22px
+              top: 2px
+              font-size: 70%
+              color: #abaab1

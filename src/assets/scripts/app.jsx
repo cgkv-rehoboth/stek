@@ -636,6 +636,11 @@ window.profileEdit = (address) => {
 };
 
 window.dashboard = (services) => {
+  $('.birthday-list-header a').click(function(){
+    $('.birthday-list-header').slideUp(300);
+    $('.birthday-list-content').slideDown(300);
+  });
+
   window.timetableRuilrequests();
 
   ReactDom.render(

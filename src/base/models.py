@@ -236,6 +236,14 @@ class Profile(TimestampedModel, models.Model):
     is_before_birthday = (today.month, today.day) < (self.birthday.month, self.birthday.day)
     return years - int(is_before_birthday)
 
+  def sex(self):
+    if self.geslacht == "V" or self.geslacht == "Vrouw":
+      return "V"
+    elif self.geslacht == "M" or self.geslacht == "Man":
+      return "M"
+    else:
+      return "O"
+
 
 def family_pic(fam, filename):
   _, ext = os.path.splitext(filename)

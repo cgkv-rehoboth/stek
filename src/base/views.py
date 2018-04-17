@@ -578,10 +578,20 @@ def reset_password_done(request):
 
 @login_required
 def dashboard(request):
+  today_date = datetime.today().date()
+
+  ## News items
+  # Get CMS page from Fiber
+  fiber_page = get_object_or_404(Page, url__exact=('"dashboard"'))
+
+  # Get the birthdays for today
+  coming_date = today_date + timedelta(days=1)
+  birthday_profiles_today = Profile.objects.filter(birthday__day=today_date.day, birthday__month=today_date.month)
+  birthday_profiles_coming = Profile.objects.filter(birthday__day=coming_date.day, birthday__month=coming_date.month).order_by("birthday")
 
   ## Get services for this week
-  maxweeks = datetime.today().date() + timedelta(weeks=1)
-  services = Service.objects.filter(enddatetime__gte=datetime.today().date(), startdatetime__lte=maxweeks).order_by("startdatetime", "enddatetime")
+  maxweeks = today_date + timedelta(weeks=1)
+  services = Service.objects.filter(enddatetime__gte=today_date, startdatetime__lte=maxweeks).order_by("startdatetime", "enddatetime")
 
   serviceslist = []
   for service in services:
@@ -674,16 +684,14 @@ def dashboard(request):
 
   is_birthday = request.profile.birthday.strftime('%d-%m') == datetime.today().date().strftime('%d-%m')
 
-  ## Fibar action
-  # Get CMS page from Fiber
-  fiber_page = get_object_or_404(Page, url__exact=('"dashboard"'))
-
   return render(request, 'dashboard.html', {
     'is_birthday': is_birthday,
+    'fiber_page': fiber_page,
+    'birthday_profiles_today': birthday_profiles_today,
+    'birthday_profiles_coming': birthday_profiles_coming,
     'services': servicesJSON,
     'ruilrequests': ruilrequests,
-    'duties': duties,
-    'fiber_page': fiber_page
+    'duties': duties
   })
 
 
