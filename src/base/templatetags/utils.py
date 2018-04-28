@@ -1,6 +1,11 @@
 from django import template
 import random
 from public.models import Slide
+
+from machina.apps.forum_conversation.models import *
+from machina.core.loading import get_class
+TrackingHandler = get_class('forum_tracking.handler', 'TrackingHandler')
+
 register = template.Library()
 
 @register.filter('klass')
@@ -50,5 +55,16 @@ def isobject(ob, str):
 
 @register.assignment_tag()
 def slides():
-  """ Returns al visible slides for the header carousel """
+  """ Returns all visible slides for the header carousel """
   return Slide.objects.filter(live=True).order_by('order')
+
+@register.assignment_tag(takes_context=True)
+def unread_forum_topics(context):
+  """ Returns the unread topics of the Machina forum """
+  request = context.get('request', None)
+
+  # Get all topics
+  all_forum_topics = Topic.objects.all()
+
+  # Retrieve the unread topics
+  return TrackingHandler(request=request).get_unread_topics(all_forum_topics, request.user)

@@ -1,4 +1,6 @@
 {% load staticfiles %}
+{% load utils %}{# Load utils from src/base/templatetags/utils.py #}
+{% unread_forum_topics as unread_forum_topics_var %}
 
 <header>
   <!-- Navigation -->
@@ -44,7 +46,16 @@
             <a href="{% url 'timetable-list-page' %}" title="Bekijk alle roosters">Roosters</a>
           </li>
           <li>
-            <a href="{% url 'forum' %}" title="Bezoek het forum">Forum</a>
+            <a href="{% url 'forum' %}"
+               title="Bezoek het forum{% if unread_forum_topics_var %} ({{ unread_forum_topics_var|length }} ongelezen onderwerp{{ unread_forum_topics_var|pluralize:"en" }}){% endif %}"
+            >
+              Forum
+              {% if unread_forum_topics_var %}
+                <span class="forum-unread-badge">
+                  <span></span>
+                </span>
+              {% endif %}
+            </a>
           </li>
           {% comment "Calendar not yet enabled for our users" %}
           <li>

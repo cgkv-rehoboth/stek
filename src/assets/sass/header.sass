@@ -15,6 +15,20 @@
     li
       background-color: $dark-bg
 
+      .forum-unread-badge
+        display: inline-block
+        position: relative
+
+        span
+          display: block
+          position: absolute
+          top: -5px
+          left: -10px
+          background-color: red
+          width: 7px
+          height: 7px
+          border-radius: 5px
+
       &:hover
         background-color: lighten($dark-bg, 5%)
 
@@ -31,13 +45,13 @@
 
       ul.dropdown-menu
         background-color: $dark-bg
-        padding: 0px
+        padding: 0
         margin-right: -4px
-        border: 0px
+        border: 0
 
         li
           text-align: right
-          padding: 0px
+          padding: 0
 
           a
             padding-top: 8px
@@ -48,5 +62,12 @@
             border-top: 1px solid #3a5669
 
 @media (max-width: 767px)
-  .navbar-custom .nav li ul.dropdown-menu li
-    text-align: left
+  .navbar-custom .nav li
+    .forum-unread-badge
+      float: right
+
+      span
+        top: 7px
+
+    ul.dropdown-menu li
+      text-align: left
