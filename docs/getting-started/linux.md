@@ -1,31 +1,34 @@
 # Unix, getting started
 
-1. Use your package manager to install `python`, `node`
-2. Clone this repository
-3. Open a terminal at the root of the repository
-4. Run the following commands to create the python and node sandboxes and install the local
+- Use your package manager to install `python`, `node`
+- Clone this repository
+- Open a terminal at the root of the repository
+- Run the following commands to create the python and node sandboxes and install the local
    dependencies.
 
     make install
 	  source .virtualenv/bin/activate
 	  pip install -r requirements
 
-5. Install gulp globally using npm: `sudo npm install -g gulp`
+- Install gulp globally using npm: `sudo npm install -g gulp`
 
-6. Run the build for the client side files `gulp`
+- Run the build for the client side files `gulp`
 
-7. Download and install MySQL and run the following queries:
+- Download and install MySQL and run the following queries:
 
     create database cgkv;
     grant all privileges on cgkv.* to cgkv@localhost identified by 'lCCnO6D9Py1VQukTlGknTnFiNyx6TmJ6';
 
-8.  You can now migrate the database (make sure the virtualenv is activated as before) and
-    run the development server; from the `src/` run:
+- Create the tables and insert the default data (make sure the virtualenv is activated as before):
 
-    python manage.py migrate
-	  python manage.py runserver
+	python src/manage.py migrate
+	python src/manage.py loaddata
 
-9.  You should now be able to visit `localhost:8000` (and `localhost:8000/admin/`) in your browser.
+-  Run the development server:
+
+	python src/manage.py runserver
+
+-  You should now be able to visit `localhost:8000` (and `localhost:8000/admin/`) in your browser.
 
 ## Post installation
 
