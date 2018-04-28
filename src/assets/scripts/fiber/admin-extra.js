@@ -34,7 +34,7 @@ if (document.getElementById('wpr-body')) {
   // Use jQuery as $ variable
   (function ($) {
     /*
-     Disable some Fiber functions when all functions (the whole document) is loaded
+     Change some Fiber functions when all functions (the whole document) is loaded
      */
     $(document).ready(function(){
       // Prevent element dragging
@@ -71,6 +71,12 @@ if (document.getElementById('wpr-body')) {
         });
         
       }
+
+
+      // Use an icon to indicate that a block is editable instead of the blue box-shadow
+      var edit_icon_html = "<div class=\"fiber-edittable-block\"><i class=\"fa fa-pencil\" style=\"color: #848484;\"></i></div>";
+      $("div[data-fiber-data]:not(.content) .content")
+          .prepend(edit_icon_html);
 
 
       // Hide the sidebar on page load, because the cookie setting won't work on mobile devices

@@ -305,6 +305,39 @@ quote
   height: 100%
   margin-left: 0 !important // Remove white bar on the left, which was for the original sidebar
 
+  // Remove the blue box-shadowing and show a small edit-icon
+  [data-fiber-data*="\"url\":"]
+    transition: border-right-color 400ms
+    border-right-color: #eee0     // Give border color a initial color to start fading from
+
+    &:hover
+      // Undo defaults
+      box-shadow: none
+      cursor: inherit
+
+      // Do our own stuff
+      border-right: 1px dashed #d7d7d7
+
+      .fiber-edittable-block
+        display: inline-block
+
+    // The edit-icon block
+    .fiber-edittable-block
+      background-color: #dedede
+      border: 1px solid #d7d7d7
+      border-radius: 51px
+      box-shadow: 0px 1px 2px 0px #7b7b7b
+      display: none
+      font-size: 75%
+      padding: 3px 4px
+      position: absolute
+      right: -11px
+      bottom: -9px
+      cursor: pointer
+
+      fa
+        color: #848484
+
 .df-sidebar #df-wpr-sidebar
   z-index: 1030
 
@@ -333,3 +366,4 @@ quote
 
       &:hover
         opacity: 1
+
