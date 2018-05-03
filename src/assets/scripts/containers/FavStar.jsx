@@ -21,7 +21,6 @@ export default class FavStar extends React.Component {
     if(this.state.favorite)
       return api.profiles.defavorite(this.props.pk)
       .then((data) => {
-        console.debug("Favorite unset");
 
         this.setState({
           favorite: false
@@ -30,7 +29,6 @@ export default class FavStar extends React.Component {
     else
       return api.profiles.favorite(this.props.pk)
       .then((data) => {
-        console.debug("Favorite set");
 
         this.setState({
           favorite: true
