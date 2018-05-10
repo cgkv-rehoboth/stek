@@ -1,0 +1,198 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <style>
+    .error_found, .error_found td {
+      background-color: #ffe2e9 !important;
+    }
+    .warning_found, .warning_found td {
+      background-color: #fff4e6 !important;
+    }
+  </style>
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>{{ timetable.title }} <small>Rooster importeren</small></h2>
+        </div>
+        <div class="col-sm-12">
+          <a href="{% url 'timetable-teamleader-page' timetable.pk %}" class="backlink">< Terug naar de beheerpagina</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          Bekijk hieronder het resultaat. Indien er fouten zijn, corrigeer deze in je bestand en probeer het opnieuw te uploaden. Deze fouten worden namelijk helemaal niet verwerkt.<br/>
+          Indien het resultaat naar wens is, klik op 'Importeren' om het rooster te importeren.
+        </div>
+
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+
+        <div class="col-sm-12">
+          <h3>Resultaat</h3>
+
+          <div class="scroll-div">
+            <table id="usertable" class="table table-hover">
+              <thead>
+                <th>Datum</th>
+                <th>Tijdstip / Dienst</th>
+                <th>Familie</th>
+                <th>Persoon</th>
+                <th>Extra opmerkingen</th>
+              </thead>
+              <tbody>
+                {% for output_line in output_lines %}
+                  <tr
+                    {% if output_line.errors_found %}
+                      class="error_found"
+                    {% elif output_line.warnings_found %}
+                      class="warning_found"
+                    {% endif %}
+                  >
+                    <td>
+                      {{ output_line.datum|date:"d-m-Y" }}
+
+                      {% if output_line.error_datum %}x
+                        <span title="{{ output_line.error_datum }}">
+                          <i class="fa fa-times fa-fw"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.warning_datum %}
+                        <span title="{{ output_line.warning_datum }}">
+                          <i class="fa fa-info"></i>
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if output_line.event %}
+                        {% if output_line.event|isobject:"service" %}
+                          <a href="{% url 'services-single' output_line.event.id %}">{{ output_line.event.title }}</a>
+                        {% else %}
+                          <a href="{% url 'events-single' output_line.event.id %}">{{ output_line.event.title }}</a>
+                        {% endif %}
+                      {% else %}
+                        {{ output_line.tijdstip }}
+                      {% endif %}
+
+                      {% if output_line.error_event %}
+                        <span title="{{ output_line.error_event }}">
+                          <i class="fa fa-times"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.error_tijdstip %}
+                        <span title="{{ output_line.error_tijdstip }}">
+                          <i class="fa fa-times"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.warning_event %}
+                        <span title="{{ output_line.warning_event }}">
+                          <i class="fa fa-info"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.warning_tijdstip %}
+                        <span title="{{ output_line.warning_tijdstip }}">
+                          <i class="fa fa-info"></i>
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if output_line.familie %}
+                        <a href="{% url 'family-detail-page' output_line.familie.id %}" class="black-url">
+                          Fam. {{ output_line.familie.name_initials }}
+                        </a>
+                      {% endif %}
+
+                      {% if output_line.error_familie %}
+                        <span title="{{ output_line.error_familie }}">
+                          <i class="fa fa-times"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.warning_familie %}
+                        <span title="{{ output_line.warning_familie }}">
+                          <i class="fa fa-info"></i>
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if output_line.persoon %}
+                        <a href="{% url 'profile-detail-page' output_line.persoon.id %}" class="black-url">
+                          {{ output_line.persoon }}
+                        </a>
+                      {% endif %}
+
+                      {% if output_line.error_persoon %}
+                        <span title="{{ output_line.error_persoon }}">
+                          <i class="fa fa-times"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.warning_persoon %}
+                        <span title="{{ output_line.warning_persoon }}">
+                          <i class="fa fa-info"></i>
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {{ output_line.comments }}
+
+                      {% if output_line.error_comments %}
+                        <span title="{{ output_line.error_comments }}">
+                          <i class="fa fa-times"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.warning_comments %}
+                        <span title="{{ output_line.warning_comments }}">
+                          <i class="fa fa-info"></i>
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <form method="post" action="{% url 'timetable-import-from-file-save' timetable.pk %}" class="form-horizontal">
+            {% csrf_token %}
+            <input type="hidden" name="timetable" value="{{ timetable.pk }}" />
+            <input type="hidden" name="json_valid_lines" value="{{ json_valid_lines }}" />
+
+            <div class="form-group">
+              <div class="col-sm-10 col-sm-offset-2">
+                <a href="{% url 'timetable-import-from-file-index' timetable.pk %}" class="btn btn-default black">Annuleren</a>
+
+                <button type="submit" class="btn btn-default cyan">
+                  Importeren
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+    <div>
+    </div>
+  </section>
+
+  {% include "./confirmationmodal.html" %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.teamPage();
+  </script>
+{% endblock %}

@@ -17,13 +17,18 @@ from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import default_storage
 import random
 import logging
 import re
+import csv
+import tempfile
+import json
 
 from .models import *
 from base.models import Profile, Family
 from .forms import *
+from .validators import *
 
 logger = logging.getLogger(__name__)
 
@@ -713,6 +718,387 @@ def timetable_teamleader_duty_delete(request, id):
 #     'selected_member': selected_member,
 #   })
 
+@login_required
+def timetable_import_from_file_index(request, id):
+  try:
+    timetable = Timetable.objects.get(pk=id)
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('timetable-detail-page')
+
+  return render(request, 'teampage/csv_upload/upload_page.html', {
+    'timetable': timetable
+  })
+
+@login_required
+@require_POST
+def timetable_import_from_file_check(request, id):
+  try:
+    # Get SSL secured timetable pk, and not by URL
+    timetable = Timetable.objects.get(pk=request.POST.get("timetable", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('timetable-detail-page')
+
+  # Check if user is teamleader of this timetable's team
+  if not request.profile.teamleader_of(timetable.team) and not request.user.has_perm('agenda.change_timetable'):
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=timetable.pk)
+
+  # Get file
+  upload_file = request.FILES.get('upload_file')
+
+  # Check for file
+  if not upload_file:
+    messages.error(request, "Er dient een bestand geüpload te worden.")
+    return redirect('timetable-import-from-file-index', id=timetable.pk)
+
+  if not validate_file_extension(upload_file, ['.csv']):
+    messages.error(request, "Onjuist bestandsformaat. Het bestand dient een .csv bestand te zijn.");
+    return redirect('timetable-import-from-file-index', id=timetable.pk)
+
+  headers = ['Datum', 'Tijdstip', 'Familie', 'Persoon', 'Extra opmerkingen']
+  
+  def get_month_by_name(name):
+    months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
+    return months.index(name.lower()) + 1 if name in months else 0
+
+  # Create a temp file
+  with tempfile.NamedTemporaryFile() as tf:
+    # Copy the uploaded file to the temp file
+    #for chunk in upload_file.chunks():
+    #  tf.write(chunk)
+
+    # Save contents to file on disk
+    #tf.flush()
+
+    # Read file
+    #with open(tf.name, 'r', encoding="ISO-8859-1") as fh:  # todo: fix permission error with tmp file
+    tf = default_storage.open('D:\\Documents\\workspace\\CGKV website\\stek\\media\\files\\Rooster template.csv')
+    with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
+      #lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
+      lines = csv.DictReader(fh, delimiter=';')
+
+      # Check for needed headers
+      missingheaders = list(set(headers) - set(lines.fieldnames))
+      if missingheaders:
+        if len(missingheaders) > 1:
+          messages.error(request, "De kolommen <strong>%s</strong> ontbreken in het bestand." % ', '.join(missingheaders))
+        else:
+          messages.error(request, "De kolom <strong>%s</strong> ontbreekt in het bestand." % missingheaders[0])
+        return redirect('timetable-import-from-file-index', id=timetable.pk)
+
+      # for each line
+      month = None
+      date = None
+      date_start = None
+      date_end = None
+      event = None
+      errors_found = 0
+      output_lines = []
+      for line in lines:
+        error = {}
+        warning = {}
+        # Get date
+        # If only month name is given: save this for the next iterations
+        # If only nummer is given: get month from saved month ^
+        if line['Datum']:
+          #if int(line['Datum']):
+          #  # Only day
+          #  day = line['Datum']
+
+          #  if month == 0:
+          #    error['datum'] = "Ongeldige datum: er is geen maand bekend."
+          #else:
+          #  # Parse date to month number
+          #  month = get_month_by_name(line['Datum'].strip())
+
+          #  # Validate if it is a month
+          #  if month == 0:
+          #    # Maybe it is a valid date
+          #    try:
+          #      date = datetime.strptime(line['Datum'].strip(), "%d-%m-%Y")
+          #    except ValueError as e:
+          #      error['datum'] = "Ongeldige datum '%s'." % line['Datum']
+
+          try:
+            date = datetime.strptime(line['Datum'].strip(), "%d-%m-%Y")
+          except ValueError as e:
+            error['datum'] = "Ongeldige datum '%s'." % line['Datum']
+            date = None
+        # else:
+        #   Use date from previous line if it exists, else
+        elif date is None:
+          error['datum'] = "Onbekende datum."
+
+        # Set boundaries for 1 day
+        if line['Tijdstip'] and date:
+          if line['Tijdstip'] == 'Ochtend':
+            # Service time between 8:00 and 13:00
+            date_start = date + timedelta(hours=8)
+            date_end = date + timedelta(hours=13)
+          elif line['Tijdstip'] == 'Middag':
+            # Service time between 13:00 and 00:00
+            date_start = date + timedelta(hours=13)
+            date_end = date + timedelta(hours=24)
+          elif line['Tijdstip'] == 'Avond':
+            # Service time between 17:00 and 00:00
+            date_start = date + timedelta(hours=17)
+            date_end = date + timedelta(hours=24)
+          elif re.match("^\d?\d:\d\d$", line['Tijdstip']):
+            time = line['Tijdstip'].split(':')
+            date_start = date + timedelta(hours=int(time[0]), minutes=int(time[1]))
+          elif len(line['Tijdstip']) > 0:
+            error['tijdstip'] = "Ongeldige tijdstip '%s'." % line['Tijdstip']
+            date_start = None
+            date_end = None
+        # else:
+        #   Use time from previous line if it exists, else
+        elif date_start is None:
+          error['tijdstip'] = "Onbekend aanvangs tijdstip."
+
+        # Search event
+        if date_start:
+          if date_end:
+            event = Event.objects.filter(startdatetime__gte=date_start, enddatetime__lt=date_end)
+          else:
+            event = Event.objects.filter(startdatetime=date_start)
+
+          if len(event) > 1:
+            error['event'] = "Meerdere diensten gevonden op dit tijdstip."
+            event = None
+          elif event is None or len(event) == 0:
+            error['event'] = "Geen diensten gevonden voor dit tijdstip."
+          else:
+            event = event.first()
+        else:
+          event = None
+
+        # Get description/comment
+        comments = line['Extra opmerkingen'].strip()
+        # todo: HTML filter comments
+
+        # Save whole in dict
+        main_line = {}
+        main_line['datum'] = date
+        main_line['tijdstip'] = line['Tijdstip']
+        main_line['event'] = event
+        main_line['comments'] = comments
+
+        for key,val in error.items():
+          error_name = 'error_%s' % key
+          main_line[error_name] = val
+
+        for key,val in warning.items():
+          warning_name = 'warning_%s' % key
+          main_line[warning_name] = val
+
+        # Split families into array
+        if line['Familie']:
+          for familie in line['Familie'].split('/'):
+            tmp_error = {}
+            tmp_warning = {}
+
+            lastname = re.sub(r"^Fam\.\s?", '', familie.strip(), flags=re.IGNORECASE).strip()
+            familie = Family.objects.filter(lastname=lastname)
+
+            if len(familie) > 1:
+              # Try to be smart and select the familie which is in the team
+              teammembers = TeamMember.objects.filter(team=timetable.team, family__in=familie)
+
+              # If one is found
+              if len(teammembers) == 1:
+                # Set the family
+                familie = teammembers.firs().family
+              else:
+                tmp_error['familie'] = "Meerdere families gevonden voor '%s'." % lastname
+                familie = None
+
+            elif familie is None or len(familie) == 0:
+              tmp_error['familie'] = "Geen families gevonden voor '%s'." % lastname
+            else:
+              familie = familie.first()
+
+              # Check if familie is in team
+              try:
+                TeamMember.objects.get(team=timetable.team, family=familie)
+              except ObjectDoesNotExist:
+                tmp_warning['familie'] = "Familie is geen lid van het team."
+
+            # todo: Check if the timetableduty already exists
+
+            # Save whole in the dict
+            temp_line = {}
+            temp_line['familie'] = familie
+            temp_line['persoon'] = None
+            temp_line['errors_found'] = len(error) + len(tmp_error)
+            temp_line['warnings_found'] = len(warning) + len(tmp_warning)
+
+            for key,val in tmp_error.items():
+              error_name = 'error_%s' % key
+              temp_line[error_name] = val
+
+            for key,val in tmp_warning.items():
+              warning_name = 'warning_%s' % key
+              temp_line[warning_name] = val
+
+            # Count total invalid lines
+            if len(error) or len(tmp_error):
+              errors_found += 1
+
+            output_lines.append({**main_line, **temp_line})
+
+        # Split persons into array
+        if line['Persoon']:
+          for persoon in line['Persoon'].split('/'):
+            tmp_error = {}
+            tmp_warning = {}
+            
+            # Create first and possible last name
+            persoon_names = persoon.strip().split(' ', 1)
+            firstname = persoon_names[0].strip()
+
+            if len(persoon_names) > 1:
+              lastname = persoon_names[1].strip()
+              profile = Profile.objects.filter(first_name=firstname, last_name=lastname)
+            else:
+              lastname = None
+              profile = Profile.objects.filter(first_name=firstname)
+
+            if len(profile) > 1:
+              # Try to be smart and select the person who is in the team
+              teammembers = TeamMember.objects.filter(team=timetable.team, profile__in=profile)
+
+              # If one is found
+              if len(teammembers) == 1:
+                # Set the profile
+                profile = teammembers.first().profile
+              else:
+                tmp_error['persoon'] = "Meerdere personen gevonden voor '%s'." % persoon
+                profile = None
+
+            elif profile is None or len(profile) == 0:
+              tmp_error['persoon'] = "Geen persoon gevonden voor '%s'." % persoon
+            else:
+              profile = profile.first()
+
+              # Check if profile is in team
+              try:
+                teammember = TeamMember.objects.filter(team=timetable.team, profile=profile)
+              except ObjectDoesNotExist:
+                tmp_warning['persoon'] = "Persoon is geen lid van het team."
+
+            # Save whole as object
+            temp_line = {}
+            temp_line['familie'] = None
+            temp_line['persoon'] = profile
+            temp_line['errors_found'] = len(error) + len(tmp_error)
+            temp_line['warnings_found'] = len(warning) + len(tmp_warning)
+
+            for key,val in tmp_error.items():
+              error_name = 'error_%s' % key
+              temp_line[error_name] = val
+
+            for key,val in tmp_warning.items():
+              warning_name = 'warning_%s' % key
+              temp_line[warning_name] = val
+
+            # Count total invalid lines
+            if len(error) or len(tmp_error):
+              errors_found += 1
+
+            output_lines.append({**main_line, **temp_line})
+
+  if output_lines:
+    if errors_found:
+      messages.warning(request, "Er zijn %d regels met een fout." % errors_found)
+    else:
+      messages.success(request, "Er zijn geen fouten gevonden!")
+
+  # Create a json representation of the lines which have no errors
+  valid_lines = []
+  for output_line in output_lines:
+    if output_line['errors_found'] == 0:
+      line = {
+        'datum':    output_line['datum'],
+        'tijdstip': output_line['tijdstip'],
+        'event':    output_line['event'].pk if output_line['event'] else '',
+        'familie':  output_line['familie'].pk if output_line['familie'] else '',
+        'persoon':  output_line['persoon'].pk if output_line['persoon'] else '',
+        'comments': output_line['comments']
+      }
+      valid_lines.append(line)
+  json_valid_lines = json.dumps(valid_lines, default=str)
+
+  return render(request, 'teampage/csv_upload/check_page.html', {
+    'timetable':    timetable,
+    'output_lines': output_lines,
+    'json_valid_lines': json_valid_lines
+  })
+
+@login_required
+@require_POST
+def timetable_import_from_file_save(request, id):
+  try:
+    # Get SSL secured timetable pk, and not by URL
+    timetable = Timetable.objects.get(pk=request.POST.get("timetable", ""))
+  except ObjectDoesNotExist:
+    messages.error(request, 'Rooster bestaat niet.')
+    return redirect('timetable-detail-page')
+
+  # Check if user is teamleader of this timetable's team
+  if not request.profile.teamleader_of(timetable.team) and not request.user.has_perm('agenda.change_timetable'):
+    # Redirect to first public page
+    return redirect('timetable-detail-page', id=timetable.pk)
+
+  # Retrieve data
+  json_valid_lines = request.POST.get("json_valid_lines", "")
+
+  # Process data
+  if not json_valid_lines:
+    messages.error(request, "Geen data doorgekregen.")
+    return redirect('timetable-import-from-file-index', id=timetable.pk)
+
+  for line in json.loads(json_valid_lines):
+    # Get the valid Events object
+    try:
+      event = Event.objects.get(pk=line['event'])
+    except ObjectDoesNotExist:
+      messages.error(request, "Onjuiste dienst voor de inroostering op %s, %s." % (line['datum'], line['tijdstip']))
+      continue
+
+    # Get the valid Family or Profile object
+    familie = None
+    persoon = None
+    if line['familie']:
+      try:
+        familie = Family.objects.get(pk=line['familie'])
+      except ObjectDoesNotExist:
+        messages.error(request, "Onjuiste familie voor de inroostering op %s, %s." % (line['datum'], line['tijdstip']))
+        continue
+    elif line['persoon']:
+      try:
+        persoon = Profile.objects.get(pk=line['persoon'])
+      except ObjectDoesNotExist:
+        messages.error(request, "Onjuiste persoon voor de inroostering op %s, %s." % (line['datum'], line['tijdstip']))
+        continue
+    else:
+      messages.error(request, "Geen familie of persoon doorgekregen voor de inroostering op %s, %s." % (line['datum'], line['tijdstip']))
+      continue
+
+    # Create the new duty
+    duty = TimetableDuty.objects.create(
+      timetable=timetable,
+      event=event,
+      responsible_family=familie,
+      responsible=persoon,
+      comments=line['comments']
+    )
+
+    messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
+    #messages.success(request, "%s is ingepland voor '%s'." % (persoon if persoon else familie, event))
+
+  return redirect('timetable-teamleader-page', id=timetable.pk)
 
 # Calendar
 
@@ -1733,6 +2119,13 @@ urls = [
       name='timetable-teamleader-duty-edit'),
   url(r'^roosters/teamleider/duty/(?P<id>\d+)/delete/$', timetable_teamleader_duty_delete,
       name='timetable-teamleader-duty-delete'),
+
+  url(r'^roosters/(?P<id>\d+)/teamleider/importeren/$', timetable_import_from_file_index,
+      name='timetable-import-from-file-index'),
+  url(r'^roosters/(?P<id>\d+)/teamleider/importeren/check/$', timetable_import_from_file_check,
+      name='timetable-import-from-file-check'),
+  url(r'^roosters/(?P<id>\d+)/teamleider/importeren/save/$', timetable_import_from_file_save,
+      name='timetable-import-from-file-save'),
 
   url(r'^roosters/(?P<id>\d+)/teamleider/$', timetable_teamleader, name='timetable-teamleader-page'),
 
