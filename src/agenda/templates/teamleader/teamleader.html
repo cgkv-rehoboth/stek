@@ -9,7 +9,13 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <h2>Mijn team <small>{{ table.title }}</small></h2>
+          <h2>Mijn team
+            <small>
+              <a href="{% url 'timetable-detail-page' table.id %}" class="black-url">
+                {{ table.title }}
+              </a>
+            </small>
+          </h2>
         </div>
       </div>
 
@@ -78,6 +84,11 @@
 
         <div class="col-sm-12">
           <h3 id="inplannen">Inplannen</h3>
+          <p>
+            Hieronder kan je handmatig leden voor het rooster inplannen. Je kan ook een CSV bestand uploaden:
+            <a href="{% url 'timetable-import-from-file-index' table.pk %}">
+              CSV bestand uploaden <i class="fa fa-file-text-o" style="font-size: 79%"></i></a>
+          </p>
 
           {% if members.all or families.all %}
             <div id="dutyForm">
@@ -187,11 +198,8 @@
           {% endif %}
 
         </div>
+      </div>
 
-      <div class="col-sm-12">
-        <a href="{% url 'timetable-import-from-file-index' table.pk %}">CSV bestand uploaden</a>
-      </div>
-      </div>
     </div>
     <br/>
   </section>

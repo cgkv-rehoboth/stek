@@ -788,5 +788,50 @@ window.eventPage = () => {
   }
 };
 
+window.importCSV = () => {
+  /* All the functions we need */
+  // Count the amount of checked/selected lines and display this
+  function update_checkbox_counter(){
+    // Update the counters
+    let checked_checkboxes = $('#rooster_csv_table input[type=checkbox]:checked');
+    $('.rooster_csv_counter').text(checked_checkboxes.length);
+
+    // Update the form hidden input
+    let selected_lines = [];
+    $.each(checked_checkboxes, function(k,v){
+      selected_lines.push($(v).attr('data-duty-id'));
+    });
+
+    $('form input[name=json_selected_lines]').val(JSON.stringify(selected_lines));
+  }
+
+  // Update the tr line according to the checked value of the checkbox
+  function update_checkbox(checkbox) {
+    // Remove any of the not_selected classes
+    checkbox.closest('tr').removeClass("not_selected");
+    // Add the not_selected class if needed
+    if (!checkbox.prop("checked")){
+      checkbox.closest('tr').addClass("not_selected");
+    }
+    update_checkbox_counter();
+  }
+
+  // Inital update
+  update_checkbox_counter();
+
+  $("#rooster_csv_table").on("click", "tr:not(.roosters_csv_errors_found)", function(e){
+    if( $(e.target).is('td') ) {
+      let id = $(this).attr('data-duty-id');
+      let checkbox = $(this).find('input[data-duty-id=' + id + ']');
+      checkbox.prop("checked", !checkbox.prop("checked"));
+      update_checkbox(checkbox);
+    }
+  });
+
+  $("#rooster_csv_table").on("click", "input[type=checkbox]", function() {
+    update_checkbox($(this));
+  });
+};
+
 // Add Fibers CKEditor styling sheet
 import "fiber/admin-extra"

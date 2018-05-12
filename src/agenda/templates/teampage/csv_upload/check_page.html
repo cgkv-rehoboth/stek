@@ -5,19 +5,17 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
-  <style>
-    .error_found, .error_found td {
-      background-color: #ffe2e9 !important;
-    }
-    .warning_found, .warning_found td {
-      background-color: #fff4e6 !important;
-    }
-  </style>
-  <section>
+  <section id="rooster_csv">
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <h2>{{ timetable.title }} <small>Rooster importeren</small></h2>
+          <h2>Rooster importeren
+            <small>
+              <a href="{% url 'timetable-detail-page' timetable.id %}" class="black-url">
+                {{ timetable.title }}
+              </a>
+            </small>
+          </h2>
         </div>
         <div class="col-sm-12">
           <a href="{% url 'timetable-teamleader-page' timetable.pk %}" class="backlink">< Terug naar de beheerpagina</a>
@@ -27,7 +25,16 @@
       <div class="row">
         <div class="col-sm-12">
           Bekijk hieronder het resultaat. Indien er fouten zijn, corrigeer deze in je bestand en probeer het opnieuw te uploaden. Deze fouten worden namelijk helemaal niet verwerkt.<br/>
-          Indien het resultaat naar wens is, klik op 'Importeren' om het rooster te importeren.
+          Indien het resultaat naar wens is, klik op 'Importeren' om het rooster te importeren.<br/>
+          Indien een inroostering al bestaat, wordt deze standaard niet geïmporteerd. Indien je deze wel laat importeren, dan word de oude inroostering vervangen met de nieuwe inroostering.<br/>
+          Door met de muis boven de
+          <span class="roosters_csv_icon roosters_csv_warning" title="Dit is een waarschuwingsbericht.">
+            <i class="fa fa-fw fa-exclamation-triangle"></i>
+          </span> en
+          <span class="roosters_csv_icon roosters_csv_error" title="Dit is een foutmelding.">
+            <i class="fa fa-fw fa-exclamation-circle fa-fw"></i>
+          </span>
+          icoontjes te zweven, krijg je meer informatie over de waarschuwing/fout te zien.
         </div>
 
         <div class="col-sm-12">
@@ -36,11 +43,15 @@
         </div>
 
         <div class="col-sm-12">
-          <h3>Resultaat</h3>
+          <h3>
+            Resultaat
+            <span class="badge rooster_csv_counter" title="Aantal geselecteerde regels dat geïmporteerd zal worden."></span>
+          </h3>
 
           <div class="scroll-div">
-            <table id="usertable" class="table table-hover">
+            <table id="rooster_csv_table" class="table table-hover">
               <thead>
+                <th></th>
                 <th>Datum</th>
                 <th>Tijdstip / Dienst</th>
                 <th>Familie</th>
@@ -49,113 +60,146 @@
               </thead>
               <tbody>
                 {% for output_line in output_lines %}
-                  <tr
-                    {% if output_line.errors_found %}
-                      class="error_found"
-                    {% elif output_line.warnings_found %}
-                      class="warning_found"
-                    {% endif %}
+                  <tr data-duty-id="{{ output_line.id }}"
+                      class="
+                        {% if output_line.errors_found %}
+                          roosters_csv_errors_found
+                        {% elif output_line.warnings_found %}
+                          roosters_csv_warnings_found
+                        {% endif %}
+                        {% if output_line.duplicate_found and not output_line.errors_found %}
+                          not_selected
+                        {% endif %}
+                        "
                   >
                     <td>
-                      {{ output_line.datum|date:"d-m-Y" }}
-
-                      {% if output_line.error_datum %}x
-                        <span title="{{ output_line.error_datum }}">
-                          <i class="fa fa-times fa-fw"></i>
-                        </span>
+                      {% if not output_line.errors_found %}
+                        <input type="checkbox"
+                               data-duty-id="{{ output_line.id }}"
+                               {% if not output_line.duplicate_found %}checked="checked"{% endif %} />
                       {% endif %}
-
-                      {% if output_line.warning_datum %}
-                        <span title="{{ output_line.warning_datum }}">
-                          <i class="fa fa-info"></i>
+                      {% if output_line.duplicate_found %}
+                        <a target="_blank" href="{% url 'timetable-teamleader-duty-edit' output_line.duplicate_found %}">
+                          <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_duplicate }} Klik hier om deze te bekijken.">
+                            <i class="fa fa-fw fa-exclamation-triangle"></i>
+                          </span>
+                        </a>
+                      {% elif output_line.warning_duplicate %}
+                        <span class="roosters_csv_icon roosters_csv_warning_soft" title="{{ output_line.warning_duplicate }}">
+                          <i class="fa fa-fw fa-exclamation"></i>
                         </span>
                       {% endif %}
                     </td>
                     <td>
-                      {% if output_line.event %}
+                      {% if output_line.event|klass == "Event" %}
+                        {{ output_line.event.startdatetime|date:"d-m-Y" }}
+                      {% elif output_line.datum|klass == "datetime" %}
+                        {{ output_line.datum|date:"d-m-Y" }}
+                      {% else %}
+                        {{ output_line.datum }}
+                      {% endif %}
+
+                      {% if output_line.warning_datum %}
+                        <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_datum }}">
+                          <i class="fa fa-fw fa-exclamation-triangle"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.error_datum %}
+                        <span class="roosters_csv_icon roosters_csv_error" title="{{ output_line.error_datum }}">
+                          <i class="fa fa-fw fa-exclamation-circle fa-fw"></i>
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if output_line.event|klass == "Event" %}
                         {% if output_line.event|isobject:"service" %}
-                          <a href="{% url 'services-single' output_line.event.id %}">{{ output_line.event.title }}</a>
+                          <a target="_blank" href="{% url 'services-single' output_line.event.id %}">{{ output_line.event.title }}</a>
                         {% else %}
-                          <a href="{% url 'events-single' output_line.event.id %}">{{ output_line.event.title }}</a>
+                          <a target="_blank" href="{% url 'events-single' output_line.event.id %}">{{ output_line.event.title }}</a>
                         {% endif %}
                       {% else %}
-                        {{ output_line.tijdstip }}
-                      {% endif %}
-
-                      {% if output_line.error_event %}
-                        <span title="{{ output_line.error_event }}">
-                          <i class="fa fa-times"></i>
-                        </span>
-                      {% endif %}
-
-                      {% if output_line.error_tijdstip %}
-                        <span title="{{ output_line.error_tijdstip }}">
-                          <i class="fa fa-times"></i>
-                        </span>
+                        {{ output_line.tijdstip|default_if_none:"" }}
                       {% endif %}
 
                       {% if output_line.warning_event %}
-                        <span title="{{ output_line.warning_event }}">
-                          <i class="fa fa-info"></i>
+                        <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_event }}">
+                          <i class="fa fa-fw fa-exclamation-triangle"></i>
                         </span>
                       {% endif %}
 
                       {% if output_line.warning_tijdstip %}
-                        <span title="{{ output_line.warning_tijdstip }}">
-                          <i class="fa fa-info"></i>
+                        <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_tijdstip }}">
+                          <i class="fa fa-fw fa-exclamation-triangle"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.error_event %}
+                        <span class="roosters_csv_icon roosters_csv_error" title="{{ output_line.error_event }}">
+                          <i class="fa fa-fw fa-exclamation-circle"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.error_tijdstip %}
+                        <span class="roosters_csv_icon roosters_csv_error" title="{{ output_line.error_tijdstip }}">
+                          <i class="fa fa-fw fa-exclamation-circle"></i>
                         </span>
                       {% endif %}
                     </td>
                     <td>
-                      {% if output_line.familie %}
-                        <a href="{% url 'family-detail-page' output_line.familie.id %}" class="black-url">
+                      {% if output_line.familie|klass == "Family" %}
+                        <a target="_blank" href="{% url 'family-detail-page' output_line.familie.id %}" class="black-url">
                           Fam. {{ output_line.familie.name_initials }}
                         </a>
-                      {% endif %}
-
-                      {% if output_line.error_familie %}
-                        <span title="{{ output_line.error_familie }}">
-                          <i class="fa fa-times"></i>
-                        </span>
+                      {% else %}
+                        {{ output_line.familie|default_if_none:"" }}
                       {% endif %}
 
                       {% if output_line.warning_familie %}
-                        <span title="{{ output_line.warning_familie }}">
-                          <i class="fa fa-info"></i>
+                        <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_familie }}">
+                          <i class="fa fa-fw fa-exclamation-triangle"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.error_familie %}
+                        <span class="roosters_csv_icon roosters_csv_error" title="{{ output_line.error_familie }}">
+                          <i class="fa fa-fw fa-exclamation-circle"></i>
                         </span>
                       {% endif %}
                     </td>
                     <td>
-                      {% if output_line.persoon %}
-                        <a href="{% url 'profile-detail-page' output_line.persoon.id %}" class="black-url">
-                          {{ output_line.persoon }}
+                      {% if output_line.persoon|klass == "Profile" %}
+                        <a target="_blank" href="{% url 'profile-detail-page' output_line.persoon.id %}" class="black-url">
+                          {{ output_line.persoon.name }}
                         </a>
-                      {% endif %}
-
-                      {% if output_line.error_persoon %}
-                        <span title="{{ output_line.error_persoon }}">
-                          <i class="fa fa-times"></i>
-                        </span>
+                      {% else %}
+                        {{ output_line.persoon|default_if_none:"" }}
                       {% endif %}
 
                       {% if output_line.warning_persoon %}
-                        <span title="{{ output_line.warning_persoon }}">
-                          <i class="fa fa-info"></i>
+                        <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_persoon }}">
+                          <i class="fa fa-fw fa-exclamation-triangle"></i>
+                        </span>
+                      {% endif %}
+
+                      {% if output_line.error_persoon %}
+                        <span class="roosters_csv_icon roosters_csv_error" title="{{ output_line.error_persoon }}">
+                          <i class="fa fa-fw fa-exclamation-circle"></i>
                         </span>
                       {% endif %}
                     </td>
                     <td>
                       {{ output_line.comments }}
 
-                      {% if output_line.error_comments %}
-                        <span title="{{ output_line.error_comments }}">
-                          <i class="fa fa-times"></i>
+                      {% if output_line.warning_comments %}
+                        <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_comments }}">
+                          <i class="fa fa-fw fa-exclamation-triangle"></i>
                         </span>
                       {% endif %}
 
-                      {% if output_line.warning_comments %}
-                        <span title="{{ output_line.warning_comments }}">
-                          <i class="fa fa-info"></i>
+                      {% if output_line.error_comments %}
+                        <span class="roosters_csv_icon roosters_csv_error" title="{{ output_line.error_comments }}">
+                          <i class="fa fa-fw fa-exclamation-circle"></i>
                         </span>
                       {% endif %}
                     </td>
@@ -169,22 +213,23 @@
             {% csrf_token %}
             <input type="hidden" name="timetable" value="{{ timetable.pk }}" />
             <input type="hidden" name="json_valid_lines" value="{{ json_valid_lines }}" />
+            <input type="hidden" name="json_selected_lines" value="" />
 
-            <div class="form-group">
-              <div class="col-sm-10 col-sm-offset-2">
-                <a href="{% url 'timetable-import-from-file-index' timetable.pk %}" class="btn btn-default black">Annuleren</a>
+            <div class="pull-right">
+              <a href="{% url 'timetable-import-from-file-index' timetable.pk %}" class="btn btn-default black">Annuleren</a>
 
-                <button type="submit" class="btn btn-default cyan">
-                  Importeren
-                </button>
-              </div>
+              <button type="submit" class="btn btn-default cyan">
+                Importeren
+                (<span class="rooster_csv_counter"></span>)
+              </button>
             </div>
           </form>
         </div>
-
+        <div></div>
       </div>
     </div>
     <div>
+      <br/>
     </div>
   </section>
 
@@ -193,6 +238,6 @@
 
 {% block scripts %}
   <script>
-    window.teamPage();
+    window.importCSV();
   </script>
 {% endblock %}

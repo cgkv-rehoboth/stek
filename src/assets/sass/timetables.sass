@@ -113,3 +113,63 @@
   background-color: #f8f8f8
   border: 1px solid #bbb
   border-top-color: #dfdfdf
+
+////
+//  Timetable import pages
+//
+
+#rooster_csv
+  span.badge.rooster_csv_counter
+    font-size: 16px
+    position: relative
+    bottom: 1px
+    display: inline-block
+    background-color: #5188c7
+
+  .roosters_csv_icon
+    cursor: help
+    transition: all 180ms
+
+  .roosters_csv_warning_soft
+    color: #c6ba82
+    &:hover
+      color: #a89654
+
+  .roosters_csv_warning
+    color: #e7d052
+    &:hover
+      color: #e7c300
+
+  .roosters_csv_error
+    color: #db9d9d
+    &:hover
+      color: #cb6e6e
+
+  table
+    tbody
+      tr
+        td
+          transition: all 200ms, color 150ms
+
+        &:not(.roosters_csv_errors_found)
+          cursor: pointer
+
+        &.roosters_csv_warnings_found
+          td
+            background-color: #fcf8e3
+          &:hover td
+            background-color: #fcecd9
+
+        &.roosters_csv_errors_found
+          td
+            background-color: #ffe9e9
+          &:hover td
+            background-color: #ffe2e7
+
+        &.not_selected
+          color: #aaa
+          a
+            color: #86acce
+
+        .roosters_csv_icon
+          float: right
