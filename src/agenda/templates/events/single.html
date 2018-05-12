@@ -15,7 +15,7 @@
         {% if perms.agenda.add_event or perms.agenda.add_eventfile%}
         <div class="col-sm-12">
           {% if perms.agenda.add_event %}
-            <a href="{% url 'events-admin-edit' event.id %}" class="backlink"><i class="fa fa-calendar-plus-o fa-fw" aria-hidden="true"></i> Event bewerken</a>
+            <a href="{% url 'events-admin-edit' event.id %}" class="backlink"><i class="fa fa-calendar-plus-o fa-fw" aria-hidden="true"></i> Gebeurtenis bewerken</a>
           {% endif %}
           {% comment %}
             {% if perms.agenda.add_event and perms.agenda.add_eventfile%}
