@@ -633,6 +633,10 @@ def timetable_teamleader_duty_edit(request, id):
   # Get all teamfamilies
   families = duty.timetable.team.teammembers.filter(profile=None)
 
+  # Check if current responsible is a teammember
+  teammember = TeamMember.objects.filter(team=duty.timetable.team, profile=duty.responsible, family=duty.responsible_family)
+  responsible_in_team = len(teammember) > 0
+
   return render(request, 'teamleader/teamleader_duty_edit.html', {
     'duty'          : duty,
     'table'         : duty.timetable,
@@ -641,6 +645,7 @@ def timetable_teamleader_duty_edit(request, id):
     'members'       : members,
     'families'      : families,
     'selected_event': duty.event.pk,
+    'responsible_in_team': responsible_in_team
   })
 
 

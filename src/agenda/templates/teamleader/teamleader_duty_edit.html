@@ -9,7 +9,13 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <h2>Mijn team <small>{{ table.title }}</small></h2>
+          <h2>Mijn team
+            <small>
+              <a href="{% url 'timetable-detail-page' table.id %}" class="black-url">
+                {{ table.title }}
+              </a>
+            </small>
+          </h2>
         </div>
       </div>
 
@@ -60,6 +66,15 @@
                 <div>
                   <label>Verantwoordelijke</label><br/>
                   <select name="responsible">
+                    {% if not responsible_in_team %}
+                      <optgroup label="Niet teamleden">
+                      {% if duty.responsible %}
+                        <option value="p{{ duty.responsible.pk }}" selected="selected">{{ duty.responsible.name }}</option>
+                      {% elif duty.responsible_family %}
+                        <option value="f{{ duty.responsible_family.pk }}" selected="selected">{{ duty.responsible_family }}</option>
+                      {% endif %}
+                      </optgroup>
+                    {% endif %}
                     {% if members.all %}
                       <optgroup label="Personen">
                       {% for member in members.all %}
@@ -89,6 +104,15 @@
                     Wijzigen
                   </button>
                 </div>
+                <br/>
+
+                <div>
+                  <a href="{% url 'timetable-teamleader-duty-delete' duty.pk %}"
+                     class="confirm-dialog-button"
+                     data-message="Weet je zeker dat je dit item wilt verwijderen?"
+                     title="Verwijderen"
+                     style="color: #a30000; font-size: 90%">Verwijderen</a>
+                </div>
               </form>
             </div>
           {% else %}
@@ -101,6 +125,8 @@
       </div>
     </div>
   </section>
+
+  {% include "./confirmationmodal.html" %}
 {% endblock %}
 
 {% block scripts %}
