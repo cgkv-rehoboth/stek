@@ -122,7 +122,9 @@
                       <small>{{ e.enddatetime|date:"j F Y, G:i" }}u</small>
                     </td>
 
-                    <td class="ef-title">{{ e.title }}</td>
+                    <td class="ef-title">
+                      <a href="{% url 'events-single' e.id %}" title="Bekijk de gebeurtenis">{{ e.title }}</a>
+                    </td>
 
                     <td class="ef-timetable">
                       {% if e.incalendar %}
