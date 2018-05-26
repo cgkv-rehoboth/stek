@@ -115,7 +115,12 @@ class Profile(TimestampedModel, models.Model):
     super().delete(*args, **kwargs)
 
   def check_firsttime(sender, user, request, **kwargs):
-    p = request.user.profile
+    try:
+      p = request.user.profile
+    except Profile.DoesNotExist:
+      print('User has no profile')
+      return
+
     if not p.has_logged_in and p.email:
       # Send mail with some first-time information
       template = get_template('emails/welcome_information.html')

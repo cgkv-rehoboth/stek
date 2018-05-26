@@ -1,6 +1,6 @@
 Django==1.8.6
 django-model-utils==2.3.1
-djangorestframework==3.3.1
+djangorestframework==3.3.1  # Update to < 3.4
 djangorestframework-jwt==1.7.2
 django-cors-headers==1.1.0
 django-livefield==2.2.0
@@ -12,16 +12,16 @@ ipython==4.1.2
 mysqlclient==1.3.12
 django-tables2==1.0.5
 django-flat-theme==1.1.3
-django-debug-toolbar
-Pillow
+django-debug-toolbar==1.4
+Pillow==3.1.1
 whitenoise==3.0
 unidecode==0.04.19
-python-dateutil
-django-ckeditor
+python-dateutil==2.6.0
+django-ckeditor==5.1.1
 
-django-machina
-django-haystack
-django-mptt
-django-markdown
-django-widget-tweaks
-django-fiber
+django-machina==0.3.0
+django-haystack==2.5.0
+django-mptt==0.8.6
+django-markdown==0.8.4
+django-widget-tweaks==1.4.1
+django-fiber==1.4.1

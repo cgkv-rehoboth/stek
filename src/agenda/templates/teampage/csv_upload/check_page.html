@@ -67,8 +67,10 @@
                         {% elif output_line.warnings_found %}
                           roosters_csv_warnings_found
                         {% endif %}
-                        {% if output_line.duplicate_found and not output_line.errors_found %}
+                        {% if not output_line.errors_found %}
+                         {% if output_line.duplicate_found or families_list|get:output_line.id or profiles_list|get:output_line.id %}
                           not_selected
+                         {% endif %}
                         {% endif %}
                         "
                   >
@@ -76,7 +78,9 @@
                       {% if not output_line.errors_found %}
                         <input type="checkbox"
                                data-duty-id="{{ output_line.id }}"
-                               {% if not output_line.duplicate_found %}checked="checked"{% endif %} />
+                               {% if not output_line.duplicate_found and not families_list|get:output_line.id and not profiles_list|get:output_line.id %}
+                                checked="checked"
+                               {% endif %} />
                       {% endif %}
                       {% if output_line.duplicate_found %}
                         <a target="_blank" href="{% url 'timetable-teamleader-duty-edit' output_line.duplicate_found %}">
@@ -155,6 +159,16 @@
                         {{ output_line.familie|default_if_none:"" }}
                       {% endif %}
 
+                      {% if families_list|get:output_line.id %}
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        <select name="familie">
+                          <option value="0">Selecteer de juiste familie</option>
+                          {% for familie in families_list|get:output_line.id %}
+                            <option value="{{ familie.pk }}">{{ familie }}</option>
+                          {% endfor %}
+                        </select>
+                      {% endif %}
+
                       {% if output_line.warning_familie %}
                         <span class="roosters_csv_icon roosters_csv_warning" title="{{ output_line.warning_familie }}">
                           <i class="fa fa-fw fa-exclamation-triangle"></i>
@@ -174,6 +188,16 @@
                         </a>
                       {% else %}
                         {{ output_line.persoon|default_if_none:"" }}
+                      {% endif %}
+
+                      {% if profiles_list|get:output_line.id %}
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        <select name="persoon">
+                          <option value="0">-- Selecteer de juiste persoon --</option>
+                          {% for profile in profiles_list|get:output_line.id %}
+                            <option value="{{ profile.pk }}">{{ profile }}</option>
+                          {% endfor %}
+                        </select>
                       {% endif %}
 
                       {% if output_line.warning_persoon %}
@@ -214,6 +238,7 @@
             <input type="hidden" name="timetable" value="{{ timetable.pk }}" />
             <input type="hidden" name="json_valid_lines" value="{{ json_valid_lines }}" />
             <input type="hidden" name="json_selected_lines" value="" />
+            <input type="hidden" name="json_selected_responsibles" value="" />
 
             <div class="pull-right">
               <a href="{% url 'timetable-import-from-file-index' timetable.pk %}" class="btn btn-default black">Annuleren</a>

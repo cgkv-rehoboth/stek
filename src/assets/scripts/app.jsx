@@ -820,6 +820,12 @@ window.importCSV = () => {
   update_checkbox_counter();
 
   $("#rooster_csv_table").on("click", "tr:not(.roosters_csv_errors_found)", function(e){
+    let select = $(this).find('select');
+    // Check if this row may be selected
+    if (select && select.val() == 0){
+      // Cancel click
+      return;
+    }
     if( $(e.target).is('td') ) {
       let id = $(this).attr('data-duty-id');
       let checkbox = $(this).find('input[data-duty-id=' + id + ']');
@@ -828,9 +834,42 @@ window.importCSV = () => {
     }
   });
 
-  $("#rooster_csv_table").on("click", "input[type=checkbox]", function() {
+  $("#rooster_csv_table").on("click", "input[type=checkbox]", function(e) {
+    let select = $(this).closest('tr').find('select');
+    // Check if this row may be selected
+    if (select && select.val() == 0){
+      // Cancel click
+      $(this).prop('checked', false);
+    }
+
     update_checkbox($(this));
   });
+
+  $("#rooster_csv_table").on("change", "select", function() {
+    let selected_responsibles = {};
+
+    // Iterate over all select elements
+    $('#rooster_csv_table select').each(function (index){
+      let selected = $(this).val();
+      let checkbox = $(this).closest('tr').find('input[type=checkbox]');
+      if (selected > 0) {
+        // Add date to the array
+        let row_id = $(this).closest('tr').attr('data-duty-id');
+        selected_responsibles[row_id] = $(this).attr('name') + '_' + selected;
+
+        // Select row
+        checkbox.prop('checked', true);
+      }else{
+        // Deselect this row because it's invalid
+        checkbox.prop('checked', false);
+      }
+      update_checkbox(checkbox);
+    });
+
+    // Add the data to the form, ready for submit
+    $('form input[name=json_selected_responsibles]').val(JSON.stringify(selected_responsibles));
+  });
+
 };
 
 // Add Fibers CKEditor styling sheet

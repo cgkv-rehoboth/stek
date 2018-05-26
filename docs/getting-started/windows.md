@@ -7,29 +7,34 @@
 - Run the following commands to create the python sandbox and install the python dependencies
    as described by the file `requirements`:
 
+    ```
     python -m venv .virtualenv
-	  .virtualenv\Scripts\activate.ps
-	  python -m pip install -r requirements
+    .virtualenv\Scripts\activate.ps
+    python -m pip install -r requirements
 
 - Run the following commands to install the node sandbox with the dependencies as described by the
    `package.json`:
 
-	  npm install
-	  npm install -g gulp
+    ```
+    npm install
+    npm install -g gulp
 
 - Run the build for the client side files
 
+    ```
     gulp
 
 - Download and install MySQL and run the following queries:
 
+    ```
     create database cgkv;
     grant all privileges on cgkv.* to cgkv@localhost identified by 'lCCnO6D9Py1VQukTlGknTnFiNyx6TmJ6';
 
 - Create the tables and insert the default data (make sure the virtualenv is activated as before):
 
-	python src/manage.py migrate
-	python src/manage.py loaddata
+    ```
+    python src/manage.py migrate
+    python src/manage.py loaddata
 
 - Download and install PyCharm :
 
@@ -41,12 +46,13 @@
 - You can now run django tasks `Tools > Run manage.py Task`. Execute the following in the prompt
     that opens:
 
+    ```
     migrate
-	  runserver
-
-	or continue using the command line:
-
-	python src/manage.py runserver
+    runserver
+    
+    or continue using the command line:
+    
+    python src/manage.py runserver
 
 - You should now be able to visit `localhost:8000` (and `localhost:8000/admin/`) in your browser
 

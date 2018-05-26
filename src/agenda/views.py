@@ -29,6 +29,7 @@ from .models import *
 from base.models import Profile, Family
 from .forms import *
 from .validators import *
+from base.views import get_delimiter
 
 logger = logging.getLogger(__name__)
 
@@ -768,21 +769,22 @@ def timetable_import_from_file_check(request, id):
     months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
     return months.index(name.lower()) + 1 if name in months else 0
 
+  families_list = {}
+  profiles_list = {}
   # Create a temp file
   with tempfile.NamedTemporaryFile() as tf:
     # Copy the uploaded file to the temp file
-    #for chunk in upload_file.chunks():
-    #  tf.write(chunk)
+    for chunk in upload_file.chunks():
+      tf.write(chunk)
 
     # Save contents to file on disk
-    #tf.flush()
+    tf.flush()
 
     # Read file
-    #with open(tf.name, 'r', encoding="ISO-8859-1") as fh:  # todo: fix permission error with tmp file
-    tf = default_storage.open('D:\\Documents\\workspace\\CGKV website\\stek\\media\\files\\Rooster template.csv')
+    #tf = default_storage.open('files/Rooster template.csv')  #todo: debug
+    #tf = default_storage.open('D:\\Documents\\workspace\\CGKV website\\stek\\media\\files\\Rooster Koffieschenken 2018.csv')   #todo: debug
     with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-      #lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
-      lines = csv.DictReader(fh, delimiter=';')
+      lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
 
       # Check for needed headers
       missingheaders = list(set(headers) - set(lines.fieldnames))
@@ -794,21 +796,25 @@ def timetable_import_from_file_check(request, id):
         return redirect('timetable-import-from-file-index', id=timetable.pk)
 
       # for each line
-      month = None
       date = None
       date_start = None
       date_end = None
-      event = None
       errors_found = 0
       output_lines = []
       line_id = 0
       for line in lines:
         error = {}
         warning = {}
+
+        # Skip this line if no usefull information is given
+        if not (line['Familie'] or line['Persoon']):
+          continue
+
         # Get date
         # If only month name is given: save this for the next iterations
         # If only nummer is given: get month from saved month ^
         if line['Datum']:
+          # Moet nog verder uitgewerkt worden:
           #if int(line['Datum']):
           #  # Only day
           #  day = line['Datum']
@@ -893,7 +899,6 @@ def timetable_import_from_file_check(request, id):
 
         # Get description/comment
         comments = line['Extra opmerkingen'].strip()
-        # todo: HTML filter comments
 
         # Save whole in dict
         main_line = {}
@@ -917,8 +922,30 @@ def timetable_import_from_file_check(request, id):
             tmp_warning = {}
             line_id += 1
 
-            lastname = re.sub(r"^Fam\.\s?", '', familie.strip(), flags=re.IGNORECASE).strip()
+            family_name = re.sub(r"^Fam\.\s?", '', familie.strip(), flags=re.IGNORECASE).strip().split(' ')
+            lastname = family_name[-1]
             family = Family.objects.filter(lastname=lastname)
+
+            # Filter family list even further based on the name (prefix and initials)
+            if len(family) > 1 and len(family_name) > 1:
+                # Make search query more strict
+                if '.' in family_name[0]:
+                  families_found = []
+                  for fam in family:
+                    if fam.householder().first().initials == family_name[0]:
+                      families_found.append(fam.pk)
+
+                  family = family.filter(pk__in=families_found)
+
+                  if len(family_name) > 2:
+                    family = family.filter(prefix="%s%s%s" % (family_name[-3], (' ' if len(family_name) > 4 else ''), family_name[-2]))  # Verkrijg een-na-laastse, to leave room for more initals
+
+                else:
+                  families = family.filter(prefix=family_name[0])
+                  # If still multiple families are found, orraait
+                  # but if suddenly no families are found, use the old family list to fire the 'select one of multiple families' warning
+                  if len(families):
+                    family = families
 
             if len(family) > 1:
               # Try to be smart and select the familie which is in the team
@@ -927,9 +954,10 @@ def timetable_import_from_file_check(request, id):
               # If one is found
               if len(teammembers) == 1:
                 # Set the family
-                family = teammembers.firs().family
+                family = teammembers.first().family
               else:
-                tmp_error['familie'] = "Meerdere families gevonden voor '%s'." % lastname
+                tmp_warning['familie'] = "Meerdere families gevonden voor '%s'." % lastname
+                families_list[line_id] = family
                 family = None
 
             elif family is None or len(family) == 0:
@@ -972,7 +1000,8 @@ def timetable_import_from_file_check(request, id):
             if len(error) or len(tmp_error):
               errors_found += 1
 
-            output_lines.append({**main_line, **temp_line})
+            temp_line.update(main_line)
+            output_lines.append(temp_line)
 
         # Split persons into array
         if line['Persoon']:
@@ -982,11 +1011,11 @@ def timetable_import_from_file_check(request, id):
             line_id += 1
 
             # Create first and possible last name
-            persoon_names = persoon.strip().split(' ', 1)
+            persoon_names = persoon.strip().split(' ')
             firstname = persoon_names[0].strip()
 
             if len(persoon_names) > 1:
-              lastname = persoon_names[1].strip()
+              lastname = persoon_names[-1].strip()
               profile = Profile.objects.filter(first_name=firstname, last_name=lastname)
             else:
               lastname = None
@@ -1001,7 +1030,8 @@ def timetable_import_from_file_check(request, id):
                 # Set the profile
                 profile = teammembers.first().profile
               else:
-                tmp_error['persoon'] = "Meerdere personen gevonden voor '%s'." % persoon
+                tmp_warning['persoon'] = "Meerdere personen gevonden voor '%s'." % persoon
+                profiles_list[line_id] = profile
                 profile = None
 
             elif profile is None or len(profile) == 0:
@@ -1011,7 +1041,7 @@ def timetable_import_from_file_check(request, id):
 
               # Check if profile is in team
               try:
-                teammember = TeamMember.objects.filter(team=timetable.team, profile=profile)
+                TeamMember.objects.get(team=timetable.team, profile=profile)
               except ObjectDoesNotExist:
                 tmp_warning['persoon'] = "Persoon is geen lid van het team."
 
@@ -1044,7 +1074,8 @@ def timetable_import_from_file_check(request, id):
             if len(error) or len(tmp_error):
               errors_found += 1
 
-            output_lines.append({**main_line, **temp_line})
+            temp_line.update(main_line)
+            output_lines.append(temp_line)
 
   if output_lines:
     if errors_found:
@@ -1060,17 +1091,19 @@ def timetable_import_from_file_check(request, id):
         'datum':    output_line['datum'],
         'tijdstip': output_line['tijdstip'],
         'event':    output_line['event'].pk if output_line['event'] else '',
-        'familie':  output_line['familie'].pk if output_line['familie'] else '',
-        'persoon':  output_line['persoon'].pk if output_line['persoon'] else '',
+        'familie':  output_line['familie'].pk if isinstance(output_line['familie'], Family) else '',
+        'persoon':  output_line['persoon'].pk if isinstance(output_line['persoon'], Profile) else '',
         'comments': output_line['comments']
       }
       valid_lines[output_line['id']] = line
   json_valid_lines = json.dumps(valid_lines, default=str)
 
   return render(request, 'teampage/csv_upload/check_page.html', {
-    'timetable':    timetable,
-    'output_lines': output_lines,
-    'json_valid_lines': json_valid_lines
+    'timetable':        timetable,
+    'output_lines':     output_lines,
+    'json_valid_lines': json_valid_lines,
+    'families_list':    families_list,
+    'profiles_list':    profiles_list
   })
 
 @login_required
@@ -1091,6 +1124,7 @@ def timetable_import_from_file_save(request, id):
   # Retrieve data
   json_valid_lines = request.POST.get("json_valid_lines", "")
   json_selected_lines = request.POST.get("json_selected_lines", "")
+  json_selected_responsibles = request.POST.get("json_selected_responsibles", "")
 
   # Process data
   if not (json_valid_lines and json_selected_lines):
@@ -1100,6 +1134,7 @@ def timetable_import_from_file_save(request, id):
   # Parse the json
   valid_lines = json.loads(json_valid_lines)
   selected_lines = json.loads(json_selected_lines)
+  selected_responsibles = json.loads(json_selected_responsibles)
   for selected_line in selected_lines:
     line = valid_lines[selected_line]
 
@@ -1113,6 +1148,15 @@ def timetable_import_from_file_save(request, id):
     # Get the valid Family or Profile object
     family = None
     profile = None
+    # First look if there was a custom one selected
+    if not(line['familie'] or line['persoon']) and selected_responsibles[selected_line]:
+      responsible = selected_responsibles[selected_line].split('_')
+      if responsible[0] == 'familie':
+        line['familie'] = responsible[1]
+      elif responsible[0] == 'persoon':
+        line['persoon'] = responsible[1]
+
+    # Now get the right guy
     if line['familie']:
       try:
         family = Family.objects.get(pk=line['familie'])
@@ -1134,20 +1178,21 @@ def timetable_import_from_file_save(request, id):
     if duty:
       # Update duty
       duty.comments = line['comments']
-      duty.save()
+      #duty.save()
 
       messages.success(request, "De inroostering van %s voor '%s' is bijgewerkt." % (duty.resp_name(), event))
     else:
       # Create the new duty
-      duty = TimetableDuty.objects.create(
-        timetable=timetable,
-        event=event,
-        responsible_family=family,
-        responsible=profile,
-        comments=line['comments']
-      )
+      #duty = TimetableDuty.objects.create(
+      #  timetable=timetable,
+      #  event=event,
+      #  responsible_family=family,
+      #  responsible=profile,
+      #  comments=line['comments']
+      #)
 
-      messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
+      #messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
+      messages.success(request, "%s%s is ingepland voor '%s'." % (family, profile, event))
 
   return redirect('timetable-teamleader-page', id=timetable.pk)
 
@@ -1995,8 +2040,6 @@ def events_admin(request):
   events = Event.objects.filter(startdatetime__gte=maxweeks) \
     .exclude(pk__in=services) \
     .order_by("startdatetime", "enddatetime", "title")
-
-  print(events)
 
   return render(request, 'events/admin.html', {
     'startdatetime': startdatetime,
