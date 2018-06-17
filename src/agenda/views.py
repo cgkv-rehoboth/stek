@@ -924,8 +924,6 @@ def timetable_import_from_file_check(request, id):
     tf.flush()
 
     # Read file
-    #tf = default_storage.open('files/Rooster template.csv')  #todo: debug
-    #tf = default_storage.open('D:\\Documents\\workspace\\CGKV website\\stek\\media\\files\\Rooster Koffieschenken 2018.csv')   #todo: debug
     with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
       lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
 
@@ -952,6 +950,10 @@ def timetable_import_from_file_check(request, id):
         # Skip this line if no usefull information is given
         if not (line['Familie'] or line['Persoon']):
           continue
+
+        # Make sure the right encoding is used
+        for header in headers:
+          line[header] = decodeCSV(line[header])
 
         # Get date
         # If only month name is given: save this for the next iterations
@@ -1050,11 +1052,11 @@ def timetable_import_from_file_check(request, id):
         main_line['event'] = event
         main_line['comments'] = comments
 
-        for key,val in error.items():
+        for key, val in error.items():
           error_name = 'error_%s' % key
           main_line[error_name] = val
 
-        for key,val in warning.items():
+        for key, val in warning.items():
           warning_name = 'warning_%s' % key
           main_line[warning_name] = val
 
@@ -1075,7 +1077,7 @@ def timetable_import_from_file_check(request, id):
                 if '.' in family_name[0]:
                   families_found = []
                   for fam in family:
-                    if fam.householder().first().initials == family_name[0]:
+                    if fam.householder() and fam.householder().first().initials == family_name[0]:
                       families_found.append(fam.pk)
 
                   family = family.filter(pk__in=families_found)
@@ -1205,11 +1207,11 @@ def timetable_import_from_file_check(request, id):
             temp_line['warnings_found'] = len(warning) + len(tmp_warning)
             temp_line['duplicate_found'] = duplicate_found
 
-            for key,val in tmp_error.items():
+            for key, val in tmp_error.items():
               error_name = 'error_%s' % key
               temp_line[error_name] = val
 
-            for key,val in tmp_warning.items():
+            for key, val in tmp_warning.items():
               warning_name = 'warning_%s' % key
               temp_line[warning_name] = val
 
@@ -1252,6 +1254,8 @@ def timetable_import_from_file_check(request, id):
 @login_required
 @require_POST
 def timetable_import_from_file_save(request, id):
+  DEBUG_CSVROOSTERIMPORT = False
+
   try:
     # Get SSL secured timetable pk, and not by URL
     timetable = Timetable.objects.get(pk=request.POST.get("timetable", ""))
@@ -1265,9 +1269,9 @@ def timetable_import_from_file_save(request, id):
     return redirect('timetable-detail-page', id=timetable.pk)
 
   # Retrieve data
-  json_valid_lines = request.POST.get("json_valid_lines", "")
-  json_selected_lines = request.POST.get("json_selected_lines", "")
-  json_selected_responsibles = request.POST.get("json_selected_responsibles", "")
+  json_valid_lines = request.POST.get("json_valid_lines", None)
+  json_selected_lines = request.POST.get("json_selected_lines", None)
+  json_selected_responsibles = request.POST.get("json_selected_responsibles", None)
 
   # Process data
   if not (json_valid_lines and json_selected_lines):
@@ -1275,9 +1279,15 @@ def timetable_import_from_file_save(request, id):
     return redirect('timetable-import-from-file-index', id=timetable.pk)
 
   # Parse the json
-  valid_lines = json.loads(json_valid_lines)
-  selected_lines = json.loads(json_selected_lines)
-  selected_responsibles = json.loads(json_selected_responsibles)
+  valid_lines = json.loads(json_valid_lines if len(json_valid_lines) else "[]")
+  selected_lines = json.loads(json_selected_lines if len(json_selected_lines) else "[]")
+  selected_responsibles = json.loads(json_selected_responsibles if len(json_selected_responsibles) else "[]")
+
+  # Process data
+  if len(selected_lines) == 0:
+    messages.warning(request, "Er is niets geselecteerd om te importeren.")
+    return redirect('timetable-teamleader-page', id=timetable.pk)
+
   for selected_line in selected_lines:
     line = valid_lines[selected_line]
 
@@ -1321,21 +1331,25 @@ def timetable_import_from_file_save(request, id):
     if duty:
       # Update duty
       duty.comments = line['comments']
-      #duty.save()
+      if DEBUG_CSVROOSTERIMPORT:
+        messages.success(request, "De inroostering van %s voor '%s' is bijgewerkt." % (duty.resp_name(), event))
+      else:
+        duty.save()
 
-      messages.success(request, "De inroostering van %s voor '%s' is bijgewerkt." % (duty.resp_name(), event))
     else:
       # Create the new duty
-      #duty = TimetableDuty.objects.create(
-      #  timetable=timetable,
-      #  event=event,
-      #  responsible_family=family,
-      #  responsible=profile,
-      #  comments=line['comments']
-      #)
+      if DEBUG_CSVROOSTERIMPORT:
+        messages.success(request, "%s is ingepland voor '%s'." % (family if family else profile, event))
+      else:
+        duty = TimetableDuty.objects.create(
+         timetable=timetable,
+         event=event,
+         responsible_family=family,
+         responsible=profile,
+         comments=line['comments']
+        )
 
-      #messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
-      messages.success(request, "%s%s is ingepland voor '%s'." % (family, profile, event))
+        messages.success(request, "%s is ingepland voor '%s'." % (duty.resp_name(), event))
 
   return redirect('timetable-teamleader-page', id=timetable.pk)
 
@@ -2360,7 +2374,7 @@ urls = [
   url(r'^roosters/(?P<id>\d+)/teamleider/importeren/$', timetable_import_from_file_index,
       name='timetable-import-from-file-index'),
   url(r'^roosters/(?P<id>\d+)/teamleider/importeren/check/$', timetable_import_from_file_check,
-      name='timetable-import-from-file-check'),
+     name='timetable-import-from-file-check'),
   url(r'^roosters/(?P<id>\d+)/teamleider/importeren/save/$', timetable_import_from_file_save,
       name='timetable-import-from-file-save'),
 
