@@ -43,9 +43,7 @@
           {% endif %}
           {{ v.lastnamep }}
           {% if v.members_sorted %}
-            <small>(
-              {% for w in v.members_sorted %} {{ w.first_name }}{% if not forloop.last %},{% endif %} {% endfor %}
-              )</small>
+            <small>(&nbsp;{% for w in v.members_sorted %}{% if not forloop.first %} {% endif %}{{ w.first_name }}{% if not forloop.last %}, {% endif %}{% endfor %}&nbsp;)</small>
           {% endif %}
         </p>
       </div>
@@ -55,7 +53,7 @@
           <!-- Familymembers + details -->
           <h3>Gezinsleden</h3>
           {% if v.members_sorted %}
-            <table class="table table-bordered table-hover scroll-table">
+            <table class="table table-bordered table-hover scroll-div">
               <thead>
                 <tr>
                   <th>Voornaam</th>
@@ -66,11 +64,18 @@
               <tbody>
                 {% for w in v.members_sorted %}
                   <tr>
-                    <td><a href="{% url 'profile-detail-page' w.pk %}">
-                      {{ w.first_name }}
-                    </a></td>
+                    <td>
+                      <a href="{% url 'profile-detail-page' w.pk %}">
+                        {{ w.first_name }}
+                      </a>
+                    </td>
                     <td>{{ w.birthday }}</td>
-                    <td>{{ w.phone }}</td>
+                    <td>
+                      {% if w.phone %}
+                        {{ w.phone }}
+                        <a href="tel:{{ w.phone }}" class="make-contact-icon" title="Bel {{ w.first_name }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
+                      {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -97,7 +102,11 @@
               {% endif %}
               {{ v.address.street }}<br/>
               {{ v.address.zip }}, {{ v.address.city }} <br />
-              {{ v.address.phone }} <br />
+              {% if v.address.phone %}
+                {{ v.address.phone }}
+                <a href="tel:{{ v.address.phone }}" class="make-contact-icon" title="Bel de familie {{ v.lastnamep }}"><i class="fa fa-phone" aria-hidden="true"></i></a>
+                <br />
+              {% endif %}
               <a href="https://www.google.com/maps/place/{{ v.address }}"
                  target="_blank"
                  title="Bekijk op Google Maps" class="google-maps-link">

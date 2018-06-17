@@ -10,7 +10,6 @@
       <div class="inactive-profile">
         <center><h1>Dit profiel bestaat niet (meer).</h1></center>
 
-
         {% include './messages.html' %}
       </div>
     </section>
@@ -39,7 +38,9 @@
         <div class="col-md-4">
           {% if p.photo %}
             <div class="profile-pic-container">
-              <img class="profile-pic" src="{{ p.photo.url }}" />
+              <a href="{{ p.photo.url }}" target="_blank" title="Afbeelding bekijken">
+                <img class="profile-pic" src="{{ p.photo.url }}" />
+              </a>
             </div>
           {% endif %}
         </div>
@@ -49,7 +50,7 @@
           {% include './messages.html' %}
 
           <h3>Persoonlijk</h3>
-          <table class="table table-bordered">
+          <table class="table table-bordered scroll-div">
             <tbody>
               <tr>
                 <th>Naam</th>
@@ -78,7 +79,7 @@
           <br/>
 
           <h3>Contact</h3>
-          <table class="table table-bordered">
+          <table class="table table-bordered scroll-div">
             <tbody>
               {% if p.best_address %}
                 <tr>
@@ -127,7 +128,7 @@
               {% endfor %}
             </ul>
             {% comment %}
-            <table class="table table-bordered">
+            <table class="table table-bordered scroll-div">
               <thead>
                 <th>Team</th>
                 <th>Rol</th>

@@ -791,17 +791,18 @@ window.eventPage = () => {
 window.importCSV = () => {
   /* All the functions we need */
   // Count the amount of checked/selected lines and display this
+  let selected_lines = [];
   function update_checkbox_counter(){
     // Update the counters
     let checked_checkboxes = $('#rooster_csv_table input[type=checkbox]:checked');
-    $('.rooster_csv_counter').text(checked_checkboxes.length);
 
     // Update the form hidden input
-    let selected_lines = [];
+    selected_lines = [];
     $.each(checked_checkboxes, function(k,v){
       selected_lines.push($(v).attr('data-duty-id'));
     });
 
+    $('.rooster_csv_counter').text(selected_lines.length);
     $('form input[name=json_selected_lines]').val(JSON.stringify(selected_lines));
   }
 
@@ -868,6 +869,20 @@ window.importCSV = () => {
 
     // Add the data to the form, ready for submit
     $('form input[name=json_selected_responsibles]').val(JSON.stringify(selected_responsibles));
+  });
+
+  // Only let the user import duties if there are any selected
+  $("#rooster_csv form").on("click", ".submit-button", function(e){
+    if (selected_lines.length == 0) {
+      e.preventDefault();
+
+      $("#confirm-modal .modal-title").text("Dat gaat niet lukken...");
+      $("#confirm-modal .modal-body").html("Er zijn geen taken geselecteerd om te importeren.");
+      $("#confirm-modal .modal-cancel").html("Terug");
+      $("#confirm-modal .modal-footer .modal-ok").hide();
+
+      $("#confirm-modal").modal('show');
+    }
   });
 
 };

@@ -66,6 +66,87 @@ def get_delimiter(file):
   else:
     return ','
 
+# Decode a string with an unkown charset.
+# Only used for uploaded CSV files in agenda/views:timetable_import_from_file_check()
+def decodeCSV(str, encoding="ISO-8859-1"):
+  #     ["latin-1", "utf-8"],
+  #     ["cp1252", "latin-1"],
+  #     ["cp720", "mac-turkish"],
+  #     ["latin-1", "cp720"],
+  # # Try the first encoding. If it fails, try the other encoding
+  # try:
+  #   return str.encode('cp720').decode('cp720')  # offline
+  # except:
+  #   # Encode/decode with 'replace' to prevent further exceptions
+  #   return str.encode('latin-1', errors='replace').decode('cp720', errors='replace')  # upload
+  if encoding == "ISO-8859-1":
+    try:
+      return str.encode('latin-1').decode('utf-8')
+    except:
+      try:
+        return str.encode('cp1252').decode('latin-1')
+      except:
+        try:
+          return str.encode('cp720').decode('mac-turkish')
+        except:
+          return str.encode('latin-1', errors='ignore').decode('cp720', errors='ignore')
+  elif encoding == "latin-1" or encoding == "unicode_escape":
+    try:
+      return str.encode('latin-1').decode('utf-8')
+    except:
+      try:
+        return str.encode('cp1252').decode('latin-1')
+      except:
+        try:
+          return str.encode('cp720').decode('mac-turkish')
+        except:
+          return str.encode('latin-1', errors='ignore').decode('cp720', errors='ignore')
+  elif encoding == "cp720":
+    try:
+      return str.encode('cp720').decode('utf-8')
+    except:
+      try:
+        return str.encode('cp1252').decode('latin-1')
+      except:
+        try:
+          return str.encode('latin-1').decode('mac-turkish')
+        except:
+          return str.encode('cp720', errors='ignore').decode('latin-1', errors='ignore')
+  elif encoding == "cp1252":
+    try:
+      return str.encode('latin-1').decode('utf-8')
+    except:
+      try:
+        return str.encode('latin-1').decode('latin-1')
+      except:
+        try:
+          str.encode('mac-turkish').decode('cp720')  # just for firing the exception to test to check which encoding it is
+          return str.encode('cp1252').decode('cp720')
+        except:
+          return str.encode('cp1252', errors='ignore').decode('cp1252', errors='ignore')
+  elif encoding == "arabic":
+    try:
+      str.encode('cp720').decode('latin-1')  # just for firing the exception to test to check which encoding it is
+      try:
+        str.encode('latin-1').decode('mac-turkish')
+        return str.encode('latin-1', errors='ignore').decode('mac-turkish', errors='ignore')
+      except:
+        return str.encode('arabic', errors='ignore').decode('latin-1', errors='ignore')
+    except:
+      return str.encode('latin-1', errors='ignore').decode('cp720', errors='ignore')
+  elif encoding == "mac-turkish":
+    try:
+      return str.encode('cp720').decode('cp720')
+    except:
+      try:
+        return str.encode('mac-turkish').decode('utf-8')
+      except:
+        return str.encode('mac-turkish', errors='ignore').decode('latin-1', errors='ignore')
+  elif encoding == "utf-8":
+    return str.encode('latin-1', errors='ignore').decode('utf-8', errors='ignore')
+  else:
+    return str
+
 
 def validate_phone(phone):
   # Replace +31 with 0

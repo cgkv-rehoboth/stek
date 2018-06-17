@@ -4,6 +4,18 @@
       left: 10px
       bottom: 20px
 
+  @media only screen and (max-width: 768px)
+    table
+      // Only for touchscreen devices like phones and tablets
+      display: block
+      overflow-x: auto
+
+      &.table-bordered
+        border-width: inherit
+
+  .make-contact-icon
+    font-size: 90%
+
 #profile
   .profile-pic
     max-width: 100%

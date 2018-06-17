@@ -20,7 +20,9 @@
     <div class="row greeting">
       {% if request.profile.photo %}
         <div class="profile-picture col-md-2 col-md-offset-1">
-          <img src="{{ request.profile.photo.url }}" />
+          <a href="{{ request.profile.photo.url }}" target="_blank" title="Afbeelding bekijken">
+            <img src="{{ request.profile.photo.url }}" />
+          </a>
         </div>
       {% else %}
         <div class="col-md-2 col-md-offset-1"></div>

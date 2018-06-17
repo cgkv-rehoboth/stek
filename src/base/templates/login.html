@@ -38,7 +38,7 @@
           {% else %}
             <div class="text-center">
               <h2>Welkom {{ request.profile.first_name }}!</h2>
-              <p>Je bent ingelogd</p>
+              <p>Je bent ingelogd. Ga door naar je <a href="{% url 'dashboard' %}">dashboard <i class="fa fa-home"></i></a>.</p>
               <br/>
               <p>Klik <a href="{% url 'logout' %}">hier</a> om weer uit te loggen.</p>
             </div>
