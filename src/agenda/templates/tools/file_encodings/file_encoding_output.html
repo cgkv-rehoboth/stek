@@ -1,0 +1,73 @@
+{% extends "./layout.html" %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <style>
+    .table td{
+      border-right: 1px solid #b9b9b9;
+      text-align: center;
+    }
+  </style>
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>File encoding check</h2>
+        </div>
+        <div class="col-sm-12">
+          <a href="{% url 'tools-file-encodings-upload' %}" class="backlink">< Terug naar uploadpagina</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <!-- Error handling messages -->
+          {% include "./messages.html" %}
+        </div>
+
+        <div class="col-sm-12">
+          {% for table_file_encoding, table in table_file_encodings.items %}
+            <h3>{{ table_file_encoding }}</h3>
+            <table class="table table-hover scroll-table">
+              <thead>
+                <tr>
+                <td></td>
+                {% for row in table_headers %}
+                  <td>{{ row }}</td>
+                {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+              {% for file, values in table.items %}
+                <tr>
+                  <td><strong>{{ file }}</strong></td>
+                  {% for row in table_headers %}
+                    {% if row in values.0 %}
+                      <td>X</td>
+                    {% elif row in values.1 %}
+                      <td>E</td>
+                    {% else %}
+                      <td></td>
+                    {% endif %}
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+              </tbody>
+
+            </table>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.teamAddPage();
+  </script>
+{% endblock %}

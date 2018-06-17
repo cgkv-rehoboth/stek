@@ -29,7 +29,7 @@ from .models import *
 from base.models import Profile, Family
 from .forms import *
 from .validators import *
-from base.views import get_delimiter
+from base.views import get_delimiter, decodeCSV
 
 logger = logging.getLogger(__name__)
 
@@ -735,6 +735,149 @@ def timetable_import_from_file_index(request, id):
   return render(request, 'teampage/csv_upload/upload_page.html', {
     'timetable': timetable
   })
+
+if settings.DEBUG:
+  @login_required
+  def tools_compare_file_encodings_upload(request):
+    if not request.user.has_perm('agenda.change_timetable'):
+      return HttpResponse(status=404)
+
+    return render(request, 'tools/file_encodings/file_encoding_upload.html')
+
+  @login_required()
+  @require_POST
+  def tools_compare_file_encodings_output(request):
+    if not request.user.has_perm('agenda.change_timetable'):
+      return HttpResponse(status=404)
+
+    # Get file
+    upload_files = []
+    upload_files.append(request.FILES.get('upload_file0'))
+    upload_files.append(request.FILES.get('upload_file1'))
+    upload_files.append(request.FILES.get('upload_file2'))
+    upload_files.append(request.FILES.get('upload_file3'))
+
+    # Check for file
+    if not upload_files:
+      messages.error(request, "Er dient een bestand geüpload te worden.")
+      return redirect('tools-file-encodings-upload')
+
+    for upload_file in upload_files:
+      if not validate_file_extension(upload_file, ['.csv']):
+        messages.error(request, "Onjuist bestandsformaat. Het bestand dient een .csv bestand te zijn.");
+        return redirect('tools-file-encodings-upload')
+
+    encodings = ['utf-8', 'utf-16', 'latin-1', 'cp720', 'cp1252', 'arabic', 'unicode_escape', 'mac-turkish']
+    file_encodings = ['utf-8', 'utf-16', 'latin-1', 'cp720', 'cp1252', 'arabic', 'unicode_escape', 'mac-turkish', 'ISO-8859-1']
+    exclude_encoding_pairs = [
+      ['utf-8', 'utf-16'],
+      ['utf-8', 'latin-1'],
+      ['utf-8', 'cp720'],
+      ['utf-8', 'cp1252'],
+      ['utf-8', 'arabic'],
+      ['utf-8', 'unicode_escape'],
+      ['utf-8', 'mac-turkish'],
+      ['utf-16', 'utf-8'],
+      ['utf-16', 'latin-1'],
+      ['utf-16', 'cp720'],
+      ['utf-16', 'cp1252'],
+      ['utf-16', 'arabic'],
+      ['utf-16', 'unicode_escape'],
+      ['utf-16', 'mac-turkish'],
+      ['latin-1', 'utf-16'],
+      ['latin-1', 'arabic'],
+      ['cp720', 'utf-16'],
+      ['cp720', 'arabic'],
+      ['cp1252', 'utf-16'],
+      ['cp1252', 'arabic'],
+      ['arabic', 'utf-8'],
+      ['arabic', 'utf-16'],
+      ['arabic', 'arabic'],
+      ['unicode_escape', 'utf-8'],
+      ['unicode_escape', 'utf-16'],
+      ['unicode_escape', 'latin-1'],
+      ['unicode_escape', 'cp720'],
+      ['unicode_escape', 'cp1252'],
+      ['unicode_escape', 'arabic'],
+      ['unicode_escape', 'mac-turkish'],
+      ['mac-turkish', 'utf-16'],
+      ['mac-turkish', 'arabic'],
+    ]
+
+    table_encodings = []
+    for encoding in encodings:
+      for decoding in encodings:
+        table_encodings.append("%s / %s" % (encoding, decoding))
+
+    files = []
+    for upload_file in upload_files:
+      # Create a temp file
+      # with tempfile.NamedTemporaryFile() as tf:
+      file = tempfile.NamedTemporaryFile()
+
+      # Copy the uploaded file to the temp file
+      for chunk in upload_file.chunks():
+        file.write(chunk)
+
+      # Save contents to file on disk
+      file.flush()
+
+      files.append(file)
+
+    # Read file
+    table_file_encodings = {}
+    for file_encoding in file_encodings:
+      encodings_files = {}
+      for file in files:
+        encoded_file_encodings = []
+        encoded_file_exceptions = []
+        try:
+          with open(file.name, 'r', encoding=file_encoding) as fh:
+            lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
+
+            for line in lines:
+              # Skip this line if no usefull information is given
+              txt = line['Persoon']
+              if not (len(txt) and txt[0] == "C"):
+                continue
+
+              print("")
+              print("ENCODING")
+              print("--")
+              print(txt)
+
+              for encoding in encodings:
+                for decoding in encodings:
+                    try:
+                      encoded = txt.encode(encoding).decode(decoding)
+                      if encoded == "Corné":
+                        print("%14s / %14s: %s" % (encoding, decoding, encoded))
+                        encoded_file_encodings.append("%s / %s" % (encoding, decoding))
+                    except:
+                      encoded_file_exceptions.append("%s / %s" % (encoding, decoding))
+                      continue
+        except:
+          pass
+
+        encodings_files[str(file.name)] = [encoded_file_encodings, encoded_file_exceptions]
+      # table_file_encodings[file_encoding] = "stuff"
+      table_file_encodings[file_encoding] = encodings_files
+
+    table_headers = []
+    for encoding in encodings:
+      for decoding in encodings:
+        if not [encoding, decoding] in exclude_encoding_pairs:
+          table_headers.append("%s / %s" % (encoding, decoding))
+
+    for file in files:
+      file.close()
+
+    # Return this to a table
+    return render(request, 'tools/file_encodings/file_encoding_output.html', {
+      'table_headers': table_headers,
+      'file_encodings': file_encodings,
+      'table_file_encodings': table_file_encodings
+    })
 
 @login_required
 @require_POST
@@ -2281,3 +2424,11 @@ urls = [
   url(r'^roosters/diensten/bestanden/beheren/toevoegen/$', services_files_admin_add, name='services-files-admin-add'),
   url(r'^roosters/diensten/bestanden/beheren/$', services_files_admin, name='services-files-admin'),
 ]
+
+if settings.DEBUG:
+  urls = urls + [
+    url(r'^tools/fileencoding/output', tools_compare_file_encodings_output,
+      name='tools-file-encodings-output'),
+    url(r'^tools/fileencoding/upload', tools_compare_file_encodings_upload,
+      name='tools-file-encodings-upload'),
+  ]
