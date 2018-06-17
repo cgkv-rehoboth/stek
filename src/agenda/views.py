@@ -1254,7 +1254,7 @@ def timetable_import_from_file_check(request, id):
 @login_required
 @require_POST
 def timetable_import_from_file_save(request, id):
-  DEBUG_CSVROOSTERIMPORT = False
+  DEBUG_CSVROOSTERIMPORT = True
 
   try:
     # Get SSL secured timetable pk, and not by URL
