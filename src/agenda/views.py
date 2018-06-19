@@ -953,7 +953,7 @@ def timetable_import_from_file_check(request, id):
 
         # Make sure the right encoding is used
         for header in headers:
-          line[header] = decodeCSV(line[header])
+          line[header] = decodeCSV(line[header]).strip()
 
         # Get date
         # If only month name is given: save this for the next iterations
@@ -1043,7 +1043,7 @@ def timetable_import_from_file_check(request, id):
         warning_duplicate = "Er zijn reeds andere inroosteringen voor deze dienst." if duty else None
 
         # Get description/comment
-        comments = line['Extra opmerkingen'].strip()
+        comments = line['Extra opmerkingen']
 
         # Save whole in dict
         main_line = {}
@@ -1066,6 +1066,9 @@ def timetable_import_from_file_check(request, id):
             tmp_error = {}
             tmp_warning = {}
             line_id += 1
+
+            # Validations and filters
+            familie = familie.strip()
 
             family_name = re.sub(r"^Fam\.\s?", '', familie.strip(), flags=re.IGNORECASE).strip().split(' ')
             lastname = family_name[-1]
@@ -1155,8 +1158,11 @@ def timetable_import_from_file_check(request, id):
             tmp_warning = {}
             line_id += 1
 
+            # Validations and filters
+            persoon = persoon.strip()
+
             # Create first and possible last name
-            persoon_names = persoon.strip().split(' ')
+            persoon_names = persoon.split(' ')
             firstname = persoon_names[0].strip()
 
             if len(persoon_names) > 1:

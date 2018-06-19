@@ -170,7 +170,7 @@
 
                       {% if families_list|get:output_line.id %}
                         <i class="fa fa-arrow-right" aria-hidden="true"></i>
-                        <select name="familie">
+                        <select name="familie" data-select-id="{{ output_line.familie|default_if_none:"" }}">
                           <option value="0">Selecteer de juiste familie</option>
                           {% for familie in families_list|get:output_line.id %}
                             <option value="{{ familie.pk }}">{{ familie }}</option>
@@ -204,7 +204,7 @@
 
                       {% if profiles_list|get:output_line.id %}
                         <i class="fa fa-arrow-right" aria-hidden="true"></i>
-                        <select name="persoon">
+                        <select name="persoon" data-select-id="{{ output_line.persoon|default_if_none:"" }}">
                           <option value="0">-- Selecteer de juiste persoon --</option>
                           {% for profile in profiles_list|get:output_line.id %}
                             <option value="{{ profile.pk }}">{{ profile }}</option>

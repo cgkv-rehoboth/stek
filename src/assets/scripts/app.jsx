@@ -846,11 +846,23 @@ window.importCSV = () => {
     update_checkbox($(this));
   });
 
+  let data_manual_selected = [];
   $("#rooster_csv_table").on("change", "select", function() {
     let selected_responsibles = {};
+    // Get paramaters for setting name autmoatic
+    let data_select_id = $(this).attr('data-select-id');
+    let selected_val = $(this).val();
+    let manually_added = data_manual_selected.indexOf(data_select_id);
 
     // Iterate over all select elements
     $('#rooster_csv_table select').each(function (index){
+      // Automatic set selected name
+      if (manually_added < 0 && $(this).attr('data-select-id') == data_select_id){
+        // Set name automatically if this type is not set before and this element identifies with the triggered element
+        $(this).val(selected_val);
+      }
+
+      // Determine if the task are valid and can be added to the selected_lines
       let selected = $(this).val();
       let checkbox = $(this).closest('tr').find('input[type=checkbox]');
       if (selected > 0) {
@@ -866,6 +878,11 @@ window.importCSV = () => {
       }
       update_checkbox(checkbox);
     });
+
+    // Do not set these elements automatic anymore
+    if (manually_added < 0){
+      data_manual_selected.push(data_select_id);
+    }
 
     // Add the data to the form, ready for submit
     $('form input[name=json_selected_responsibles]').val(JSON.stringify(selected_responsibles));
