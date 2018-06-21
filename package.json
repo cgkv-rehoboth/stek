@@ -23,7 +23,7 @@
     "watchify": "^3.2.3"
   },
   "dependencies": {
-    "bootstrap": "^3.3.6",
+    "bootstrap": "^3.3.7",
     "classnames": "^2.2.1",
     "cookies-js": "^1.2.2",
     "font-awesome": "^4.7.0",

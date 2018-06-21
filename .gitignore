@@ -11,3 +11,5 @@ dist/
 .tern-port
 .gitignore
 src/cgkv/localsettings.py
+static/
+log/
