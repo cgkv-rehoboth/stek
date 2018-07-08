@@ -69,15 +69,13 @@ export default function frontpageMain() {
   /**
    * Popup
    */
-  /*
   ReactDom.render(
     <Popup>
-      Vanaf zondag 5 juni is het zomerrooster weer begonnen en begint de 2e dienst om 18:30u.
+      Volg onze Hands of Hope groep vanaf 16 juli op <a href="http://handsofhopeproject.nl">handsofhopeproject.nl</a>.
     </Popup>,
     $('#popup')[0]
   );
-  */
-  
+
   
   /**
    * Contact form
