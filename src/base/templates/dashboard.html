@@ -38,14 +38,16 @@
       </div>
     </div>
 
-{% comment %}{# todo: uncomment this to enable Mededelingen and Birthday  #}
     <div class="row newsfeed">
       <h3>Mededelingen</h3>
-      <div class="newsfeed-list col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8">
-        <!-- One can choose from these three layout options: newsfeed-simple, newsfeed-cubes, and newsfeed-list -->
+      <div class="newsfeed-list col-md-offset-1 col-md-10 col-lg-offset-2 col-lg-8"> <!-- One can choose from these three layout options: newsfeed-simple, newsfeed-cubes, and newsfeed-list -->
+        {% comment %}{# todo: uncomment this to enable Mededelingen #}
         {% show_page_content "nieuwsberichten" %}
+        {% endcomment %}
 
-        <div class="birthday-list">
+        <div class="birthday-list"
+             style="border-top-width: 1px; border-radius: 2px"  {# todo: remove this row when enabling Mededelingen #}
+        >
           <div class="birthday-list-header">
             <i class="fa fa-birthday-cake"></i>
             {% if birthday_profiles_today %}
@@ -113,7 +115,6 @@
         </div>
       </div>
     </div>
-{% endcomment %}
 
     <div class="row">
       <h3>Diensten van de aankomende week</h3>

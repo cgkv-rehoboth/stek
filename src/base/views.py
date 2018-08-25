@@ -667,8 +667,8 @@ def dashboard(request):
 
   # Get the birthdays for today
   coming_date = today_date + timedelta(days=1)
-  birthday_profiles_today = Profile.objects.filter(birthday__day=today_date.day, birthday__month=today_date.month)
-  birthday_profiles_coming = Profile.objects.filter(birthday__day=coming_date.day, birthday__month=coming_date.month).order_by("birthday")
+  birthday_profiles_today = Profile.objects.filter(birthday__day=today_date.day, birthday__month=today_date.month, is_active=True)
+  birthday_profiles_coming = Profile.objects.filter(birthday__day=coming_date.day, birthday__month=coming_date.month, is_active=True).order_by("birthday")
 
   ## Get services for this week
   maxweeks = today_date + timedelta(weeks=1)
