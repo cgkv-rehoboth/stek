@@ -9,7 +9,17 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <h2>Diensten <small>{{ service.title }}</small></h2>
+          <h2><a href="{% url 'services-page' %}" class="black-url">Diensten</a>
+            <small>
+              {% if service_prev %}
+                <a href="{% url 'services-single' service_prev.id %}" title="Vorige: {{ service_prev }}" class="services-navigator"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+              {% endif %}
+              {{ service.title }}
+              {% if service_next %}
+                <a href="{% url 'services-single' service_next.id %}" title="Volgende: {{ service_next }}" class="services-navigator"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+              {% endif %}
+            </small>
+          </h2>
         </div>
 
         {% if perms.agenda.add_service or perms.agenda.add_eventfile%}

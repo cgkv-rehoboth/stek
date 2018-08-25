@@ -2129,8 +2129,20 @@ def services_single(request, id):
     messages.error(request, 'Dienst bestaat niet.')
     return redirect('services-page')
 
+  # Get previous and next services
+  try:
+    service_prev = Service.get_previous_by_startdatetime(service)
+  except ObjectDoesNotExist:
+    service_prev = None
+  try:
+    service_next = Service.get_next_by_startdatetime(service)
+  except ObjectDoesNotExist:
+    service_next = None
+
   return render(request, 'services/single.html', {
     'service': service,
+    'service_next': service_next,
+    'service_prev': service_prev,
   })
 
 
