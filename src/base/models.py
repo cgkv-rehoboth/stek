@@ -106,7 +106,7 @@ class Profile(TimestampedModel, models.Model):
     unique_together = (('first_name', 'initials', 'last_name', 'prefix', 'birthday', 'lidnr'), )
 
   def delete(self, *args, **kwargs):
-    # remove all ruilrequests
+    # remove all dependencies
     RuilRequest.objects.filter(profile=self).delete()
 
     # Delete photo file
@@ -406,4 +406,4 @@ class Favorites(models.Model):
   favorite    = models.ForeignKey(Profile, related_name="favorited_by")
 
   def __str__(self):
-    return "%s += %s" % (self.owner.name(), self.favorite.name())
+    return "%s <3 %s" % (self.owner.name(), self.favorite.name())

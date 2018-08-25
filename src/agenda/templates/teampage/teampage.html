@@ -148,8 +148,8 @@
             <br/>
 
             {% for m in members.all %}
-              <div class="team-usersquare team-role-{{ m.role.short_name }}">
-                {% if m.family %}
+              {% if m.family %}
+                <div class="team-usersquare team-role-{{ m.role.short_name }}">
                   <a href="{% url 'family-detail-page' m.family.pk %}" title="{{ m.family }} ({{ m.role }})" class="team-userlink">
                     <div class="team-userimage-div">
                       {% if m.family.thumbnail %}
@@ -169,7 +169,9 @@
                       {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
                     </div>
                   </a>
-                {% else %}
+                </div>
+              {% elif m.profile %}
+                <div class="team-usersquare team-role-{{ m.role.short_name }}">
                   <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }} ({{ m.role }})" class="team-userlink">
                     <div class="team-userimage-div">
                       {% if m.profile.photo %}
@@ -187,8 +189,24 @@
                       {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
                     </div>
                   </a>
-                {% endif %}
-              </div>
+                </div>
+              {% else %}
+                <div class="team-usersquare team-role-{{ m.role.short_name }} team-usersquare-unkown">
+                  <a href="#" title="Geen lid gevonden" class="team-userlink">
+                    <div class="team-userimage-div">
+                      <img src="{% static 'resources/images/default_pf_unkown.png' %}" class="team-userimage"/>
+                    </div>
+
+                    <div class="team-userinfo">
+                      {{ m.name }}
+                    </div>
+
+                    <div class="team-userrole" title="{% if m.is_admin %}Dit lid heeft beheerrechten over dit team{% endif %}">
+                      {{ m.role|capfirst }} {% if m.is_admin %}*{% endif %}
+                    </div>
+                  </a>
+                </div>
+              {% endif %}
             {% endfor %}
             <div style="font-size: 65%; margin-left: 20px; margin-bottom: 30px;">* Dit lid is beheerder van deze teampagina</div>
           {% else %}

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 from datetime import datetime
+from django import forms
 
 # Create custom display for TimeTable
 class TimetableDutyInline(admin.TabularInline):
@@ -86,7 +87,22 @@ class TeamMemberRoleAdmin(admin.ModelAdmin):
 admin.site.register(TeamMemberRole, TeamMemberRoleAdmin)
 
 # Team stuff
+class TeamMemberForm(forms.ModelForm):
+  class Meta:
+    model = TeamMember
+    fields = '__all__'
+
+  def clean(self):
+    profile = self.cleaned_data.get('profile')
+    family = self.cleaned_data.get('family')
+    if not profile and not family:
+      raise forms.ValidationError("Geen verantwoordelijke gekozen.")
+    if profile and family:
+      raise forms.ValidationError("Kies maximaal 1 verantwoordelijke.")
+    return self.cleaned_data
+
 class TeamMemberAdmin(admin.ModelAdmin):
+  form = TeamMemberForm
   list_display = ['name', 'team', 'role', 'is_admin', 'get_mail']
 
 admin.site.register(TeamMember, TeamMemberAdmin)
@@ -103,7 +119,7 @@ class TeamAdmin(admin.ModelAdmin):
   def get_leader_names(self, obj):
     # Return a string with all the names of the leaders (profile and families)
     return ", ".join(
-      [ (m.profile.namei() if m.profile else str(m.family)) for m in obj.leaders() ]
+      [ (m.profile.namei() if m.profile else m.name()) for m in obj.leaders() ]
     )
 
 admin.site.register(Team, TeamAdmin)

@@ -92,8 +92,10 @@
                   <td>
                     {% if m.family %}
                       <a href="{% url 'family-detail-page' m.family.pk %}" title="{{ m.family }}" class="team-userlink">{{ m.name }}</a>
-                    {% else %}
+                    {% elif m.profile %}
                       <a href="{% url 'profile-detail-page' m.profile.pk %}" title="{{ m.profile }}" class="team-userlink">{{ m.name }}</a>
+                    {% else %}
+                      Onbekend lid
                     {% endif %}
                   </td>
                   <td>{{ m.role|capfirst }}</td>
@@ -106,7 +108,7 @@
                     <span class="table-tools">
                       <a href="{% url 'teampage-control-members-edit' m.pk %}" title="Bewerken">
                         <i class="fa fa-pencil-square-o fa-fw"></i></a>
-                      <a href="{% url 'teampage-control-members-delete' m.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je {% if m.family %}deze familie{% else %}dit lid{% endif %} wilt verwijderen?" title="Verwijderen">
+                      <a href="{% url 'teampage-control-members-delete' m.pk %}" class="confirm-dialog-button" data-message="Weet je zeker dat je {% if m.family %}deze familie{% else %}dit lid{% endif %} van het team wilt verwijderen?" title="Verwijderen">
                         <i class="fa fa-times fa-fw"></i>
                       </a>
                     </span>

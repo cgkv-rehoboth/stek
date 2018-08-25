@@ -74,10 +74,12 @@
                           <a href="{% url 'family-detail-page' lid.family.pk %}">
                             {{ lid.name }}
                           </a>
-                        {% else %}
+                        {% elif lid.profile %}
                           <a href="{% url 'profile-detail-page' lid.profile.pk %}">
                             {{ lid.name }}
                           </a>
+                        {% else %}
+                          {{ lid.name }}
                         {% endif %}
                       </td>
                       <td>{{ lid.role|capfirst }}</td>

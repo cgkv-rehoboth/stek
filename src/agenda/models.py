@@ -174,9 +174,11 @@ class TeamMember(models.Model):
 
   def name(self):
     if self.family:
-      return self.family
-    else:
+      return str(self.family)
+    elif self.profile:
       return self.profile.name()
+    else:
+      return "Onbekend lid"
 
 
 class RuilRequest(models.Model):
