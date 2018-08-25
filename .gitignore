@@ -13,3 +13,4 @@ dist/
 src/cgkv/localsettings.py
 static/
 log/
+private_docs/
