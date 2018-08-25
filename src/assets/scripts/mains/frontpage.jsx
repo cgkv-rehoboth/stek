@@ -69,12 +69,12 @@ export default function frontpageMain() {
   /**
    * Popup
    */
-  ReactDom.render(
-    <Popup>
-      Volg onze Hands of Hope groep vanaf 16 juli op <a href="http://handsofhopeproject.nl">handsofhopeproject.nl</a>.
-    </Popup>,
-    $('#popup')[0]
-  );
+  // ReactDom.render(
+  //   <Popup>
+  //     Volg onze Hands of Hope groep vanaf 16 juli op <a href="http://handsofhopeproject.nl">handsofhopeproject.nl</a>.
+  //   </Popup>,
+  //   $('#popup')[0]
+  // );
 
   
   /**
