@@ -994,6 +994,7 @@ def timetable_import_from_file_check(request, id):
           continue
 
         # Set boundaries for 1 day
+          custom_event = None
         if line['Tijdstip'] and date:
           if line['Tijdstip'] == 'Ochtend':
             # Service time between 8:00 and 13:00
@@ -1012,7 +1013,21 @@ def timetable_import_from_file_check(request, id):
             date_start = date + timedelta(hours=int(time[0]), minutes=int(time[1]))
             date_end = None
           elif len(line['Tijdstip']) > 0:
-            error['tijdstip'] = "Ongeldige tijdstip '%s'." % line['Tijdstip']
+            # Check if a custom title is given
+            if date_start:
+              custom_event = Event.objects.filter(title=line['Tijdstip'], startdatetime__gte=date_start)
+            else:
+              custom_event = Event.objects.filter(title=line['Tijdstip'])
+
+            if len(custom_event) == 1:
+              custom_event = custom_event.first()
+            elif len(custom_event) > 1:
+              custom_event = None
+              error['tijdstip'] = "Meerdere diensten gevonden voor titel '%s'." % line['Tijdstip']
+            else:
+              custom_event = None
+              error['tijdstip'] = "Ongeldige tijdstip '%s'." % line['Tijdstip']
+
             date_start = None
             date_end = None
         # else:
@@ -1035,6 +1050,8 @@ def timetable_import_from_file_check(request, id):
             error['event'] = "Geen diensten gevonden voor dit tijdstip."
           else:
             event = event.first()
+        elif custom_event:
+          event = custom_event
         else:
           event = None
 
