@@ -9,7 +9,8 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-12">
-          <h2>Mijn team
+          <h2>
+            <a href="{% url 'teampage' table.team.pk %}" class="black-url">Mijn team</a>
             <small>
               <a href="{% url 'timetable-detail-page' table.id %}" class="black-url">
                 {{ table.title }}
