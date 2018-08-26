@@ -153,7 +153,7 @@ export class LivePlayer extends React.Component {
   }
 
   ondurationchange(){
-    console.debug("Media length has changed...");
+    console.debug("Media length has changed to " + this.duration() + "...");
 
     /* Info:
      *   if(player.duration == 13.212) -> dienst is NIET live

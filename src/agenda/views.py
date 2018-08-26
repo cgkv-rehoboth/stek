@@ -1091,6 +1091,12 @@ def timetable_import_from_file_check(request, id):
             lastname = family_name[-1]
             family = Family.objects.filter(lastname=lastname)
 
+            # Issue: Fam. Smith-Tensen, when just Fam. Smith is inserted, 'no family is found'
+            # Fix: when no family is foun, try extending the lastname by using __contains
+            if family is None or len(family) == 0:
+              # Remove dots in case of afkortingen like John S.
+              family = Family.objects.filter(lastname__contains=lastname.replace('.', ''))
+
             # Filter family list even further based on the name (prefix and initials)
             if len(family) > 1 and len(family_name) > 1:
                 # Make search query more strict
@@ -1185,6 +1191,12 @@ def timetable_import_from_file_check(request, id):
             if len(persoon_names) > 1:
               lastname = persoon_names[-1].strip()
               profile = Profile.objects.filter(first_name=firstname, last_name=lastname)
+
+              # Issue: John Smith-Tensen, when just John Smith is inserted, 'no person is found'
+              # Fix: when no person is foun, try extending the lastname by using __contains
+              if profile is None or len(profile) == 0:
+                # Remove dots in case of afkortingen like John S.
+                profile = Profile.objects.filter(first_name=firstname, last_name__contains=lastname.replace('.', ''))
             else:
               lastname = None
               profile = Profile.objects.filter(first_name=firstname)
