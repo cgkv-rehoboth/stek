@@ -407,10 +407,3 @@ class Favorites(models.Model):
 
   def __str__(self):
     return "%s <3 %s" % (self.owner.name(), self.favorite.name())
-
-
-class ProfileSettings(models.Model):
-
-  profile                           = models.ForeignKey(Profile, related_name="settings")
-  #get_timetableduty_reminder        = models.BooleanField(default=True) # De weekselijke herinnering per mail aan je taken voor as zondag
-  #get_empty_timetableduty_reminder  = models.BooleanField(default=True) # De herinnering aan teamleaders indien het rooster van hum team voor een zekere tijd leegs taat
