@@ -47,7 +47,11 @@ LOCALE_PATHS = [
   os.path.join(BASE_DIR, "../src/custommachina/locale/"),
 ]
 
-ALLOWED_HOSTS = ['*']
+# People who get code error notifications.
+# In the format (('Full Name', 'email@example.com'), ('Full Name', 'anotheremail@example.com'))
+ADMINS = (('Samuel-Anton Jansen', 'samuelanton@hotmail.com'), ('Website Team', 'website@rehobothkerkwoerden.nl'))
+
+ALLOWED_HOSTS = ['*']  # todo: make default to rehobothkerkwoerden.nl
 CORS_ORIGIN_ALLOW_ALL = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
@@ -55,6 +59,9 @@ EMAIL_FILE_PATH = '/tmp/django-messages'
 
 DEFAULT_FROM_EMAIL = 'Rehobothkerk Woerden <noreply@rehobothkerkwoerden.nl>'
 
+# Tuple of IP addresses, as strings, that:
+#   * See debug comments, when DEBUG is true
+#   * Receive x-headers
 INTERNAL_IPS = ('127.0.0.1',)
 
 APPEND_SLASH = False
@@ -125,6 +132,7 @@ REST_FRAMEWORK = {
 ROOT_URLCONF = 'cgkv.urls'
 
 LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 
 WSGI_APPLICATION = 'cgkv.wsgi.application'
@@ -144,17 +152,10 @@ DATABASES = {
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.7/topics/i18n/
+internationalizationpath = os.path.join(BASE_DIR, "cgkv/internationalization.py")
+if os.path.exists(internationalizationpath):
+    from cgkv.internationalization import *
 
-LANGUAGE_CODE = 'nl'
-
-TIME_ZONE = None
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
