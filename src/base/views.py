@@ -1,15 +1,13 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import logout
 from django.db.models import Prefetch, Q
-from django.http import JsonResponse
+from django.http import  HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
 from django.views.decorators.http import *
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from django.views.generic import RedirectView
-from django import http
 from django.core import serializers
 from django.contrib import messages
 from datetime import datetime, timedelta
@@ -22,11 +20,8 @@ from dateutil.relativedelta import relativedelta
 import csv
 import tempfile
 import json
-import re
 import sys
-import logging
 from django.core.validators import *
-from django.db import IntegrityError
 from django.db.utils import OperationalError
 from django.views.decorators.cache import never_cache
 
@@ -659,6 +654,10 @@ def reset_password_done(request):
 
 @login_required
 def dashboard(request):
+  # Check if profile exists
+  if request.profile is None:
+    return HttpResponse("FOUT: Er bestaat geen profiel voor dit account. <br/><a href='%s'>Klik hier</a> om uit te loggen. <br/><br/>Neem contact op met de website beheerder (zie de inlogpagina)." % reverse('logout'))
+
   today_date = datetime.today().date()
 
   ## News items
