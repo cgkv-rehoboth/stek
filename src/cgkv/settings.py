@@ -49,7 +49,7 @@ LOCALE_PATHS = [
 
 # People who get code error notifications.
 # In the format (('Full Name', 'email@example.com'), ('Full Name', 'anotheremail@example.com'))
-ADMINS = (('Samuel-Anton Jansen', 'samuelanton@hotmail.com'), ('Website Team', 'website@rehobothkerkwoerden.nl'))
+ADMINS = (('Website Team', 'website@rehobothkerkwoerden.nl'))
 
 ALLOWED_HOSTS = ['*']  # todo: make default to rehobothkerkwoerden.nl
 CORS_ORIGIN_ALLOW_ALL = True

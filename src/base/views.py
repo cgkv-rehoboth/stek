@@ -639,7 +639,7 @@ def profile_pic_delete(request, pk):
 
 def logout_view(request):
   logout(request)
-  return redirect('login')
+  return redirect('index')
 
 
 def change_password_done(request):
