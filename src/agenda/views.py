@@ -1677,7 +1677,7 @@ def teampage_control_members_edit_save(request, id):
     role = TeamMemberRole.objects.get(pk=request.POST.get("role", ""))
   except ObjectDoesNotExist:
     messages.error(request, 'Teamrol bestaat niet.')
-    return redirect('teampage-control-members', id=team.pk)
+    return redirect('teampage-control-members', id=member.team.pk)
 
   member.role = role
   member.is_admin = True if request.POST.get("is_admin", False) else False

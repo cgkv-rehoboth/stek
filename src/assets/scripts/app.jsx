@@ -116,7 +116,7 @@ $('a[href^="5e2nabe5s4"]').on('mouseover mouseup', function(){
 });
 // Output only to href
 $('a[href^="p1ec2fx1uz"]').on('mouseover mouseup', function(){
-  var href = decodeMail($(this).attr('href').replace("5e2nabe5s4", ''));
+  var href = decodeMail($(this).attr('href').replace("p1ec2fx1uz", ''));
   $(this).attr('href', 'mailto:' + href);
   
   // Unbind this action
@@ -124,7 +124,7 @@ $('a[href^="p1ec2fx1uz"]').on('mouseover mouseup', function(){
 });
 // Output only to text
 $('a[href^="zs39qpz9ti"]').on('mouseover mouseup', function(){
-  var href = decodeMail($(this).attr('href').replace("5e2nabe5s4", ''));
+  var href = decodeMail($(this).attr('href').replace("zs39qpz9ti", ''));
   $(this).text(href);
   
   // Unbind this action
