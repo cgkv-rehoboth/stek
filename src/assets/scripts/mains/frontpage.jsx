@@ -69,12 +69,12 @@ export default function frontpageMain() {
   /**
    * Popup
    */
-  // ReactDom.render(
-  //   <Popup>
-  //     Volg onze Hands of Hope groep vanaf 16 juli op <a href="http://handsofhopeproject.nl">handsofhopeproject.nl</a>.
-  //   </Popup>,
-  //   $('#popup')[0]
-  // );
+  ReactDom.render(
+    <Popup>
+      Zondag a.s. (7 okt) is de ochtenddienst om <strong>10:00u</strong> in de <strong><a href="http://www.kerkpleinwoerden.nl/jml33/index.php/kerkgebouwen/kruiskerk" title="Website van de Kruiskerk" target="_blank">Kruiskerk</a></strong>.
+    </Popup>,
+    $('#popup')[0]
+  );
 
   
   /**
