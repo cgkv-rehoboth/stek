@@ -994,7 +994,7 @@ def timetable_import_from_file_check(request, id):
           continue
 
         # Set boundaries for 1 day
-          custom_event = None
+        custom_event = None
         if line['Tijdstip'] and date:
           if line['Tijdstip'] == 'Ochtend':
             # Service time between 8:00 and 13:00
@@ -1289,7 +1289,7 @@ def timetable_import_from_file_check(request, id):
 @login_required
 @require_POST
 def timetable_import_from_file_save(request, id):
-  DEBUG_CSVROOSTERIMPORT = True
+  DEBUG_CSVROOSTERIMPORT = False
 
   try:
     # Get SSL secured timetable pk, and not by URL
