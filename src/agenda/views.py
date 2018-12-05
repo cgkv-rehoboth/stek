@@ -25,6 +25,7 @@ import csv
 import tempfile
 import json
 
+from .excel_reader import excel_to_lines, csv_to_lines, DataValidationError, HeaderValidationError
 from .models import *
 from base.models import Profile, Family
 from .forms import *
@@ -879,6 +880,7 @@ if settings.DEBUG:
       'table_file_encodings': table_file_encodings
     })
 
+
 @login_required
 @require_POST
 def timetable_import_from_file_check(request, id):
@@ -902,8 +904,8 @@ def timetable_import_from_file_check(request, id):
     messages.error(request, "Er dient een bestand geüpload te worden.")
     return redirect('timetable-import-from-file-index', id=timetable.pk)
 
-  if not validate_file_extension(upload_file, ['.csv']):
-    messages.error(request, "Onjuist bestandsformaat. Het bestand dient een .csv bestand te zijn.");
+  if not validate_file_extension(upload_file, ['.csv', '.xlsx', '.xls']):
+    messages.error(request, "Onjuist bestandsformaat. Het bestand dient een .csv, .xlsx of .xls bestand te zijn.")
     return redirect('timetable-import-from-file-index', id=timetable.pk)
 
   headers = ['Datum', 'Tijdstip', 'Familie', 'Persoon', 'Extra opmerkingen']
@@ -914,348 +916,353 @@ def timetable_import_from_file_check(request, id):
 
   families_list = {}
   profiles_list = {}
-  # Create a temp file
-  with tempfile.NamedTemporaryFile() as tf:
-    # Copy the uploaded file to the temp file
-    for chunk in upload_file.chunks():
-      tf.write(chunk)
 
-    # Save contents to file on disk
-    tf.flush()
+  # Get lines from the file
+  try:
+    print("Inlezen: %s" % upload_file)
+    if validate_file_extension(upload_file, ['.csv']):
+      lines = csv_to_lines(upload_file, headers)
+    elif validate_file_extension(upload_file, ['.xlsx', '.xls']):
+      lines = excel_to_lines(upload_file, headers)
+    else:
+      messages.error(request, "Kan het bestandsformaat niet verwerken.")
+      return redirect('timetable-import-from-file-index', id=timetable.pk)
+  except HeaderValidationError as e:
+    print("Er is een fout opgetreden bij het uitlezen van het bestand", e)
+    if len(e.missing_headers) > 1:
+      messages.error(request, "De kolommen <strong>%s</strong> ontbreken in het bestand." % ', '.join(e.missing_headers))
+    else:
+      messages.error(request, "De kolom <strong>%s</strong> ontbreekt in het bestand." % e.missing_headers[0])
+    return redirect('timetable-import-from-file-index', id=timetable.pk)
+  except DataValidationError as e:
+    print("Er is een fout opgetreden bij het uitlezen van het bestand.", e)
+    messages.error(request, "Er is een fout opgetreden bij het uitlezen van het bestand: %s." % e.message)
+    return redirect('timetable-import-from-file-index', id=timetable.pk)
+  except Exception as e:
+    print("Er is een fout opgetreden bij het uitlezen van het bestand.", e)
+    messages.error(request, "Er is een fout opgetreden bij het uitlezen van het bestand.")
+    return redirect('timetable-import-from-file-index', id=timetable.pk)
 
-    # Read file
-    with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-      lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
+  # for each line
+  date = None
+  date_start = None
+  date_end = None
+  errors_found = 0
+  output_lines = []
+  line_id = 0
+  for line in lines:
+    error = {}
+    warning = {}
 
-      # Check for needed headers
-      missingheaders = list(set(headers) - set(lines.fieldnames))
-      if missingheaders:
-        if len(missingheaders) > 1:
-          messages.error(request, "De kolommen <strong>%s</strong> ontbreken in het bestand." % ', '.join(missingheaders))
-        else:
-          messages.error(request, "De kolom <strong>%s</strong> ontbreekt in het bestand." % missingheaders[0])
-        return redirect('timetable-import-from-file-index', id=timetable.pk)
+    # Skip this line if no usefull information is given
+    if not (line['Familie'] or line['Persoon']):
+      continue
 
-      # for each line
-      date = None
-      date_start = None
-      date_end = None
-      errors_found = 0
-      output_lines = []
-      line_id = 0
-      for line in lines:
-        error = {}
-        warning = {}
+    # Make sure the right encoding is used
+    for header in headers:
+      line[header] = decodeCSV(line[header]).strip()
 
-        # Skip this line if no usefull information is given
-        if not (line['Familie'] or line['Persoon']):
-          continue
+    # Get date
+    # If only month name is given: save this for the next iterations
+    # If only nummer is given: get month from saved month ^
+    if line['Datum']:
+      # Moet nog verder uitgewerkt worden:
+      #if int(line['Datum']):
+      #  # Only day
+      #  day = line['Datum']
 
-        # Make sure the right encoding is used
-        for header in headers:
-          line[header] = decodeCSV(line[header]).strip()
+      #  if month == 0:
+      #    error['datum'] = "Ongeldige datum: er is geen maand bekend."
+      #else:
+      #  # Parse date to month number
+      #  month = get_month_by_name(line['Datum'].strip())
 
-        # Get date
-        # If only month name is given: save this for the next iterations
-        # If only nummer is given: get month from saved month ^
-        if line['Datum']:
-          # Moet nog verder uitgewerkt worden:
-          #if int(line['Datum']):
-          #  # Only day
-          #  day = line['Datum']
+      #  # Validate if it is a month
+      #  if month == 0:
+      #    # Maybe it is a valid date
+      #    try:
+      #      date = datetime.strptime(line['Datum'].strip(), "%d-%m-%Y")
+      #    except ValueError as e:
+      #      error['datum'] = "Ongeldige datum '%s'." % line['Datum']
 
-          #  if month == 0:
-          #    error['datum'] = "Ongeldige datum: er is geen maand bekend."
-          #else:
-          #  # Parse date to month number
-          #  month = get_month_by_name(line['Datum'].strip())
+      try:
+        date = datetime.strptime(line['Datum'].strip(), "%d-%m-%Y")
+      except ValueError as e:
+        error['datum'] = "Ongeldige datum '%s'." % line['Datum']
+        date = None
+        date_start = None
+    # else:
+    #   Use date from previous line if it exists, else
+    elif date is None:
+      error['datum'] = "Onbekende datum."
 
-          #  # Validate if it is a month
-          #  if month == 0:
-          #    # Maybe it is a valid date
-          #    try:
-          #      date = datetime.strptime(line['Datum'].strip(), "%d-%m-%Y")
-          #    except ValueError as e:
-          #      error['datum'] = "Ongeldige datum '%s'." % line['Datum']
+    # Only process upcoming duties
+    if date and date < datetime.now():
+      continue
 
-          try:
-            date = datetime.strptime(line['Datum'].strip(), "%d-%m-%Y")
-          except ValueError as e:
-            error['datum'] = "Ongeldige datum '%s'." % line['Datum']
-            date = None
-            date_start = None
-        # else:
-        #   Use date from previous line if it exists, else
-        elif date is None:
-          error['datum'] = "Onbekende datum."
-
-        # Only process upcoming duties
-        if date and date < datetime.now():
-          continue
-
-        # Set boundaries for 1 day
-        custom_event = None
-        if line['Tijdstip'] and date:
-          if line['Tijdstip'] == 'Ochtend':
-            # Service time between 8:00 and 13:00
-            date_start = date + timedelta(hours=8)
-            date_end = date + timedelta(hours=13)
-          elif line['Tijdstip'] == 'Middag':
-            # Service time between 13:00 and 00:00
-            date_start = date + timedelta(hours=13)
-            date_end = date + timedelta(hours=24)
-          elif line['Tijdstip'] == 'Avond':
-            # Service time between 17:00 and 00:00
-            date_start = date + timedelta(hours=17)
-            date_end = date + timedelta(hours=24)
-          elif re.match("^\d?\d:\d\d$", line['Tijdstip']):
-            time = line['Tijdstip'].split(':')
-            date_start = date + timedelta(hours=int(time[0]), minutes=int(time[1]))
-            date_end = None
-          elif len(line['Tijdstip']) > 0:
-            # Check if a custom title is given
-            if date_start:
-              custom_event = Event.objects.filter(title=line['Tijdstip'], startdatetime__gte=date_start)
-            else:
-              custom_event = Event.objects.filter(title=line['Tijdstip'])
-
-            if len(custom_event) == 1:
-              custom_event = custom_event.first()
-            elif len(custom_event) > 1:
-              custom_event = None
-              error['tijdstip'] = "Meerdere diensten gevonden voor titel '%s'." % line['Tijdstip']
-            else:
-              custom_event = None
-              error['tijdstip'] = "Ongeldige tijdstip '%s'." % line['Tijdstip']
-
-            date_start = None
-            date_end = None
-        # else:
-        #   Use time from previous line if it exists, else
-        elif date_start is None:
-          #error['tijdstip'] = "Onbekend aanvangs tijdstip."
-          date_end = None
-
-        # Search event
+    # Set boundaries for 1 day
+    custom_event = None
+    if line['Tijdstip'] and date:
+      if line['Tijdstip'] == 'Ochtend':
+        # Service time between 8:00 and 13:00
+        date_start = date + timedelta(hours=8)
+        date_end = date + timedelta(hours=13)
+      elif line['Tijdstip'] == 'Middag':
+        # Service time between 13:00 and 00:00
+        date_start = date + timedelta(hours=13)
+        date_end = date + timedelta(hours=24)
+      elif line['Tijdstip'] == 'Avond':
+        # Service time between 17:00 and 00:00
+        date_start = date + timedelta(hours=17)
+        date_end = date + timedelta(hours=24)
+      elif re.match("^\d?\d:\d\d$", line['Tijdstip']):
+        time = line['Tijdstip'].split(':')
+        date_start = date + timedelta(hours=int(time[0]), minutes=int(time[1]))
+        date_end = None
+      elif len(line['Tijdstip']) > 0:
+        # Check if a custom title is given
         if date_start:
-          if date_end:
-            event = Event.objects.filter(startdatetime__gte=date_start, enddatetime__lt=date_end)
-          else:
-            event = Event.objects.filter(startdatetime=date_start)
-
-          if len(event) > 1:
-            error['event'] = "Meerdere diensten gevonden op dit tijdstip."
-            event = None
-          elif event is None or len(event) == 0:
-            error['event'] = "Geen diensten gevonden voor dit tijdstip."
-          else:
-            event = event.first()
-        elif custom_event:
-          event = custom_event
+          custom_event = Event.objects.filter(title=line['Tijdstip'], startdatetime__gte=date_start)
         else:
-          event = None
+          custom_event = Event.objects.filter(title=line['Tijdstip'])
 
-        # Check if other duties already exists for this service
-        duty = TimetableDuty.objects.filter(timetable=timetable, event=event)
-        warning_duplicate = "Er zijn reeds andere inroosteringen voor deze dienst." if duty else None
+        if len(custom_event) == 1:
+          custom_event = custom_event.first()
+        elif len(custom_event) > 1:
+          custom_event = None
+          error['tijdstip'] = "Meerdere diensten gevonden voor titel '%s'." % line['Tijdstip']
+        else:
+          custom_event = None
+          error['tijdstip'] = "Ongeldige tijdstip '%s'." % line['Tijdstip']
 
-        # Get description/comment
-        comments = line['Extra opmerkingen']
+        date_start = None
+        date_end = None
+    # else:
+    #   Use time from previous line if it exists, else
+    elif date_start is None:
+      #error['tijdstip'] = "Onbekend aanvangs tijdstip."
+      date_end = None
 
-        # Save whole in dict
-        main_line = {}
-        main_line['datum'] = date if date else line['Datum']
-        main_line['tijdstip'] = line['Tijdstip']
-        main_line['event'] = event
-        main_line['comments'] = comments
+    # Search event
+    if date_start:
+      if date_end:
+        event = Event.objects.filter(startdatetime__gte=date_start, enddatetime__lt=date_end)
+      else:
+        event = Event.objects.filter(startdatetime=date_start)
 
-        for key, val in error.items():
+      if len(event) > 1:
+        error['event'] = "Meerdere diensten gevonden op dit tijdstip."
+        event = None
+      elif event is None or len(event) == 0:
+        error['event'] = "Geen diensten gevonden voor dit tijdstip."
+      else:
+        event = event.first()
+    elif custom_event:
+      event = custom_event
+    else:
+      event = None
+
+    # Check if other duties already exists for this service
+    duty = TimetableDuty.objects.filter(timetable=timetable, event=event)
+    warning_duplicate = "Er zijn reeds andere inroosteringen voor deze dienst." if duty else None
+
+    # Get description/comment
+    comments = line['Extra opmerkingen']
+
+    # Save whole in dict
+    main_line = {}
+    main_line['datum'] = date if date else line['Datum']
+    main_line['tijdstip'] = line['Tijdstip']
+    main_line['event'] = event
+    main_line['comments'] = comments
+
+    for key, val in error.items():
+      error_name = 'error_%s' % key
+      main_line[error_name] = val
+
+    for key, val in warning.items():
+      warning_name = 'warning_%s' % key
+      main_line[warning_name] = val
+
+    # Split families into array
+    if line['Familie']:
+      for familie in line['Familie'].split('/'):
+        tmp_error = {}
+        tmp_warning = {}
+        line_id += 1
+
+        # Validations and filters
+        familie = familie.strip()
+
+        family_name = re.sub(r"^Fam\.\s?", '', familie.strip(), flags=re.IGNORECASE).strip().split(' ')
+        lastname = family_name[-1]
+        family = Family.objects.filter(lastname=lastname)
+
+        # Issue: Fam. Smith-Tensen, when just Fam. Smith is inserted, 'no family is found'
+        # Fix: when no family is foun, try extending the lastname by using __contains
+        if family is None or len(family) == 0:
+          # Remove dots in case of afkortingen like John S.
+          family = Family.objects.filter(lastname__contains=lastname.replace('.', ''))
+
+        # Filter family list even further based on the name (prefix and initials)
+        if len(family) > 1 and len(family_name) > 1:
+            # Make search query more strict
+            if '.' in family_name[0]:
+              families_found = []
+              for fam in family:
+                if fam.householder() and fam.householder().first().initials == family_name[0]:
+                  families_found.append(fam.pk)
+
+              family = family.filter(pk__in=families_found)
+
+              if len(family_name) > 2:
+                family = family.filter(prefix="%s%s%s" % (family_name[-3], (' ' if len(family_name) > 4 else ''), family_name[-2]))  # Verkrijg een-na-laastse, to leave room for more initals
+
+            else:
+              families = family.filter(prefix=family_name[0])
+              # If still multiple families are found, orraait
+              # but if suddenly no families are found, use the old family list to fire the 'select one of multiple families' warning
+              if len(families):
+                family = families
+
+        if len(family) > 1:
+          # Try to be smart and select the familie which is in the team
+          teammembers = TeamMember.objects.filter(team=timetable.team, family__in=family)
+
+          # If one is found
+          if len(teammembers) == 1:
+            # Set the family
+            family = teammembers.first().family
+          else:
+            tmp_warning['familie'] = "Meerdere families gevonden voor '%s'." % lastname
+            families_list[line_id] = family
+            family = None
+
+        elif family is None or len(family) == 0:
+          tmp_error['familie'] = "Geen families gevonden voor '%s'." % lastname
+        else:
+          family = family.first()
+
+          # Check if familie is in team
+          try:
+            TeamMember.objects.get(team=timetable.team, family=family)
+          except ObjectDoesNotExist:
+            tmp_warning['familie'] = "Familie is geen lid van het team."
+
+        # Check if the timetable duty already exists
+        duty = TimetableDuty.objects.filter(timetable=timetable, event=event, responsible=None, responsible_family=family)
+        duplicate_found = duty.first().id if duty else False
+        if duplicate_found:
+          tmp_warning['duplicate'] = "Deze inroostering bestaat al."
+        elif warning_duplicate:
+          tmp_warning['duplicate'] = warning_duplicate
+
+        # Save whole in the dict
+        temp_line = {}
+        temp_line['id'] = line_id
+        temp_line['familie'] = family if family else familie
+        temp_line['persoon'] = None
+        temp_line['errors_found'] = len(error) + len(tmp_error)
+        temp_line['warnings_found'] = len(warning) + len(tmp_warning)
+        temp_line['duplicate_found'] = duplicate_found
+
+        for key,val in tmp_error.items():
           error_name = 'error_%s' % key
-          main_line[error_name] = val
+          temp_line[error_name] = val
 
-        for key, val in warning.items():
+        for key,val in tmp_warning.items():
           warning_name = 'warning_%s' % key
-          main_line[warning_name] = val
+          temp_line[warning_name] = val
 
-        # Split families into array
-        if line['Familie']:
-          for familie in line['Familie'].split('/'):
-            tmp_error = {}
-            tmp_warning = {}
-            line_id += 1
+        # Count total invalid lines
+        if len(error) or len(tmp_error):
+          errors_found += 1
 
-            # Validations and filters
-            familie = familie.strip()
+        temp_line.update(main_line)
+        output_lines.append(temp_line)
 
-            family_name = re.sub(r"^Fam\.\s?", '', familie.strip(), flags=re.IGNORECASE).strip().split(' ')
-            lastname = family_name[-1]
-            family = Family.objects.filter(lastname=lastname)
+    # Split persons into array
+    if line['Persoon']:
+      for persoon in line['Persoon'].split('/'):
+        tmp_error = {}
+        tmp_warning = {}
+        line_id += 1
 
-            # Issue: Fam. Smith-Tensen, when just Fam. Smith is inserted, 'no family is found'
-            # Fix: when no family is foun, try extending the lastname by using __contains
-            if family is None or len(family) == 0:
-              # Remove dots in case of afkortingen like John S.
-              family = Family.objects.filter(lastname__contains=lastname.replace('.', ''))
+        # Validations and filters
+        persoon = persoon.strip()
 
-            # Filter family list even further based on the name (prefix and initials)
-            if len(family) > 1 and len(family_name) > 1:
-                # Make search query more strict
-                if '.' in family_name[0]:
-                  families_found = []
-                  for fam in family:
-                    if fam.householder() and fam.householder().first().initials == family_name[0]:
-                      families_found.append(fam.pk)
+        # Create first and possible last name
+        persoon_names = persoon.split(' ')
+        firstname = persoon_names[0].strip()
 
-                  family = family.filter(pk__in=families_found)
+        if len(persoon_names) > 1:
+          lastname = persoon_names[-1].strip()
+          profile = Profile.objects.filter(first_name=firstname, last_name=lastname)
 
-                  if len(family_name) > 2:
-                    family = family.filter(prefix="%s%s%s" % (family_name[-3], (' ' if len(family_name) > 4 else ''), family_name[-2]))  # Verkrijg een-na-laastse, to leave room for more initals
+          # Issue: John Smith-Tensen, when just John Smith is inserted, 'no person is found'
+          # Fix: when no person is foun, try extending the lastname by using __contains
+          if profile is None or len(profile) == 0:
+            # Remove dots in case of afkortingen like John S.
+            profile = Profile.objects.filter(first_name=firstname, last_name__contains=lastname.replace('.', ''))
+        else:
+          lastname = None
+          profile = Profile.objects.filter(first_name=firstname)
 
-                else:
-                  families = family.filter(prefix=family_name[0])
-                  # If still multiple families are found, orraait
-                  # but if suddenly no families are found, use the old family list to fire the 'select one of multiple families' warning
-                  if len(families):
-                    family = families
+        if len(profile) > 1:
+          # Try to be smart and select the person who is in the team
+          teammembers = TeamMember.objects.filter(team=timetable.team, profile__in=profile)
 
-            if len(family) > 1:
-              # Try to be smart and select the familie which is in the team
-              teammembers = TeamMember.objects.filter(team=timetable.team, family__in=family)
+          # If one is found
+          if len(teammembers) == 1:
+            # Set the profile
+            profile = teammembers.first().profile
+          else:
+            tmp_warning['persoon'] = "Meerdere personen gevonden voor '%s'." % persoon
+            profiles_list[line_id] = profile
+            profile = None
 
-              # If one is found
-              if len(teammembers) == 1:
-                # Set the family
-                family = teammembers.first().family
-              else:
-                tmp_warning['familie'] = "Meerdere families gevonden voor '%s'." % lastname
-                families_list[line_id] = family
-                family = None
+        elif profile is None or len(profile) == 0:
+          tmp_error['persoon'] = "Geen persoon gevonden voor '%s'." % persoon
+        else:
+          profile = profile.first()
 
-            elif family is None or len(family) == 0:
-              tmp_error['familie'] = "Geen families gevonden voor '%s'." % lastname
-            else:
-              family = family.first()
+          # Check if profile is in team
+          try:
+            TeamMember.objects.get(team=timetable.team, profile=profile)
+          except ObjectDoesNotExist:
+            tmp_warning['persoon'] = "Persoon is geen lid van het team."
 
-              # Check if familie is in team
-              try:
-                TeamMember.objects.get(team=timetable.team, family=family)
-              except ObjectDoesNotExist:
-                tmp_warning['familie'] = "Familie is geen lid van het team."
+        # Check if the timetable duty already exists
+        duty = TimetableDuty.objects.filter(timetable=timetable, event=event, responsible=profile, responsible_family=None)
+        duplicate_found = duty.first().id if duty else False
+        if duplicate_found:
+          tmp_warning['duplicate'] = "Deze inroostering bestaat al."
+        elif warning_duplicate:
+          tmp_warning['duplicate'] = warning_duplicate
 
-            # Check if the timetable duty already exists
-            duty = TimetableDuty.objects.filter(timetable=timetable, event=event, responsible=None, responsible_family=family)
-            duplicate_found = duty.first().id if duty else False
-            if duplicate_found:
-              tmp_warning['duplicate'] = "Deze inroostering bestaat al."
-            elif warning_duplicate:
-              tmp_warning['duplicate'] = warning_duplicate
+        # Save whole as object
+        temp_line = {}
+        temp_line['id'] = line_id
+        temp_line['familie'] = None
+        temp_line['persoon'] = profile if profile else persoon
+        temp_line['errors_found'] = len(error) + len(tmp_error)
+        temp_line['warnings_found'] = len(warning) + len(tmp_warning)
+        temp_line['duplicate_found'] = duplicate_found
 
-            # Save whole in the dict
-            temp_line = {}
-            temp_line['id'] = line_id
-            temp_line['familie'] = family if family else familie
-            temp_line['persoon'] = None
-            temp_line['errors_found'] = len(error) + len(tmp_error)
-            temp_line['warnings_found'] = len(warning) + len(tmp_warning)
-            temp_line['duplicate_found'] = duplicate_found
+        for key, val in tmp_error.items():
+          error_name = 'error_%s' % key
+          temp_line[error_name] = val
 
-            for key,val in tmp_error.items():
-              error_name = 'error_%s' % key
-              temp_line[error_name] = val
+        for key, val in tmp_warning.items():
+          warning_name = 'warning_%s' % key
+          temp_line[warning_name] = val
 
-            for key,val in tmp_warning.items():
-              warning_name = 'warning_%s' % key
-              temp_line[warning_name] = val
+        # Count total invalid lines
+        if len(error) or len(tmp_error):
+          errors_found += 1
 
-            # Count total invalid lines
-            if len(error) or len(tmp_error):
-              errors_found += 1
-
-            temp_line.update(main_line)
-            output_lines.append(temp_line)
-
-        # Split persons into array
-        if line['Persoon']:
-          for persoon in line['Persoon'].split('/'):
-            tmp_error = {}
-            tmp_warning = {}
-            line_id += 1
-
-            # Validations and filters
-            persoon = persoon.strip()
-
-            # Create first and possible last name
-            persoon_names = persoon.split(' ')
-            firstname = persoon_names[0].strip()
-
-            if len(persoon_names) > 1:
-              lastname = persoon_names[-1].strip()
-              profile = Profile.objects.filter(first_name=firstname, last_name=lastname)
-
-              # Issue: John Smith-Tensen, when just John Smith is inserted, 'no person is found'
-              # Fix: when no person is foun, try extending the lastname by using __contains
-              if profile is None or len(profile) == 0:
-                # Remove dots in case of afkortingen like John S.
-                profile = Profile.objects.filter(first_name=firstname, last_name__contains=lastname.replace('.', ''))
-            else:
-              lastname = None
-              profile = Profile.objects.filter(first_name=firstname)
-
-            if len(profile) > 1:
-              # Try to be smart and select the person who is in the team
-              teammembers = TeamMember.objects.filter(team=timetable.team, profile__in=profile)
-
-              # If one is found
-              if len(teammembers) == 1:
-                # Set the profile
-                profile = teammembers.first().profile
-              else:
-                tmp_warning['persoon'] = "Meerdere personen gevonden voor '%s'." % persoon
-                profiles_list[line_id] = profile
-                profile = None
-
-            elif profile is None or len(profile) == 0:
-              tmp_error['persoon'] = "Geen persoon gevonden voor '%s'." % persoon
-            else:
-              profile = profile.first()
-
-              # Check if profile is in team
-              try:
-                TeamMember.objects.get(team=timetable.team, profile=profile)
-              except ObjectDoesNotExist:
-                tmp_warning['persoon'] = "Persoon is geen lid van het team."
-
-            # Check if the timetable duty already exists
-            duty = TimetableDuty.objects.filter(timetable=timetable, event=event, responsible=profile, responsible_family=None)
-            duplicate_found = duty.first().id if duty else False
-            if duplicate_found:
-              tmp_warning['duplicate'] = "Deze inroostering bestaat al."
-            elif warning_duplicate:
-              tmp_warning['duplicate'] = warning_duplicate
-
-            # Save whole as object
-            temp_line = {}
-            temp_line['id'] = line_id
-            temp_line['familie'] = None
-            temp_line['persoon'] = profile if profile else persoon
-            temp_line['errors_found'] = len(error) + len(tmp_error)
-            temp_line['warnings_found'] = len(warning) + len(tmp_warning)
-            temp_line['duplicate_found'] = duplicate_found
-
-            for key, val in tmp_error.items():
-              error_name = 'error_%s' % key
-              temp_line[error_name] = val
-
-            for key, val in tmp_warning.items():
-              warning_name = 'warning_%s' % key
-              temp_line[warning_name] = val
-
-            # Count total invalid lines
-            if len(error) or len(tmp_error):
-              errors_found += 1
-
-            temp_line.update(main_line)
-            output_lines.append(temp_line)
+        temp_line.update(main_line)
+        output_lines.append(temp_line)
 
   if output_lines:
     if errors_found:
@@ -1285,6 +1292,7 @@ def timetable_import_from_file_check(request, id):
     'families_list':    families_list,
     'profiles_list':    profiles_list
   })
+
 
 @login_required
 @require_POST

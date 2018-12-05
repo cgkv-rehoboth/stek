@@ -25,3 +25,5 @@ django-mptt==0.8.6
 django-markdown==0.8.4
 django-widget-tweaks==1.4.1
 django-fiber==1.4.1
+pandas
+xlrd

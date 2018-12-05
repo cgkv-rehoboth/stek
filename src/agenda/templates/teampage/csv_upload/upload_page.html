@@ -36,7 +36,7 @@
 {#            </div>#}
 {#        </div>#}
         <div class="col-sm-12">
-          Indien je een rooster bijhoudt volgens <a href="{{ MEDIA_URL }}files/Rooster template.xlsx" title="Klik hier om de template te downloaden">dit template</a>, dan kan je dit rooster via Excel als een .csv bestand opslaan. Dit bestand kan je vervolgens hier uploaden om direct je rooster online te importeren. <br/>
+          Indien je een rooster bijhoudt volgens <a href="{{ MEDIA_URL }}files/Rooster template.xlsx" title="Klik hier om de template te downloaden">dit template</a>, dan kan je dit rooster via Excel als een .csv bestand opslaan, of gewoon als een Excel (.xlsx of .xls) opslaan. Dit bestand kan je vervolgens hier uploaden om direct je rooster online te importeren. <br/>
           Let wel: er zijn een aantal regels waar je je aan moet houden bij het invullen bij het rooster. Zo moeten de datums volledig uitgeschreven zijn en kan je bij Tijdstip alleen kiezen tussen 'Ochtend' (voor een ochtenddienst), 'Middag' (voor een middagdienst of avonddienst) of een ander tijdstip geschreven in het formaat 'hh:mm' (zoals '8:30' of '19:45'). Ook moeten de familienamen onder de kolom Familie ingevuld worden, net zoals de personen onder de kolom 'Persoon'. Je kan meerdere families / personen in één regel plaatsen door deze van elkaar te scheiden met '/' (zoals 'Willem Oranje / Maxima'). Families mag je voorgaan met 'Fam. ' (spatie na de punt!), maar is niet verplicht (zoals 'Fam. Oranje' of 'Oranje').
         </div>
 
@@ -49,9 +49,9 @@
 
             <div class="col-sm-12">
               <div class="form-group">
-                <label class="col-sm-2 control-label">CSV bestand</label>
+                <label class="col-sm-2 control-label">CSV/XLS(X) bestand</label>
                 <div class="col-sm-10">
-                  <input type="file" name="upload_file" accept="text/csv" required />
+                  <input type="file" name="upload_file" accept="text/csv, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required />
                 </div>
               </div>
             </div>
