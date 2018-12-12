@@ -2,7 +2,6 @@ import csv
 import datetime
 import tempfile
 
-import numpy as np
 import pandas as panda
 from dateutil import parser
 
@@ -29,8 +28,8 @@ def excel_to_lines(file, headers):
                         )
 
   # Check file headers
-  if not np.array_equal(headers, df.columns):
-    missingheaders = list(set(headers) - set(df.columns))
+  missingheaders = list(set(headers) - set(df.columns))
+  if missingheaders:
     raise HeaderValidationError('Headers are not equal!', missingheaders)
 
   if len(df.index) < 1:
@@ -47,6 +46,8 @@ def excel_to_lines(file, headers):
       elif isinstance(value, datetime.time):    # Convert time types
         value = value.strftime("%H:%M")
       elif isinstance(value, panda.Timestamp):  # Convert datetime types
+        value = value.strftime("%d-%m-%Y")
+      elif isinstance(value, datetime.datetime):  # Convert datetime types
         value = value.strftime("%d-%m-%Y")
       elif header == 'Datum':                   # Convert string datetime types
         datetime_obj = parser.parse(value)
@@ -68,19 +69,22 @@ def csv_to_lines(file, headers):
     # Save contents to file on disk
     tf.flush()
 
-  # Read file
-  with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
-    csv_lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
+    # Read file
+    with open(tf.name, 'r', encoding="ISO-8859-1") as fh:
+      csv_lines = csv.DictReader(fh, delimiter=get_delimiter(fh))
 
-    # Check for needed headers
-    if not np.array_equal(headers, csv_lines.fieldnames):
+      # Check for needed headers
       missingheaders = list(set(headers) - set(csv_lines.fieldnames))
-      raise HeaderValidationError('Headers are not equal!', missingheaders)
+      if missingheaders:
+        print(headers)
+        print(csv_lines.fieldnames)
+        print(missingheaders)
+        raise HeaderValidationError('Headers are not equal!', missingheaders)
 
-    if len(csv_lines) < 1:
-      raise DataValidationError('No data!')
+      # Get lines
+      lines = [line for line in csv_lines]
 
-  # Get lines
-  lines = [line for line in csv_lines]
+      if len(lines) < 1:
+        raise DataValidationError('No data!')
 
   return lines

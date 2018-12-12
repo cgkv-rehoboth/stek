@@ -928,18 +928,18 @@ def timetable_import_from_file_check(request, id):
       messages.error(request, "Kan het bestandsformaat niet verwerken.")
       return redirect('timetable-import-from-file-index', id=timetable.pk)
   except HeaderValidationError as e:
-    print("Er is een fout opgetreden bij het uitlezen van het bestand", e)
+    print("[HeaderValidationError] Er is een fout opgetreden bij het uitlezen van het bestand.\n", e)
     if len(e.missing_headers) > 1:
       messages.error(request, "De kolommen <strong>%s</strong> ontbreken in het bestand." % ', '.join(e.missing_headers))
     else:
       messages.error(request, "De kolom <strong>%s</strong> ontbreekt in het bestand." % e.missing_headers[0])
     return redirect('timetable-import-from-file-index', id=timetable.pk)
   except DataValidationError as e:
-    print("Er is een fout opgetreden bij het uitlezen van het bestand.", e)
+    print("[DataValidationError] Er is een fout opgetreden bij het uitlezen van het bestand.\n", e)
     messages.error(request, "Er is een fout opgetreden bij het uitlezen van het bestand: %s." % e.message)
     return redirect('timetable-import-from-file-index', id=timetable.pk)
   except Exception as e:
-    print("Er is een fout opgetreden bij het uitlezen van het bestand.", e)
+    print("[Exception] Er is een fout opgetreden bij het uitlezen van het bestand.\n", e)
     messages.error(request, "Er is een fout opgetreden bij het uitlezen van het bestand.")
     return redirect('timetable-import-from-file-index', id=timetable.pk)
 
