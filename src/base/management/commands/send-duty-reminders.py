@@ -1,3 +1,6 @@
+import sys
+from smtplib import SMTPDataError
+
 from django.core.management.base import BaseCommand
 from agenda.models import *
 from datetime import datetime, timedelta
@@ -42,7 +45,16 @@ def send_reminder_mail(duty, resp):
 
   to_emails = [resp.email, ]
 
-  send_mail(subject, messageTXT, from_email, to_emails, html_message=messageHTML)
+  try:
+    send_mail(subject, messageTXT, from_email, to_emails, html_message=messageHTML)
+    return True
+  except SMTPDataError:
+    print("[FAILURE] Email niet verzonden. Er is een fout met de mail server.")
+    return False
+  except:
+    print("[FAILURE] Er is iets onbekends mis gegaan bij het versturen van de mail:")
+    print(sys.exc_info())
+    return False
 
 
 class Command(BaseCommand):

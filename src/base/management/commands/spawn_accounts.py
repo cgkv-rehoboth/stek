@@ -1,3 +1,6 @@
+import sys
+from smtplib import SMTPDataError
+
 from django.core.management.base import BaseCommand, CommandError
 from base.models import Profile
 from django.contrib.auth.models import User
@@ -41,9 +44,23 @@ def send_reset_email(profile, username):
     profile.save()
 
     # init the password reset form
-    reset_form = NewAccountPasswordResetForm({ "email": profile.email })
+    try:
+      reset_form = NewAccountPasswordResetForm({ "email": profile.email })
+    except:
+      print("   Er is iets onbekends mis gegaan:")
+      print(sys.exc_info()[0])
+      return False
+
     if reset_form.is_valid():
-      reset_form.save()
+      try:
+        reset_form.save()
+      except SMTPDataError:
+        print("   Email niet verzonden. Er is een fout met de mail server.")
+        return False
+      except:
+        print("   Er is iets onbekends mis gegaan bij het versturen van de mail:")
+        print(sys.exc_info())
+        return False
       return True
     else:
       print("[FAILURE]: Ongeldig password-reset-form voor e-mailadres '%s'" % profile.email)
