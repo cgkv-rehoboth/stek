@@ -20,9 +20,9 @@ class ContactSerializer(serializers.Serializer):
 
     # Check to whom the mail must be send (default to scriba)
     if self.validated_data['recipient'] == "predikant":
-      to = ['info@ajansen.nu']
+      to = ['no@robots.nu']
     else:
-      to = ['scriba@rehobothkerkwoerden.nl']
+      to = ['no@robots.nl']
 
     message = self.validated_data['message']
 
