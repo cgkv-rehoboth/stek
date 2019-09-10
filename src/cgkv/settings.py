@@ -7,7 +7,7 @@ from machina import MACHINA_MAIN_TEMPLATE_DIR, MACHINA_MAIN_STATIC_DIR
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'xtij@)g$t19zj^l$u)gud6-9!0436!=cp&8prn(ahk9)68(j&+'
+SECRET_KEY = ''********'
 
 PAGE_USE_SITE_ID = True
 SITE_ID = 1
@@ -49,7 +49,7 @@ LOCALE_PATHS = [
 
 # People who get code error notifications.
 # In the format (('Full Name', 'email@example.com'), ('Full Name', 'anotheremail@example.com'))
-ADMINS = (('Website Team', 'website@rehobothkerkwoerden.nl'))
+ADMINS = (('Website Team', 'no@robots.nl'))
 
 ALLOWED_HOSTS = ['*']  # todo: make default to rehobothkerkwoerden.nl
 CORS_ORIGIN_ALLOW_ALL = True
@@ -57,7 +57,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/tmp/django-messages'
 
-DEFAULT_FROM_EMAIL = 'Rehobothkerk Woerden <noreply@rehobothkerkwoerden.nl>'
+DEFAULT_FROM_EMAIL = 'Rehobothkerk Woerden <no@robots.nl>'
 
 # Tuple of IP addresses, as strings, that:
 #   * See debug comments, when DEBUG is true
@@ -143,9 +143,9 @@ WSGI_APPLICATION = 'cgkv.wsgi.application'
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.mysql',
-    'NAME': 'cgkv',
-    'USER': 'cgkv',
-    'PASSWORD': 'lCCnO6D9Py1VQukTlGknTnFiNyx6TmJ6',
+    'NAME': '********',
+    'USER': '********',
+    'PASSWORD': '********',
     'HOST': 'localhost',
     'PORT': '3306',
   }
@@ -200,8 +200,8 @@ SECURE_SSL_REDIRECT = True
 #
 
 NOCAPTCHA = True
-RECAPTCHA_PUBLIC_KEY = '6LdTEBsTAAAAAEGoRs_P10MVgylFKuxHnKZzB-m1'
-RECAPTCHA_PRIVATE_KEY = '6LdTEBsTAAAAAGdjKkSYNWRSx_5w5fCEZGrZIkyk'
+RECAPTCHA_PUBLIC_KEY = ''********'
+RECAPTCHA_PRIVATE_KEY = ''********'
 
 # cache settings
 
